@@ -1,0 +1,814 @@
+{
+  "changed_brief_fields": [
+    "site longitudinal extent",
+    "three of four exact approach ordinates",
+    "absolute platform and concourse locations"
+  ],
+  "compile_hash": "cc3deb51d6548833fb8d4832fac4fd540f3ddf03052fd2d33f036baadcbdac41",
+  "component_admission": {
+    "authentic_UK_components": false,
+    "bank_components": [
+      {
+        "bank": "A",
+        "origin": "authored_v04_fan_and_access; not imported UK hardware",
+        "subassembly_hash": "49b27a077f35daedc87dc85736580325f3b537c24542ba01dd80b100b891364c",
+        "translation_m": [
+          1000.0,
+          -42.0
+        ]
+      },
+      {
+        "bank": "B",
+        "origin": "authored_v04_fan_and_access; not imported UK hardware",
+        "subassembly_hash": "49b27a077f35daedc87dc85736580325f3b537c24542ba01dd80b100b891364c",
+        "translation_m": [
+          1000.0,
+          6.0
+        ]
+      }
+    ],
+    "component_authenticity": "unassessed; every generated or imported component is authored synthetic",
+    "import_report": null,
+    "imported_instances": []
+  },
+  "construction_authorised": false,
+  "family": "isolated",
+  "game_status": "not_tested",
+  "normal_independence": {
+    "compile_hash": "cc3deb51d6548833fb8d4832fac4fd540f3ddf03052fd2d33f036baadcbdac41",
+    "not_established": [
+      "real interlocking independence",
+      "full dynamic gauging",
+      "game routing"
+    ],
+    "pairs": [
+      {
+        "conflicts": [],
+        "route_a": "A:A1:in",
+        "route_b": "B:B1:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:in",
+        "route_b": "B:B1:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:in",
+        "route_b": "B:B2:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:in",
+        "route_b": "B:B2:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:in",
+        "route_b": "B:B3:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:in",
+        "route_b": "B:B3:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:in",
+        "route_b": "B:B4:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:in",
+        "route_b": "B:B4:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:out",
+        "route_b": "B:B1:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:out",
+        "route_b": "B:B1:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:out",
+        "route_b": "B:B2:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:out",
+        "route_b": "B:B2:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:out",
+        "route_b": "B:B3:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:out",
+        "route_b": "B:B3:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:out",
+        "route_b": "B:B4:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A1:out",
+        "route_b": "B:B4:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:in",
+        "route_b": "B:B1:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:in",
+        "route_b": "B:B1:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:in",
+        "route_b": "B:B2:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:in",
+        "route_b": "B:B2:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:in",
+        "route_b": "B:B3:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:in",
+        "route_b": "B:B3:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:in",
+        "route_b": "B:B4:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:in",
+        "route_b": "B:B4:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:out",
+        "route_b": "B:B1:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:out",
+        "route_b": "B:B1:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:out",
+        "route_b": "B:B2:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:out",
+        "route_b": "B:B2:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:out",
+        "route_b": "B:B3:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:out",
+        "route_b": "B:B3:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:out",
+        "route_b": "B:B4:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A2:out",
+        "route_b": "B:B4:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:in",
+        "route_b": "B:B1:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:in",
+        "route_b": "B:B1:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:in",
+        "route_b": "B:B2:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:in",
+        "route_b": "B:B2:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:in",
+        "route_b": "B:B3:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:in",
+        "route_b": "B:B3:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:in",
+        "route_b": "B:B4:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:in",
+        "route_b": "B:B4:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:out",
+        "route_b": "B:B1:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:out",
+        "route_b": "B:B1:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:out",
+        "route_b": "B:B2:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:out",
+        "route_b": "B:B2:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:out",
+        "route_b": "B:B3:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:out",
+        "route_b": "B:B3:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:out",
+        "route_b": "B:B4:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A3:out",
+        "route_b": "B:B4:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:in",
+        "route_b": "B:B1:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:in",
+        "route_b": "B:B1:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:in",
+        "route_b": "B:B2:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:in",
+        "route_b": "B:B2:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:in",
+        "route_b": "B:B3:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:in",
+        "route_b": "B:B3:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:in",
+        "route_b": "B:B4:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:in",
+        "route_b": "B:B4:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:out",
+        "route_b": "B:B1:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:out",
+        "route_b": "B:B1:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:out",
+        "route_b": "B:B2:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:out",
+        "route_b": "B:B2:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:out",
+        "route_b": "B:B3:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:out",
+        "route_b": "B:B3:out"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:out",
+        "route_b": "B:B4:in"
+      },
+      {
+        "conflicts": [],
+        "route_a": "A:A4:out",
+        "route_b": "B:B4:out"
+      }
+    ],
+    "route_pair_count": 64,
+    "status": "independent_in_compiled_resource_model"
+  },
+  "original_brief_site": {
+    "actual_ports_outside": [
+      "A:return_0:start",
+      "A:return_0:end",
+      "A:F2:N",
+      "A:F2:R",
+      "A:return_1:start",
+      "A:return_1:end",
+      "A:F3:T",
+      "A:F3:N",
+      "A:F3:R",
+      "A:return_2:start",
+      "A:return_2:end",
+      "A:BERTH_P1",
+      "A:BUFFER_P1",
+      "A:BERTH_P2",
+      "A:BUFFER_P2",
+      "A:BERTH_P3",
+      "A:BUFFER_P3",
+      "A:BERTH_P4",
+      "A:BUFFER_P4",
+      "B:return_0:start",
+      "B:return_0:end",
+      "B:F2:N",
+      "B:F2:R",
+      "B:return_1:start",
+      "B:return_1:end",
+      "B:F3:T",
+      "B:F3:N",
+      "B:F3:R",
+      "B:return_2:start",
+      "B:return_2:end",
+      "B:BERTH_P1",
+      "B:BUFFER_P1",
+      "B:BERTH_P2",
+      "B:BUFFER_P2",
+      "B:BERTH_P3",
+      "B:BUFFER_P3",
+      "B:BERTH_P4",
+      "B:BUFFER_P4"
+    ],
+    "construction_authorised": false,
+    "fixed_orientation_translation_certificate": {
+      "actual_port_x_span_m": 1970.0,
+      "available_x_span_m": 1200.0,
+      "fits_under_translation_only": false,
+      "scope": "this fixed candidate cannot be translated into the box; other shapes/families/rotation not ruled out"
+    },
+    "padding_m": 0.0,
+    "rail_control_hull_envelope_m": [
+      0.0,
+      -54.0,
+      1970.0,
+      42.0
+    ],
+    "required_port_mismatches": [
+      {
+        "actual_m": [
+          0.0,
+          -42.0
+        ],
+        "port": "A:ARRIVAL",
+        "required_m": [
+          0.0,
+          -18.0
+        ]
+      },
+      {
+        "actual_m": [
+          0.0,
+          -54.0
+        ],
+        "port": "A:DEPARTURE",
+        "required_m": [
+          0.0,
+          -6.0
+        ]
+      },
+      {
+        "actual_m": [
+          0.0,
+          -6.0
+        ],
+        "port": "B:DEPARTURE",
+        "required_m": [
+          0.0,
+          18.0
+        ]
+      }
+    ],
+    "reservations": [],
+    "scope": "plan centreline/hull and supplied reservations, not structural or dynamic gauge approval",
+    "site_box_m": [
+      0.0,
+      -90.0,
+      1200.0,
+      90.0
+    ],
+    "source_hash": "b2ff80f99bd8f470d976c13cc7146885fd16e7b2cf559d39973807f3c731ec12",
+    "status": "fail"
+  },
+  "proposed_larger_test_site": {
+    "actual_ports_outside": [],
+    "construction_authorised": false,
+    "padding_m": 1.75,
+    "rail_control_hull_envelope_m": [
+      -1.75,
+      -55.75,
+      1971.75,
+      43.75
+    ],
+    "required_port_mismatches": [],
+    "reservations": [
+      {
+        "contained": true,
+        "id": "concourse_reservation",
+        "kind": "planar_reserved_volume_only",
+        "possible_rail_contacts": []
+      }
+    ],
+    "scope": "plan centreline/hull and supplied reservations, not structural or dynamic gauge approval",
+    "site_box_m": [
+      -5.0,
+      -90.0,
+      2200.0,
+      90.0
+    ],
+    "source_hash": "b2ff80f99bd8f470d976c13cc7146885fd16e7b2cf559d39973807f3c731ec12",
+    "status": "pass_within_scope"
+  },
+  "retained_brief_fields": [
+    "four directional approach roles",
+    "eight platform roads",
+    "two service groups",
+    "four 260 m and four 320 m boarding intervals",
+    "platform-road y positions"
+  ],
+  "schema_version": "0.6.0",
+  "selected_numerical_checks": {
+    "A1": {
+      "GB_interface": {
+        "clauses": [
+          "7.7.17.6",
+          "7.7.17.7"
+        ],
+        "reason": "selected national-rule platform height/offset route not numerically imported",
+        "source_id": "S058",
+        "status": "unassessed"
+      },
+      "applicability_origin": "explicit new-line study assumption; not automatic national profile resolution",
+      "cant_mm": 0,
+      "interval_m": [
+        1710.0,
+        1970.0
+      ],
+      "platform_cant": {
+        "clause": "4.2.4.2(2)",
+        "limit_mm": 110,
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "status": "pass",
+        "value_mm": 0
+      },
+      "platform_radius": {
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "status": "pass"
+      },
+      "straight": true,
+      "usable_length_m": 260.0
+    },
+    "A2": {
+      "GB_interface": {
+        "clauses": [
+          "7.7.17.6",
+          "7.7.17.7"
+        ],
+        "reason": "selected national-rule platform height/offset route not numerically imported",
+        "source_id": "S058",
+        "status": "unassessed"
+      },
+      "applicability_origin": "explicit new-line study assumption; not automatic national profile resolution",
+      "cant_mm": 0,
+      "interval_m": [
+        1710.0,
+        1970.0
+      ],
+      "platform_cant": {
+        "clause": "4.2.4.2(2)",
+        "limit_mm": 110,
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "status": "pass",
+        "value_mm": 0
+      },
+      "platform_radius": {
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "status": "pass"
+      },
+      "straight": true,
+      "usable_length_m": 260.0
+    },
+    "A3": {
+      "GB_interface": {
+        "clauses": [
+          "7.7.17.6",
+          "7.7.17.7"
+        ],
+        "reason": "selected national-rule platform height/offset route not numerically imported",
+        "source_id": "S058",
+        "status": "unassessed"
+      },
+      "applicability_origin": "explicit new-line study assumption; not automatic national profile resolution",
+      "cant_mm": 0,
+      "interval_m": [
+        1650.0,
+        1970.0
+      ],
+      "platform_cant": {
+        "clause": "4.2.4.2(2)",
+        "limit_mm": 110,
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "status": "pass",
+        "value_mm": 0
+      },
+      "platform_radius": {
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "status": "pass"
+      },
+      "straight": true,
+      "usable_length_m": 320.0
+    },
+    "A4": {
+      "GB_interface": {
+        "clauses": [
+          "7.7.17.6",
+          "7.7.17.7"
+        ],
+        "reason": "selected national-rule platform height/offset route not numerically imported",
+        "source_id": "S058",
+        "status": "unassessed"
+      },
+      "applicability_origin": "explicit new-line study assumption; not automatic national profile resolution",
+      "cant_mm": 0,
+      "interval_m": [
+        1650.0,
+        1970.0
+      ],
+      "platform_cant": {
+        "clause": "4.2.4.2(2)",
+        "limit_mm": 110,
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "status": "pass",
+        "value_mm": 0
+      },
+      "platform_radius": {
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "status": "pass"
+      },
+      "straight": true,
+      "usable_length_m": 320.0
+    },
+    "B1": {
+      "GB_interface": {
+        "clauses": [
+          "7.7.17.6",
+          "7.7.17.7"
+        ],
+        "reason": "selected national-rule platform height/offset route not numerically imported",
+        "source_id": "S058",
+        "status": "unassessed"
+      },
+      "applicability_origin": "explicit new-line study assumption; not automatic national profile resolution",
+      "cant_mm": 0,
+      "interval_m": [
+        1710.0,
+        1970.0
+      ],
+      "platform_cant": {
+        "clause": "4.2.4.2(2)",
+        "limit_mm": 110,
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "status": "pass",
+        "value_mm": 0
+      },
+      "platform_radius": {
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "status": "pass"
+      },
+      "straight": true,
+      "usable_length_m": 260.0
+    },
+    "B2": {
+      "GB_interface": {
+        "clauses": [
+          "7.7.17.6",
+          "7.7.17.7"
+        ],
+        "reason": "selected national-rule platform height/offset route not numerically imported",
+        "source_id": "S058",
+        "status": "unassessed"
+      },
+      "applicability_origin": "explicit new-line study assumption; not automatic national profile resolution",
+      "cant_mm": 0,
+      "interval_m": [
+        1710.0,
+        1970.0
+      ],
+      "platform_cant": {
+        "clause": "4.2.4.2(2)",
+        "limit_mm": 110,
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "status": "pass",
+        "value_mm": 0
+      },
+      "platform_radius": {
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "status": "pass"
+      },
+      "straight": true,
+      "usable_length_m": 260.0
+    },
+    "B3": {
+      "GB_interface": {
+        "clauses": [
+          "7.7.17.6",
+          "7.7.17.7"
+        ],
+        "reason": "selected national-rule platform height/offset route not numerically imported",
+        "source_id": "S058",
+        "status": "unassessed"
+      },
+      "applicability_origin": "explicit new-line study assumption; not automatic national profile resolution",
+      "cant_mm": 0,
+      "interval_m": [
+        1650.0,
+        1970.0
+      ],
+      "platform_cant": {
+        "clause": "4.2.4.2(2)",
+        "limit_mm": 110,
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "status": "pass",
+        "value_mm": 0
+      },
+      "platform_radius": {
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "status": "pass"
+      },
+      "straight": true,
+      "usable_length_m": 320.0
+    },
+    "B4": {
+      "GB_interface": {
+        "clauses": [
+          "7.7.17.6",
+          "7.7.17.7"
+        ],
+        "reason": "selected national-rule platform height/offset route not numerically imported",
+        "source_id": "S058",
+        "status": "unassessed"
+      },
+      "applicability_origin": "explicit new-line study assumption; not automatic national profile resolution",
+      "cant_mm": 0,
+      "interval_m": [
+        1650.0,
+        1970.0
+      ],
+      "platform_cant": {
+        "clause": "4.2.4.2(2)",
+        "limit_mm": 110,
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "status": "pass",
+        "value_mm": 0
+      },
+      "platform_radius": {
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "status": "pass"
+      },
+      "straight": true,
+      "usable_length_m": 320.0
+    },
+    "whole_candidate_base_radius_floor": {
+      "clause": "4.2.3.4(1)",
+      "limit_m": 150,
+      "parameter_id": "NEW_LINE_HORIZONTAL_RADIUS_FLOOR",
+      "scope": "base floor only; speed, reverse curves and platform criteria remain separate",
+      "source_id": "S058",
+      "status": "pass",
+      "value_m": 334.0515839251409
+    }
+  },
+  "strict_UK_input_gate": {
+    "UK_profile_gate": "not_passed",
+    "construction_authorised": false,
+    "game_status": "not_tested",
+    "mode": "gb_rules_strict",
+    "offline_analysis_allowed": false,
+    "scope": "input admission only; no legal, safety or whole-network certification",
+    "synthetic_components": true,
+    "unresolved": [
+      "exact_vehicle_geometry",
+      "dynamic_gauge_method",
+      "pointwork_speed_applicability",
+      "platform_height_offset",
+      "real_release_profile",
+      "authentic_component_catalogue"
+    ]
+  },
+  "vehicle_summary": {
+    "full_gauge": "unassessed",
+    "pairs_evaluated": 18,
+    "parent_curve_body_error": "unassessed",
+    "record_hash": "40bdbe8de0c14359c11f282436b095d693d302a12ca54047133af4bda641e331",
+    "routes_evaluated": 16
+  }
+}

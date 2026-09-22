@@ -1,0 +1,499 @@
+{
+  "accepted_count": 5,
+  "candidates": [
+    {
+      "accepted": true,
+      "candidate_hash": "35b0bdb4d9729d9d72886a4fa3bdac8518bf94a54c11de698d188dc4d51c8c16",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 0.0,
+        "mode": "flat_crossing",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": false,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [],
+      "grade_upper": 0.0,
+      "height_m": 0.0,
+      "mode": "flat",
+      "ramp_m": 750.0
+    },
+    {
+      "accepted": false,
+      "candidate_hash": "3937826b3ad20a1abe4c58adf412e94237214908c0ff40e4a48a6497f257531d",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 6.5,
+        "mode": "flyover",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": false,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [
+        "return_connector:grade_pass",
+        "crossing_envelope_insufficient"
+      ],
+      "grade_upper": 0.02031250000203125,
+      "height_m": 6.5,
+      "mode": "flyover",
+      "ramp_m": 600
+    },
+    {
+      "accepted": false,
+      "candidate_hash": "5822357847d48652d6028b2adcf5a031dd560af4e33e508b593ea8a63affb2d4",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 7.5,
+        "mode": "flyover",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": false,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [
+        "return_connector:grade_pass"
+      ],
+      "grade_upper": 0.02343750000234375,
+      "height_m": 7.5,
+      "mode": "flyover",
+      "ramp_m": 600
+    },
+    {
+      "accepted": false,
+      "candidate_hash": "a28b087ca15f0b6ab4b1780ef1a49d45e3b9ff886839af027e05da27d9fb3911",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 6.5,
+        "mode": "flyover",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": false,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [
+        "crossing_envelope_insufficient"
+      ],
+      "grade_upper": 0.016250000001625,
+      "height_m": 6.5,
+      "mode": "flyover",
+      "ramp_m": 750
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "a7277661b28a2e5c3c74a4d223de005745e4cd0efbd2fc1ae34fc8bfd350bc1e",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 7.5,
+        "mode": "flyover",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": true,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [],
+      "grade_upper": 0.018750000001875,
+      "height_m": 7.5,
+      "mode": "flyover",
+      "ramp_m": 750
+    },
+    {
+      "accepted": false,
+      "candidate_hash": "3f91a14854251a6ecc11de03e9b001082330d884ef60e7a4d6eb6390f3826770",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 6.5,
+        "mode": "flyover",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": false,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [
+        "crossing_envelope_insufficient"
+      ],
+      "grade_upper": 0.013541666668020834,
+      "height_m": 6.5,
+      "mode": "flyover",
+      "ramp_m": 900
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "1417777b65c0e3b0d42efb0223b8735f5d17ca01a1d8d2c471a7803549e17414",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 7.5,
+        "mode": "flyover",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": true,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [],
+      "grade_upper": 0.0156250000015625,
+      "height_m": 7.5,
+      "mode": "flyover",
+      "ramp_m": 900
+    },
+    {
+      "accepted": false,
+      "failures": [
+        "full ramp does not fit between real component ports"
+      ],
+      "height_m": 6.5,
+      "mode": "flyover",
+      "ramp_m": 1050
+    },
+    {
+      "accepted": false,
+      "failures": [
+        "full ramp does not fit between real component ports"
+      ],
+      "height_m": 7.5,
+      "mode": "flyover",
+      "ramp_m": 1050
+    },
+    {
+      "accepted": false,
+      "candidate_hash": "6c7841b337ff956f5f21495964f819df0d1f9e8213766513faa48a9efd0efb5f",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 6.5,
+        "mode": "diveunder",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": false,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [
+        "return_connector:grade_pass",
+        "crossing_envelope_insufficient"
+      ],
+      "grade_upper": 0.02031250000203125,
+      "height_m": 6.5,
+      "mode": "diveunder",
+      "ramp_m": 600
+    },
+    {
+      "accepted": false,
+      "candidate_hash": "c29b99ca263912b58a1305f3cd618686fd16947739ef45e4937d1e708a47857b",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 7.5,
+        "mode": "diveunder",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": false,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [
+        "return_connector:grade_pass"
+      ],
+      "grade_upper": 0.02343750000234375,
+      "height_m": 7.5,
+      "mode": "diveunder",
+      "ramp_m": 600
+    },
+    {
+      "accepted": false,
+      "candidate_hash": "067344a508db2d78dfc9c2f4a37958f366d39d2e871640752ea73858d7bf6066",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 6.5,
+        "mode": "diveunder",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": false,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [
+        "crossing_envelope_insufficient"
+      ],
+      "grade_upper": 0.016250000001625,
+      "height_m": 6.5,
+      "mode": "diveunder",
+      "ramp_m": 750
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "6d564d8ad18bece6b2e22aef68a54091cc9e7a4ef55f1afb99175e9d3a2ffd26",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 7.5,
+        "mode": "diveunder",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": true,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [],
+      "grade_upper": 0.018750000001875,
+      "height_m": 7.5,
+      "mode": "diveunder",
+      "ramp_m": 750
+    },
+    {
+      "accepted": false,
+      "candidate_hash": "7c075e66e86237e9201b43e3b55f6778e025ef25397f7b8d6b8011602e1bfacd",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 6.5,
+        "mode": "diveunder",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": false,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [
+        "crossing_envelope_insufficient"
+      ],
+      "grade_upper": 0.013541666668020834,
+      "height_m": 6.5,
+      "mode": "diveunder",
+      "ramp_m": 900
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "be6ff1519204bccbcb6bbf5ac7143314a3cafdfbf605aad330989322beec2198",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 7.5,
+        "mode": "diveunder",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": true,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [],
+      "grade_upper": 0.0156250000015625,
+      "height_m": 7.5,
+      "mode": "diveunder",
+      "ramp_m": 900
+    },
+    {
+      "accepted": false,
+      "failures": [
+        "full ramp does not fit between real component ports"
+      ],
+      "height_m": 6.5,
+      "mode": "diveunder",
+      "ramp_m": 1050
+    },
+    {
+      "accepted": false,
+      "failures": [
+        "full ramp does not fit between real component ports"
+      ],
+      "height_m": 7.5,
+      "mode": "diveunder",
+      "ramp_m": 1050
+    }
+  ],
+  "construction_authorised": false,
+  "evaluated": 17,
+  "fixture_hash": "b3c822871f9763b8bc5ac25ee4375af373543594fc3cb7ed0654344190460973",
+  "grid_size": 17,
+  "selected_by_mode": {
+    "diveunder": {
+      "accepted": true,
+      "candidate_hash": "6d564d8ad18bece6b2e22aef68a54091cc9e7a4ef55f1afb99175e9d3a2ffd26",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 7.5,
+        "mode": "diveunder",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": true,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [],
+      "grade_upper": 0.018750000001875,
+      "height_m": 7.5,
+      "mode": "diveunder",
+      "ramp_m": 750
+    },
+    "flat": {
+      "accepted": true,
+      "candidate_hash": "35b0bdb4d9729d9d72886a4fa3bdac8518bf94a54c11de698d188dc4d51c8c16",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 0.0,
+        "mode": "flat_crossing",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": false,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [],
+      "grade_upper": 0.0,
+      "height_m": 0.0,
+      "mode": "flat",
+      "ramp_m": 750.0
+    },
+    "flyover": {
+      "accepted": true,
+      "candidate_hash": "a7277661b28a2e5c3c74a4d223de005745e4cd0efbd2fc1ae34fc8bfd350bc1e",
+      "crossing": {
+        "edge_ids": [
+          "east_continuation",
+          "return_connector"
+        ],
+        "footprint_x_m": [
+          2512.4144882069795,
+          2557.0356856497283
+        ],
+        "minimum_rail_separation_m": 7.5,
+        "mode": "flyover",
+        "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+        "required_project_separation_m": 6.8,
+        "separated_within_project_envelope": true,
+        "turning_connections": [],
+        "x_m": 2534.848911042586,
+        "y_m": 1.7
+      },
+      "failures": [],
+      "grade_upper": 0.018750000001875,
+      "height_m": 7.5,
+      "mode": "flyover",
+      "ramp_m": 750
+    }
+  },
+  "selection_policy": "shortest accepted full ramps then height, within this fixed topology; not whole-civil optimality",
+  "status": "grid_complete_candidates_found"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.8.0",
+  "fidelity": "reference_source_platforms_authored_compact_station",
+  "family": "scissors",
+  "compact_spec": {"first_fan_toe_x_m":205.0,"fan_turnout_span_m":70.0,"fan_branch_slope":0.15,"fan_toe_step_m":75.0,"minimum_plain_gap_m":5.0,"link_gap_after_fan_m":5.0},
+  "platform_profile": {"gauge_mm":1435.0,"nearest_rail_offset_mm":737.5,"height_mm":915.0,"resolved_minimum_offset_mm":730.0,"applicability_confirmed":true,"offset_case":"explicit_standard_case_reference"},
+  "permissible_speeds_mph": {"A1":15.0,"A2":15.0,"A3":15.0,"A4":15.0,"B1":15.0,"B2":15.0,"B3":15.0,"B4":15.0},
+  "permissible_speed_origin": "explicit_project_platform_scenario_not_inferred_from_motion",
+  "facility_island_id": "IB12",
+  "facility_width_m": 4.0,
+  "facility_length_m": 20.0,
+  "facility_centre_x_m": 810.0,
+  "initial_lateral_offset_from_island_centre_m": -1.0,
+  "oversize_facility_width_m": 4.2,
+  "authority_lateral_half_span_m": 2.0,
+  "fit_budget": 1,
+  "exclude_failed_boarding_faces": true,
+  "operating_scenarios": ["nominal","bank_a_platforms_closed","bank_b_platforms_closed"],
+  "operating_pairs": 12
+}

@@ -1,0 +1,24 @@
+{
+  "actual_main_reference_point": [
+    5400.0,
+    0.0,
+    20.0
+  ],
+  "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+  "cell_hashes": [
+    "b24e7b43518d61d173d001f85ce85c0f0469b73a7822726c7dfc680c3f5bc893",
+    "219a71c0b73c52becb8119a5e58df427164c45b49e9e9f41e65416bc51a57a8f",
+    "93dd2717e1006bf703c04ac5f5e1eb62f50dae1789740df452191d0df53bf443",
+    "2fce2866a0bcec811c427cf98988fcaa14ac782531d879e2461f771b6ee2ead9",
+    "b008a10b2869aca2ea096ba7c01b9c1d68d6d0be9df3b76023321630d6702375",
+    "4a94e37319986165b70a3f832a99846acfc60b00508529cea78bdb4832e0a8b7",
+    "62ed633a27595b333f8756faa68bd56eb97aabd43f08437f3d9069419ead051e",
+    "1ce4c70361f4e8cb90bb9d4b667d68baae9aac5183b68edb1e8776369aaf8815",
+    "0d5dcef2e5824827d430a7a7dec2aae61995991ffb0645e8f2fda25eb4938f86"
+  ],
+  "common_interface_consistency": true,
+  "corridor_candidate_hash": "618c2962c2396da5bf780a885b9fadc17213452d0217bfb427a1515065cc3ec1",
+  "crossing_x_m": 5400,
+  "physical_branch_connections_generated": false,
+  "turnout_and_merge_interfaces": "reserved, not connected"
+}

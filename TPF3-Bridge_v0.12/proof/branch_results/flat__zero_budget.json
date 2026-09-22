@@ -1,0 +1,151 @@
+{
+  "assessment_scope": "whole-pass time-space reservation proof; waits occur outside model; not microscopic queues or live signalling",
+  "assignments": [],
+  "calendar_evaluations": 0,
+  "candidate_hash": "35b0bdb4d9729d9d72886a4fa3bdac8518bf94a54c11de698d188dc4d51c8c16",
+  "completed": 0,
+  "conflict_witness_counts": {},
+  "construction_authorised": false,
+  "fixed_block_claims": [],
+  "grade_sensitive_performance": false,
+  "independent_check": {
+    "errors": [],
+    "passed": true,
+    "scope": "independent output/resource checks; timing template reused, physical model not independently validated"
+  },
+  "mode": "flat",
+  "performance_hash": "542e15e9f6d802cf5eb2588a36fd15d09b4ff273d405fd54b15e06947fa832a8",
+  "required": 24,
+  "residual": 0,
+  "resource_hash": "f6891c0c143ecea79795080f32e92c18a771075585a59343cf1d492412a8f216",
+  "result_hash": "b1de11635f568ebaff3332fa258357f4173f588f63de17875a55fcad9d9968b6",
+  "scenario_hash": "c19669f9d77985711ac83ed14b8ef72fb3b569cd278022639da9af8946e5bc96",
+  "scenario_id": "zero_budget",
+  "scheduled": 0,
+  "terrain_or_game_validated": false,
+  "total_entry_delay_ms_scheduled_only": 0,
+  "unscheduled": 24,
+  "unserved": [
+    {
+      "reason": "search_exhausted",
+      "request_id": "T00_branch_in",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T00_main_east",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T00_main_west",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T00_branch_out",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T01_branch_in",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T01_main_east",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T01_main_west",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T01_branch_out",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T02_branch_in",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T02_main_east",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T02_main_west",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T02_branch_out",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T03_branch_in",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T03_main_east",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T03_main_west",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T03_branch_out",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T04_branch_in",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T04_main_east",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T04_main_west",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T04_branch_out",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T05_branch_in",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T05_main_east",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T05_main_west",
+      "witnesses": []
+    },
+    {
+      "reason": "search_exhausted",
+      "request_id": "T05_branch_out",
+      "witnesses": []
+    }
+  ],
+  "version": "0.10.0"
+}

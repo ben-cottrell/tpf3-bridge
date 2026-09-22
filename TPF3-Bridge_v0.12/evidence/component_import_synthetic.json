@@ -1,0 +1,98 @@
+{
+  "schema_version": "0.5.0",
+  "component_id": "SYNTH_IMPORT_T40",
+  "display_name": "Authored synthetic 40 m eased turnout",
+  "origin_kind": "authored_synthetic",
+  "source": {
+    "source_id": "LOCAL_SYNTH_005",
+    "issue": "0.5.0",
+    "locator": "Authored regression fixture; not a UK turnout drawing",
+    "reuse_status": "authored",
+    "geometry_evidence": "authored_synthetic"
+  },
+  "geometry": {
+    "units": "mm",
+    "coordinate_frame": "local_plan_xy_level_zero_cant",
+    "gauge": 1435.0,
+    "ports": [
+      {
+        "id": "T",
+        "role": "toe",
+        "xy": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "id": "N",
+        "role": "normal",
+        "xy": [
+          40000.0,
+          0.0
+        ]
+      },
+      {
+        "id": "R",
+        "role": "reverse",
+        "xy": [
+          40000.0,
+          1500.0
+        ]
+      }
+    ],
+    "routes": [
+      {
+        "id": "normal",
+        "from": "T",
+        "to": "N",
+        "state": "N",
+        "bezier_controls": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            40000.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "id": "reverse",
+        "from": "T",
+        "to": "R",
+        "state": "R",
+        "bezier_controls": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            10000.0,
+            0.0
+          ],
+          [
+            20000.0,
+            0.0
+          ],
+          [
+            30000.0,
+            750.0
+          ],
+          [
+            40000.0,
+            1500.0
+          ]
+        ]
+      }
+    ],
+    "controller": "T40_CTRL",
+    "switch_type": "synthetic_eased_centreline",
+    "crossing_type": "not_modelled_hardware"
+  },
+  "limits": {
+    "diverging_speed_mps": null,
+    "speed_evidence": "unresolved",
+    "application_profile": "synthetic_regression_only"
+  }
+}

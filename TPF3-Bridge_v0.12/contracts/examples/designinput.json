@@ -1,0 +1,164 @@
+{
+  "brief": {
+    "schema_version": "0.12.0",
+    "brief_id": "corridor-example",
+    "request_key": "design-request-1",
+    "binding": {
+      "environment": "mock",
+      "save_id": "fixture-save",
+      "load_epoch": "load-1",
+      "scope_id": "test-region",
+      "topology_revision": "topology-1",
+      "terrain_revision": "terrain-1",
+      "snapshot_hash": "3dc34be7abc802cd50f694bcba3796779554b487314c05c92203d22183a1c9ff",
+      "asset_catalogue_hash": "59e75574d15dd41311957fb2945ff86f993a71165d2222ccfe93181dcf7de16f",
+      "game_build": null,
+      "adapter_build": "contract-example-only"
+    },
+    "task": "connect_corridor",
+    "mode": "gb_reference_inspired",
+    "profile_ref": "gb-reference-game-profile-pending",
+    "effect_region": {
+      "min_m": [
+        -10,
+        -50,
+        -10
+      ],
+      "max_m": [
+        1100,
+        50,
+        100
+      ]
+    },
+    "ports": [
+      {
+        "port_id": "west_in",
+        "position_m": [
+          0,
+          1.7,
+          20
+        ],
+        "forward_unit": [
+          1,
+          0,
+          0
+        ],
+        "grade": 0,
+        "role": "entry",
+        "native_entity_ref": "existing-west",
+        "native_port_ref": "eastbound"
+      },
+      {
+        "port_id": "east_out",
+        "position_m": [
+          1000,
+          1.7,
+          20
+        ],
+        "forward_unit": [
+          1,
+          0,
+          0
+        ],
+        "grade": 0,
+        "role": "exit",
+        "native_entity_ref": "existing-east",
+        "native_port_ref": "eastbound"
+      },
+      {
+        "port_id": "east_in",
+        "position_m": [
+          1000,
+          -1.7,
+          20
+        ],
+        "forward_unit": [
+          -1,
+          0,
+          0
+        ],
+        "grade": 0,
+        "role": "entry",
+        "native_entity_ref": "existing-east",
+        "native_port_ref": "westbound"
+      },
+      {
+        "port_id": "west_out",
+        "position_m": [
+          0,
+          -1.7,
+          20
+        ],
+        "forward_unit": [
+          -1,
+          0,
+          0
+        ],
+        "grade": 0,
+        "role": "exit",
+        "native_entity_ref": "existing-west",
+        "native_port_ref": "westbound"
+      }
+    ],
+    "targets": {
+      "route_speed": {
+        "value": 26.8224,
+        "unit": "m/s",
+        "origin": {
+          "kind": "project_choice",
+          "record_ref": "example-brief-not-UK-standard"
+        }
+      },
+      "maximum_gradient": {
+        "value": 0.01,
+        "unit": "m/m",
+        "origin": {
+          "kind": "project_choice",
+          "record_ref": "example-brief-not-UK-standard"
+        }
+      },
+      "minimum_radius": {
+        "value": 1500,
+        "unit": "m",
+        "origin": {
+          "kind": "project_choice",
+          "record_ref": "example-brief-not-UK-standard"
+        }
+      },
+      "design_train_length": {
+        "value": 242.6,
+        "unit": "m",
+        "origin": {
+          "kind": "project_choice",
+          "record_ref": "example-brief-not-UK-standard"
+        }
+      }
+    },
+    "allowed_families": [
+      "double-track-corridor"
+    ],
+    "preservation": {
+      "protected_asset_refs": [
+        "existing-west",
+        "existing-east"
+      ],
+      "permitted_delete_refs": [],
+      "required_movement_refs": [
+        "main-east",
+        "main-west"
+      ],
+      "external_ports_must_match": true
+    },
+    "budget": {
+      "candidate_evaluations": 24,
+      "geometry_evaluations": 1000,
+      "local_wall_time_s": 60,
+      "game_write_attempts": 0,
+      "max_summary_bytes": 16384
+    },
+    "authorised_parameter_changes": [
+      "internal-waypoints"
+    ],
+    "policy_ref": "design-only-user-policy"
+  }
+}

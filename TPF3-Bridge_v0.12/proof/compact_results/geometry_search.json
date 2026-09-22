@@ -1,0 +1,350 @@
+{
+  "accepted_count": 6,
+  "construction_authorised": false,
+  "domain": {
+    "fan_toe_step_m": [
+      70.0,
+      75.0,
+      80.0
+    ],
+    "fan_turnout_span_m": [
+      65.0,
+      70.0,
+      75.0
+    ],
+    "first_fan_toe_x_m": [
+      205.0,
+      215.0,
+      225.0
+    ]
+  },
+  "evaluated": 27,
+  "evaluation_budget": 100,
+  "grid_complete": true,
+  "grid_size": 27,
+  "input_hash": "52032657fb48b43ee41b2a4447521dfe0b38393e865a75bb0447a6109179b2b8",
+  "maximum_specialwork_end_x_m": 650.0,
+  "profile": {
+    "envelope_gap_m": 0.5,
+    "envelope_half_width_m": 1.75,
+    "fidelity": "synthetic",
+    "flatness_m": 0.01,
+    "length_gap_m": 0.0001,
+    "minimum_radius_m": 300.0
+  },
+  "rows": [
+    {
+      "index": 0,
+      "parameters": {
+        "fan_toe_step_m": 70.0,
+        "fan_turnout_span_m": 65.0,
+        "first_fan_toe_x_m": 205.0
+      },
+      "reason": "radius_bound_not_certified:A:F1:reverse; not a proof of exact-radius violation",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 1,
+      "parameters": {
+        "fan_toe_step_m": 70.0,
+        "fan_turnout_span_m": 65.0,
+        "first_fan_toe_x_m": 215.0
+      },
+      "reason": "radius_bound_not_certified:A:F1:reverse; not a proof of exact-radius violation",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 2,
+      "parameters": {
+        "fan_toe_step_m": 70.0,
+        "fan_turnout_span_m": 65.0,
+        "first_fan_toe_x_m": 225.0
+      },
+      "reason": "radius_bound_not_certified:A:F1:reverse; not a proof of exact-radius violation",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 3,
+      "parameters": {
+        "fan_toe_step_m": 70.0,
+        "fan_turnout_span_m": 70.0,
+        "first_fan_toe_x_m": 205.0
+      },
+      "reason": "fan_plain_gap_below_project_target",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 4,
+      "parameters": {
+        "fan_toe_step_m": 70.0,
+        "fan_turnout_span_m": 70.0,
+        "first_fan_toe_x_m": 215.0
+      },
+      "reason": "fan_plain_gap_below_project_target",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 5,
+      "parameters": {
+        "fan_toe_step_m": 70.0,
+        "fan_turnout_span_m": 70.0,
+        "first_fan_toe_x_m": 225.0
+      },
+      "reason": "fan_plain_gap_below_project_target",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 6,
+      "parameters": {
+        "fan_toe_step_m": 70.0,
+        "fan_turnout_span_m": 75.0,
+        "first_fan_toe_x_m": 205.0
+      },
+      "reason": "fan_plain_gap_below_project_target",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 7,
+      "parameters": {
+        "fan_toe_step_m": 70.0,
+        "fan_turnout_span_m": 75.0,
+        "first_fan_toe_x_m": 215.0
+      },
+      "reason": "fan_plain_gap_below_project_target",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 8,
+      "parameters": {
+        "fan_toe_step_m": 70.0,
+        "fan_turnout_span_m": 75.0,
+        "first_fan_toe_x_m": 225.0
+      },
+      "reason": "fan_plain_gap_below_project_target",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 9,
+      "parameters": {
+        "fan_toe_step_m": 75.0,
+        "fan_turnout_span_m": 65.0,
+        "first_fan_toe_x_m": 205.0
+      },
+      "reason": "radius_bound_not_certified:A:F1:reverse; not a proof of exact-radius violation",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 10,
+      "parameters": {
+        "fan_toe_step_m": 75.0,
+        "fan_turnout_span_m": 65.0,
+        "first_fan_toe_x_m": 215.0
+      },
+      "reason": "radius_bound_not_certified:A:F1:reverse; not a proof of exact-radius violation",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 11,
+      "parameters": {
+        "fan_toe_step_m": 75.0,
+        "fan_turnout_span_m": 65.0,
+        "first_fan_toe_x_m": 225.0
+      },
+      "reason": "radius_bound_not_certified:A:F1:reverse; not a proof of exact-radius violation",
+      "status": "candidate_rejected"
+    },
+    {
+      "compile_hash": "cd9af2d7222d97d1469a72b017fc03df57ee4fae0530aea371be55b9e7074c42",
+      "construction_authorised": false,
+      "index": 12,
+      "parameters": {
+        "fan_toe_step_m": 75.0,
+        "fan_turnout_span_m": 70.0,
+        "first_fan_toe_x_m": 205.0
+      },
+      "radius_lower_bound_m": 312.6194593848912,
+      "spare_to_inner_marker_m": 25.0,
+      "specialwork_end_x_m": 630.0,
+      "status": "fitted_in_synthetic_geometry_scope"
+    },
+    {
+      "compile_hash": "1c4bbb46a2e8b7bb6fcae20f6e2b4e92b20721bed3b94eeb50445d6670439bf4",
+      "construction_authorised": false,
+      "index": 13,
+      "parameters": {
+        "fan_toe_step_m": 75.0,
+        "fan_turnout_span_m": 70.0,
+        "first_fan_toe_x_m": 215.0
+      },
+      "radius_lower_bound_m": 312.6194593848912,
+      "spare_to_inner_marker_m": 15.0,
+      "specialwork_end_x_m": 640.0,
+      "status": "fitted_in_synthetic_geometry_scope"
+    },
+    {
+      "compile_hash": "615f063c86feb57e7b4a257ab3c0b550a711d17826d5e261c8fa51b42f80198b",
+      "construction_authorised": false,
+      "index": 14,
+      "parameters": {
+        "fan_toe_step_m": 75.0,
+        "fan_turnout_span_m": 70.0,
+        "first_fan_toe_x_m": 225.0
+      },
+      "radius_lower_bound_m": 312.6194593848912,
+      "spare_to_inner_marker_m": 5.0,
+      "specialwork_end_x_m": 650.0,
+      "status": "fitted_in_synthetic_geometry_scope"
+    },
+    {
+      "index": 15,
+      "parameters": {
+        "fan_toe_step_m": 75.0,
+        "fan_turnout_span_m": 75.0,
+        "first_fan_toe_x_m": 205.0
+      },
+      "reason": "fan_plain_gap_below_project_target",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 16,
+      "parameters": {
+        "fan_toe_step_m": 75.0,
+        "fan_turnout_span_m": 75.0,
+        "first_fan_toe_x_m": 215.0
+      },
+      "reason": "fan_plain_gap_below_project_target",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 17,
+      "parameters": {
+        "fan_toe_step_m": 75.0,
+        "fan_turnout_span_m": 75.0,
+        "first_fan_toe_x_m": 225.0
+      },
+      "reason": "fan_plain_gap_below_project_target",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 18,
+      "parameters": {
+        "fan_toe_step_m": 80.0,
+        "fan_turnout_span_m": 65.0,
+        "first_fan_toe_x_m": 205.0
+      },
+      "reason": "radius_bound_not_certified:A:F1:reverse; not a proof of exact-radius violation",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 19,
+      "parameters": {
+        "fan_toe_step_m": 80.0,
+        "fan_turnout_span_m": 65.0,
+        "first_fan_toe_x_m": 215.0
+      },
+      "reason": "radius_bound_not_certified:A:F1:reverse; not a proof of exact-radius violation",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 20,
+      "parameters": {
+        "fan_toe_step_m": 80.0,
+        "fan_turnout_span_m": 65.0,
+        "first_fan_toe_x_m": 225.0
+      },
+      "reason": "recovery_does_not_clear_inner_long_platform_marker",
+      "status": "candidate_rejected"
+    },
+    {
+      "compile_hash": "96c985949b62c72330723bfd5bb56435b236f8bcc2b9ae39f80e5e1ec21ffb01",
+      "construction_authorised": false,
+      "index": 21,
+      "parameters": {
+        "fan_toe_step_m": 80.0,
+        "fan_turnout_span_m": 70.0,
+        "first_fan_toe_x_m": 205.0
+      },
+      "radius_lower_bound_m": 312.6194593848912,
+      "spare_to_inner_marker_m": 15.0,
+      "specialwork_end_x_m": 640.0,
+      "status": "fitted_in_synthetic_geometry_scope"
+    },
+    {
+      "compile_hash": "c950111bf01c96639b578016e36ab34532f8027d4bb2ed6301b8f242fe352daa",
+      "construction_authorised": false,
+      "index": 22,
+      "parameters": {
+        "fan_toe_step_m": 80.0,
+        "fan_turnout_span_m": 70.0,
+        "first_fan_toe_x_m": 215.0
+      },
+      "radius_lower_bound_m": 312.6194593848912,
+      "spare_to_inner_marker_m": 5.0,
+      "specialwork_end_x_m": 650.0,
+      "status": "fitted_in_synthetic_geometry_scope"
+    },
+    {
+      "index": 23,
+      "parameters": {
+        "fan_toe_step_m": 80.0,
+        "fan_turnout_span_m": 70.0,
+        "first_fan_toe_x_m": 225.0
+      },
+      "reason": "recovery_does_not_clear_inner_long_platform_marker",
+      "status": "candidate_rejected"
+    },
+    {
+      "compile_hash": "26fefd08dafff33b8bf2fa027ae3ae69bdb3d50cf73d9689baaa256beea789f5",
+      "construction_authorised": false,
+      "index": 24,
+      "parameters": {
+        "fan_toe_step_m": 80.0,
+        "fan_turnout_span_m": 75.0,
+        "first_fan_toe_x_m": 205.0
+      },
+      "radius_lower_bound_m": 334.94942076204694,
+      "spare_to_inner_marker_m": 10.0,
+      "specialwork_end_x_m": 645.0,
+      "status": "fitted_in_synthetic_geometry_scope"
+    },
+    {
+      "index": 25,
+      "parameters": {
+        "fan_toe_step_m": 80.0,
+        "fan_turnout_span_m": 75.0,
+        "first_fan_toe_x_m": 215.0
+      },
+      "reason": "recovery_does_not_clear_inner_long_platform_marker",
+      "status": "candidate_rejected"
+    },
+    {
+      "index": 26,
+      "parameters": {
+        "fan_toe_step_m": 80.0,
+        "fan_turnout_span_m": 75.0,
+        "first_fan_toe_x_m": 225.0
+      },
+      "reason": "recovery_does_not_clear_inner_long_platform_marker",
+      "status": "candidate_rejected"
+    }
+  ],
+  "schema_version": "0.7.0",
+  "scope": "finite grid in one authored family; no exhaustive topology or continuous optimisation claim",
+  "selected": {
+    "compile_hash": "cd9af2d7222d97d1469a72b017fc03df57ee4fae0530aea371be55b9e7074c42",
+    "construction_authorised": false,
+    "index": 12,
+    "parameters": {
+      "fan_toe_step_m": 75.0,
+      "fan_turnout_span_m": 70.0,
+      "first_fan_toe_x_m": 205.0
+    },
+    "radius_lower_bound_m": 312.6194593848912,
+    "spare_to_inner_marker_m": 25.0,
+    "specialwork_end_x_m": 630.0,
+    "status": "fitted_in_synthetic_geometry_scope"
+  },
+  "selection_final_within_grid": true,
+  "selection_policy": "minimise last specialwork x after hard geometry/site checks; operations not ranked here",
+  "status": "grid_complete_candidates_found"
+}

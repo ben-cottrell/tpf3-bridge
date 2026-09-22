@@ -1,0 +1,77 @@
+[
+  {
+    "id": "compact",
+    "spec": {
+      "platform_count": 4,
+      "spacing_m": 12.0,
+      "turnout_span_m": 50.0,
+      "branch_slope": 0.1,
+      "first_toe_x_m": 50.0,
+      "toe_step_m": 75,
+      "platform_start_x_m": 500,
+      "boarding_length_m": 260.0,
+      "margin_m": 5.0,
+      "site_end_x_m": 1000.0
+    },
+    "compile_hash": "24beb6a2db682b8432850d87fa40bb451918b09b52f8953c1074d301e754c5a4",
+    "resource_count": 60,
+    "proximity_pair_count": 31,
+    "route_lengths_upper_m": {
+      "P1:in": 505.00000007000006,
+      "P2:in": 505.53456700361437,
+      "P3:in": 506.13307443706503,
+      "P4:in": 506.73158187051575
+    },
+    "interpretation": "different geometry/boundaries; not an equivalent-brief optimisation comparison"
+  },
+  {
+    "id": "baseline",
+    "spec": {
+      "platform_count": 4,
+      "spacing_m": 12.0,
+      "turnout_span_m": 50.0,
+      "branch_slope": 0.1,
+      "first_toe_x_m": 50.0,
+      "toe_step_m": 150.0,
+      "platform_start_x_m": 650.0,
+      "boarding_length_m": 260.0,
+      "margin_m": 5.0,
+      "site_end_x_m": 1000.0
+    },
+    "compile_hash": "d26c139b485a068855d537736eb71ca7c3feaae7d265086fb90858941ced929e",
+    "resource_count": 60,
+    "proximity_pair_count": 31,
+    "route_lengths_upper_m": {
+      "P1:in": 655.0000000699999,
+      "P2:in": 655.5345670036144,
+      "P3:in": 656.133074437065,
+      "P4:in": 656.7315818705158
+    },
+    "interpretation": "different geometry/boundaries; not an equivalent-brief optimisation comparison"
+  },
+  {
+    "id": "extended",
+    "spec": {
+      "platform_count": 4,
+      "spacing_m": 12.0,
+      "turnout_span_m": 50.0,
+      "branch_slope": 0.1,
+      "first_toe_x_m": 50.0,
+      "toe_step_m": 190,
+      "platform_start_x_m": 800,
+      "boarding_length_m": 260.0,
+      "margin_m": 5.0,
+      "site_end_x_m": 1100
+    },
+    "compile_hash": "d42b40656a1d727702c98a2f4ce6149bb51cb6c8a5a7dd57c8214452091485bd",
+    "resource_count": 60,
+    "proximity_pair_count": 31,
+    "route_lengths_upper_m": {
+      "P1:in": 805.00000007,
+      "P2:in": 805.5345670036144,
+      "P3:in": 806.133074437065,
+      "P4:in": 806.7315818705158
+    },
+    "interpretation": "different geometry/boundaries; not an equivalent-brief optimisation comparison"
+  }
+]

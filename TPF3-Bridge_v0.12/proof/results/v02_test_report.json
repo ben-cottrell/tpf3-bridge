@@ -1,0 +1,23 @@
+{
+  "proof_version": "0.2.0",
+  "tests_run": 83,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "successful": true,
+  "elapsed_seconds_this_run": 0.4365554539999721,
+  "python": "3.13.5",
+  "scope": "Authored unit/regression tests only; not completion of all 41 project benchmarks",
+  "source_sha256": {
+    "railproof/__init__.py": "ae81178ef3fa0ba967843f32edc5de700d6c6d5c7c806c7cf205d7fbe8ffc528",
+    "railproof/demo.py": "214cf5a5b551247d642a91d46a2e0219d11368bf072d6a9ffba75235cfe9e166",
+    "railproof/engine.py": "977cf7752705f5fb84e2b48dc97fd98d350b42bd5a02a24b60fffd8cc6a9d8c9",
+    "railproof/geometry.py": "d840e639d187dad92c3ca669663cdd1b5dc82330f70674b6f8616dd5c8e02b85",
+    "railproof/model.py": "fa079a4a8ecbb13b33715977171bb8788eb6ffa832535ea8dc2fe8bd54df7f46",
+    "railproof/rules.py": "124f4a8696e0f3bfb3a625aab759d64b5a16bbff4ebedffb2d8fecca93462d19",
+    "tests/test_core.py": "157a29f8535e60ad7352e573a54c3ec544f9216a79eb89df370c8503b2f1fbe5",
+    "tests/test_geometry_rules.py": "67c25a9ac094000c80d25ef86fcd1dd1be43971013fa891cde7557ee62bcbead",
+    "tests/test_scenarios.py": "51cd8fdad407cf8a7b13d9e5a2bf262565fe22798db0bdc12f9aeaba838d331d"
+  },
+  "failure_details": []
+}

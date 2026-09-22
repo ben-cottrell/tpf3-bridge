@@ -1,0 +1,35 @@
+{
+  "schema_version": "0.5.0",
+  "profile_id": "desiro_city_thameslink_catalogue_2014",
+  "source_id": "S060",
+  "source_issue": "Siemens 2014; A19100-V800-B824-V1-7600",
+  "published": {
+    "nominal_vehicle_length_m": {
+      "value": 20.0,
+      "locator": "PDF page 1, Technical Data",
+      "kind": "manufacturer_catalogue"
+    },
+    "width_m": {
+      "value": 2.8,
+      "locator": "PDF page 1, Technical Data",
+      "kind": "manufacturer_catalogue"
+    },
+    "unit_8car_length_m": {
+      "value": 162.0,
+      "locator": "PDF page 1, Technical Data",
+      "kind": "manufacturer_catalogue"
+    },
+    "unit_12car_length_m": {
+      "value": 242.6,
+      "locator": "PDF page 1, Technical Data",
+      "kind": "manufacturer_catalogue"
+    }
+  },
+  "missing_geometry": [
+    "exact_body_outline",
+    "bogie_pivot_positions",
+    "suspension_allowances",
+    "cross_section",
+    "coupler_geometry"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "atomic_rollback": false,
+  "build": null,
+  "capabilities": {
+    "construct.bridge_reservation": {
+      "evidence": null,
+      "state": "unknown"
+    },
+    "construct.track_polyline3": {
+      "evidence": null,
+      "state": "unknown"
+    },
+    "construct.tunnel_reservation": {
+      "evidence": null,
+      "state": "unknown"
+    },
+    "query.operation_receipt": {
+      "evidence": null,
+      "state": "unknown"
+    },
+    "query.realised_geometry": {
+      "evidence": null,
+      "state": "unknown"
+    }
+  },
+  "environment": "tpf3_unprobed",
+  "real_game_probed": false,
+  "schema_version": "0.9.0"
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.12.0",
+  "plan_ref": "example-plan",
+  "plan_hash": "406089e88fcc1e996fa6e3760a80a865a85eb33f8efe28db9b2bd52163ca3ae3",
+  "binding": {
+    "environment": "mock",
+    "save_id": "fixture-save",
+    "load_epoch": "load-1",
+    "scope_id": "test-region",
+    "topology_revision": "topology-1",
+    "terrain_revision": "terrain-1",
+    "snapshot_hash": "3dc34be7abc802cd50f694bcba3796779554b487314c05c92203d22183a1c9ff",
+    "asset_catalogue_hash": "59e75574d15dd41311957fb2945ff86f993a71165d2222ccfe93181dcf7de16f",
+    "game_build": null,
+    "adapter_build": "contract-example-only"
+  },
+  "status": "blocked",
+  "operation_receipt_refs": [],
+  "checks": [
+    {
+      "check_id": "route-contract",
+      "scope": "illustrative placeholder only",
+      "status": "unassessed",
+      "mandatory_for_request": true,
+      "reason": "No design has been run from this example brief.",
+      "evidence_refs": []
+    }
+  ],
+  "observation_refs": [],
+  "unresolved": [
+    "example_not_executed"
+  ],
+  "remaining_effect_refs": []
+}

@@ -1,0 +1,103 @@
+{
+  "model_version": "0.4.0",
+  "fidelity": "synthetic_geometry_and_release; selected_UK_values_separate",
+  "mode": "whole_route",
+  "compile_hash": "6ccfcfacc283c67c42a99f4759807208bf6b61086fc6abee7725843dc14d63d2",
+  "profile": {
+    "speed_mps": 6.7056,
+    "acceleration_mps2": 0.6,
+    "braking_mps2": 0.7,
+    "setup_ms": 5000,
+    "release_ms": 3000,
+    "provenance": "project_selected_uncalibrated_level_track_profile"
+  },
+  "required_visits": 12,
+  "scheduled_visits": 0,
+  "unscheduled_visits": 12,
+  "completed_within_horizon": 0,
+  "scheduled_residual_at_horizon": 0,
+  "horizon_ms": 7200000,
+  "scheduled_states_at_horizon": {
+    "not_yet_due": 0,
+    "waiting_outside_model": 0,
+    "arrival_setup": 0,
+    "arriving": 0,
+    "berthed": 0,
+    "departure_setup": 0,
+    "departing": 0,
+    "release_hold": 0,
+    "completed": 0
+  },
+  "all_required_scheduled": false,
+  "all_required_completed_within_horizon": false,
+  "total_departure_delay_ms": 0,
+  "candidate_evaluations": 0,
+  "assignments": [],
+  "rejected": [
+    {
+      "visit_id": "V01",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "V02",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "V03",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "V04",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "V05",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "V06",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "V07",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "V08",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "V09",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "V10",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "V11",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "V12",
+      "reason": "no_legal_complete_opportunity"
+    }
+  ],
+  "assessments": {
+    "reservation_invariants": "pass",
+    "explicit_two_approach_geometry": "compiled_synthetic",
+    "shared_throat": "retained; separate external leads do not prove independence",
+    "kinematics": "analytic_constant_acceleration_level_track_only",
+    "sectional_release": "conservative_whole_route",
+    "real_interlocking": "unassessed",
+    "UK_component_and_vehicle_gauging": "unassessed",
+    "eight_platform_station": "not_implemented",
+    "braking_curve_validation": "uncalibrated",
+    "spatial_queues": "unassessed; waiting_outside_model is a temporal count",
+    "passenger_circulation": "unassessed",
+    "game_construction": "not_tested",
+    "full_UK_engineering_profile": "incomplete; selected rule checks do not promote this assembly"
+  },
+  "scenario_id": "all_platforms_closed",
+  "scenario_sha256": "1e368e4514f413cf83cb0cf6830ac7e8f840e878f2b67590e0e7d72392a1cf33"
+}

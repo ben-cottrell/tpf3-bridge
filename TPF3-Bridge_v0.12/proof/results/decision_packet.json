@@ -1,0 +1,20 @@
+{
+  "packet_kind": "executed_offline_proof",
+  "status": "offline_comparison_ready",
+  "scope": "three declared resource families; no station geometry generated",
+  "tested_scenarios": [
+    "bank_a_platforms_closed",
+    "bunched",
+    "late_stock_cycle",
+    "long_trains",
+    "nominal",
+    "platform_p1_closed",
+    "short_horizon"
+  ],
+  "family_count": 3,
+  "decision": "Use these tests to implement the joint topology/geometry stage; do not commit construction.",
+  "engineering_status": "unassessed_whole_station",
+  "game_status": "not_tested",
+  "detailed_result": "summary.json",
+  "credit_saving": null
+}

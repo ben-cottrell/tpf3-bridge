@@ -1,0 +1,51 @@
+{
+  "release": "0.4.0",
+  "review_date": "2026-09-20",
+  "archived_source_bytes": false,
+  "records": [
+    {
+      "source_id": "S058",
+      "url": "https://assets.publishing.service.gov.uk/media/68148eed3c3bba3526f03b25/ntsn-infrastructure-issue-2-May-2025.pdf",
+      "review": "Selected parsed text and page images",
+      "printed_pages": [
+        28,
+        29,
+        30,
+        42,
+        74
+      ],
+      "clauses": [
+        "4.2.3.3(1)",
+        "4.2.3.4(1)",
+        "4.2.3.5(1)",
+        "4.2.4.1(1)",
+        "4.2.4.2(2)",
+        "4.2.9.4(1)",
+        "7.7.17.3(1)"
+      ],
+      "not_claimed": "Full standard import, all exceptions or whole-network approval",
+      "source_sha256": null
+    },
+    {
+      "source_id": "S040",
+      "url": "https://www.networkrail.co.uk/wp-content/uploads/2023/12/NR-GN-CIV-100-03-Station-Capacity-Planning-guidance.pdf",
+      "review": "Selected text and page images, method-two Zone B/C equations",
+      "printed_pages": [
+        41,
+        42,
+        43
+      ],
+      "clause": "3.3.2",
+      "not_claimed": "Complete platform-width calculation, demand validation or current-rule reconciliation of every embedded citation",
+      "source_sha256": null
+    },
+    {
+      "source_id": "S044",
+      "url": "https://www.rssb.co.uk/standards-catalogue/CatalogueItem/girt7020-iss-2-1",
+      "review": "Current catalogue and published full-standard link",
+      "full_text_result": "Redirected to registration/login page; not imported",
+      "not_claimed": "Numerical GB height/offset/width clause extraction",
+      "source_sha256": null
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "version": "0.12.0",
+  "sequencing": "dependency order, not calendar estimates",
+  "work_packages": [
+    {
+      "id": "WP-01",
+      "name": "Canonical contracts and durable job store",
+      "depends_on": [],
+      "inputs": [
+        "contracts/",
+        "proof/railproof/model.py"
+      ],
+      "exit_criteria": [
+        "typed brief/result records round-trip",
+        "approval is host-resolved, never model-minted",
+        "job state survives application restart"
+      ],
+      "status": "not_implemented"
+    },
+    {
+      "id": "WP-02",
+      "name": "Read-only native adapter probe",
+      "depends_on": [
+        "WP-01"
+      ],
+      "inputs": [
+        "GAME_ADAPTER_CONTRACT.md"
+      ],
+      "exit_criteria": [
+        "game/save/build identity and load epoch verified",
+        "asymmetric coordinate round-trip",
+        "local topology/terrain/assets have coherent coverage"
+      ],
+      "status": "requires_native_mapping"
+    },
+    {
+      "id": "WP-03",
+      "name": "Canonical kernel extraction and port fitter",
+      "depends_on": [
+        "WP-01"
+      ],
+      "inputs": [
+        "proof/railgeom/curves.py",
+        "proof/railgeom/network.py",
+        "proof/railbranch/geometry.py",
+        "proof/railcompact/compiler.py"
+      ],
+      "exit_criteria": [
+        "one representation accepts selected historical fixtures",
+        "pure functions independent of demo paths",
+        "fixed external ports and parameters preserved"
+      ],
+      "status": "partial_offline_reuse"
+    },
+    {
+      "id": "WP-04",
+      "name": "Create-only native track/read-back",
+      "depends_on": [
+        "WP-02",
+        "WP-03"
+      ],
+      "inputs": [
+        "proof/railcorridor/adapter.py",
+        "proof/railbranch/adapter.py",
+        "proof/railterrain/adapter.py"
+      ],
+      "exit_criteria": [
+        "small approved save build creates correct track",
+        "native node splitting reconciled",
+        "lost response does not trigger blind duplicate build",
+        "required movements and neighbours checked"
+      ],
+      "status": "requires_native_mapping"
+    },
+    {
+      "id": "WP-05",
+      "name": "Astra-facing service and local jobs",
+      "depends_on": [
+        "WP-01",
+        "WP-04"
+      ],
+      "inputs": [
+        "contracts/agent_tools.json",
+        "AGENT_API_AND_HANDOFF.md"
+      ],
+      "exit_criteria": [
+        "actual host transport/version demonstrated",
+        "no per-segment model loops",
+        "bounded summaries and explicit cancel/partial-effect result"
+      ],
+      "status": "specified_only"
+    },
+    {
+      "id": "WP-06",
+      "name": "Structure and junction native support",
+      "depends_on": [
+        "WP-04"
+      ],
+      "inputs": [
+        "proof/railbranch/",
+        "proof/railterrain/"
+      ],
+      "exit_criteria": [
+        "real bridge/tunnel asset and turnouts identified after build",
+        "crossing non-connectivity verified",
+        "remaining merge constraint reported"
+      ],
+      "status": "partial_offline_reuse"
+    },
+    {
+      "id": "WP-07",
+      "name": "Practical signals and observation",
+      "depends_on": [
+        "WP-04"
+      ],
+      "inputs": [
+        "proof/railbranch/geometry.py",
+        "GAME_ADAPTER_CONTRACT.md"
+      ],
+      "exit_criteria": [
+        "signal placement/direction read-back",
+        "geometric waiting length retained",
+        "observed traversal separated from topology-only result"
+      ],
+      "status": "specified_only"
+    },
+    {
+      "id": "WP-08",
+      "name": "Whitelisted existing-layout replacement",
+      "depends_on": [
+        "WP-04",
+        "WP-06"
+      ],
+      "inputs": [
+        "GAME_ADAPTER_CONTRACT.md"
+      ],
+      "exit_criteria": [
+        "exact removal list and protected route invariants",
+        "own terrain edits produce revalidated successor snapshots",
+        "save/load with partial effects reconciled"
+      ],
+      "status": "specified_only"
+    },
+    {
+      "id": "WP-09",
+      "name": "Acceptance and usage benchmark",
+      "depends_on": [
+        "WP-05"
+      ],
+      "inputs": [
+        "implementation/acceptance_workflows.json"
+      ],
+      "exit_criteria": [
+        "equal tasks and starting saves across workflows",
+        "accepted work and failed attempts counted",
+        "model usage and local compute measured separately"
+      ],
+      "status": "not_run"
+    }
+  ]
+}

@@ -1,0 +1,1556 @@
+{
+  "schema_version": "0.3.0",
+  "source_hash": "ac9179283a516fb29d325bbedc2944d88cdeffefc4d194819446e16219302d19",
+  "compile_hash": "8957ebbf1a9e24307ff3d2de66e18a03b58baaa9ce38ed656b6ac38a6699a0db",
+  "routes": {
+    "cross_forward": {
+      "id": "cross_forward",
+      "start": "T1:T",
+      "end": "T2:T",
+      "edge_ids": [
+        "T1:reverse",
+        "diagonal",
+        "T2:reverse"
+      ],
+      "length_lower_m": 100.13960578855395,
+      "length_upper_m": 100.13969513753341,
+      "requirements": [
+        {
+          "resource": "component_body:T1",
+          "state": null
+        },
+        {
+          "resource": "component_body:T2",
+          "state": null
+        },
+        {
+          "resource": "control:CROSSOVER_CONTROL",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:T1:normal|diagonal",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|diagonal",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|lower_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|upper_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:normal|diagonal",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|diagonal",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|lower_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|upper_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|lower_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|upper_continuation",
+          "state": null
+        },
+        {
+          "resource": "track:T1:reverse",
+          "state": null
+        },
+        {
+          "resource": "track:T2:reverse",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal",
+          "state": null
+        }
+      ],
+      "source_hash": "ac9179283a516fb29d325bbedc2944d88cdeffefc4d194819446e16219302d19",
+      "segments": [
+        {
+          "edge_id": "T1:reverse",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            40.04171733921119,
+            40.04176200370092
+          ]
+        },
+        {
+          "edge_id": "diagonal",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            40.04171733921119,
+            40.04176200370092
+          ],
+          "exit_chainage_interval_m": [
+            60.09788844934277,
+            60.0979331338325
+          ]
+        },
+        {
+          "edge_id": "T2:reverse",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            60.09788844934277,
+            60.0979331338325
+          ],
+          "exit_chainage_interval_m": [
+            100.13960578855395,
+            100.13969513753341
+          ]
+        }
+      ]
+    },
+    "cross_reverse": {
+      "id": "cross_reverse",
+      "start": "T2:T",
+      "end": "T1:T",
+      "edge_ids": [
+        "T2:reverse",
+        "diagonal",
+        "T1:reverse"
+      ],
+      "length_lower_m": 100.13960578855395,
+      "length_upper_m": 100.13969513753341,
+      "requirements": [
+        {
+          "resource": "component_body:T1",
+          "state": null
+        },
+        {
+          "resource": "component_body:T2",
+          "state": null
+        },
+        {
+          "resource": "control:CROSSOVER_CONTROL",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:T1:normal|diagonal",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|diagonal",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|lower_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|upper_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:normal|diagonal",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|diagonal",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|lower_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|upper_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|lower_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|upper_continuation",
+          "state": null
+        },
+        {
+          "resource": "track:T1:reverse",
+          "state": null
+        },
+        {
+          "resource": "track:T2:reverse",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal",
+          "state": null
+        }
+      ],
+      "source_hash": "ac9179283a516fb29d325bbedc2944d88cdeffefc4d194819446e16219302d19",
+      "segments": [
+        {
+          "edge_id": "T2:reverse",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            40.04171733921119,
+            40.04176200370092
+          ]
+        },
+        {
+          "edge_id": "diagonal",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            40.04171733921119,
+            40.04176200370092
+          ],
+          "exit_chainage_interval_m": [
+            60.09788844934277,
+            60.0979331338325
+          ]
+        },
+        {
+          "edge_id": "T1:reverse",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            60.09788844934277,
+            60.0979331338325
+          ],
+          "exit_chainage_interval_m": [
+            100.13960578855395,
+            100.13969513753341
+          ]
+        }
+      ]
+    },
+    "lower_through": {
+      "id": "lower_through",
+      "start": "T1:T",
+      "end": "LOW_E",
+      "edge_ids": [
+        "T1:normal",
+        "lower_continuation"
+      ],
+      "length_lower_m": 99.99999998,
+      "length_upper_m": 100.00000002,
+      "requirements": [
+        {
+          "resource": "component_body:T1",
+          "state": null
+        },
+        {
+          "resource": "control:CROSSOVER_CONTROL",
+          "state": "N"
+        },
+        {
+          "resource": "proximity:T1:normal|diagonal",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:normal|lower_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|lower_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|lower_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|lower_continuation",
+          "state": null
+        },
+        {
+          "resource": "track:T1:normal",
+          "state": null
+        },
+        {
+          "resource": "track:lower_continuation",
+          "state": null
+        }
+      ],
+      "source_hash": "ac9179283a516fb29d325bbedc2944d88cdeffefc4d194819446e16219302d19",
+      "segments": [
+        {
+          "edge_id": "T1:normal",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            39.99999999,
+            40.00000001
+          ]
+        },
+        {
+          "edge_id": "lower_continuation",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            39.99999999,
+            40.00000001
+          ],
+          "exit_chainage_interval_m": [
+            99.99999998,
+            100.00000002
+          ]
+        }
+      ]
+    },
+    "upper_through": {
+      "id": "upper_through",
+      "start": "HIGH_W",
+      "end": "T2:T",
+      "edge_ids": [
+        "upper_continuation",
+        "T2:normal"
+      ],
+      "length_lower_m": 99.99999998,
+      "length_upper_m": 100.00000002,
+      "requirements": [
+        {
+          "resource": "component_body:T2",
+          "state": null
+        },
+        {
+          "resource": "control:CROSSOVER_CONTROL",
+          "state": "N"
+        },
+        {
+          "resource": "proximity:T1:reverse|upper_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:normal|diagonal",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:normal|upper_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|upper_continuation",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|upper_continuation",
+          "state": null
+        },
+        {
+          "resource": "track:T2:normal",
+          "state": null
+        },
+        {
+          "resource": "track:upper_continuation",
+          "state": null
+        }
+      ],
+      "source_hash": "ac9179283a516fb29d325bbedc2944d88cdeffefc4d194819446e16219302d19",
+      "segments": [
+        {
+          "edge_id": "upper_continuation",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            59.99999999,
+            60.00000001
+          ]
+        },
+        {
+          "edge_id": "T2:normal",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            59.99999999,
+            60.00000001
+          ],
+          "exit_chainage_interval_m": [
+            99.99999998,
+            100.00000002
+          ]
+        }
+      ]
+    }
+  },
+  "edge_requirements": {
+    "T1:normal": [
+      {
+        "resource": "component_body:T1",
+        "state": null
+      },
+      {
+        "resource": "control:CROSSOVER_CONTROL",
+        "state": "N"
+      },
+      {
+        "resource": "proximity:T1:normal|diagonal",
+        "state": null
+      },
+      {
+        "resource": "proximity:T1:normal|lower_continuation",
+        "state": null
+      },
+      {
+        "resource": "track:T1:normal",
+        "state": null
+      }
+    ],
+    "T1:reverse": [
+      {
+        "resource": "component_body:T1",
+        "state": null
+      },
+      {
+        "resource": "control:CROSSOVER_CONTROL",
+        "state": "R"
+      },
+      {
+        "resource": "proximity:T1:reverse|diagonal",
+        "state": null
+      },
+      {
+        "resource": "proximity:T1:reverse|lower_continuation",
+        "state": null
+      },
+      {
+        "resource": "proximity:T1:reverse|upper_continuation",
+        "state": null
+      },
+      {
+        "resource": "track:T1:reverse",
+        "state": null
+      }
+    ],
+    "T2:normal": [
+      {
+        "resource": "component_body:T2",
+        "state": null
+      },
+      {
+        "resource": "control:CROSSOVER_CONTROL",
+        "state": "N"
+      },
+      {
+        "resource": "proximity:T2:normal|diagonal",
+        "state": null
+      },
+      {
+        "resource": "proximity:T2:normal|upper_continuation",
+        "state": null
+      },
+      {
+        "resource": "track:T2:normal",
+        "state": null
+      }
+    ],
+    "T2:reverse": [
+      {
+        "resource": "component_body:T2",
+        "state": null
+      },
+      {
+        "resource": "control:CROSSOVER_CONTROL",
+        "state": "R"
+      },
+      {
+        "resource": "proximity:T2:reverse|diagonal",
+        "state": null
+      },
+      {
+        "resource": "proximity:T2:reverse|lower_continuation",
+        "state": null
+      },
+      {
+        "resource": "proximity:T2:reverse|upper_continuation",
+        "state": null
+      },
+      {
+        "resource": "track:T2:reverse",
+        "state": null
+      }
+    ],
+    "diagonal": [
+      {
+        "resource": "proximity:T1:normal|diagonal",
+        "state": null
+      },
+      {
+        "resource": "proximity:T1:reverse|diagonal",
+        "state": null
+      },
+      {
+        "resource": "proximity:T2:normal|diagonal",
+        "state": null
+      },
+      {
+        "resource": "proximity:T2:reverse|diagonal",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal|lower_continuation",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal|upper_continuation",
+        "state": null
+      },
+      {
+        "resource": "track:diagonal",
+        "state": null
+      }
+    ],
+    "lower_continuation": [
+      {
+        "resource": "proximity:T1:normal|lower_continuation",
+        "state": null
+      },
+      {
+        "resource": "proximity:T1:reverse|lower_continuation",
+        "state": null
+      },
+      {
+        "resource": "proximity:T2:reverse|lower_continuation",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal|lower_continuation",
+        "state": null
+      },
+      {
+        "resource": "track:lower_continuation",
+        "state": null
+      }
+    ],
+    "upper_continuation": [
+      {
+        "resource": "proximity:T1:reverse|upper_continuation",
+        "state": null
+      },
+      {
+        "resource": "proximity:T2:normal|upper_continuation",
+        "state": null
+      },
+      {
+        "resource": "proximity:T2:reverse|upper_continuation",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal|upper_continuation",
+        "state": null
+      },
+      {
+        "resource": "track:upper_continuation",
+        "state": null
+      }
+    ]
+  },
+  "platforms": {},
+  "provenance": {
+    "network": {
+      "schema_version": "0.3.0",
+      "fidelity": "synthetic_eased_components",
+      "id": "synthetic_crossover",
+      "metadata": {
+        "pattern": "single_crossover",
+        "spec": {
+          "spacing_m": 4.5,
+          "turnout_span_m": 40.0,
+          "branch_slope": 0.075,
+          "maximum_span_m": 120.0,
+          "linked_controller": true
+        },
+        "profile": {
+          "minimum_radius_m": 300.0,
+          "envelope_half_width_m": 1.75,
+          "envelope_gap_m": 0.5,
+          "flatness_m": 0.01,
+          "length_gap_m": 0.0001,
+          "fidelity": "synthetic"
+        },
+        "span_m": 100.0,
+        "connector_length_m": 20.05617112013158,
+        "catalogue": "SYNTH_EASED_1",
+        "vertical_profile": "level",
+        "cant_mm": 0
+      },
+      "ports": [
+        {
+          "id": "HIGH_W",
+          "position_m": [
+            0.0,
+            4.5
+          ],
+          "role": "external"
+        },
+        {
+          "id": "LOW_E",
+          "position_m": [
+            100.0,
+            0.0
+          ],
+          "role": "external"
+        },
+        {
+          "id": "T1:N",
+          "position_m": [
+            40.0,
+            0.0
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "T1:R",
+          "position_m": [
+            40.0,
+            1.5
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "T1:T",
+          "position_m": [
+            0.0,
+            0.0
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "T2:N",
+          "position_m": [
+            60.0,
+            4.500000000000005
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "T2:R",
+          "position_m": [
+            60.0,
+            3.0000000000000053
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "T2:T",
+          "position_m": [
+            100.0,
+            4.5
+          ],
+          "role": "internal"
+        }
+      ],
+      "edges": [
+        {
+          "id": "T1:normal",
+          "u": "T1:T",
+          "v": "T1:N",
+          "controls_m": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              40.0,
+              0.0
+            ]
+          ],
+          "component": "T1",
+          "controller": "CROSSOVER_CONTROL",
+          "state": "N",
+          "kind": "synthetic_turnout_through"
+        },
+        {
+          "id": "T1:reverse",
+          "u": "T1:T",
+          "v": "T1:R",
+          "controls_m": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              10.0,
+              0.0
+            ],
+            [
+              20.0,
+              0.0
+            ],
+            [
+              30.0,
+              0.75
+            ],
+            [
+              40.0,
+              1.5
+            ]
+          ],
+          "component": "T1",
+          "controller": "CROSSOVER_CONTROL",
+          "state": "R",
+          "kind": "synthetic_turnout_diverging"
+        },
+        {
+          "id": "T2:normal",
+          "u": "T2:T",
+          "v": "T2:N",
+          "controls_m": [
+            [
+              100.0,
+              4.5
+            ],
+            [
+              60.0,
+              4.500000000000005
+            ]
+          ],
+          "component": "T2",
+          "controller": "CROSSOVER_CONTROL",
+          "state": "N",
+          "kind": "synthetic_turnout_through"
+        },
+        {
+          "id": "T2:reverse",
+          "u": "T2:T",
+          "v": "T2:R",
+          "controls_m": [
+            [
+              100.0,
+              4.5
+            ],
+            [
+              90.0,
+              4.500000000000001
+            ],
+            [
+              80.0,
+              4.500000000000003
+            ],
+            [
+              70.0,
+              3.7500000000000036
+            ],
+            [
+              60.0,
+              3.0000000000000053
+            ]
+          ],
+          "component": "T2",
+          "controller": "CROSSOVER_CONTROL",
+          "state": "R",
+          "kind": "synthetic_turnout_diverging"
+        },
+        {
+          "id": "diagonal",
+          "u": "T1:R",
+          "v": "T2:R",
+          "controls_m": [
+            [
+              40.0,
+              1.5
+            ],
+            [
+              60.0,
+              3.0000000000000053
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "lower_continuation",
+          "u": "T1:N",
+          "v": "LOW_E",
+          "controls_m": [
+            [
+              40.0,
+              0.0
+            ],
+            [
+              100.0,
+              0.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "upper_continuation",
+          "u": "HIGH_W",
+          "v": "T2:N",
+          "controls_m": [
+            [
+              0.0,
+              4.5
+            ],
+            [
+              60.0,
+              4.500000000000005
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        }
+      ],
+      "turnouts": [
+        {
+          "id": "T1",
+          "toe": "T1:T",
+          "normal": "T1:N",
+          "reverse": "T1:R",
+          "controller": "CROSSOVER_CONTROL",
+          "normal_state": "N",
+          "reverse_state": "R"
+        },
+        {
+          "id": "T2",
+          "toe": "T2:T",
+          "normal": "T2:N",
+          "reverse": "T2:R",
+          "controller": "CROSSOVER_CONTROL",
+          "normal_state": "N",
+          "reverse_state": "R"
+        }
+      ]
+    },
+    "curves": {
+      "T1:normal": {
+        "lower_length_m": 39.99999999,
+        "upper_length_m": 40.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "T1:reverse": {
+        "lower_length_m": 40.04171733921119,
+        "upper_length_m": 40.04176200370092,
+        "curvature_upper_per_m": 0.002809095260824658,
+        "leaf_count": 20,
+        "maximum_hull_radius_m": 0.0027465903736974065,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "T2:normal": {
+        "lower_length_m": 39.99999999,
+        "upper_length_m": 40.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "T2:reverse": {
+        "lower_length_m": 40.04171733921119,
+        "upper_length_m": 40.04176200370092,
+        "curvature_upper_per_m": 0.0028090952608246593,
+        "leaf_count": 20,
+        "maximum_hull_radius_m": 0.0027465903736978506,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "diagonal": {
+        "lower_length_m": 20.05617111013158,
+        "upper_length_m": 20.05617113013158,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "lower_continuation": {
+        "lower_length_m": 59.99999999,
+        "upper_length_m": 60.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "upper_continuation": {
+        "lower_length_m": 59.99999999,
+        "upper_length_m": 60.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      }
+    },
+    "resources": {
+      "track:T1:normal": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "T1:normal"
+        ]
+      },
+      "component_body:T1": {
+        "kind": "exclusive_component_traversal",
+        "component": "T1"
+      },
+      "control:CROSSOVER_CONTROL": {
+        "kind": "explicit_component_state_map",
+        "controller": "CROSSOVER_CONTROL",
+        "not_inferred_from_geometry": true
+      },
+      "track:T1:reverse": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "T1:reverse"
+        ]
+      },
+      "track:T2:normal": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "T2:normal"
+        ]
+      },
+      "component_body:T2": {
+        "kind": "exclusive_component_traversal",
+        "component": "T2"
+      },
+      "track:T2:reverse": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "T2:reverse"
+        ]
+      },
+      "track:diagonal": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "diagonal"
+        ]
+      },
+      "track:lower_continuation": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "lower_continuation"
+        ]
+      },
+      "track:upper_continuation": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "upper_continuation"
+        ]
+      },
+      "proximity:T1:normal|diagonal": {
+        "resource": "proximity:T1:normal|diagonal",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T1:normal",
+          "diagonal"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.5,
+          "distance_lower_bound_m": 1.4999999800000001,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:T1:normal|lower_continuation": {
+        "resource": "proximity:T1:normal|lower_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T1:normal",
+          "lower_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:T1:reverse|diagonal": {
+        "resource": "proximity:T1:reverse|diagonal",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T1:reverse",
+          "diagonal"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:T1:reverse|lower_continuation": {
+        "resource": "proximity:T1:reverse|lower_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T1:reverse",
+          "lower_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.4959206426504732,
+          "distance_lower_bound_m": 1.49318151014562,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:T1:reverse|upper_continuation": {
+        "resource": "proximity:T1:reverse|upper_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T1:reverse",
+          "upper_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 3.0000000000000036,
+          "distance_lower_bound_m": 2.99726086749515,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:T2:normal|diagonal": {
+        "resource": "proximity:T2:normal|diagonal",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T2:normal",
+          "diagonal"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.5,
+          "distance_lower_bound_m": 1.4999999800000001,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:T2:normal|upper_continuation": {
+        "resource": "proximity:T2:normal|upper_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T2:normal",
+          "upper_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:T2:reverse|diagonal": {
+        "resource": "proximity:T2:reverse|diagonal",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T2:reverse",
+          "diagonal"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:T2:reverse|lower_continuation": {
+        "resource": "proximity:T2:reverse|lower_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T2:reverse",
+          "lower_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 3.0000000000000053,
+          "distance_lower_bound_m": 2.997260867495152,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:T2:reverse|upper_continuation": {
+        "resource": "proximity:T2:reverse|upper_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T2:reverse",
+          "upper_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.4959206426504732,
+          "distance_lower_bound_m": 1.49318151014562,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:diagonal|lower_continuation": {
+        "resource": "proximity:diagonal|lower_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal",
+          "lower_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.5,
+          "distance_lower_bound_m": 1.4999999800000001,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:diagonal|upper_continuation": {
+        "resource": "proximity:diagonal|upper_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal",
+          "upper_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.5,
+          "distance_lower_bound_m": 1.4999999800000001,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      }
+    },
+    "proximity_contacts": [
+      {
+        "resource": "proximity:T1:normal|diagonal",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T1:normal",
+          "diagonal"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.5,
+          "distance_lower_bound_m": 1.4999999800000001,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:T1:normal|lower_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T1:normal",
+          "lower_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:T1:reverse|diagonal",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T1:reverse",
+          "diagonal"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:T1:reverse|lower_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T1:reverse",
+          "lower_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.4959206426504732,
+          "distance_lower_bound_m": 1.49318151014562,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:T1:reverse|upper_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T1:reverse",
+          "upper_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 3.0000000000000036,
+          "distance_lower_bound_m": 2.99726086749515,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:T2:normal|diagonal",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T2:normal",
+          "diagonal"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.5,
+          "distance_lower_bound_m": 1.4999999800000001,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:T2:normal|upper_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T2:normal",
+          "upper_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:T2:reverse|diagonal",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T2:reverse",
+          "diagonal"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:T2:reverse|lower_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T2:reverse",
+          "lower_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 3.0000000000000053,
+          "distance_lower_bound_m": 2.997260867495152,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:T2:reverse|upper_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "T2:reverse",
+          "upper_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.4959206426504732,
+          "distance_lower_bound_m": 1.49318151014562,
+          "enclosure_allowance_m": 0.0027391325048532647,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:diagonal|lower_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal",
+          "lower_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.5,
+          "distance_lower_bound_m": 1.4999999800000001,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:diagonal|upper_continuation",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal",
+          "upper_continuation"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 1.5,
+          "distance_lower_bound_m": 1.4999999800000001,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      }
+    ],
+    "pair_evaluations": 21,
+    "profile": {
+      "minimum_radius_m": 300.0,
+      "envelope_half_width_m": 1.75,
+      "envelope_gap_m": 0.5,
+      "flatness_m": 0.01,
+      "length_gap_m": 0.0001,
+      "fidelity": "synthetic"
+    },
+    "time_model": "whole_leg_constant_speed_tail_clear_surrogate",
+    "assessments": {
+      "explicit_topology": "pass",
+      "selected_route_G2_continuity": "pass",
+      "synthetic_radius_bound": "pass",
+      "continuous_corridor_proxy": "compiled",
+      "real_UK_turnout_catalogue": "unassessed",
+      "full_vehicle_gauging": "unassessed",
+      "real_interlocking_control_table": "unassessed",
+      "sectional_release": "not_implemented",
+      "vertical_alignment_and_cant": "level_zero_cant_only",
+      "game_construction": "not_tested"
+    }
+  }
+}

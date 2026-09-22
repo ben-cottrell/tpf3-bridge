@@ -1,0 +1,32 @@
+{
+  "build": null,
+  "capabilities": {
+    "construct.junction_track3": {
+      "evidence": null,
+      "state": "unknown"
+    },
+    "construct.junction_turnout3": {
+      "evidence": null,
+      "state": "unknown"
+    },
+    "declare.junction_crossing": {
+      "evidence": null,
+      "state": "unknown"
+    },
+    "query.junction_geometry_topology": {
+      "evidence": null,
+      "state": "unknown"
+    },
+    "query.operation_receipt": {
+      "evidence": null,
+      "state": "unknown"
+    },
+    "reserve.junction_crossing_envelope": {
+      "evidence": null,
+      "state": "unknown"
+    }
+  },
+  "environment": "tpf3_unprobed",
+  "game_probed": false,
+  "rollback": false
+}

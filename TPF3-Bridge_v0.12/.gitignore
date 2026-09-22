@@ -1,0 +1,7 @@
+# Local test diagnostics and generated design/mock evidence.
+/.local_checks/
+/.local_runs/
+
+# Durable local batch ledger, prompts, source snapshots and worker logs.
+# Keep on disk for restart/reconciliation; never publish with the source.
+/.task_batch/

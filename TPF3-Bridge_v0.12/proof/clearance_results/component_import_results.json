@@ -1,0 +1,518 @@
+{
+  "authentic_component_imported": false,
+  "compiled_imported_geometry": {
+    "compile_hash": "7a329671148e1fc0567ee181d40c32c13a0242979702a64f584a3b700ae6d6a7",
+    "edge_requirements": {
+      "normal": [
+        {
+          "resource": "component_body:SYNTH_IMPORT_T40",
+          "state": null
+        },
+        {
+          "resource": "control:T40_CTRL",
+          "state": "N"
+        },
+        {
+          "resource": "track:normal",
+          "state": null
+        }
+      ],
+      "reverse": [
+        {
+          "resource": "component_body:SYNTH_IMPORT_T40",
+          "state": null
+        },
+        {
+          "resource": "control:T40_CTRL",
+          "state": "R"
+        },
+        {
+          "resource": "track:reverse",
+          "state": null
+        }
+      ]
+    },
+    "platforms": {},
+    "provenance": {
+      "assessments": {
+        "continuous_corridor_proxy": "compiled",
+        "explicit_topology": "pass",
+        "full_vehicle_gauging": "unassessed",
+        "game_construction": "not_tested",
+        "real_UK_turnout_catalogue": "unassessed",
+        "real_interlocking_control_table": "unassessed",
+        "sectional_release": "not_implemented",
+        "selected_route_G2_continuity": "pass",
+        "synthetic_radius_bound": "pass",
+        "vertical_alignment_and_cant": "level_zero_cant_only"
+      },
+      "curves": {
+        "normal": {
+          "bounds_origin": "Bezier subdivision + derivative hull; floating guard",
+          "curvature_upper_per_m": 0.0,
+          "leaf_count": 1,
+          "lower_length_m": 39.99999999,
+          "maximum_hull_radius_m": 1e-08,
+          "upper_length_m": 40.00000001
+        },
+        "reverse": {
+          "bounds_origin": "Bezier subdivision + derivative hull; floating guard",
+          "curvature_upper_per_m": 0.002809095260892607,
+          "leaf_count": 20,
+          "lower_length_m": 40.04171733921118,
+          "maximum_hull_radius_m": 0.0027465903736975513,
+          "upper_length_m": 40.04176200370092
+        }
+      },
+      "network": {
+        "edges": [
+          {
+            "component": "SYNTH_IMPORT_T40",
+            "controller": "T40_CTRL",
+            "controls_m": [
+              [
+                10.0,
+                20.0
+              ],
+              [
+                49.20266311364966,
+                27.94677323180245
+              ]
+            ],
+            "id": "normal",
+            "kind": "imported_centreline_route",
+            "state": "N",
+            "u": "T",
+            "v": "N"
+          },
+          {
+            "component": "SYNTH_IMPORT_T40",
+            "controller": "T40_CTRL",
+            "controls_m": [
+              [
+                10.0,
+                20.0
+              ],
+              [
+                19.800665778412416,
+                21.986693307950613
+              ],
+              [
+                29.60133155682483,
+                23.973386615901223
+              ],
+              [
+                39.55099933333354,
+                25.225029990470905
+              ],
+              [
+                49.500667109842254,
+                26.476673365040586
+              ]
+            ],
+            "id": "reverse",
+            "kind": "imported_centreline_route",
+            "state": "R",
+            "u": "T",
+            "v": "R"
+          }
+        ],
+        "fidelity": "synthetic_eased_components",
+        "id": "SYNTH_IMPORT_T40",
+        "metadata": {
+          "UK_component_approval": "unassessed",
+          "geometry_hash": "99ab356bee3f503a4baad1fad8d327bd58ce24bc8e539757cea2686b3d25c522",
+          "geometry_origin": "authored_synthetic",
+          "import_schema": "0.5.0",
+          "record_hash": "38d6f00997e9064789fcb0ceaa3788497f1c8f5f5afa9313f332bf95aa2b9a1b",
+          "transform": {
+            "angle_rad": 0.2,
+            "dx": 10.0,
+            "dy": 20.0,
+            "mirror": true
+          }
+        },
+        "ports": [
+          {
+            "id": "N",
+            "position_m": [
+              49.20266311364966,
+              27.94677323180245
+            ],
+            "role": "internal"
+          },
+          {
+            "id": "R",
+            "position_m": [
+              49.500667109842254,
+              26.476673365040586
+            ],
+            "role": "internal"
+          },
+          {
+            "id": "T",
+            "position_m": [
+              10.0,
+              20.0
+            ],
+            "role": "internal"
+          }
+        ],
+        "schema_version": "0.3.0",
+        "turnouts": [
+          {
+            "controller": "T40_CTRL",
+            "id": "SYNTH_IMPORT_T40",
+            "normal": "N",
+            "normal_state": "N",
+            "reverse": "R",
+            "reverse_state": "R",
+            "toe": "T"
+          }
+        ]
+      },
+      "pair_evaluations": 1,
+      "profile": {
+        "envelope_gap_m": 0.5,
+        "envelope_half_width_m": 1.75,
+        "fidelity": "synthetic",
+        "flatness_m": 0.01,
+        "length_gap_m": 0.0001,
+        "minimum_radius_m": 300.0
+      },
+      "proximity_contacts": [],
+      "resources": {
+        "component_body:SYNTH_IMPORT_T40": {
+          "component": "SYNTH_IMPORT_T40",
+          "kind": "exclusive_component_traversal"
+        },
+        "control:T40_CTRL": {
+          "controller": "T40_CTRL",
+          "kind": "explicit_component_state_map",
+          "not_inferred_from_geometry": true
+        },
+        "track:normal": {
+          "edges": [
+            "normal"
+          ],
+          "kind": "physical_edge_occupation"
+        },
+        "track:reverse": {
+          "edges": [
+            "reverse"
+          ],
+          "kind": "physical_edge_occupation"
+        }
+      },
+      "time_model": "whole_leg_constant_speed_tail_clear_surrogate"
+    },
+    "routes": {
+      "normal": {
+        "edge_ids": [
+          "normal"
+        ],
+        "end": "N",
+        "id": "normal",
+        "length_lower_m": 39.99999999,
+        "length_upper_m": 40.00000001,
+        "requirements": [
+          {
+            "resource": "component_body:SYNTH_IMPORT_T40",
+            "state": null
+          },
+          {
+            "resource": "control:T40_CTRL",
+            "state": "N"
+          },
+          {
+            "resource": "track:normal",
+            "state": null
+          }
+        ],
+        "segments": [
+          {
+            "edge_id": "normal",
+            "entry_chainage_interval_m": [
+              0.0,
+              0.0
+            ],
+            "exit_chainage_interval_m": [
+              39.99999999,
+              40.00000001
+            ],
+            "forward": true
+          }
+        ],
+        "source_hash": "15288870e290565b6a499268dcf7ce4bebd85297e90cb3e924176469fb69ac76",
+        "start": "T"
+      },
+      "reverse": {
+        "edge_ids": [
+          "reverse"
+        ],
+        "end": "R",
+        "id": "reverse",
+        "length_lower_m": 40.04171733921118,
+        "length_upper_m": 40.04176200370092,
+        "requirements": [
+          {
+            "resource": "component_body:SYNTH_IMPORT_T40",
+            "state": null
+          },
+          {
+            "resource": "control:T40_CTRL",
+            "state": "R"
+          },
+          {
+            "resource": "track:reverse",
+            "state": null
+          }
+        ],
+        "segments": [
+          {
+            "edge_id": "reverse",
+            "entry_chainage_interval_m": [
+              0.0,
+              0.0
+            ],
+            "exit_chainage_interval_m": [
+              40.04171733921118,
+              40.04176200370092
+            ],
+            "forward": true
+          }
+        ],
+        "source_hash": "15288870e290565b6a499268dcf7ce4bebd85297e90cb3e924176469fb69ac76",
+        "start": "T"
+      }
+    },
+    "schema_version": "0.3.0",
+    "source_hash": "15288870e290565b6a499268dcf7ce4bebd85297e90cb3e924176469fb69ac76"
+  },
+  "normalized_synthetic_geometry": {
+    "controller": "T40_CTRL",
+    "coordinate_frame": "local_plan_xy_level_zero_cant",
+    "crossing_type": "not_modelled_hardware",
+    "gauge": 1.435,
+    "ports": [
+      {
+        "id": "N",
+        "role": "normal",
+        "xy": [
+          40.0,
+          0.0
+        ]
+      },
+      {
+        "id": "R",
+        "role": "reverse",
+        "xy": [
+          40.0,
+          1.5
+        ]
+      },
+      {
+        "id": "T",
+        "role": "toe",
+        "xy": [
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "routes": [
+      {
+        "bezier_controls": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            40.0,
+            0.0
+          ]
+        ],
+        "from": "T",
+        "id": "normal",
+        "state": "N",
+        "to": "N"
+      },
+      {
+        "bezier_controls": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            10.0,
+            0.0
+          ],
+          [
+            20.0,
+            0.0
+          ],
+          [
+            30.0,
+            0.75
+          ],
+          [
+            40.0,
+            1.5
+          ]
+        ],
+        "from": "T",
+        "id": "reverse",
+        "state": "R",
+        "to": "R"
+      }
+    ],
+    "switch_type": "synthetic_eased_centreline",
+    "units": "m"
+  },
+  "note": "No product page has been substituted for an actual dimensional drawing.",
+  "pending_external": {
+    "authenticity": "source_review_required",
+    "construction_authorised": false,
+    "full_component_interface": "unassessed",
+    "geometry_hash": null,
+    "geometry_schema_checked": false,
+    "geometry_usable_in_declared_mode": false,
+    "missing": [
+      "complete_component_geometry",
+      "dimensional_drawing_evidence",
+      "reuse_permission",
+      "trusted_local_review_of_exact_record",
+      "source_backed_speed_applicability"
+    ],
+    "network_export_note": "legacy Network.canonical() retains synthetic pipeline label; no promotion through that export",
+    "record_hash": "1f5ece3f8732ae85274e5e81bbff5cd2b891b9b8125ce91ecc42c9ddf1371e1b",
+    "source_speed_record_reviewed": false,
+    "speed_applicability": "unassessed_application_profile_label_only",
+    "speed_usable_for_UK_design": false,
+    "status": "reference_only_missing_geometry"
+  },
+  "placed_synthetic_network": {
+    "edges": [
+      {
+        "component": "SYNTH_IMPORT_T40",
+        "controller": "T40_CTRL",
+        "controls_m": [
+          [
+            10.0,
+            20.0
+          ],
+          [
+            49.20266311364966,
+            27.94677323180245
+          ]
+        ],
+        "id": "normal",
+        "kind": "imported_centreline_route",
+        "state": "N",
+        "u": "T",
+        "v": "N"
+      },
+      {
+        "component": "SYNTH_IMPORT_T40",
+        "controller": "T40_CTRL",
+        "controls_m": [
+          [
+            10.0,
+            20.0
+          ],
+          [
+            19.800665778412416,
+            21.986693307950613
+          ],
+          [
+            29.60133155682483,
+            23.973386615901223
+          ],
+          [
+            39.55099933333354,
+            25.225029990470905
+          ],
+          [
+            49.500667109842254,
+            26.476673365040586
+          ]
+        ],
+        "id": "reverse",
+        "kind": "imported_centreline_route",
+        "state": "R",
+        "u": "T",
+        "v": "R"
+      }
+    ],
+    "fidelity": "synthetic_eased_components",
+    "id": "SYNTH_IMPORT_T40",
+    "metadata": {
+      "UK_component_approval": "unassessed",
+      "geometry_hash": "99ab356bee3f503a4baad1fad8d327bd58ce24bc8e539757cea2686b3d25c522",
+      "geometry_origin": "authored_synthetic",
+      "import_schema": "0.5.0",
+      "record_hash": "38d6f00997e9064789fcb0ceaa3788497f1c8f5f5afa9313f332bf95aa2b9a1b",
+      "transform": {
+        "angle_rad": 0.2,
+        "dx": 10.0,
+        "dy": 20.0,
+        "mirror": true
+      }
+    },
+    "ports": [
+      {
+        "id": "N",
+        "position_m": [
+          49.20266311364966,
+          27.94677323180245
+        ],
+        "role": "internal"
+      },
+      {
+        "id": "R",
+        "position_m": [
+          49.500667109842254,
+          26.476673365040586
+        ],
+        "role": "internal"
+      },
+      {
+        "id": "T",
+        "position_m": [
+          10.0,
+          20.0
+        ],
+        "role": "internal"
+      }
+    ],
+    "schema_version": "0.3.0",
+    "turnouts": [
+      {
+        "controller": "T40_CTRL",
+        "id": "SYNTH_IMPORT_T40",
+        "normal": "N",
+        "normal_state": "N",
+        "reverse": "R",
+        "reverse_state": "R",
+        "toe": "T"
+      }
+    ]
+  },
+  "synthetic": {
+    "authenticity": "synthetic",
+    "construction_authorised": false,
+    "full_component_interface": "unassessed",
+    "geometry_hash": "99ab356bee3f503a4baad1fad8d327bd58ce24bc8e539757cea2686b3d25c522",
+    "geometry_schema_checked": true,
+    "geometry_usable_in_declared_mode": true,
+    "missing": [
+      "source_backed_speed_applicability"
+    ],
+    "network_export_note": "legacy Network.canonical() retains synthetic pipeline label; no promotion through that export",
+    "record_hash": "38d6f00997e9064789fcb0ceaa3788497f1c8f5f5afa9313f332bf95aa2b9a1b",
+    "source_speed_record_reviewed": false,
+    "speed_applicability": "unassessed_application_profile_label_only",
+    "speed_usable_for_UK_design": false,
+    "status": "accepted_for_synthetic_tests"
+  }
+}

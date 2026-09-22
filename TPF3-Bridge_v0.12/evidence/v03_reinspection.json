@@ -1,0 +1,35 @@
+{
+  "release": "0.3.0",
+  "review_date": "2026-09-20",
+  "source_count": 59,
+  "new_source_records": 0,
+  "records": [
+    {
+      "source_id": "S045",
+      "scope": "Catalogue synopsis/status only; full numerical gauging not extracted",
+      "url": "https://www.rssb.co.uk/standards-catalogue/CatalogueItem/girt7073-iss-3"
+    },
+    {
+      "source_id": "S047",
+      "scope": "Catalogue synopsis/status only; no component dimension table imported",
+      "url": "https://www.rssb.co.uk/standards-catalogue/CatalogueItem/ris-7707-ins-iss-1"
+    },
+    {
+      "source_id": "S050",
+      "scope": "Abstract only; methodology context, not a transferred solver",
+      "url": "https://arxiv.org/abs/2405.01438"
+    },
+    {
+      "source_id": "S055",
+      "scope": "Printed pages 13 and 19; figure 5, paragraphs 21-22 and 37 and control-table note; page images inspected",
+      "url": "https://assets.publishing.service.gov.uk/media/5bf28782e5274a2aeeae93bb/R192018_181119_Waterloo.pdf",
+      "pdf_page_indices": [
+        12,
+        18
+      ],
+      "layout_epoch": "2017 report context; not current as-built"
+    }
+  ],
+  "external_source_bytes_archived": false,
+  "external_sha256": null
+}

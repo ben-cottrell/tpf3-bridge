@@ -1,0 +1,110 @@
+{
+  "two_candidate_budget": {
+    "accepted_count": 1,
+    "candidates": [
+      {
+        "accepted": true,
+        "candidate_hash": "35b0bdb4d9729d9d72886a4fa3bdac8518bf94a54c11de698d188dc4d51c8c16",
+        "crossing": {
+          "edge_ids": [
+            "east_continuation",
+            "return_connector"
+          ],
+          "footprint_x_m": [
+            2512.4144882069795,
+            2557.0356856497283
+          ],
+          "minimum_rail_separation_m": 0.0,
+          "mode": "flat_crossing",
+          "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+          "required_project_separation_m": 6.8,
+          "separated_within_project_envelope": false,
+          "turning_connections": [],
+          "x_m": 2534.848911042586,
+          "y_m": 1.7
+        },
+        "failures": [],
+        "grade_upper": 0.0,
+        "height_m": 0.0,
+        "mode": "flat",
+        "ramp_m": 750.0
+      },
+      {
+        "accepted": false,
+        "candidate_hash": "3937826b3ad20a1abe4c58adf412e94237214908c0ff40e4a48a6497f257531d",
+        "crossing": {
+          "edge_ids": [
+            "east_continuation",
+            "return_connector"
+          ],
+          "footprint_x_m": [
+            2512.4144882069795,
+            2557.0356856497283
+          ],
+          "minimum_rail_separation_m": 6.5,
+          "mode": "flyover",
+          "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+          "required_project_separation_m": 6.8,
+          "separated_within_project_envelope": false,
+          "turning_connections": [],
+          "x_m": 2534.848911042586,
+          "y_m": 1.7
+        },
+        "failures": [
+          "return_connector:grade_pass",
+          "crossing_envelope_insufficient"
+        ],
+        "grade_upper": 0.02031250000203125,
+        "height_m": 6.5,
+        "mode": "flyover",
+        "ramp_m": 600
+      }
+    ],
+    "construction_authorised": false,
+    "evaluated": 2,
+    "fixture_hash": "b3c822871f9763b8bc5ac25ee4375af373543594fc3cb7ed0654344190460973",
+    "grid_size": 17,
+    "selected_by_mode": {
+      "flat": {
+        "accepted": true,
+        "candidate_hash": "35b0bdb4d9729d9d72886a4fa3bdac8518bf94a54c11de698d188dc4d51c8c16",
+        "crossing": {
+          "edge_ids": [
+            "east_continuation",
+            "return_connector"
+          ],
+          "footprint_x_m": [
+            2512.4144882069795,
+            2557.0356856497283
+          ],
+          "minimum_rail_separation_m": 0.0,
+          "mode": "flat_crossing",
+          "origin": "derived curve intersection and full-ramp envelope; hardware not modelled",
+          "required_project_separation_m": 6.8,
+          "separated_within_project_envelope": false,
+          "turning_connections": [],
+          "x_m": 2534.848911042586,
+          "y_m": 1.7
+        },
+        "failures": [],
+        "grade_upper": 0.0,
+        "height_m": 0.0,
+        "mode": "flat",
+        "ramp_m": 750.0
+      }
+    },
+    "selection_policy": "shortest accepted full ramps then height, within this fixed topology; not whole-civil optimality",
+    "status": "search_exhausted"
+  },
+  "zero_budget": {
+    "accepted_count": 0,
+    "candidates": [],
+    "construction_authorised": false,
+    "evaluated": 0,
+    "fixture_hash": "b3c822871f9763b8bc5ac25ee4375af373543594fc3cb7ed0654344190460973",
+    "grid_size": 17,
+    "selected_by_mode": {},
+    "selection_policy": "shortest accepted full ramps then height, within this fixed topology; not whole-civil optimality",
+    "status": "search_exhausted"
+  }
+}

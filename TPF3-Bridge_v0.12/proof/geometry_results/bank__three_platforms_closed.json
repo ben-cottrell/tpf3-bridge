@@ -1,0 +1,6201 @@
+{
+  "model_version": "0.3.0",
+  "fidelity": "synthetic_geometry_derived_whole_leg_resources",
+  "compile_hash": "d26c139b485a068855d537736eb71ca7c3feaae7d265086fb90858941ced929e",
+  "source_hash": "7bec1c0c58eef5b86557c2cdae76f7283b59901426ea34ecd43400f6dfca1566",
+  "time_profile": {
+    "speed_mps": 8.0,
+    "setup_ms": 5000,
+    "release_ms": 3000
+  },
+  "required_visits": 12,
+  "scheduled_visits": 12,
+  "unscheduled_visits": 0,
+  "completed_within_horizon": 12,
+  "scheduled_residual_at_horizon": 0,
+  "horizon_ms": 7200000,
+  "total_departure_delay_ms": 11893248,
+  "all_required_scheduled": true,
+  "candidate_evaluations": 64,
+  "assignments": [
+    {
+      "visit_id": "G01",
+      "stock_id": "S01",
+      "platform_id": "P4",
+      "entry_ms": 0,
+      "berthed_ms": 110092,
+      "departure_ms": 370092,
+      "exit_clear_ms": 480184,
+      "departure_delay_ms": 92,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 0,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 0,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 0,
+          "end_ms": 110092,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 0,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "visit_id": "G02",
+      "stock_id": "S02",
+      "platform_id": "P4",
+      "entry_ms": 480184,
+      "berthed_ms": 590276,
+      "departure_ms": 850276,
+      "exit_clear_ms": 960368,
+      "departure_delay_ms": 180276,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 480184,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 480184,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 480184,
+          "end_ms": 590276,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 480184,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "component_body:F1",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 0,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 370092,
+          "end_ms": 480184,
+          "owner": "G01",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "G03",
+      "stock_id": "S03",
+      "platform_id": "P4",
+      "entry_ms": 960368,
+      "berthed_ms": 1070460,
+      "departure_ms": 1330460,
+      "exit_clear_ms": 1440552,
+      "departure_delay_ms": 360460,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 960368,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 960368,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 1330460,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 960368,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 480184,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "G04",
+      "stock_id": "S04",
+      "platform_id": "P4",
+      "entry_ms": 1440552,
+      "berthed_ms": 1550644,
+      "departure_ms": 1810644,
+      "exit_clear_ms": 1920736,
+      "departure_delay_ms": 540644,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "empty_stock",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 1440552,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 1440552,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 1440552,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "component_body:F1",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 480184,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 850276,
+          "end_ms": 960368,
+          "owner": "G02",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 960368,
+          "end_ms": 1070460,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 960368,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "G05",
+      "stock_id": "S05",
+      "platform_id": "P4",
+      "entry_ms": 1920736,
+      "berthed_ms": 2030828,
+      "departure_ms": 2290828,
+      "exit_clear_ms": 2400920,
+      "departure_delay_ms": 720828,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 1920736,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 1920736,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 1920736,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 960368,
+          "end_ms": 1440552,
+          "owner": "G03",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 1440552,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "G06",
+      "stock_id": "S06",
+      "platform_id": "P4",
+      "entry_ms": 2400920,
+      "berthed_ms": 2511012,
+      "departure_ms": 2771012,
+      "exit_clear_ms": 2881104,
+      "departure_delay_ms": 901012,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 2400920,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 2400920,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 2400920,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "component_body:F1",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 1440552,
+          "end_ms": 1550644,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 1440552,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 1920736,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "G07",
+      "stock_id": "S07",
+      "platform_id": "P4",
+      "entry_ms": 2881104,
+      "berthed_ms": 2991196,
+      "departure_ms": 3251196,
+      "exit_clear_ms": 3361288,
+      "departure_delay_ms": 1081196,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 2881104,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 2881104,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 2881104,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "component_body:F1",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 1440552,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 1810644,
+          "end_ms": 1920736,
+          "owner": "G04",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 1920736,
+          "end_ms": 2030828,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 1920736,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 2400920,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "G08",
+      "stock_id": "S08",
+      "platform_id": "P4",
+      "entry_ms": 3361288,
+      "berthed_ms": 3471380,
+      "departure_ms": 3731380,
+      "exit_clear_ms": 3841472,
+      "departure_delay_ms": 1261380,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 3361288,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 3361288,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3731380,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 3361288,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 1920736,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 2400920,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 2881104,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "G09",
+      "stock_id": "S09",
+      "platform_id": "P4",
+      "entry_ms": 3841472,
+      "berthed_ms": 3951564,
+      "departure_ms": 4211564,
+      "exit_clear_ms": 4321656,
+      "departure_delay_ms": 1441564,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 3841472,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 3841472,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 4211564,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 3841472,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 1920736,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2290828,
+          "end_ms": 2400920,
+          "owner": "G05",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2400920,
+          "end_ms": 2511012,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 2400920,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 2881104,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 3361288,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "G10",
+      "stock_id": "S10",
+      "platform_id": "P4",
+      "entry_ms": 4321656,
+      "berthed_ms": 4431748,
+      "departure_ms": 4691748,
+      "exit_clear_ms": 4801840,
+      "departure_delay_ms": 1621748,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "empty_stock",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 4321656,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 4321656,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 4691748,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 4321656,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 2400920,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2771012,
+          "end_ms": 2881104,
+          "owner": "G06",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 2881104,
+          "end_ms": 2991196,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 2881104,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 3361288,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 3841472,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "G11",
+      "stock_id": "S11",
+      "platform_id": "P4",
+      "entry_ms": 4801840,
+      "berthed_ms": 4911932,
+      "departure_ms": 5171932,
+      "exit_clear_ms": 5282024,
+      "departure_delay_ms": 1801932,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 4801840,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 4801840,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 5171932,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 4801840,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 2881104,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 3361288,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 3841472,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 4321656,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "G12",
+      "stock_id": "S12",
+      "platform_id": "P4",
+      "entry_ms": 5282024,
+      "berthed_ms": 5392116,
+      "departure_ms": 5652116,
+      "exit_clear_ms": 5762208,
+      "departure_delay_ms": 1982116,
+      "train_length_m": 160.0,
+      "incoming_route": "P4:in",
+      "outgoing_route": "P4:out",
+      "incoming_distance_upper_m": 656.7315818705158,
+      "outgoing_distance_upper_m": 656.7315818705158,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "berth:P4",
+          "start_ms": 5282024,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 5282024,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 5282024,
+          "end_ms": 5392116,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 5652116,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        },
+        {
+          "resource": "track:storage_P4",
+          "start_ms": 5282024,
+          "end_ms": 5762208,
+          "owner": "G12",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 2881104,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3251196,
+          "end_ms": 3361288,
+          "owner": "G07",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3361288,
+          "end_ms": 3471380,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 3361288,
+          "end_ms": 3841472,
+          "owner": "G08",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 3841472,
+          "end_ms": 3951564,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 3841472,
+          "end_ms": 4321656,
+          "owner": "G09",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 4321656,
+          "end_ms": 4431748,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 4321656,
+          "end_ms": 4801840,
+          "owner": "G10",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 4801840,
+          "end_ms": 4911932,
+          "owner": "G11",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 4801840,
+          "end_ms": 5282024,
+          "owner": "G11",
+          "state": null
+        }
+      ]
+    }
+  ],
+  "rejected": [],
+  "trace": [
+    {
+      "at_ms": 0,
+      "kind": "entry",
+      "visit_id": "G01",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 110092,
+      "kind": "berthed",
+      "visit_id": "G01",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 370092,
+      "kind": "departure",
+      "visit_id": "G01",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 480184,
+      "kind": "exit_clear",
+      "visit_id": "G01",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 480184,
+      "kind": "entry",
+      "visit_id": "G02",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 590276,
+      "kind": "berthed",
+      "visit_id": "G02",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 850276,
+      "kind": "departure",
+      "visit_id": "G02",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 960368,
+      "kind": "exit_clear",
+      "visit_id": "G02",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 960368,
+      "kind": "entry",
+      "visit_id": "G03",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 1070460,
+      "kind": "berthed",
+      "visit_id": "G03",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 1330460,
+      "kind": "departure",
+      "visit_id": "G03",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 1440552,
+      "kind": "exit_clear",
+      "visit_id": "G03",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 1440552,
+      "kind": "entry",
+      "visit_id": "G04",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 1550644,
+      "kind": "berthed",
+      "visit_id": "G04",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 1810644,
+      "kind": "departure",
+      "visit_id": "G04",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 1920736,
+      "kind": "exit_clear",
+      "visit_id": "G04",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 1920736,
+      "kind": "entry",
+      "visit_id": "G05",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 2030828,
+      "kind": "berthed",
+      "visit_id": "G05",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 2290828,
+      "kind": "departure",
+      "visit_id": "G05",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 2400920,
+      "kind": "exit_clear",
+      "visit_id": "G05",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 2400920,
+      "kind": "entry",
+      "visit_id": "G06",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 2511012,
+      "kind": "berthed",
+      "visit_id": "G06",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 2771012,
+      "kind": "departure",
+      "visit_id": "G06",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 2881104,
+      "kind": "exit_clear",
+      "visit_id": "G06",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 2881104,
+      "kind": "entry",
+      "visit_id": "G07",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 2991196,
+      "kind": "berthed",
+      "visit_id": "G07",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 3251196,
+      "kind": "departure",
+      "visit_id": "G07",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 3361288,
+      "kind": "exit_clear",
+      "visit_id": "G07",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 3361288,
+      "kind": "entry",
+      "visit_id": "G08",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 3471380,
+      "kind": "berthed",
+      "visit_id": "G08",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 3731380,
+      "kind": "departure",
+      "visit_id": "G08",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 3841472,
+      "kind": "exit_clear",
+      "visit_id": "G08",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 3841472,
+      "kind": "entry",
+      "visit_id": "G09",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 3951564,
+      "kind": "berthed",
+      "visit_id": "G09",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 4211564,
+      "kind": "departure",
+      "visit_id": "G09",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 4321656,
+      "kind": "exit_clear",
+      "visit_id": "G09",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 4321656,
+      "kind": "entry",
+      "visit_id": "G10",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 4431748,
+      "kind": "berthed",
+      "visit_id": "G10",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 4691748,
+      "kind": "departure",
+      "visit_id": "G10",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 4801840,
+      "kind": "exit_clear",
+      "visit_id": "G10",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 4801840,
+      "kind": "entry",
+      "visit_id": "G11",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 4911932,
+      "kind": "berthed",
+      "visit_id": "G11",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 5171932,
+      "kind": "departure",
+      "visit_id": "G11",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 5282024,
+      "kind": "exit_clear",
+      "visit_id": "G11",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 5282024,
+      "kind": "entry",
+      "visit_id": "G12",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 5392116,
+      "kind": "berthed",
+      "visit_id": "G12",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 5652116,
+      "kind": "departure",
+      "visit_id": "G12",
+      "platform_id": "P4"
+    },
+    {
+      "at_ms": 5762208,
+      "kind": "exit_clear",
+      "visit_id": "G12",
+      "platform_id": "P4"
+    }
+  ],
+  "assessments": {
+    "calendar_invariants": "pass",
+    "pattern_geometry": "synthetic_planar_compiled",
+    "four_approach_eight_platform_station": "not_implemented",
+    "microscopic_train_motion": "unassessed",
+    "UK_turnout_and_clearance_compliance": "unassessed",
+    "real_interlocking": "unassessed",
+    "sectional_resource_release": "not_implemented",
+    "passenger_circulation": "unassessed",
+    "spatial_queue_spillback": "unassessed",
+    "game_construction": "not_tested",
+    "game_observation": "not_tested"
+  },
+  "scenario_id": "three_platforms_closed"
+}

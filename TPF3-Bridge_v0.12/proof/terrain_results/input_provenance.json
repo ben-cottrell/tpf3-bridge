@@ -1,0 +1,76 @@
+{
+  "baseline_direct_corridor_accepted": true,
+  "baseline_direct_corridor_hash": "c39371daddd8cbe2ee845292dab4972f0da2c4c9b21b22301424a2263664c5bf",
+  "component_source": "authored synthetic import",
+  "fixture_hash": "3e5f40c4b9377f27febccbc5b35a8fe47e723b1d30f489f8c43f76accd83cb46",
+  "formation_length_m": 242.6,
+  "local_junction_profile": {
+    "allowance_m": 0.3,
+    "branch_centre_y_m": 240.0,
+    "branch_parallel_x_m": 4500.0,
+    "crossing_half_band_m": 4.0,
+    "deck_depth_m": 1.2,
+    "diverge_x_m": 1800.0,
+    "electrification_m": 0.8,
+    "holding_stop_x_m": 2200.0,
+    "level_change_m": 7.5,
+    "lower_envelope_m": 4.5,
+    "maximum_grade": 0.02,
+    "merge_x_m": 1500.0,
+    "minimum_radius_m": 300.0,
+    "minimum_vertical_radius_m": 5000.0,
+    "plateau_m": 100.0,
+    "rail_height_m": 20.0,
+    "ramp_m": 750.0,
+    "site_y_max_m": 270.0,
+    "site_y_min_m": -150.0,
+    "span_m": 6000.0,
+    "spread_finish_x_m": 1200.0,
+    "track_centres_m": 3.4,
+    "west_spread_y_m": -120.0
+  },
+  "new_source_records": 0,
+  "original_corridor_is_unbuilt_design_baseline": true,
+  "retained_mainline_profile": {
+    "cant_mm": 0,
+    "max_grade": 0.01,
+    "max_lateral_accel_mps2": 0.65,
+    "max_lateral_jerk_mps3": 0.15,
+    "min_radius_m": 1500,
+    "min_vertical_radius_m": 5000,
+    "speed_mph": 60
+  },
+  "source_branch_hash": "b3c822871f9763b8bc5ac25ee4375af373543594fc3cb7ed0654344190460973",
+  "source_corridor_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+  "source_field": "unit_12car_length_m",
+  "source_reference": "S060 retained manufacturer record",
+  "station_internal_edits": false,
+  "terrain_hash": "8c2ddb34eb47ee654af4b0675c7d3b1c189f600939af240c9876aa57ce73363f",
+  "terrain_revision": "synthetic_terrain_01",
+  "unchanged_static_constraints": {
+    "end_height_m": 20,
+    "forbidden": [
+      [
+        2200,
+        -360,
+        3150,
+        -100
+      ]
+    ],
+    "gate_x_m": [
+      1800,
+      3000,
+      4800
+    ],
+    "length_m": 6000,
+    "site": [
+      -5,
+      -1200,
+      6005,
+      1200
+    ],
+    "track_centres_m": 3.4
+  },
+  "vehicle_source_record_hash": "40bdbe8de0c14359c11f282436b095d693d302a12ca54047133af4bda641e331",
+  "version": "0.11.0"
+}

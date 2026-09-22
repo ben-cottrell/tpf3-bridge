@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.9.0",
+  "checked_on": "2026-09-21",
+  "published_behaviour": [
+    {
+      "feature": "path_based_signals",
+      "evidence_state": "documented",
+      "source_id": "S001",
+      "locator": "All clear section",
+      "api_state": "unknown"
+    },
+    {
+      "feature": "configured_alternative_terminals",
+      "evidence_state": "documented",
+      "source_id": "S001",
+      "locator": "All clear section",
+      "api_state": "unknown"
+    },
+    {
+      "feature": "junction_priorities",
+      "evidence_state": "documented",
+      "source_id": "S001",
+      "locator": "All clear section",
+      "api_state": "unknown"
+    },
+    {
+      "feature": "script_content_reload",
+      "evidence_state": "documented",
+      "source_id": "S001",
+      "locator": "Modding section",
+      "api_state": "unknown"
+    }
+  ],
+  "first_probes": [
+    "terrain height/coordinate datum",
+    "track geometry query",
+    "station boundary/terminal query",
+    "plain track construction",
+    "bridge/tunnel construction and snapping",
+    "realised geometry and connectivity readback",
+    "signal/reservation and priority behaviour",
+    "operation reconciliation after lost acknowledgement"
+  ],
+  "game_api_tested": false,
+  "mock_evidence_cannot_promote_game_capability": true,
+  "release_reference": "S069",
+  "game_build": null,
+  "mod_build": null
+}

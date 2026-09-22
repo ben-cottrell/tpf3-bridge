@@ -1,0 +1,367 @@
+{
+  "compile_hash": "8957ebbf1a9e24307ff3d2de66e18a03b58baaa9ce38ed656b6ac38a6699a0db",
+  "requests": [
+    {
+      "id": "lower",
+      "route": "lower_through",
+      "requested_ms": 0,
+      "train_length_m": 160.0,
+      "start_ms": 0,
+      "clear_ms": 40501,
+      "wait_ms": 0,
+      "claims": [
+        {
+          "resource": "component_body:T1",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "control:CROSSOVER_CONTROL",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": "N"
+        },
+        {
+          "resource": "proximity:T1:normal|diagonal",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:normal|lower_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|lower_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|lower_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|lower_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "track:T1:normal",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "track:lower_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "id": "upper",
+      "route": "upper_through",
+      "requested_ms": 0,
+      "train_length_m": 160.0,
+      "start_ms": 0,
+      "clear_ms": 40501,
+      "wait_ms": 0,
+      "claims": [
+        {
+          "resource": "component_body:T2",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        },
+        {
+          "resource": "control:CROSSOVER_CONTROL",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": "N"
+        },
+        {
+          "resource": "proximity:T1:reverse|upper_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:normal|diagonal",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:normal|upper_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|upper_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|upper_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        },
+        {
+          "resource": "track:T2:normal",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        },
+        {
+          "resource": "track:upper_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "id": "crossing",
+      "route": "cross_forward",
+      "requested_ms": 0,
+      "train_length_m": 160.0,
+      "start_ms": 40501,
+      "clear_ms": 81019,
+      "wait_ms": 40501,
+      "claims": [
+        {
+          "resource": "component_body:T1",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "component_body:T2",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "control:CROSSOVER_CONTROL",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:T1:normal|diagonal",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|diagonal",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|lower_continuation",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|upper_continuation",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:normal|diagonal",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|diagonal",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|lower_continuation",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|upper_continuation",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|lower_continuation",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|upper_continuation",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "track:T1:reverse",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "track:T2:reverse",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal",
+          "start_ms": 40501,
+          "end_ms": 81019,
+          "owner": "crossing",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "component_body:T1",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "component_body:T2",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        },
+        {
+          "resource": "control:CROSSOVER_CONTROL",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": "N"
+        },
+        {
+          "resource": "control:CROSSOVER_CONTROL",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": "N"
+        },
+        {
+          "resource": "proximity:T1:normal|diagonal",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|lower_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "proximity:T1:reverse|upper_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:normal|diagonal",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|lower_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "proximity:T2:reverse|upper_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|lower_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "lower",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal|upper_continuation",
+          "start_ms": 0,
+          "end_ms": 40501,
+          "owner": "upper",
+          "state": null
+        }
+      ]
+    }
+  ],
+  "calendar_invariants": "pass",
+  "policy": "declared_request_order",
+  "time_model": "whole_leg_constant_speed_tail_clear_surrogate"
+}

@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "batch_id": "connection-l06-l08",
+  "tasks": [
+    {
+      "id": "L06",
+      "card": "Implement only connection input validation in new bridge_connection.py: validate_connection(record) returns an equal validated record without mutation; reject invalid/unknown fields with ValueError (a distinct subclass may identify unsupported inputs). Use the exact small record demonstrated by tools/connection_acceptance.py:fixture as the local extension, reusing v0.12 Port, Vec3 and Snapshot region/coordinate_frame conventions. Do not change the shared contracts schema. Two directed ports use position_m and unit forward_unit; metres, z-up, right-handed named local frame; region min_m/max_m; explicit min_radius_m, max_length_m, cant_mm, max_candidates (integer 0..400), curvature_depth (0..10). Support equal finite endpoint elevation, horizontal unit tangents, grade=0 and cant_mm=0 only; explicitly reject vertical/cant conditions. Retain separate source_refs, project_choices and assumptions without claiming game observations. Reject booleans-as-numbers, nonfinite numbers, malformed/duplicate JSON at file entry, nonunit/zero tangents, malformed regions and missing/unknown fields. Out-of-region endpoints remain a geometric failed-check outcome in L07, not silently moved. Add connection_example.json and focused tests/test_connection_input.py. Read host fixture for exact field names and accepted return contract; no fitting/application feature yet. Update short STATE.md with actual checks and pending host acceptance.",
+      "pointers": [
+        "tools/connection_acceptance.py:fixture,input_checks",
+        "bridge_app.py:design,inspect_run",
+        "bridge_cli.py:main",
+        "tests/test_cli.py:CliTests",
+        "contracts/bridge.schema.json:$defs.Port,$defs.Vec3,$defs.Snapshot region/coordinate_frame only",
+        "contracts/examples/snapshot.json:coordinate_frame,ports",
+        "STATE.md"
+      ],
+      "write_files": [
+        "bridge_connection.py",
+        "connection_example.json",
+        "tests/test_connection_input.py",
+        "STATE.md"
+      ],
+      "acceptance": [
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_input",
+          "--label",
+          "batch_l06_input"
+        ],
+        [
+          "python",
+          "tools/connection_acceptance.py",
+          "--task",
+          "L06"
+        ]
+      ]
+    },
+    {
+      "id": "L07",
+      "card": "Add fit_connection(record) to bridge_connection.py using existing Bezier, line, flatten, curvature_upper, join_check and railbranch.geometry.hermite; preserve historical modules. Domain: one directed, level zero-cant connection in a start-tangent local frame, strictly positive endpoint forward span, end travel heading within +/-45 degrees of start heading. Support arbitrary overall map translation/rotation within kernel coordinate bounds; outside this relative domain is unsupported_input. Family: a straight line or at most two joined x-affine quintic Hermite pieces, zero end curvature, finite explicit midpoint-position/slope grid (at most 100 candidates). Use a deterministic complete finite enumeration within max_candidates; never accept a partial-search winner on budget exhaustion. Record full grid/search and per-candidate checks locally via returned data. Preserve both endpoint positions/travel directions, prove positive derivative/regularity, continuous region containment using conservative hull/subdivision bounds, curvature_upper <= 1/min_radius_m, join position/tangent/curvature checks and conservative length bounds <= max_length_m. No sample-only acceptance. Return status connection_ready with candidate={curves:[{controls:[[x,y],...]}],elevation_m:z}; otherwise candidate=null with distinct invalid_input, unsupported_input, failed_checks (e.g. endpoint outside region), no_accepted_candidate (completed finite grid), incomplete_search (budget exhausted). Include evaluated/search_status/check details and avoid global impossibility claims. Preserve explicit constraints, never lower radius or alter travel direction. tests/test_connection_geometry.py must independently check straight, translated/rotated, supported 30-degree end heading, too-tight and out-of-region cases; zero/partial budgets, domain rejection, joins and bounds. No adapter or application integration yet. Update short STATE.md.",
+      "pointers": [
+        "bridge_connection.py:validate_connection",
+        "tools/connection_acceptance.py:geometry_checks,independent_geometry",
+        "proof/railgeom/curves.py:Bezier,line,flatten,join_check",
+        "proof/railbranch/geometry.py:hermite,state",
+        "proof/tests/test_geom_kernel.py",
+        "proof/tests/test_branch_geometry.py",
+        "STATE.md"
+      ],
+      "write_files": [
+        "bridge_connection.py",
+        "tests/test_connection_geometry.py",
+        "STATE.md"
+      ],
+      "acceptance": [
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_input",
+          "--label",
+          "batch_l07_input"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_geometry",
+          "--label",
+          "batch_l07_geometry"
+        ],
+        [
+          "python",
+          "tools/connection_acceptance.py",
+          "--task",
+          "L07"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "geometry",
+          "--label",
+          "batch_l07_kernel"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "branch",
+          "--label",
+          "batch_l07_branch"
+        ]
+      ]
+    },
+    {
+      "id": "L08",
+      "card": "Expose bridge_app.connect(input_path, output) and python bridge_cli.py connect --input <record.json> --output <new-directory>, reusing L06/L07. Return compact <=4096-byte JSON, status connection_ready for fully checked complete fits; explicit offline scope and game_constructed:false. Reuse run.json atomic publication, output protection, saved artifact hashes, status and verify. Extend the existing versioned record validation for connection mode/outcomes without breaking old design/mock records; reuse fixture.json,context.json,search.json,candidate.json,summary.json filenames. Save full geometry, checks, input identity, implementation hashes (including loaded geometry helpers), source/project/assumption distinctions and supported domain. Preserve honest unsupported, invalid, failed-check, complete-no-candidate, budget-exhausted and interrupted outcomes; missing/corrupt records unavailable. No calls to corridor design/search, adapters or mock execution for connect; fresh status/verify never import geometry/search. Add tests/test_connection_app.py including new CLI/API, fresh-process status/verify, failed/incomplete runs, tamper/missing artifacts, output refusal, compact output and forbidden engine/adapter calls. Preserve all existing corridor commands/tests. Document commands, domain, independent-check scope, limitations and usage in USAGE.md. No new feature beyond integration. Update short STATE.md and stop after host acceptance.",
+      "pointers": [
+        "bridge_app.py:design,inspect_run,atomic_json,initial_summary",
+        "bridge_cli.py:main,emit",
+        "bridge_connection.py:validate_connection,fit_connection",
+        "tools/connection_acceptance.py:application_checks",
+        "tests/test_cli.py:CliTests,WrapperTests",
+        "connection_example.json",
+        "USAGE.md",
+        "STATE.md"
+      ],
+      "write_files": [
+        "bridge_app.py",
+        "bridge_cli.py",
+        "tests/test_connection_app.py",
+        "USAGE.md",
+        "STATE.md"
+      ],
+      "acceptance": [
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_input",
+          "--label",
+          "batch_l08_input"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_geometry",
+          "--label",
+          "batch_l08_geometry"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_application",
+          "--label",
+          "batch_l08_app"
+        ],
+        [
+          "python",
+          "tools/connection_acceptance.py",
+          "--task",
+          "L08"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "application",
+          "--label",
+          "batch_l08_regression"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "geometry",
+          "--label",
+          "batch_l08_kernel"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "branch",
+          "--label",
+          "batch_l08_branch"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "corridor",
+          "--label",
+          "batch_l08_corridor"
+        ]
+      ]
+    }
+  ]
+}

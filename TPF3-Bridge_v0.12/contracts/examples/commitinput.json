@@ -1,0 +1,6 @@
+{
+  "plan_ref": "example-plan",
+  "expected_plan_hash": "406089e88fcc1e996fa6e3760a80a865a85eb33f8efe28db9b2bd52163ca3ae3",
+  "approval_ref": "example-host-approval",
+  "request_key": "commit-1"
+}

@@ -1,0 +1,33 @@
+{
+  "assessments": {
+    "3D_dynamics_and_cant": "not_implemented",
+    "actual_bogie_spacing": "unresolved",
+    "authentic_UK_turnout_import": "not_acquired",
+    "authentic_vehicle_gauge": "unassessed",
+    "component_geometry_import_path": "restricted_synthetic_three_port_contract_executed",
+    "game": "not_tested",
+    "planar_rigid_body_model": "executed",
+    "polyline_between_pose_bound": "executed"
+  },
+  "crossover_pair_studies": 3,
+  "crossover_statuses": [
+    "clear_within_polyline_static_model",
+    "sampled_body_contact",
+    "sampled_body_contact"
+  ],
+  "fixture_hash": "e5c8c507aa49ce4f7e50f70b3524decb31c25b2014185e841834f786bf266bf6",
+  "formation_length_trials": 2,
+  "obstacle_status": "sampled_body_contact",
+  "refinement_statuses": [
+    "unresolved_between_poses",
+    "clear_within_polyline_static_model"
+  ],
+  "resource_mutations": [],
+  "schema_version": "0.5.0",
+  "source_compile_hashes": [
+    "8957ebbf1a9e24307ff3d2de66e18a03b58baaa9ce38ed656b6ac38a6699a0db",
+    "6ccfcfacc283c67c42a99f4759807208bf6b61086fc6abee7725843dc14d63d2"
+  ],
+  "spacing_rows": 18,
+  "vehicle_record_hash": "40bdbe8de0c14359c11f282436b095d693d302a12ca54047133af4bda641e331"
+}

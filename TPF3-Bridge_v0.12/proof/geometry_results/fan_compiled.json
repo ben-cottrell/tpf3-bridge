@@ -1,0 +1,4855 @@
+{
+  "schema_version": "0.3.0",
+  "source_hash": "7bec1c0c58eef5b86557c2cdae76f7283b59901426ea34ecd43400f6dfca1566",
+  "compile_hash": "d26c139b485a068855d537736eb71ca7c3feaae7d265086fb90858941ced929e",
+  "routes": {
+    "P1:in": {
+      "id": "P1:in",
+      "start": "APPROACH",
+      "end": "BERTH_P1",
+      "edge_ids": [
+        "spine_0",
+        "F1:normal",
+        "spine_1",
+        "F2:normal",
+        "spine_2",
+        "F3:normal",
+        "lead_P1"
+      ],
+      "length_lower_m": 654.9999999300001,
+      "length_upper_m": 655.0000000699999,
+      "requirements": [
+        {
+          "resource": "component_body:F1",
+          "state": null
+        },
+        {
+          "resource": "component_body:F2",
+          "state": null
+        },
+        {
+          "resource": "component_body:F3",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "state": "N"
+        },
+        {
+          "resource": "control:F2",
+          "state": "N"
+        },
+        {
+          "resource": "control:F3",
+          "state": "N"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|diagonal_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:normal|diagonal_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:normal|lead_P1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:normal|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:reverse|lead_P1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:reverse|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_1|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_2|lead_P1",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P1|storage_P1",
+          "state": null
+        },
+        {
+          "resource": "track:F1:normal",
+          "state": null
+        },
+        {
+          "resource": "track:F2:normal",
+          "state": null
+        },
+        {
+          "resource": "track:F3:normal",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P1",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null
+        },
+        {
+          "resource": "track:spine_1",
+          "state": null
+        },
+        {
+          "resource": "track:spine_2",
+          "state": null
+        }
+      ],
+      "source_hash": "7bec1c0c58eef5b86557c2cdae76f7283b59901426ea34ecd43400f6dfca1566",
+      "segments": [
+        {
+          "edge_id": "spine_0",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            49.99999999,
+            50.00000001
+          ]
+        },
+        {
+          "edge_id": "F1:normal",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            49.99999999,
+            50.00000001
+          ],
+          "exit_chainage_interval_m": [
+            99.99999998,
+            100.00000002
+          ]
+        },
+        {
+          "edge_id": "spine_1",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            99.99999998,
+            100.00000002
+          ],
+          "exit_chainage_interval_m": [
+            199.99999997,
+            200.00000003
+          ]
+        },
+        {
+          "edge_id": "F2:normal",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            199.99999997,
+            200.00000003
+          ],
+          "exit_chainage_interval_m": [
+            249.99999996,
+            250.00000004
+          ]
+        },
+        {
+          "edge_id": "spine_2",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            249.99999996,
+            250.00000004
+          ],
+          "exit_chainage_interval_m": [
+            349.99999995,
+            350.00000005
+          ]
+        },
+        {
+          "edge_id": "F3:normal",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            349.99999995,
+            350.00000005
+          ],
+          "exit_chainage_interval_m": [
+            399.99999994,
+            400.00000006
+          ]
+        },
+        {
+          "edge_id": "lead_P1",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            399.99999994,
+            400.00000006
+          ],
+          "exit_chainage_interval_m": [
+            654.9999999300001,
+            655.0000000699999
+          ]
+        }
+      ]
+    },
+    "P1:out": {
+      "id": "P1:out",
+      "start": "BERTH_P1",
+      "end": "APPROACH",
+      "edge_ids": [
+        "lead_P1",
+        "F3:normal",
+        "spine_2",
+        "F2:normal",
+        "spine_1",
+        "F1:normal",
+        "spine_0"
+      ],
+      "length_lower_m": 654.99999993,
+      "length_upper_m": 655.00000007,
+      "requirements": [
+        {
+          "resource": "component_body:F1",
+          "state": null
+        },
+        {
+          "resource": "component_body:F2",
+          "state": null
+        },
+        {
+          "resource": "component_body:F3",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "state": "N"
+        },
+        {
+          "resource": "control:F2",
+          "state": "N"
+        },
+        {
+          "resource": "control:F3",
+          "state": "N"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|diagonal_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:normal|diagonal_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:normal|lead_P1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:normal|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:reverse|lead_P1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:reverse|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_1|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_2|lead_P1",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P1|storage_P1",
+          "state": null
+        },
+        {
+          "resource": "track:F1:normal",
+          "state": null
+        },
+        {
+          "resource": "track:F2:normal",
+          "state": null
+        },
+        {
+          "resource": "track:F3:normal",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P1",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null
+        },
+        {
+          "resource": "track:spine_1",
+          "state": null
+        },
+        {
+          "resource": "track:spine_2",
+          "state": null
+        }
+      ],
+      "source_hash": "7bec1c0c58eef5b86557c2cdae76f7283b59901426ea34ecd43400f6dfca1566",
+      "segments": [
+        {
+          "edge_id": "lead_P1",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            254.99999999,
+            255.00000001
+          ]
+        },
+        {
+          "edge_id": "F3:normal",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            254.99999999,
+            255.00000001
+          ],
+          "exit_chainage_interval_m": [
+            304.99999998,
+            305.00000002
+          ]
+        },
+        {
+          "edge_id": "spine_2",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            304.99999998,
+            305.00000002
+          ],
+          "exit_chainage_interval_m": [
+            404.99999997,
+            405.00000003
+          ]
+        },
+        {
+          "edge_id": "F2:normal",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            404.99999997,
+            405.00000003
+          ],
+          "exit_chainage_interval_m": [
+            454.99999995999997,
+            455.00000004000003
+          ]
+        },
+        {
+          "edge_id": "spine_1",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            454.99999995999997,
+            455.00000004000003
+          ],
+          "exit_chainage_interval_m": [
+            554.99999995,
+            555.00000005
+          ]
+        },
+        {
+          "edge_id": "F1:normal",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            554.99999995,
+            555.00000005
+          ],
+          "exit_chainage_interval_m": [
+            604.99999994,
+            605.00000006
+          ]
+        },
+        {
+          "edge_id": "spine_0",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            604.99999994,
+            605.00000006
+          ],
+          "exit_chainage_interval_m": [
+            654.99999993,
+            655.00000007
+          ]
+        }
+      ]
+    },
+    "P2:in": {
+      "id": "P2:in",
+      "start": "APPROACH",
+      "end": "BERTH_P2",
+      "edge_ids": [
+        "spine_0",
+        "F1:normal",
+        "spine_1",
+        "F2:normal",
+        "spine_2",
+        "F3:reverse",
+        "diagonal_2",
+        "return_2",
+        "lead_P2"
+      ],
+      "length_lower_m": 655.5344334150722,
+      "length_upper_m": 655.5345670036144,
+      "requirements": [
+        {
+          "resource": "component_body:F1",
+          "state": null
+        },
+        {
+          "resource": "component_body:F2",
+          "state": null
+        },
+        {
+          "resource": "component_body:F3",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "state": "N"
+        },
+        {
+          "resource": "control:F2",
+          "state": "N"
+        },
+        {
+          "resource": "control:F3",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|diagonal_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:normal|diagonal_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:normal|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:reverse|diagonal_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:reverse|lead_P1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:reverse|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_1|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_2|lead_P1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_2|return_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P2|return_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P2|storage_P2",
+          "state": null
+        },
+        {
+          "resource": "track:F1:normal",
+          "state": null
+        },
+        {
+          "resource": "track:F2:normal",
+          "state": null
+        },
+        {
+          "resource": "track:F3:reverse",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_2",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P2",
+          "state": null
+        },
+        {
+          "resource": "track:return_2",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null
+        },
+        {
+          "resource": "track:spine_1",
+          "state": null
+        },
+        {
+          "resource": "track:spine_2",
+          "state": null
+        }
+      ],
+      "source_hash": "7bec1c0c58eef5b86557c2cdae76f7283b59901426ea34ecd43400f6dfca1566",
+      "segments": [
+        {
+          "edge_id": "spine_0",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            49.99999999,
+            50.00000001
+          ]
+        },
+        {
+          "edge_id": "F1:normal",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            49.99999999,
+            50.00000001
+          ],
+          "exit_chainage_interval_m": [
+            99.99999998,
+            100.00000002
+          ]
+        },
+        {
+          "edge_id": "spine_1",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            99.99999998,
+            100.00000002
+          ],
+          "exit_chainage_interval_m": [
+            199.99999997,
+            200.00000003
+          ]
+        },
+        {
+          "edge_id": "F2:normal",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            199.99999997,
+            200.00000003
+          ],
+          "exit_chainage_interval_m": [
+            249.99999996,
+            250.00000004
+          ]
+        },
+        {
+          "edge_id": "spine_2",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            249.99999996,
+            250.00000004
+          ],
+          "exit_chainage_interval_m": [
+            349.99999995,
+            350.00000005
+          ]
+        },
+        {
+          "edge_id": "F3:reverse",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            349.99999995,
+            350.00000005
+          ],
+          "exit_chainage_interval_m": [
+            400.09265201861297,
+            400.09271884288404
+          ]
+        },
+        {
+          "edge_id": "diagonal_2",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            400.09265201861297,
+            400.09271884288404
+          ],
+          "exit_chainage_interval_m": [
+            470.4417813564592,
+            470.44184820073025
+          ]
+        },
+        {
+          "edge_id": "return_2",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            470.4417813564592,
+            470.44184820073025
+          ],
+          "exit_chainage_interval_m": [
+            520.5344334250722,
+            520.5345669936144
+          ]
+        },
+        {
+          "edge_id": "lead_P2",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            520.5344334250722,
+            520.5345669936144
+          ],
+          "exit_chainage_interval_m": [
+            655.5344334150722,
+            655.5345670036144
+          ]
+        }
+      ]
+    },
+    "P2:out": {
+      "id": "P2:out",
+      "start": "BERTH_P2",
+      "end": "APPROACH",
+      "edge_ids": [
+        "lead_P2",
+        "return_2",
+        "diagonal_2",
+        "F3:reverse",
+        "spine_2",
+        "F2:normal",
+        "spine_1",
+        "F1:normal",
+        "spine_0"
+      ],
+      "length_lower_m": 655.534433415072,
+      "length_upper_m": 655.5345670036144,
+      "requirements": [
+        {
+          "resource": "component_body:F1",
+          "state": null
+        },
+        {
+          "resource": "component_body:F2",
+          "state": null
+        },
+        {
+          "resource": "component_body:F3",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "state": "N"
+        },
+        {
+          "resource": "control:F2",
+          "state": "N"
+        },
+        {
+          "resource": "control:F3",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|diagonal_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:normal|diagonal_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:normal|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:reverse|diagonal_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:reverse|lead_P1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F3:reverse|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_1|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_2|lead_P1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_2|return_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P2|return_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P2|storage_P2",
+          "state": null
+        },
+        {
+          "resource": "track:F1:normal",
+          "state": null
+        },
+        {
+          "resource": "track:F2:normal",
+          "state": null
+        },
+        {
+          "resource": "track:F3:reverse",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_2",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P2",
+          "state": null
+        },
+        {
+          "resource": "track:return_2",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null
+        },
+        {
+          "resource": "track:spine_1",
+          "state": null
+        },
+        {
+          "resource": "track:spine_2",
+          "state": null
+        }
+      ],
+      "source_hash": "7bec1c0c58eef5b86557c2cdae76f7283b59901426ea34ecd43400f6dfca1566",
+      "segments": [
+        {
+          "edge_id": "lead_P2",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            134.99999999,
+            135.00000001
+          ]
+        },
+        {
+          "edge_id": "return_2",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            134.99999999,
+            135.00000001
+          ],
+          "exit_chainage_interval_m": [
+            185.0926520586129,
+            185.09271880288406
+          ]
+        },
+        {
+          "edge_id": "diagonal_2",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            185.0926520586129,
+            185.09271880288406
+          ],
+          "exit_chainage_interval_m": [
+            255.44178139645913,
+            255.44184816073027
+          ]
+        },
+        {
+          "edge_id": "F3:reverse",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            255.44178139645913,
+            255.44184816073027
+          ],
+          "exit_chainage_interval_m": [
+            305.5344334650721,
+            305.53456695361433
+          ]
+        },
+        {
+          "edge_id": "spine_2",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            305.5344334650721,
+            305.53456695361433
+          ],
+          "exit_chainage_interval_m": [
+            405.5344334550721,
+            405.53456696361434
+          ]
+        },
+        {
+          "edge_id": "F2:normal",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            405.5344334550721,
+            405.53456696361434
+          ],
+          "exit_chainage_interval_m": [
+            455.53443344507207,
+            455.53456697361435
+          ]
+        },
+        {
+          "edge_id": "spine_1",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            455.53443344507207,
+            455.53456697361435
+          ],
+          "exit_chainage_interval_m": [
+            555.5344334350721,
+            555.5345669836144
+          ]
+        },
+        {
+          "edge_id": "F1:normal",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            555.5344334350721,
+            555.5345669836144
+          ],
+          "exit_chainage_interval_m": [
+            605.534433425072,
+            605.5345669936144
+          ]
+        },
+        {
+          "edge_id": "spine_0",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            605.534433425072,
+            605.5345669936144
+          ],
+          "exit_chainage_interval_m": [
+            655.534433415072,
+            655.5345670036144
+          ]
+        }
+      ]
+    },
+    "P3:in": {
+      "id": "P3:in",
+      "start": "APPROACH",
+      "end": "BERTH_P3",
+      "edge_ids": [
+        "spine_0",
+        "F1:normal",
+        "spine_1",
+        "F2:reverse",
+        "diagonal_1",
+        "return_1",
+        "lead_P3"
+      ],
+      "length_lower_m": 656.1329408885229,
+      "length_upper_m": 656.133074437065,
+      "requirements": [
+        {
+          "resource": "component_body:F1",
+          "state": null
+        },
+        {
+          "resource": "component_body:F2",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "state": "N"
+        },
+        {
+          "resource": "control:F2",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|diagonal_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|diagonal_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_1|return_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_1|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P3|return_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P3|storage_P3",
+          "state": null
+        },
+        {
+          "resource": "track:F1:normal",
+          "state": null
+        },
+        {
+          "resource": "track:F2:reverse",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_1",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P3",
+          "state": null
+        },
+        {
+          "resource": "track:return_1",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null
+        },
+        {
+          "resource": "track:spine_1",
+          "state": null
+        }
+      ],
+      "source_hash": "7bec1c0c58eef5b86557c2cdae76f7283b59901426ea34ecd43400f6dfca1566",
+      "segments": [
+        {
+          "edge_id": "spine_0",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            49.99999999,
+            50.00000001
+          ]
+        },
+        {
+          "edge_id": "F1:normal",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            49.99999999,
+            50.00000001
+          ],
+          "exit_chainage_interval_m": [
+            99.99999998,
+            100.00000002
+          ]
+        },
+        {
+          "edge_id": "spine_1",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            99.99999998,
+            100.00000002
+          ],
+          "exit_chainage_interval_m": [
+            199.99999997,
+            200.00000003
+          ]
+        },
+        {
+          "edge_id": "F2:reverse",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            199.99999997,
+            200.00000003
+          ],
+          "exit_chainage_interval_m": [
+            250.09265203861293,
+            250.09271882288405
+          ]
+        },
+        {
+          "edge_id": "diagonal_1",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            250.09265203861293,
+            250.09271882288405
+          ],
+          "exit_chainage_interval_m": [
+            441.04028882990985,
+            441.04035563418097
+          ]
+        },
+        {
+          "edge_id": "return_1",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            441.04028882990985,
+            441.04035563418097
+          ],
+          "exit_chainage_interval_m": [
+            491.1329408985228,
+            491.133074427065
+          ]
+        },
+        {
+          "edge_id": "lead_P3",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            491.1329408985228,
+            491.133074427065
+          ],
+          "exit_chainage_interval_m": [
+            656.1329408885229,
+            656.133074437065
+          ]
+        }
+      ]
+    },
+    "P3:out": {
+      "id": "P3:out",
+      "start": "BERTH_P3",
+      "end": "APPROACH",
+      "edge_ids": [
+        "lead_P3",
+        "return_1",
+        "diagonal_1",
+        "F2:reverse",
+        "spine_1",
+        "F1:normal",
+        "spine_0"
+      ],
+      "length_lower_m": 656.1329408885227,
+      "length_upper_m": 656.133074437065,
+      "requirements": [
+        {
+          "resource": "component_body:F1",
+          "state": null
+        },
+        {
+          "resource": "component_body:F2",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "state": "N"
+        },
+        {
+          "resource": "control:F2",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|diagonal_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:normal|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|diagonal_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:F2:reverse|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_1|return_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_1|spine_2",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P3|return_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P3|storage_P3",
+          "state": null
+        },
+        {
+          "resource": "track:F1:normal",
+          "state": null
+        },
+        {
+          "resource": "track:F2:reverse",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_1",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P3",
+          "state": null
+        },
+        {
+          "resource": "track:return_1",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null
+        },
+        {
+          "resource": "track:spine_1",
+          "state": null
+        }
+      ],
+      "source_hash": "7bec1c0c58eef5b86557c2cdae76f7283b59901426ea34ecd43400f6dfca1566",
+      "segments": [
+        {
+          "edge_id": "lead_P3",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            164.99999999,
+            165.00000001
+          ]
+        },
+        {
+          "edge_id": "return_1",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            164.99999999,
+            165.00000001
+          ],
+          "exit_chainage_interval_m": [
+            215.0926520586129,
+            215.09271880288406
+          ]
+        },
+        {
+          "edge_id": "diagonal_1",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            215.0926520586129,
+            215.09271880288406
+          ],
+          "exit_chainage_interval_m": [
+            406.0402888499098,
+            406.04035561418095
+          ]
+        },
+        {
+          "edge_id": "F2:reverse",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            406.0402888499098,
+            406.04035561418095
+          ],
+          "exit_chainage_interval_m": [
+            456.13294091852276,
+            456.133074407065
+          ]
+        },
+        {
+          "edge_id": "spine_1",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            456.13294091852276,
+            456.133074407065
+          ],
+          "exit_chainage_interval_m": [
+            556.1329409085228,
+            556.133074417065
+          ]
+        },
+        {
+          "edge_id": "F1:normal",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            556.1329409085228,
+            556.133074417065
+          ],
+          "exit_chainage_interval_m": [
+            606.1329408985227,
+            606.133074427065
+          ]
+        },
+        {
+          "edge_id": "spine_0",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            606.1329408985227,
+            606.133074427065
+          ],
+          "exit_chainage_interval_m": [
+            656.1329408885227,
+            656.133074437065
+          ]
+        }
+      ]
+    },
+    "P4:in": {
+      "id": "P4:in",
+      "start": "APPROACH",
+      "end": "BERTH_P4",
+      "edge_ids": [
+        "spine_0",
+        "F1:reverse",
+        "diagonal_0",
+        "return_0",
+        "lead_P4"
+      ],
+      "length_lower_m": 656.7314483619734,
+      "length_upper_m": 656.7315818705158,
+      "requirements": [
+        {
+          "resource": "component_body:F1",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null
+        }
+      ],
+      "source_hash": "7bec1c0c58eef5b86557c2cdae76f7283b59901426ea34ecd43400f6dfca1566",
+      "segments": [
+        {
+          "edge_id": "spine_0",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            49.99999999,
+            50.00000001
+          ]
+        },
+        {
+          "edge_id": "F1:reverse",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            49.99999999,
+            50.00000001
+          ],
+          "exit_chainage_interval_m": [
+            100.09265205861293,
+            100.09271880288406
+          ]
+        },
+        {
+          "edge_id": "diagonal_0",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            100.09265205861293,
+            100.09271880288406
+          ],
+          "exit_chainage_interval_m": [
+            411.63879630336055,
+            411.6388630676317
+          ]
+        },
+        {
+          "edge_id": "return_0",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            411.63879630336055,
+            411.6388630676317
+          ],
+          "exit_chainage_interval_m": [
+            461.7314483719735,
+            461.73158186051575
+          ]
+        },
+        {
+          "edge_id": "lead_P4",
+          "forward": true,
+          "entry_chainage_interval_m": [
+            461.7314483719735,
+            461.73158186051575
+          ],
+          "exit_chainage_interval_m": [
+            656.7314483619734,
+            656.7315818705158
+          ]
+        }
+      ]
+    },
+    "P4:out": {
+      "id": "P4:out",
+      "start": "BERTH_P4",
+      "end": "APPROACH",
+      "edge_ids": [
+        "lead_P4",
+        "return_0",
+        "diagonal_0",
+        "F1:reverse",
+        "spine_0"
+      ],
+      "length_lower_m": 656.7314483619734,
+      "length_upper_m": 656.7315818705158,
+      "requirements": [
+        {
+          "resource": "component_body:F1",
+          "state": null
+        },
+        {
+          "resource": "control:F1",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null
+        }
+      ],
+      "source_hash": "7bec1c0c58eef5b86557c2cdae76f7283b59901426ea34ecd43400f6dfca1566",
+      "segments": [
+        {
+          "edge_id": "lead_P4",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            0.0,
+            0.0
+          ],
+          "exit_chainage_interval_m": [
+            194.99999999,
+            195.00000001
+          ]
+        },
+        {
+          "edge_id": "return_0",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            194.99999999,
+            195.00000001
+          ],
+          "exit_chainage_interval_m": [
+            245.0926520586129,
+            245.09271880288406
+          ]
+        },
+        {
+          "edge_id": "diagonal_0",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            245.0926520586129,
+            245.09271880288406
+          ],
+          "exit_chainage_interval_m": [
+            556.6387963033606,
+            556.6388630676317
+          ]
+        },
+        {
+          "edge_id": "F1:reverse",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            556.6387963033606,
+            556.6388630676317
+          ],
+          "exit_chainage_interval_m": [
+            606.7314483719734,
+            606.7315818605158
+          ]
+        },
+        {
+          "edge_id": "spine_0",
+          "forward": false,
+          "entry_chainage_interval_m": [
+            606.7314483719734,
+            606.7315818605158
+          ],
+          "exit_chainage_interval_m": [
+            656.7314483619734,
+            656.7315818705158
+          ]
+        }
+      ]
+    }
+  },
+  "edge_requirements": {
+    "F1:normal": [
+      {
+        "resource": "component_body:F1",
+        "state": null
+      },
+      {
+        "resource": "control:F1",
+        "state": "N"
+      },
+      {
+        "resource": "proximity:F1:normal|diagonal_0",
+        "state": null
+      },
+      {
+        "resource": "proximity:F1:normal|spine_0",
+        "state": null
+      },
+      {
+        "resource": "proximity:F1:normal|spine_1",
+        "state": null
+      },
+      {
+        "resource": "track:F1:normal",
+        "state": null
+      }
+    ],
+    "F1:reverse": [
+      {
+        "resource": "component_body:F1",
+        "state": null
+      },
+      {
+        "resource": "control:F1",
+        "state": "R"
+      },
+      {
+        "resource": "proximity:F1:reverse|diagonal_0",
+        "state": null
+      },
+      {
+        "resource": "proximity:F1:reverse|spine_0",
+        "state": null
+      },
+      {
+        "resource": "proximity:F1:reverse|spine_1",
+        "state": null
+      },
+      {
+        "resource": "track:F1:reverse",
+        "state": null
+      }
+    ],
+    "F2:normal": [
+      {
+        "resource": "component_body:F2",
+        "state": null
+      },
+      {
+        "resource": "control:F2",
+        "state": "N"
+      },
+      {
+        "resource": "proximity:F2:normal|diagonal_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:F2:normal|spine_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:F2:normal|spine_2",
+        "state": null
+      },
+      {
+        "resource": "track:F2:normal",
+        "state": null
+      }
+    ],
+    "F2:reverse": [
+      {
+        "resource": "component_body:F2",
+        "state": null
+      },
+      {
+        "resource": "control:F2",
+        "state": "R"
+      },
+      {
+        "resource": "proximity:F2:reverse|diagonal_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:F2:reverse|spine_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:F2:reverse|spine_2",
+        "state": null
+      },
+      {
+        "resource": "track:F2:reverse",
+        "state": null
+      }
+    ],
+    "F3:normal": [
+      {
+        "resource": "component_body:F3",
+        "state": null
+      },
+      {
+        "resource": "control:F3",
+        "state": "N"
+      },
+      {
+        "resource": "proximity:F3:normal|diagonal_2",
+        "state": null
+      },
+      {
+        "resource": "proximity:F3:normal|lead_P1",
+        "state": null
+      },
+      {
+        "resource": "proximity:F3:normal|spine_2",
+        "state": null
+      },
+      {
+        "resource": "track:F3:normal",
+        "state": null
+      }
+    ],
+    "F3:reverse": [
+      {
+        "resource": "component_body:F3",
+        "state": null
+      },
+      {
+        "resource": "control:F3",
+        "state": "R"
+      },
+      {
+        "resource": "proximity:F3:reverse|diagonal_2",
+        "state": null
+      },
+      {
+        "resource": "proximity:F3:reverse|lead_P1",
+        "state": null
+      },
+      {
+        "resource": "proximity:F3:reverse|spine_2",
+        "state": null
+      },
+      {
+        "resource": "track:F3:reverse",
+        "state": null
+      }
+    ],
+    "diagonal_0": [
+      {
+        "resource": "proximity:F1:normal|diagonal_0",
+        "state": null
+      },
+      {
+        "resource": "proximity:F1:reverse|diagonal_0",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal_0|return_0",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal_0|spine_1",
+        "state": null
+      },
+      {
+        "resource": "track:diagonal_0",
+        "state": null
+      }
+    ],
+    "diagonal_1": [
+      {
+        "resource": "proximity:F2:normal|diagonal_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:F2:reverse|diagonal_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal_1|return_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal_1|spine_2",
+        "state": null
+      },
+      {
+        "resource": "track:diagonal_1",
+        "state": null
+      }
+    ],
+    "diagonal_2": [
+      {
+        "resource": "proximity:F3:normal|diagonal_2",
+        "state": null
+      },
+      {
+        "resource": "proximity:F3:reverse|diagonal_2",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal_2|lead_P1",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal_2|return_2",
+        "state": null
+      },
+      {
+        "resource": "track:diagonal_2",
+        "state": null
+      }
+    ],
+    "lead_P1": [
+      {
+        "resource": "proximity:F3:normal|lead_P1",
+        "state": null
+      },
+      {
+        "resource": "proximity:F3:reverse|lead_P1",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal_2|lead_P1",
+        "state": null
+      },
+      {
+        "resource": "proximity:lead_P1|storage_P1",
+        "state": null
+      },
+      {
+        "resource": "track:lead_P1",
+        "state": null
+      }
+    ],
+    "lead_P2": [
+      {
+        "resource": "proximity:lead_P2|return_2",
+        "state": null
+      },
+      {
+        "resource": "proximity:lead_P2|storage_P2",
+        "state": null
+      },
+      {
+        "resource": "track:lead_P2",
+        "state": null
+      }
+    ],
+    "lead_P3": [
+      {
+        "resource": "proximity:lead_P3|return_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:lead_P3|storage_P3",
+        "state": null
+      },
+      {
+        "resource": "track:lead_P3",
+        "state": null
+      }
+    ],
+    "lead_P4": [
+      {
+        "resource": "proximity:lead_P4|return_0",
+        "state": null
+      },
+      {
+        "resource": "proximity:lead_P4|storage_P4",
+        "state": null
+      },
+      {
+        "resource": "track:lead_P4",
+        "state": null
+      }
+    ],
+    "return_0": [
+      {
+        "resource": "proximity:diagonal_0|return_0",
+        "state": null
+      },
+      {
+        "resource": "proximity:lead_P4|return_0",
+        "state": null
+      },
+      {
+        "resource": "track:return_0",
+        "state": null
+      }
+    ],
+    "return_1": [
+      {
+        "resource": "proximity:diagonal_1|return_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:lead_P3|return_1",
+        "state": null
+      },
+      {
+        "resource": "track:return_1",
+        "state": null
+      }
+    ],
+    "return_2": [
+      {
+        "resource": "proximity:diagonal_2|return_2",
+        "state": null
+      },
+      {
+        "resource": "proximity:lead_P2|return_2",
+        "state": null
+      },
+      {
+        "resource": "track:return_2",
+        "state": null
+      }
+    ],
+    "spine_0": [
+      {
+        "resource": "proximity:F1:normal|spine_0",
+        "state": null
+      },
+      {
+        "resource": "proximity:F1:reverse|spine_0",
+        "state": null
+      },
+      {
+        "resource": "track:spine_0",
+        "state": null
+      }
+    ],
+    "spine_1": [
+      {
+        "resource": "proximity:F1:normal|spine_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:F1:reverse|spine_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:F2:normal|spine_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:F2:reverse|spine_1",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal_0|spine_1",
+        "state": null
+      },
+      {
+        "resource": "track:spine_1",
+        "state": null
+      }
+    ],
+    "spine_2": [
+      {
+        "resource": "proximity:F2:normal|spine_2",
+        "state": null
+      },
+      {
+        "resource": "proximity:F2:reverse|spine_2",
+        "state": null
+      },
+      {
+        "resource": "proximity:F3:normal|spine_2",
+        "state": null
+      },
+      {
+        "resource": "proximity:F3:reverse|spine_2",
+        "state": null
+      },
+      {
+        "resource": "proximity:diagonal_1|spine_2",
+        "state": null
+      },
+      {
+        "resource": "track:spine_2",
+        "state": null
+      }
+    ],
+    "storage_P1": [
+      {
+        "resource": "proximity:lead_P1|storage_P1",
+        "state": null
+      },
+      {
+        "resource": "track:storage_P1",
+        "state": null
+      }
+    ],
+    "storage_P2": [
+      {
+        "resource": "proximity:lead_P2|storage_P2",
+        "state": null
+      },
+      {
+        "resource": "track:storage_P2",
+        "state": null
+      }
+    ],
+    "storage_P3": [
+      {
+        "resource": "proximity:lead_P3|storage_P3",
+        "state": null
+      },
+      {
+        "resource": "track:storage_P3",
+        "state": null
+      }
+    ],
+    "storage_P4": [
+      {
+        "resource": "proximity:lead_P4|storage_P4",
+        "state": null
+      },
+      {
+        "resource": "track:storage_P4",
+        "state": null
+      }
+    ]
+  },
+  "platforms": {
+    "P1": {
+      "id": "P1",
+      "label": "1",
+      "bank": "A",
+      "usable_length_m": 260.0,
+      "margin_each_end_m": 5.0,
+      "marker_port": "BERTH_P1",
+      "storage_edge": "storage_P1",
+      "boarding_interval_x_m": [
+        650.0,
+        910.0
+      ],
+      "stop_mode": "rear_at_entry_marker; front=marker+train_length; synthetic"
+    },
+    "P2": {
+      "id": "P2",
+      "label": "2",
+      "bank": "A",
+      "usable_length_m": 260.0,
+      "margin_each_end_m": 5.0,
+      "marker_port": "BERTH_P2",
+      "storage_edge": "storage_P2",
+      "boarding_interval_x_m": [
+        650.0,
+        910.0
+      ],
+      "stop_mode": "rear_at_entry_marker; front=marker+train_length; synthetic"
+    },
+    "P3": {
+      "id": "P3",
+      "label": "3",
+      "bank": "A",
+      "usable_length_m": 260.0,
+      "margin_each_end_m": 5.0,
+      "marker_port": "BERTH_P3",
+      "storage_edge": "storage_P3",
+      "boarding_interval_x_m": [
+        650.0,
+        910.0
+      ],
+      "stop_mode": "rear_at_entry_marker; front=marker+train_length; synthetic"
+    },
+    "P4": {
+      "id": "P4",
+      "label": "4",
+      "bank": "A",
+      "usable_length_m": 260.0,
+      "margin_each_end_m": 5.0,
+      "marker_port": "BERTH_P4",
+      "storage_edge": "storage_P4",
+      "boarding_interval_x_m": [
+        650.0,
+        910.0
+      ],
+      "stop_mode": "rear_at_entry_marker; front=marker+train_length; synthetic"
+    }
+  },
+  "provenance": {
+    "network": {
+      "schema_version": "0.3.0",
+      "fidelity": "synthetic_eased_components",
+      "id": "synthetic_platform_bank",
+      "metadata": {
+        "pattern": "single_spine_platform_fan",
+        "spec": {
+          "platform_count": 4,
+          "spacing_m": 12.0,
+          "turnout_span_m": 50.0,
+          "branch_slope": 0.1,
+          "first_toe_x_m": 50.0,
+          "toe_step_m": 150.0,
+          "platform_start_x_m": 650.0,
+          "boarding_length_m": 260.0,
+          "margin_m": 5.0,
+          "site_end_x_m": 1000.0
+        },
+        "profile": {
+          "minimum_radius_m": 300.0,
+          "envelope_half_width_m": 1.75,
+          "envelope_gap_m": 0.5,
+          "flatness_m": 0.01,
+          "length_gap_m": 0.0001,
+          "fidelity": "synthetic"
+        },
+        "catalogue": "SYNTH_EASED_1",
+        "vertical_profile": "level",
+        "cant_mm": 0,
+        "scope": "one bidirectional approach, not the v0.2 four-track station brief",
+        "last_fan_curve_end_x_m": 520.0
+      },
+      "ports": [
+        {
+          "id": "APPROACH",
+          "position_m": [
+            0.0,
+            0.0
+          ],
+          "role": "external"
+        },
+        {
+          "id": "BERTH_P1",
+          "position_m": [
+            655.0,
+            0.0
+          ],
+          "role": "berth_rear_stop_marker"
+        },
+        {
+          "id": "BERTH_P2",
+          "position_m": [
+            655.0,
+            12.0
+          ],
+          "role": "berth_rear_stop_marker"
+        },
+        {
+          "id": "BERTH_P3",
+          "position_m": [
+            655.0,
+            24.0
+          ],
+          "role": "berth_rear_stop_marker"
+        },
+        {
+          "id": "BERTH_P4",
+          "position_m": [
+            655.0,
+            36.0
+          ],
+          "role": "berth_rear_stop_marker"
+        },
+        {
+          "id": "BUFFER_P1",
+          "position_m": [
+            910.0,
+            0.0
+          ],
+          "role": "terminal_limit"
+        },
+        {
+          "id": "BUFFER_P2",
+          "position_m": [
+            910.0,
+            12.0
+          ],
+          "role": "terminal_limit"
+        },
+        {
+          "id": "BUFFER_P3",
+          "position_m": [
+            910.0,
+            24.0
+          ],
+          "role": "terminal_limit"
+        },
+        {
+          "id": "BUFFER_P4",
+          "position_m": [
+            910.0,
+            36.0
+          ],
+          "role": "terminal_limit"
+        },
+        {
+          "id": "F1:N",
+          "position_m": [
+            100.0,
+            0.0
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "F1:R",
+          "position_m": [
+            100.0,
+            2.5
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "F1:T",
+          "position_m": [
+            50.0,
+            0.0
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "F2:N",
+          "position_m": [
+            250.0,
+            0.0
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "F2:R",
+          "position_m": [
+            250.0,
+            2.5
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "F2:T",
+          "position_m": [
+            200.0,
+            0.0
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "F3:N",
+          "position_m": [
+            400.0,
+            0.0
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "F3:R",
+          "position_m": [
+            400.0,
+            2.5
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "F3:T",
+          "position_m": [
+            350.0,
+            0.0
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "return_0:end",
+          "position_m": [
+            460.0,
+            36.0
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "return_0:start",
+          "position_m": [
+            410.0,
+            33.50000000000001
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "return_1:end",
+          "position_m": [
+            490.0,
+            24.0
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "return_1:start",
+          "position_m": [
+            440.0,
+            21.500000000000007
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "return_2:end",
+          "position_m": [
+            520.0,
+            12.0
+          ],
+          "role": "internal"
+        },
+        {
+          "id": "return_2:start",
+          "position_m": [
+            470.0,
+            9.500000000000005
+          ],
+          "role": "internal"
+        }
+      ],
+      "edges": [
+        {
+          "id": "F1:normal",
+          "u": "F1:T",
+          "v": "F1:N",
+          "controls_m": [
+            [
+              50.0,
+              0.0
+            ],
+            [
+              100.0,
+              0.0
+            ]
+          ],
+          "component": "F1",
+          "controller": "F1",
+          "state": "N",
+          "kind": "synthetic_turnout_through"
+        },
+        {
+          "id": "F1:reverse",
+          "u": "F1:T",
+          "v": "F1:R",
+          "controls_m": [
+            [
+              50.0,
+              0.0
+            ],
+            [
+              62.5,
+              0.0
+            ],
+            [
+              75.0,
+              0.0
+            ],
+            [
+              87.5,
+              1.25
+            ],
+            [
+              100.0,
+              2.5
+            ]
+          ],
+          "component": "F1",
+          "controller": "F1",
+          "state": "R",
+          "kind": "synthetic_turnout_diverging"
+        },
+        {
+          "id": "F2:normal",
+          "u": "F2:T",
+          "v": "F2:N",
+          "controls_m": [
+            [
+              200.0,
+              0.0
+            ],
+            [
+              250.0,
+              0.0
+            ]
+          ],
+          "component": "F2",
+          "controller": "F2",
+          "state": "N",
+          "kind": "synthetic_turnout_through"
+        },
+        {
+          "id": "F2:reverse",
+          "u": "F2:T",
+          "v": "F2:R",
+          "controls_m": [
+            [
+              200.0,
+              0.0
+            ],
+            [
+              212.5,
+              0.0
+            ],
+            [
+              225.0,
+              0.0
+            ],
+            [
+              237.5,
+              1.25
+            ],
+            [
+              250.0,
+              2.5
+            ]
+          ],
+          "component": "F2",
+          "controller": "F2",
+          "state": "R",
+          "kind": "synthetic_turnout_diverging"
+        },
+        {
+          "id": "F3:normal",
+          "u": "F3:T",
+          "v": "F3:N",
+          "controls_m": [
+            [
+              350.0,
+              0.0
+            ],
+            [
+              400.0,
+              0.0
+            ]
+          ],
+          "component": "F3",
+          "controller": "F3",
+          "state": "N",
+          "kind": "synthetic_turnout_through"
+        },
+        {
+          "id": "F3:reverse",
+          "u": "F3:T",
+          "v": "F3:R",
+          "controls_m": [
+            [
+              350.0,
+              0.0
+            ],
+            [
+              362.5,
+              0.0
+            ],
+            [
+              375.0,
+              0.0
+            ],
+            [
+              387.5,
+              1.25
+            ],
+            [
+              400.0,
+              2.5
+            ]
+          ],
+          "component": "F3",
+          "controller": "F3",
+          "state": "R",
+          "kind": "synthetic_turnout_diverging"
+        },
+        {
+          "id": "diagonal_0",
+          "u": "F1:R",
+          "v": "return_0:start",
+          "controls_m": [
+            [
+              100.0,
+              2.5
+            ],
+            [
+              410.0,
+              33.50000000000001
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "diagonal_1",
+          "u": "F2:R",
+          "v": "return_1:start",
+          "controls_m": [
+            [
+              250.0,
+              2.5
+            ],
+            [
+              440.0,
+              21.500000000000007
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "diagonal_2",
+          "u": "F3:R",
+          "v": "return_2:start",
+          "controls_m": [
+            [
+              400.0,
+              2.5
+            ],
+            [
+              470.0,
+              9.500000000000005
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "lead_P1",
+          "u": "F3:N",
+          "v": "BERTH_P1",
+          "controls_m": [
+            [
+              400.0,
+              0.0
+            ],
+            [
+              655.0,
+              0.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "lead_P2",
+          "u": "return_2:end",
+          "v": "BERTH_P2",
+          "controls_m": [
+            [
+              520.0,
+              12.0
+            ],
+            [
+              655.0,
+              12.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "lead_P3",
+          "u": "return_1:end",
+          "v": "BERTH_P3",
+          "controls_m": [
+            [
+              490.0,
+              24.0
+            ],
+            [
+              655.0,
+              24.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "lead_P4",
+          "u": "return_0:end",
+          "v": "BERTH_P4",
+          "controls_m": [
+            [
+              460.0,
+              36.0
+            ],
+            [
+              655.0,
+              36.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "return_0",
+          "u": "return_0:start",
+          "v": "return_0:end",
+          "controls_m": [
+            [
+              410.0,
+              33.50000000000001
+            ],
+            [
+              422.5,
+              34.75000000000001
+            ],
+            [
+              435.0,
+              36.0
+            ],
+            [
+              447.5,
+              36.0
+            ],
+            [
+              460.0,
+              36.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line_eased_return"
+        },
+        {
+          "id": "return_1",
+          "u": "return_1:start",
+          "v": "return_1:end",
+          "controls_m": [
+            [
+              440.0,
+              21.500000000000007
+            ],
+            [
+              452.5,
+              22.750000000000004
+            ],
+            [
+              465.0,
+              24.000000000000004
+            ],
+            [
+              477.5,
+              24.0
+            ],
+            [
+              490.0,
+              24.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line_eased_return"
+        },
+        {
+          "id": "return_2",
+          "u": "return_2:start",
+          "v": "return_2:end",
+          "controls_m": [
+            [
+              470.0,
+              9.500000000000005
+            ],
+            [
+              482.5,
+              10.750000000000005
+            ],
+            [
+              495.0,
+              12.000000000000004
+            ],
+            [
+              507.5,
+              12.000000000000002
+            ],
+            [
+              520.0,
+              12.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line_eased_return"
+        },
+        {
+          "id": "spine_0",
+          "u": "APPROACH",
+          "v": "F1:T",
+          "controls_m": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              50.0,
+              0.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "spine_1",
+          "u": "F1:N",
+          "v": "F2:T",
+          "controls_m": [
+            [
+              100.0,
+              0.0
+            ],
+            [
+              200.0,
+              0.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "spine_2",
+          "u": "F2:N",
+          "v": "F3:T",
+          "controls_m": [
+            [
+              250.0,
+              0.0
+            ],
+            [
+              350.0,
+              0.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "plain_line"
+        },
+        {
+          "id": "storage_P1",
+          "u": "BERTH_P1",
+          "v": "BUFFER_P1",
+          "controls_m": [
+            [
+              655.0,
+              0.0
+            ],
+            [
+              910.0,
+              0.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "platform_storage"
+        },
+        {
+          "id": "storage_P2",
+          "u": "BERTH_P2",
+          "v": "BUFFER_P2",
+          "controls_m": [
+            [
+              655.0,
+              12.0
+            ],
+            [
+              910.0,
+              12.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "platform_storage"
+        },
+        {
+          "id": "storage_P3",
+          "u": "BERTH_P3",
+          "v": "BUFFER_P3",
+          "controls_m": [
+            [
+              655.0,
+              24.0
+            ],
+            [
+              910.0,
+              24.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "platform_storage"
+        },
+        {
+          "id": "storage_P4",
+          "u": "BERTH_P4",
+          "v": "BUFFER_P4",
+          "controls_m": [
+            [
+              655.0,
+              36.0
+            ],
+            [
+              910.0,
+              36.0
+            ]
+          ],
+          "component": null,
+          "controller": null,
+          "state": null,
+          "kind": "platform_storage"
+        }
+      ],
+      "turnouts": [
+        {
+          "id": "F1",
+          "toe": "F1:T",
+          "normal": "F1:N",
+          "reverse": "F1:R",
+          "controller": "F1",
+          "normal_state": "N",
+          "reverse_state": "R"
+        },
+        {
+          "id": "F2",
+          "toe": "F2:T",
+          "normal": "F2:N",
+          "reverse": "F2:R",
+          "controller": "F2",
+          "normal_state": "N",
+          "reverse_state": "R"
+        },
+        {
+          "id": "F3",
+          "toe": "F3:T",
+          "normal": "F3:N",
+          "reverse": "F3:R",
+          "controller": "F3",
+          "normal_state": "N",
+          "reverse_state": "R"
+        }
+      ]
+    },
+    "curves": {
+      "F1:normal": {
+        "lower_length_m": 49.99999999,
+        "upper_length_m": 50.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "F1:reverse": {
+        "lower_length_m": 50.09265206861293,
+        "upper_length_m": 50.092718792884064,
+        "curvature_upper_per_m": 0.002993549643590657,
+        "leaf_count": 24,
+        "maximum_hull_radius_m": 0.004577641807486514,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "F2:normal": {
+        "lower_length_m": 49.99999999,
+        "upper_length_m": 50.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "F2:reverse": {
+        "lower_length_m": 50.09265206861293,
+        "upper_length_m": 50.092718792884064,
+        "curvature_upper_per_m": 0.002993549643590657,
+        "leaf_count": 24,
+        "maximum_hull_radius_m": 0.004577641807486524,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "F3:normal": {
+        "lower_length_m": 49.99999999,
+        "upper_length_m": 50.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "F3:reverse": {
+        "lower_length_m": 50.09265206861293,
+        "upper_length_m": 50.092718792884064,
+        "curvature_upper_per_m": 0.002993549643590657,
+        "leaf_count": 24,
+        "maximum_hull_radius_m": 0.004577641807486524,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "diagonal_0": {
+        "lower_length_m": 311.5461442447476,
+        "upper_length_m": 311.5461442647476,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "diagonal_1": {
+        "lower_length_m": 190.9476367912969,
+        "upper_length_m": 190.94763681129692,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "diagonal_2": {
+        "lower_length_m": 70.34912933784624,
+        "upper_length_m": 70.34912935784622,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "lead_P1": {
+        "lower_length_m": 254.99999999,
+        "upper_length_m": 255.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "lead_P2": {
+        "lower_length_m": 134.99999999,
+        "upper_length_m": 135.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "lead_P3": {
+        "lower_length_m": 164.99999999,
+        "upper_length_m": 165.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "lead_P4": {
+        "lower_length_m": 194.99999999,
+        "upper_length_m": 195.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "return_0": {
+        "lower_length_m": 50.09265206861293,
+        "upper_length_m": 50.092718792884064,
+        "curvature_upper_per_m": 0.002993549643590657,
+        "leaf_count": 24,
+        "maximum_hull_radius_m": 0.004577641807486764,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "return_1": {
+        "lower_length_m": 50.09265206861293,
+        "upper_length_m": 50.092718792884064,
+        "curvature_upper_per_m": 0.002993549643590657,
+        "leaf_count": 24,
+        "maximum_hull_radius_m": 0.004577641807486764,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "return_2": {
+        "lower_length_m": 50.09265206861293,
+        "upper_length_m": 50.092718792884064,
+        "curvature_upper_per_m": 0.002993549643590657,
+        "leaf_count": 24,
+        "maximum_hull_radius_m": 0.00457764180748668,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "spine_0": {
+        "lower_length_m": 49.99999999,
+        "upper_length_m": 50.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "spine_1": {
+        "lower_length_m": 99.99999999,
+        "upper_length_m": 100.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "spine_2": {
+        "lower_length_m": 99.99999999,
+        "upper_length_m": 100.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "storage_P1": {
+        "lower_length_m": 254.99999999,
+        "upper_length_m": 255.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "storage_P2": {
+        "lower_length_m": 254.99999999,
+        "upper_length_m": 255.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "storage_P3": {
+        "lower_length_m": 254.99999999,
+        "upper_length_m": 255.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      },
+      "storage_P4": {
+        "lower_length_m": 254.99999999,
+        "upper_length_m": 255.00000001,
+        "curvature_upper_per_m": 0.0,
+        "leaf_count": 1,
+        "maximum_hull_radius_m": 1e-08,
+        "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+      }
+    },
+    "resources": {
+      "track:F1:normal": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "F1:normal"
+        ]
+      },
+      "component_body:F1": {
+        "kind": "exclusive_component_traversal",
+        "component": "F1"
+      },
+      "control:F1": {
+        "kind": "explicit_component_state_map",
+        "controller": "F1",
+        "not_inferred_from_geometry": true
+      },
+      "track:F1:reverse": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "F1:reverse"
+        ]
+      },
+      "track:F2:normal": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "F2:normal"
+        ]
+      },
+      "component_body:F2": {
+        "kind": "exclusive_component_traversal",
+        "component": "F2"
+      },
+      "control:F2": {
+        "kind": "explicit_component_state_map",
+        "controller": "F2",
+        "not_inferred_from_geometry": true
+      },
+      "track:F2:reverse": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "F2:reverse"
+        ]
+      },
+      "track:F3:normal": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "F3:normal"
+        ]
+      },
+      "component_body:F3": {
+        "kind": "exclusive_component_traversal",
+        "component": "F3"
+      },
+      "control:F3": {
+        "kind": "explicit_component_state_map",
+        "controller": "F3",
+        "not_inferred_from_geometry": true
+      },
+      "track:F3:reverse": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "F3:reverse"
+        ]
+      },
+      "track:diagonal_0": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "diagonal_0"
+        ]
+      },
+      "track:diagonal_1": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "diagonal_1"
+        ]
+      },
+      "track:diagonal_2": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "diagonal_2"
+        ]
+      },
+      "track:lead_P1": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "lead_P1"
+        ]
+      },
+      "track:lead_P2": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "lead_P2"
+        ]
+      },
+      "track:lead_P3": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "lead_P3"
+        ]
+      },
+      "track:lead_P4": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "lead_P4"
+        ]
+      },
+      "track:return_0": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "return_0"
+        ]
+      },
+      "track:return_1": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "return_1"
+        ]
+      },
+      "track:return_2": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "return_2"
+        ]
+      },
+      "track:spine_0": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "spine_0"
+        ]
+      },
+      "track:spine_1": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "spine_1"
+        ]
+      },
+      "track:spine_2": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "spine_2"
+        ]
+      },
+      "track:storage_P1": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "storage_P1"
+        ]
+      },
+      "track:storage_P2": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "storage_P2"
+        ]
+      },
+      "track:storage_P3": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "storage_P3"
+        ]
+      },
+      "track:storage_P4": {
+        "kind": "physical_edge_occupation",
+        "edges": [
+          "storage_P4"
+        ]
+      },
+      "proximity:F1:normal|diagonal_0": {
+        "resource": "proximity:F1:normal|diagonal_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:normal",
+          "diagonal_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F1:normal|spine_0": {
+        "resource": "proximity:F1:normal|spine_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:normal",
+          "spine_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F1:normal|spine_1": {
+        "resource": "proximity:F1:normal|spine_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:normal",
+          "spine_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F1:reverse|diagonal_0": {
+        "resource": "proximity:F1:reverse|diagonal_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:reverse",
+          "diagonal_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699817108,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F1:reverse|spine_0": {
+        "resource": "proximity:F1:reverse|spine_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:reverse",
+          "spine_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004577651807486514,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F1:reverse|spine_1": {
+        "resource": "proximity:F1:reverse|spine_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:reverse",
+          "spine_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.487951196060122,
+          "distance_lower_bound_m": 2.483395601360305,
+          "enclosure_allowance_m": 0.004555594699817108,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F2:normal|diagonal_1": {
+        "resource": "proximity:F2:normal|diagonal_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:normal",
+          "diagonal_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F2:normal|spine_1": {
+        "resource": "proximity:F2:normal|spine_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:normal",
+          "spine_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F2:normal|spine_2": {
+        "resource": "proximity:F2:normal|spine_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:normal",
+          "spine_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F2:reverse|diagonal_1": {
+        "resource": "proximity:F2:reverse|diagonal_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:reverse",
+          "diagonal_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699818502,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F2:reverse|spine_1": {
+        "resource": "proximity:F2:reverse|spine_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:reverse",
+          "spine_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004577651807486524,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F2:reverse|spine_2": {
+        "resource": "proximity:F2:reverse|spine_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:reverse",
+          "spine_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.487951196060122,
+          "distance_lower_bound_m": 2.4833956013603036,
+          "enclosure_allowance_m": 0.004555594699818502,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F3:normal|diagonal_2": {
+        "resource": "proximity:F3:normal|diagonal_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:normal",
+          "diagonal_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F3:normal|lead_P1": {
+        "resource": "proximity:F3:normal|lead_P1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:normal",
+          "lead_P1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F3:normal|spine_2": {
+        "resource": "proximity:F3:normal|spine_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:normal",
+          "spine_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F3:reverse|diagonal_2": {
+        "resource": "proximity:F3:reverse|diagonal_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:reverse",
+          "diagonal_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699815715,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F3:reverse|lead_P1": {
+        "resource": "proximity:F3:reverse|lead_P1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:reverse",
+          "lead_P1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.487951196060122,
+          "distance_lower_bound_m": 2.4833956013603067,
+          "enclosure_allowance_m": 0.004555594699815715,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:F3:reverse|spine_2": {
+        "resource": "proximity:F3:reverse|spine_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:reverse",
+          "spine_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004577651807486524,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:diagonal_0|return_0": {
+        "resource": "proximity:diagonal_0|return_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_0",
+          "return_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699813505,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:diagonal_0|spine_1": {
+        "resource": "proximity:diagonal_0|spine_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_0",
+          "spine_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:diagonal_1|return_1": {
+        "resource": "proximity:diagonal_1|return_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_1",
+          "return_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699817041,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:diagonal_1|spine_2": {
+        "resource": "proximity:diagonal_1|spine_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_1",
+          "spine_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:diagonal_2|lead_P1": {
+        "resource": "proximity:diagonal_2|lead_P1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_2",
+          "lead_P1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:diagonal_2|return_2": {
+        "resource": "proximity:diagonal_2|return_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_2",
+          "return_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699815273,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:lead_P1|storage_P1": {
+        "resource": "proximity:lead_P1|storage_P1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P1",
+          "storage_P1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:lead_P2|return_2": {
+        "resource": "proximity:lead_P2|return_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P2",
+          "return_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.00457765180748668,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:lead_P2|storage_P2": {
+        "resource": "proximity:lead_P2|storage_P2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P2",
+          "storage_P2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:lead_P3|return_1": {
+        "resource": "proximity:lead_P3|return_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P3",
+          "return_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.0045776518074867635,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:lead_P3|storage_P3": {
+        "resource": "proximity:lead_P3|storage_P3",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P3",
+          "storage_P3"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:lead_P4|return_0": {
+        "resource": "proximity:lead_P4|return_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P4",
+          "return_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.0045776518074867635,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      "proximity:lead_P4|storage_P4": {
+        "resource": "proximity:lead_P4|storage_P4",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P4",
+          "storage_P4"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      }
+    },
+    "proximity_contacts": [
+      {
+        "resource": "proximity:F1:normal|diagonal_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:normal",
+          "diagonal_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F1:normal|spine_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:normal",
+          "spine_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F1:normal|spine_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:normal",
+          "spine_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F1:reverse|diagonal_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:reverse",
+          "diagonal_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699817108,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F1:reverse|spine_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:reverse",
+          "spine_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004577651807486514,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F1:reverse|spine_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F1:reverse",
+          "spine_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.487951196060122,
+          "distance_lower_bound_m": 2.483395601360305,
+          "enclosure_allowance_m": 0.004555594699817108,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F2:normal|diagonal_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:normal",
+          "diagonal_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F2:normal|spine_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:normal",
+          "spine_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F2:normal|spine_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:normal",
+          "spine_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F2:reverse|diagonal_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:reverse",
+          "diagonal_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699818502,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F2:reverse|spine_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:reverse",
+          "spine_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004577651807486524,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F2:reverse|spine_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F2:reverse",
+          "spine_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.487951196060122,
+          "distance_lower_bound_m": 2.4833956013603036,
+          "enclosure_allowance_m": 0.004555594699818502,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F3:normal|diagonal_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:normal",
+          "diagonal_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F3:normal|lead_P1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:normal",
+          "lead_P1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F3:normal|spine_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:normal",
+          "spine_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F3:reverse|diagonal_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:reverse",
+          "diagonal_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699815715,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F3:reverse|lead_P1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:reverse",
+          "lead_P1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.487951196060122,
+          "distance_lower_bound_m": 2.4833956013603067,
+          "enclosure_allowance_m": 0.004555594699815715,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:F3:reverse|spine_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "F3:reverse",
+          "spine_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004577651807486524,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:diagonal_0|return_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_0",
+          "return_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699813505,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:diagonal_0|spine_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_0",
+          "spine_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:diagonal_1|return_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_1",
+          "return_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699817041,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:diagonal_1|spine_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_1",
+          "spine_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:diagonal_2|lead_P1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_2",
+          "lead_P1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 2.5,
+          "distance_lower_bound_m": 2.49999998,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:diagonal_2|return_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "diagonal_2",
+          "return_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            0.125
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.004555594699815273,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:lead_P1|storage_P1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P1",
+          "storage_P1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:lead_P2|return_2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P2",
+          "return_2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.00457765180748668,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:lead_P2|storage_P2",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P2",
+          "storage_P2"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:lead_P3|return_1",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P3",
+          "return_1"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.0045776518074867635,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:lead_P3|storage_P3",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P3",
+          "storage_P3"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:lead_P4|return_0",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P4",
+          "return_0"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.875,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 0.0045776518074867635,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      },
+      {
+        "resource": "proximity:lead_P4|storage_P4",
+        "kind": "conservative_corridor_pair",
+        "edges": [
+          "lead_P4",
+          "storage_P4"
+        ],
+        "required_centreline_separation_m": 4.0,
+        "witness": {
+          "a_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "b_parameter_interval": [
+            0.0,
+            1.0
+          ],
+          "chord_distance_m": 0.0,
+          "distance_lower_bound_m": 0.0,
+          "enclosure_allowance_m": 2e-08,
+          "status": "possible_contact_conservative"
+        },
+        "rail_connection_created": false
+      }
+    ],
+    "pair_evaluations": 253,
+    "profile": {
+      "minimum_radius_m": 300.0,
+      "envelope_half_width_m": 1.75,
+      "envelope_gap_m": 0.5,
+      "flatness_m": 0.01,
+      "length_gap_m": 0.0001,
+      "fidelity": "synthetic"
+    },
+    "time_model": "whole_leg_constant_speed_tail_clear_surrogate",
+    "assessments": {
+      "explicit_topology": "pass",
+      "selected_route_G2_continuity": "pass",
+      "synthetic_radius_bound": "pass",
+      "continuous_corridor_proxy": "compiled",
+      "real_UK_turnout_catalogue": "unassessed",
+      "full_vehicle_gauging": "unassessed",
+      "real_interlocking_control_table": "unassessed",
+      "sectional_release": "not_implemented",
+      "vertical_alignment_and_cant": "level_zero_cant_only",
+      "game_construction": "not_tested"
+    }
+  }
+}

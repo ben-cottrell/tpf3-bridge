@@ -1,0 +1,347 @@
+{
+  "reference_lookup": {
+    "status": "reference_value",
+    "parameter_id": "GB_NOMINAL_TRACK_CENTRES",
+    "value": 3.4,
+    "units": "m",
+    "source_id": "S058",
+    "clause": "7.7.17.3(1)",
+    "not_assessed": [
+      "swept vehicle clearance",
+      "aerodynamic or route-specific constraints",
+      "platform island space",
+      "exceptions and national technical rules"
+    ]
+  },
+  "nominal_gauge": {
+    "status": "reference_value",
+    "parameter_id": "GB_NOMINAL_GAUGE",
+    "value": 1435,
+    "units": "mm",
+    "source_id": "S058",
+    "clause": "4.2.4.1(1)",
+    "not_assessed": [
+      "gauge tolerances",
+      "gauge widening",
+      "track condition"
+    ]
+  },
+  "track_centres_m": 3.4,
+  "synthetic_proxy_required_separation_m": 4.0,
+  "proximity_resources": [
+    {
+      "resource": "proximity:lower|upper",
+      "kind": "conservative_corridor_pair",
+      "edges": [
+        "lower",
+        "upper"
+      ],
+      "required_centreline_separation_m": 4.0,
+      "witness": {
+        "a_parameter_interval": [
+          0.0,
+          1.0
+        ],
+        "b_parameter_interval": [
+          0.0,
+          1.0
+        ],
+        "chord_distance_m": 3.4,
+        "distance_lower_bound_m": 3.39999998,
+        "enclosure_allowance_m": 2e-08,
+        "status": "possible_contact_conservative"
+      },
+      "rail_connection_created": false
+    }
+  ],
+  "proxy_independence_established": false,
+  "actual_vehicle_clearance": "unassessed",
+  "interpretation": "The 4m generic proxy is not an authentic GB gauge. Do not alter it merely to make a 3.4m reference pass.",
+  "compiled_model": {
+    "schema_version": "0.3.0",
+    "source_hash": "d47bb1bf822d428a868fc2feefdd7449fa1239d27d40f9b5acccdcd922eec004",
+    "compile_hash": "6c484e97dc038ec2cb7acd72b6b0a1d6e4ff5427c751cb588fc75bd863445e30",
+    "routes": {
+      "lower": {
+        "id": "lower",
+        "start": "lower_start",
+        "end": "lower_end",
+        "edge_ids": [
+          "lower"
+        ],
+        "length_lower_m": 99.99999999,
+        "length_upper_m": 100.00000001,
+        "requirements": [
+          {
+            "resource": "proximity:lower|upper",
+            "state": null
+          },
+          {
+            "resource": "track:lower",
+            "state": null
+          }
+        ],
+        "source_hash": "d47bb1bf822d428a868fc2feefdd7449fa1239d27d40f9b5acccdcd922eec004",
+        "segments": [
+          {
+            "edge_id": "lower",
+            "forward": true,
+            "entry_chainage_interval_m": [
+              0.0,
+              0.0
+            ],
+            "exit_chainage_interval_m": [
+              99.99999999,
+              100.00000001
+            ]
+          }
+        ]
+      },
+      "upper": {
+        "id": "upper",
+        "start": "upper_start",
+        "end": "upper_end",
+        "edge_ids": [
+          "upper"
+        ],
+        "length_lower_m": 99.99999999,
+        "length_upper_m": 100.00000001,
+        "requirements": [
+          {
+            "resource": "proximity:lower|upper",
+            "state": null
+          },
+          {
+            "resource": "track:upper",
+            "state": null
+          }
+        ],
+        "source_hash": "d47bb1bf822d428a868fc2feefdd7449fa1239d27d40f9b5acccdcd922eec004",
+        "segments": [
+          {
+            "edge_id": "upper",
+            "forward": true,
+            "entry_chainage_interval_m": [
+              0.0,
+              0.0
+            ],
+            "exit_chainage_interval_m": [
+              99.99999999,
+              100.00000001
+            ]
+          }
+        ]
+      }
+    },
+    "edge_requirements": {
+      "lower": [
+        {
+          "resource": "proximity:lower|upper",
+          "state": null
+        },
+        {
+          "resource": "track:lower",
+          "state": null
+        }
+      ],
+      "upper": [
+        {
+          "resource": "proximity:lower|upper",
+          "state": null
+        },
+        {
+          "resource": "track:upper",
+          "state": null
+        }
+      ]
+    },
+    "platforms": {},
+    "provenance": {
+      "network": {
+        "schema_version": "0.3.0",
+        "fidelity": "synthetic_eased_components",
+        "id": "gb_nominal_spacing_proxy_limit_test",
+        "metadata": {},
+        "ports": [
+          {
+            "id": "lower_end",
+            "position_m": [
+              100,
+              0
+            ],
+            "role": "internal"
+          },
+          {
+            "id": "lower_start",
+            "position_m": [
+              0,
+              0
+            ],
+            "role": "internal"
+          },
+          {
+            "id": "upper_end",
+            "position_m": [
+              100,
+              3.4
+            ],
+            "role": "internal"
+          },
+          {
+            "id": "upper_start",
+            "position_m": [
+              0,
+              3.4
+            ],
+            "role": "internal"
+          }
+        ],
+        "edges": [
+          {
+            "id": "lower",
+            "u": "lower_start",
+            "v": "lower_end",
+            "controls_m": [
+              [
+                0,
+                0
+              ],
+              [
+                100,
+                0
+              ]
+            ],
+            "component": null,
+            "controller": null,
+            "state": null,
+            "kind": "plain_line"
+          },
+          {
+            "id": "upper",
+            "u": "upper_start",
+            "v": "upper_end",
+            "controls_m": [
+              [
+                0,
+                3.4
+              ],
+              [
+                100,
+                3.4
+              ]
+            ],
+            "component": null,
+            "controller": null,
+            "state": null,
+            "kind": "plain_line"
+          }
+        ],
+        "turnouts": []
+      },
+      "curves": {
+        "lower": {
+          "lower_length_m": 99.99999999,
+          "upper_length_m": 100.00000001,
+          "curvature_upper_per_m": 0.0,
+          "leaf_count": 1,
+          "maximum_hull_radius_m": 1e-08,
+          "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+        },
+        "upper": {
+          "lower_length_m": 99.99999999,
+          "upper_length_m": 100.00000001,
+          "curvature_upper_per_m": 0.0,
+          "leaf_count": 1,
+          "maximum_hull_radius_m": 1e-08,
+          "bounds_origin": "Bezier subdivision + derivative hull; floating guard"
+        }
+      },
+      "resources": {
+        "track:lower": {
+          "kind": "physical_edge_occupation",
+          "edges": [
+            "lower"
+          ]
+        },
+        "track:upper": {
+          "kind": "physical_edge_occupation",
+          "edges": [
+            "upper"
+          ]
+        },
+        "proximity:lower|upper": {
+          "resource": "proximity:lower|upper",
+          "kind": "conservative_corridor_pair",
+          "edges": [
+            "lower",
+            "upper"
+          ],
+          "required_centreline_separation_m": 4.0,
+          "witness": {
+            "a_parameter_interval": [
+              0.0,
+              1.0
+            ],
+            "b_parameter_interval": [
+              0.0,
+              1.0
+            ],
+            "chord_distance_m": 3.4,
+            "distance_lower_bound_m": 3.39999998,
+            "enclosure_allowance_m": 2e-08,
+            "status": "possible_contact_conservative"
+          },
+          "rail_connection_created": false
+        }
+      },
+      "proximity_contacts": [
+        {
+          "resource": "proximity:lower|upper",
+          "kind": "conservative_corridor_pair",
+          "edges": [
+            "lower",
+            "upper"
+          ],
+          "required_centreline_separation_m": 4.0,
+          "witness": {
+            "a_parameter_interval": [
+              0.0,
+              1.0
+            ],
+            "b_parameter_interval": [
+              0.0,
+              1.0
+            ],
+            "chord_distance_m": 3.4,
+            "distance_lower_bound_m": 3.39999998,
+            "enclosure_allowance_m": 2e-08,
+            "status": "possible_contact_conservative"
+          },
+          "rail_connection_created": false
+        }
+      ],
+      "pair_evaluations": 1,
+      "profile": {
+        "minimum_radius_m": 300.0,
+        "envelope_half_width_m": 1.75,
+        "envelope_gap_m": 0.5,
+        "flatness_m": 0.01,
+        "length_gap_m": 0.0001,
+        "fidelity": "synthetic"
+      },
+      "time_model": "whole_leg_constant_speed_tail_clear_surrogate",
+      "assessments": {
+        "explicit_topology": "pass",
+        "selected_route_G2_continuity": "pass",
+        "synthetic_radius_bound": "pass",
+        "continuous_corridor_proxy": "compiled",
+        "real_UK_turnout_catalogue": "unassessed",
+        "full_vehicle_gauging": "unassessed",
+        "real_interlocking_control_table": "unassessed",
+        "sectional_release": "not_implemented",
+        "vertical_alignment_and_cant": "level_zero_cant_only",
+        "game_construction": "not_tested"
+      }
+    }
+  }
+}

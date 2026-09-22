@@ -1,0 +1,98 @@
+{
+  "base_release": "0.12.0",
+  "corridor_environment": {
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]"
+  },
+  "corridor_stdout_bytes": 275,
+  "corridor_test_result": {
+    "elapsed_seconds": 1.2164914510000244,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "status": "passed",
+    "tests_run": 100
+  },
+  "date": "2026-09-21",
+  "evidence_paths": [
+    "handoff_evidence/corridor_test_report.json",
+    "handoff_evidence/corridor_test_log.txt",
+    "handoff_evidence/quiet_helper_tests.txt"
+  ],
+  "full_legacy_suite_rerun": false,
+  "game_tested": false,
+  "helper_test_result": {
+    "elapsed_seconds": 7.655,
+    "status": "passed",
+    "tests_run": 14
+  },
+  "kind": "lean_handoff_overlay_validation",
+  "manifest_excludes": [
+    "handoff_validation.json"
+  ],
+  "measured_model_credit_saving": null,
+  "next_task_implemented": false,
+  "original_archive_files_unchanged": 575,
+  "original_archive_mismatches": [],
+  "original_archive_sha256": "9f6d0b56c68b710bfc9eea8fa30cae2d9610866c75681dff08b26c6482547f5c",
+  "overlay_sha256": {
+    "AGENTS.md": "3a0a9c1f947f6d15e756b67f8cd91ddf24676b1a8bc3bfb57487f799b70fb6b1",
+    "CURRENT_TASK.md": "a43ce22ffbb870261c0c39c478923806156d434e2d694828e3983333024bea45",
+    "LEAN_HANDOFF_README.md": "5d0d471cf94134f28d784cba78fb3dc080d5404645e0c7d5cd932a64d7d34b70",
+    "STATE.md": "556ed314b0877614b38e025cde8020fda58bd85a948dbf773ef4b559015ace82",
+    "handoff_evidence/corridor_test_log.txt": "c83d39dddededfb40a22121401b3c6042a3c92b6d4630a7151cf7fd0bc3e5588",
+    "handoff_evidence/corridor_test_report.json": "55ec2fafcd0a506df783f6d90c105f93929da6ad31f056551aecb1575bb56bf4",
+    "handoff_evidence/quiet_helper_tests.txt": "1c9440730366db745fe86a78c4f6b73173f3db66077ad91222c41e2d527dcc57",
+    "tools/quiet_checks.py": "39c893497ad56702dfdb1b3559a323dd136b2e795a87d579c578d492719e04eb",
+    "tools/test_quiet_checks.py": "7ade63a8e8909d86b18fce00853f713f420f6466a6b9a9f523a132a0cd48ab2c"
+  },
+  "scope": "handoff notes and quiet test utility; no bridge wrapper implementation and no game integration",
+  "size_measurement_limit": "Only these authored notes; not tokenizer output, total model context or a billing measurement.",
+  "source_symbols_verified": {
+    "proof/railcorridor/adapter.py": [
+      "compile_plan",
+      "MockAdapter",
+      "execute"
+    ],
+    "proof/railcorridor/demo.py": [
+      "run"
+    ],
+    "proof/railcorridor/planning.py": [
+      "parse_json",
+      "validate_fixture",
+      "search",
+      "objective"
+    ]
+  },
+  "startup_notes": {
+    "AGENTS.md": {
+      "utf8_bytes": 2735,
+      "words_whitespace_split": 396
+    },
+    "CURRENT_TASK.md": {
+      "utf8_bytes": 4769,
+      "words_whitespace_split": 622
+    },
+    "STATE.md": {
+      "utf8_bytes": 2026,
+      "words_whitespace_split": 289
+    }
+  },
+  "startup_total_bytes": 9530,
+  "startup_total_words": 1307,
+  "tested_source_paths": {
+    "AGENT_API_AND_HANDOFF.md": "b5d54e85b9f597df9e47156eadb12dac42d46fe1e1b68b59c65718e917899d25",
+    "GAME_ADAPTER_CONTRACT.md": "af163587dd60dea71c860593bb0f487ebc87162df75aa2ae02a6c333232381ca",
+    "IMPLEMENTATION_SPEC.md": "7568dde056ee77a0b9e70c71ec1a9fbdfaf3b6d5d173f92124c38edefe085578",
+    "evidence/uk_parameters.json": "c59996a17692160a1dba97e98b114e876b56aebb4fe86cc08bedd6e4b621af80",
+    "proof/corridor_fixtures/release.json": "1aebb2579a97df0167b855be02fa1655205477a227db29ac424294e441f5a663",
+    "proof/railcorridor/adapter.py": "b564142b551abd63c3dafc4ec861216ffed21f34950a97a8ee6c8a90607bd57a",
+    "proof/railcorridor/demo.py": "53edbefba9e6ba52902f9575a23028ae2bc6d036b05acbc0ef46ce54984dfecd",
+    "proof/railcorridor/geometry.py": "1007cf468c1f6c63778874628c9979f0b99ac17cffa0ffe6b976ceda5d234d7d",
+    "proof/railcorridor/planning.py": "3a6ba44b87f1e91614aa9ddc90d8b692d556fc3c78b9a3e27e8e45601bda7858",
+    "proof/railops/uk_profiles.py": "6ca81bfc1a0f69589ffcd096024fe248f7d16031b966fabafc20e9c473f8af41",
+    "proof/tests/test_corridor_adapter.py": "701d3cbbdec6de1af3f1bb81b7ce8a5d75dd2dcc5a62f64e78d46e25931d25d2",
+    "proof/tests/test_corridor_planning.py": "4538cbbfe700919b2ae70b31e7fb8eff4ae6dabc779387af221e38cf15a29bd2"
+  },
+  "windows_tested": false
+}

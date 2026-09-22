@@ -1,0 +1,410 @@
+{
+  "additional_600m_specialwork_limit": {
+    "accepted_count": 0,
+    "construction_authorised": false,
+    "domain": {
+      "fan_toe_step_m": [
+        70.0,
+        75.0,
+        80.0
+      ],
+      "fan_turnout_span_m": [
+        65.0,
+        70.0,
+        75.0
+      ],
+      "first_fan_toe_x_m": [
+        205.0,
+        215.0,
+        225.0
+      ]
+    },
+    "evaluated": 27,
+    "evaluation_budget": 100,
+    "grid_complete": true,
+    "grid_size": 27,
+    "input_hash": "e1e8c7de14c85f30161d7c3dae384532972f4b4bc9adc2661ceff140a27d4798",
+    "maximum_specialwork_end_x_m": 600.0,
+    "profile": {
+      "envelope_gap_m": 0.5,
+      "envelope_half_width_m": 1.75,
+      "fidelity": "synthetic",
+      "flatness_m": 0.01,
+      "length_gap_m": 0.0001,
+      "minimum_radius_m": 300.0
+    },
+    "rows": [
+      {
+        "index": 0,
+        "parameters": {
+          "fan_toe_step_m": 70.0,
+          "fan_turnout_span_m": 65.0,
+          "first_fan_toe_x_m": 205.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 1,
+        "parameters": {
+          "fan_toe_step_m": 70.0,
+          "fan_turnout_span_m": 65.0,
+          "first_fan_toe_x_m": 215.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 2,
+        "parameters": {
+          "fan_toe_step_m": 70.0,
+          "fan_turnout_span_m": 65.0,
+          "first_fan_toe_x_m": 225.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 3,
+        "parameters": {
+          "fan_toe_step_m": 70.0,
+          "fan_turnout_span_m": 70.0,
+          "first_fan_toe_x_m": 205.0
+        },
+        "reason": "fan_plain_gap_below_project_target",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 4,
+        "parameters": {
+          "fan_toe_step_m": 70.0,
+          "fan_turnout_span_m": 70.0,
+          "first_fan_toe_x_m": 215.0
+        },
+        "reason": "fan_plain_gap_below_project_target",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 5,
+        "parameters": {
+          "fan_toe_step_m": 70.0,
+          "fan_turnout_span_m": 70.0,
+          "first_fan_toe_x_m": 225.0
+        },
+        "reason": "fan_plain_gap_below_project_target",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 6,
+        "parameters": {
+          "fan_toe_step_m": 70.0,
+          "fan_turnout_span_m": 75.0,
+          "first_fan_toe_x_m": 205.0
+        },
+        "reason": "fan_plain_gap_below_project_target",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 7,
+        "parameters": {
+          "fan_toe_step_m": 70.0,
+          "fan_turnout_span_m": 75.0,
+          "first_fan_toe_x_m": 215.0
+        },
+        "reason": "fan_plain_gap_below_project_target",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 8,
+        "parameters": {
+          "fan_toe_step_m": 70.0,
+          "fan_turnout_span_m": 75.0,
+          "first_fan_toe_x_m": 225.0
+        },
+        "reason": "fan_plain_gap_below_project_target",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 9,
+        "parameters": {
+          "fan_toe_step_m": 75.0,
+          "fan_turnout_span_m": 65.0,
+          "first_fan_toe_x_m": 205.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 10,
+        "parameters": {
+          "fan_toe_step_m": 75.0,
+          "fan_turnout_span_m": 65.0,
+          "first_fan_toe_x_m": 215.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 11,
+        "parameters": {
+          "fan_toe_step_m": 75.0,
+          "fan_turnout_span_m": 65.0,
+          "first_fan_toe_x_m": 225.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 12,
+        "parameters": {
+          "fan_toe_step_m": 75.0,
+          "fan_turnout_span_m": 70.0,
+          "first_fan_toe_x_m": 205.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 13,
+        "parameters": {
+          "fan_toe_step_m": 75.0,
+          "fan_turnout_span_m": 70.0,
+          "first_fan_toe_x_m": 215.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 14,
+        "parameters": {
+          "fan_toe_step_m": 75.0,
+          "fan_turnout_span_m": 70.0,
+          "first_fan_toe_x_m": 225.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 15,
+        "parameters": {
+          "fan_toe_step_m": 75.0,
+          "fan_turnout_span_m": 75.0,
+          "first_fan_toe_x_m": 205.0
+        },
+        "reason": "fan_plain_gap_below_project_target",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 16,
+        "parameters": {
+          "fan_toe_step_m": 75.0,
+          "fan_turnout_span_m": 75.0,
+          "first_fan_toe_x_m": 215.0
+        },
+        "reason": "fan_plain_gap_below_project_target",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 17,
+        "parameters": {
+          "fan_toe_step_m": 75.0,
+          "fan_turnout_span_m": 75.0,
+          "first_fan_toe_x_m": 225.0
+        },
+        "reason": "fan_plain_gap_below_project_target",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 18,
+        "parameters": {
+          "fan_toe_step_m": 80.0,
+          "fan_turnout_span_m": 65.0,
+          "first_fan_toe_x_m": 205.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 19,
+        "parameters": {
+          "fan_toe_step_m": 80.0,
+          "fan_turnout_span_m": 65.0,
+          "first_fan_toe_x_m": 215.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 20,
+        "parameters": {
+          "fan_toe_step_m": 80.0,
+          "fan_turnout_span_m": 65.0,
+          "first_fan_toe_x_m": 225.0
+        },
+        "reason": "recovery_does_not_clear_inner_long_platform_marker",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 21,
+        "parameters": {
+          "fan_toe_step_m": 80.0,
+          "fan_turnout_span_m": 70.0,
+          "first_fan_toe_x_m": 205.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 22,
+        "parameters": {
+          "fan_toe_step_m": 80.0,
+          "fan_turnout_span_m": 70.0,
+          "first_fan_toe_x_m": 215.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 23,
+        "parameters": {
+          "fan_toe_step_m": 80.0,
+          "fan_turnout_span_m": 70.0,
+          "first_fan_toe_x_m": 225.0
+        },
+        "reason": "recovery_does_not_clear_inner_long_platform_marker",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 24,
+        "parameters": {
+          "fan_toe_step_m": 80.0,
+          "fan_turnout_span_m": 75.0,
+          "first_fan_toe_x_m": 205.0
+        },
+        "reason": "specialwork_exceeds_search_limit",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 25,
+        "parameters": {
+          "fan_toe_step_m": 80.0,
+          "fan_turnout_span_m": 75.0,
+          "first_fan_toe_x_m": 215.0
+        },
+        "reason": "recovery_does_not_clear_inner_long_platform_marker",
+        "status": "candidate_rejected"
+      },
+      {
+        "index": 26,
+        "parameters": {
+          "fan_toe_step_m": 80.0,
+          "fan_turnout_span_m": 75.0,
+          "first_fan_toe_x_m": 225.0
+        },
+        "reason": "recovery_does_not_clear_inner_long_platform_marker",
+        "status": "candidate_rejected"
+      }
+    ],
+    "schema_version": "0.7.0",
+    "scope": "finite grid in one authored family; no exhaustive topology or continuous optimisation claim",
+    "selected": null,
+    "selection_final_within_grid": false,
+    "selection_policy": "minimise last specialwork x after hard geometry/site checks; operations not ranked here",
+    "status": "grid_complete_no_candidate"
+  },
+  "bounded_one_evaluation": {
+    "accepted_count": 0,
+    "construction_authorised": false,
+    "domain": {
+      "fan_toe_step_m": [
+        70.0,
+        75.0,
+        80.0
+      ],
+      "fan_turnout_span_m": [
+        65.0,
+        70.0,
+        75.0
+      ],
+      "first_fan_toe_x_m": [
+        205.0,
+        215.0,
+        225.0
+      ]
+    },
+    "evaluated": 1,
+    "evaluation_budget": 1,
+    "grid_complete": false,
+    "grid_size": 27,
+    "input_hash": "c5bcdac641a062132f6a683b2205dbacd9cc48b1d8d04dc8d745b0fcf45a7e22",
+    "maximum_specialwork_end_x_m": 650.0,
+    "profile": {
+      "envelope_gap_m": 0.5,
+      "envelope_half_width_m": 1.75,
+      "fidelity": "synthetic",
+      "flatness_m": 0.01,
+      "length_gap_m": 0.0001,
+      "minimum_radius_m": 300.0
+    },
+    "rows": [
+      {
+        "index": 0,
+        "parameters": {
+          "fan_toe_step_m": 70.0,
+          "fan_turnout_span_m": 65.0,
+          "first_fan_toe_x_m": 205.0
+        },
+        "reason": "radius_bound_not_certified:A:F1:reverse; not a proof of exact-radius violation",
+        "status": "candidate_rejected"
+      }
+    ],
+    "schema_version": "0.7.0",
+    "scope": "finite grid in one authored family; no exhaustive topology or continuous optimisation claim",
+    "selected": null,
+    "selection_final_within_grid": false,
+    "selection_policy": "minimise last specialwork x after hard geometry/site checks; operations not ranked here",
+    "status": "search_exhausted"
+  },
+  "no_evaluations": {
+    "accepted_count": 0,
+    "construction_authorised": false,
+    "domain": {
+      "fan_toe_step_m": [
+        70.0,
+        75.0,
+        80.0
+      ],
+      "fan_turnout_span_m": [
+        65.0,
+        70.0,
+        75.0
+      ],
+      "first_fan_toe_x_m": [
+        205.0,
+        215.0,
+        225.0
+      ]
+    },
+    "evaluated": 0,
+    "evaluation_budget": 0,
+    "grid_complete": false,
+    "grid_size": 27,
+    "input_hash": "717f87fbd006086e1d5436218cf919c6173a8e7d5c986ba37ccbc7e2550a7dc7",
+    "maximum_specialwork_end_x_m": 650.0,
+    "profile": {
+      "envelope_gap_m": 0.5,
+      "envelope_half_width_m": 1.75,
+      "fidelity": "synthetic",
+      "flatness_m": 0.01,
+      "length_gap_m": 0.0001,
+      "minimum_radius_m": 300.0
+    },
+    "rows": [],
+    "schema_version": "0.7.0",
+    "scope": "finite grid in one authored family; no exhaustive topology or continuous optimisation claim",
+    "selected": null,
+    "selection_final_within_grid": false,
+    "selection_policy": "minimise last specialwork x after hard geometry/site checks; operations not ranked here",
+    "status": "search_exhausted"
+  }
+}

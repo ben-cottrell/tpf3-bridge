@@ -1,0 +1,53 @@
+{
+  "actual_ports_outside": [],
+  "construction_authorised": false,
+  "padding_m": 0.0,
+  "rail_control_hull_envelope_m": [
+    0.0,
+    -42.00000000000001,
+    1000.0,
+    42.00000000000001
+  ],
+  "required_port_mismatches": [],
+  "reservations": [
+    {
+      "contained": true,
+      "id": "concourse",
+      "kind": "planar_reserved_volume_only",
+      "possible_rail_contacts": []
+    },
+    {
+      "contained": true,
+      "id": "IA12",
+      "kind": "planar_reserved_volume_only",
+      "possible_rail_contacts": []
+    },
+    {
+      "contained": true,
+      "id": "IA34",
+      "kind": "planar_reserved_volume_only",
+      "possible_rail_contacts": []
+    },
+    {
+      "contained": true,
+      "id": "IB12",
+      "kind": "planar_reserved_volume_only",
+      "possible_rail_contacts": []
+    },
+    {
+      "contained": true,
+      "id": "IB34",
+      "kind": "planar_reserved_volume_only",
+      "possible_rail_contacts": []
+    }
+  ],
+  "scope": "plan centreline/hull and supplied reservations, not structural or dynamic gauge approval",
+  "site_box_m": [
+    0.0,
+    -90.0,
+    1200.0,
+    90.0
+  ],
+  "source_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+  "status": "pass_within_scope"
+}

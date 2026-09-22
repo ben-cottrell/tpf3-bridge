@@ -1,0 +1,163 @@
+{
+  "accepted": 9,
+  "actual_game_calls": 0,
+  "actual_model_calls_inside_runner": 0,
+  "complete_branch_junction": false,
+  "corridor_rows": [
+    {
+      "accepted": true,
+      "candidate_hash": "c39371daddd8cbe2ee845292dab4972f0da2c4c9b21b22301424a2263664c5bf",
+      "earthwork_estimate_m3": 53763.411843112255,
+      "elevated_length_m": 250.0,
+      "offset_m": 0,
+      "pareto": true,
+      "per_track_mean_length_m": 6000.0,
+      "rail_plateau_m": 20,
+      "tunnel_length_m": 600.0
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "fb4bb750d8cddc1b6d0a287cc0f632db1a515930f1df542da3bdcf72e06f67a6",
+      "earthwork_estimate_m3": 93139.189612189,
+      "elevated_length_m": 250.0,
+      "offset_m": 0,
+      "pareto": true,
+      "per_track_mean_length_m": 6000.012698372066,
+      "rail_plateau_m": 24,
+      "tunnel_length_m": 520.0
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "1008f50e86dd10f22683547b6ed33c7d8956497ce9f7ba464ec62c3cea673efb",
+      "earthwork_estimate_m3": 102936.85907294857,
+      "elevated_length_m": 1440.0,
+      "offset_m": 0,
+      "pareto": true,
+      "per_track_mean_length_m": 6000.050793000752,
+      "rail_plateau_m": 28,
+      "tunnel_length_m": 440.0
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "30e9528a7b7909fc9e2ba4f20cb5f110e3602a66f700c33f5476024054e626bc",
+      "earthwork_estimate_m3": 62917.868898070934,
+      "elevated_length_m": 250.38476477691643,
+      "offset_m": 180,
+      "pareto": true,
+      "per_track_mean_length_m": 6025.5500683515875,
+      "rail_plateau_m": 20,
+      "tunnel_length_m": 400.0
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "92977c7729a5d640812e1cd343b79ccb8ecc1b3127131c182ad2cba7ef2c4636",
+      "earthwork_estimate_m3": 113718.42496975871,
+      "elevated_length_m": 250.38476477691643,
+      "offset_m": 180,
+      "pareto": true,
+      "per_track_mean_length_m": 6025.562605690415,
+      "rail_plateau_m": 24,
+      "tunnel_length_m": 160.0
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "4b04213b080ef28ff2c89e833a320791a0c4fdb23724343bd2719aefd00e7d5d",
+      "earthwork_estimate_m3": 114511.06599731493,
+      "elevated_length_m": 1522.1989739211017,
+      "offset_m": 180,
+      "pareto": true,
+      "per_track_mean_length_m": 6025.600217239902,
+      "rail_plateau_m": 28,
+      "tunnel_length_m": 0.0
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "618c2962c2396da5bf780a885b9fadc17213452d0217bfb427a1515065cc3ec1",
+      "earthwork_estimate_m3": 50421.79213760227,
+      "elevated_length_m": 250.92948602539226,
+      "offset_m": 280,
+      "pareto": true,
+      "per_track_mean_length_m": 6061.27961777368,
+      "rail_plateau_m": 20,
+      "tunnel_length_m": 0.0
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "23b71f757ffbd8b0ce08d7cad1a3331bed1cffa71e63d6e4652ec7b936440124",
+      "earthwork_estimate_m3": 104226.62866163277,
+      "elevated_length_m": 250.92948602539226,
+      "offset_m": 280,
+      "pareto": false,
+      "per_track_mean_length_m": 6061.291937829175,
+      "rail_plateau_m": 24,
+      "tunnel_length_m": 0.0
+    },
+    {
+      "accepted": true,
+      "candidate_hash": "97f3ae526a5d01a48c2b1b738a6f36fa00ef5322ee39ed3848737a7f4449f139",
+      "earthwork_estimate_m3": 108592.08348075429,
+      "elevated_length_m": 2005.303268639219,
+      "offset_m": 280,
+      "pareto": false,
+      "per_track_mean_length_m": 6061.328897555299,
+      "rail_plateau_m": 28,
+      "tunnel_length_m": 0.0
+    },
+    {
+      "accepted": false,
+      "candidate_hash": "c772a6ddcfc430d3c3bf00bf929337da0663d125d981854a56fe93249fb7c30b",
+      "earthwork_estimate_m3": 50421.79213760227,
+      "elevated_length_m": 250.92948602539226,
+      "offset_m": -280,
+      "pareto": false,
+      "per_track_mean_length_m": 6061.27961777368,
+      "rail_plateau_m": 20,
+      "tunnel_length_m": 0.0
+    },
+    {
+      "accepted": false,
+      "candidate_hash": "909b11af123ba7cd8de749bfa49fdfd328eee0a4430a78d4c9519ae64ed4f779",
+      "earthwork_estimate_m3": 104226.62866163277,
+      "elevated_length_m": 250.92948602539226,
+      "offset_m": -280,
+      "pareto": false,
+      "per_track_mean_length_m": 6061.291937829175,
+      "rail_plateau_m": 24,
+      "tunnel_length_m": 0.0
+    },
+    {
+      "accepted": false,
+      "candidate_hash": "5e463f593edf6d4c249dbf8b55d6aed9e0c2c94c604840767ef9dbd59b0bdcc7",
+      "earthwork_estimate_m3": 108592.08348075429,
+      "elevated_length_m": 2005.303268639219,
+      "offset_m": -280,
+      "pareto": false,
+      "per_track_mean_length_m": 6061.328897555299,
+      "rail_plateau_m": 28,
+      "tunnel_length_m": 0.0
+    }
+  ],
+  "crossing_cell_passes": 7,
+  "crossing_cell_trials": 9,
+  "evaluated": 12,
+  "fixture_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+  "full_uk_certification_claim": false,
+  "mock_case_statuses": {
+    "clean": "mock_verified",
+    "idempotent_repeat": "mock_verified",
+    "lost_acknowledgement": "mock_verified",
+    "rejected_construction": "partial_failure",
+    "snapped_geometry": "realised_geometry_mismatch",
+    "stale_terrain": "preflight_blocked",
+    "stale_world": "preflight_blocked",
+    "unconnected_game": "preflight_blocked",
+    "unknown_capability": "preflight_blocked"
+  },
+  "mock_operation_count": 52,
+  "pareto_count": 7,
+  "real_network_constructed": false,
+  "release": "0.9.0",
+  "selected_candidate_hash": "618c2962c2396da5bf780a885b9fadc17213452d0217bfb427a1515065cc3ec1",
+  "selection_policy": "lowest midpoint-estimated earthwork, then length; example lowering choice only",
+  "station_internal_edits": false
+}

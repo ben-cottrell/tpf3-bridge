@@ -1,0 +1,171 @@
+[
+  {
+    "all_results": [
+      {
+        "completed": 2,
+        "delay_ms": 49714,
+        "design_hash": "fa59f662c33014f967c11d498d23d5f5f133a13b35c7fef3770b47b1d52dc709",
+        "mode": "flat",
+        "qualifies": false,
+        "required": 2,
+        "reservation_union_area_m2": 265131.8321478899,
+        "residual": 0,
+        "tunnel_track_metres_estimate": 436.45161290322585,
+        "unscheduled": 0
+      },
+      {
+        "completed": 2,
+        "delay_ms": 0,
+        "design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+        "mode": "flyover",
+        "qualifies": true,
+        "required": 2,
+        "reservation_union_area_m2": 268249.90594577143,
+        "residual": 0,
+        "tunnel_track_metres_estimate": 436.45161290322585,
+        "unscheduled": 0
+      },
+      {
+        "completed": 2,
+        "delay_ms": 0,
+        "design_hash": "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824",
+        "mode": "diveunder",
+        "qualifies": true,
+        "required": 2,
+        "reservation_union_area_m2": 281684.87535987154,
+        "residual": 0,
+        "tunnel_track_metres_estimate": 1083.25796707852,
+        "unscheduled": 0
+      }
+    ],
+    "alternatives": [
+      {
+        "completed": 2,
+        "delay_ms": 0,
+        "design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+        "mode": "flyover",
+        "qualifies": true,
+        "required": 2,
+        "reservation_union_area_m2": 268249.90594577143,
+        "residual": 0,
+        "tunnel_track_metres_estimate": 436.45161290322585,
+        "unscheduled": 0
+      },
+      {
+        "completed": 2,
+        "delay_ms": 0,
+        "design_hash": "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824",
+        "mode": "diveunder",
+        "qualifies": true,
+        "required": 2,
+        "reservation_union_area_m2": 281684.87535987154,
+        "residual": 0,
+        "tunnel_track_metres_estimate": 1083.25796707852,
+        "unscheduled": 0
+      }
+    ],
+    "construction_authorised": false,
+    "delay_budget_ms": 0,
+    "detail_policy": "keep search, terrain cells and reservations local",
+    "scenario": "crossing_pulse",
+    "scenario_hash": "9d5174bd01c10f464f6c9b68d405eb74c8dda67561edd83a241a569070097c0a",
+    "status": "terrain_and_operation_alternatives",
+    "unresolved_choice": "actual structures, grade-aware performance and game representation remain unassessed"
+  },
+  {
+    "all_results": [
+      {
+        "completed": 2,
+        "delay_ms": 337362,
+        "design_hash": "fa59f662c33014f967c11d498d23d5f5f133a13b35c7fef3770b47b1d52dc709",
+        "mode": "flat",
+        "qualifies": false,
+        "required": 2,
+        "reservation_union_area_m2": 265131.8321478899,
+        "residual": 0,
+        "tunnel_track_metres_estimate": 436.45161290322585,
+        "unscheduled": 0
+      },
+      {
+        "completed": 2,
+        "delay_ms": 337378,
+        "design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+        "mode": "flyover",
+        "qualifies": false,
+        "required": 2,
+        "reservation_union_area_m2": 268249.90594577143,
+        "residual": 0,
+        "tunnel_track_metres_estimate": 436.45161290322585,
+        "unscheduled": 0
+      },
+      {
+        "completed": 2,
+        "delay_ms": 337378,
+        "design_hash": "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824",
+        "mode": "diveunder",
+        "qualifies": false,
+        "required": 2,
+        "reservation_union_area_m2": 281684.87535987154,
+        "residual": 0,
+        "tunnel_track_metres_estimate": 1083.25796707852,
+        "unscheduled": 0
+      }
+    ],
+    "alternatives": [],
+    "construction_authorised": false,
+    "delay_budget_ms": 0,
+    "detail_policy": "keep search, terrain cells and reservations local",
+    "scenario": "merge_pulse",
+    "scenario_hash": "c583a6e16efd95261329516c412b622cdd48b6f501359dd06e493dd6320fffb9",
+    "status": "no_tested_design_meets_outcome",
+    "unresolved_choice": "actual structures, grade-aware performance and game representation remain unassessed"
+  },
+  {
+    "all_results": [
+      {
+        "completed": 2,
+        "delay_ms": 2735418,
+        "design_hash": "fa59f662c33014f967c11d498d23d5f5f133a13b35c7fef3770b47b1d52dc709",
+        "mode": "flat",
+        "qualifies": false,
+        "required": 2,
+        "reservation_union_area_m2": 265131.8321478899,
+        "residual": 0,
+        "tunnel_track_metres_estimate": 436.45161290322585,
+        "unscheduled": 0
+      },
+      {
+        "completed": 2,
+        "delay_ms": 2735404,
+        "design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+        "mode": "flyover",
+        "qualifies": false,
+        "required": 2,
+        "reservation_union_area_m2": 268249.90594577143,
+        "residual": 0,
+        "tunnel_track_metres_estimate": 436.45161290322585,
+        "unscheduled": 0
+      },
+      {
+        "completed": 2,
+        "delay_ms": 2735404,
+        "design_hash": "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824",
+        "mode": "diveunder",
+        "qualifies": false,
+        "required": 2,
+        "reservation_union_area_m2": 281684.87535987154,
+        "residual": 0,
+        "tunnel_track_metres_estimate": 1083.25796707852,
+        "unscheduled": 0
+      }
+    ],
+    "alternatives": [],
+    "construction_authorised": false,
+    "delay_budget_ms": 0,
+    "detail_policy": "keep search, terrain cells and reservations local",
+    "scenario": "downstream_blocked",
+    "scenario_hash": "8047a65ce0b3d4c338e9c88e080f01354039717cb15e11ae2c4916240bc188c0",
+    "status": "no_tested_design_meets_outcome",
+    "unresolved_choice": "actual structures, grade-aware performance and game representation remain unassessed"
+  }
+]

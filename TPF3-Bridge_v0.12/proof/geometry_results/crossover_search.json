@@ -1,0 +1,672 @@
+{
+  "within_100m": {
+    "schema_version": "0.3.0",
+    "status": "candidate_found_in_enumerated_set",
+    "evaluations": 35,
+    "grid_size": 35,
+    "feasible_candidates": 3,
+    "best_in_evaluated_set": {
+      "spec": {
+        "spacing_m": 4.5,
+        "turnout_span_m": 45.0,
+        "branch_slope": 0.09,
+        "maximum_span_m": 100,
+        "linked_controller": true
+      },
+      "status": "synthetic_candidate_fitted",
+      "span_m": 95.0,
+      "compile_hash": "6d916d4c74072376667c772adfc5080f57da5ae6f7f4eac183c43421524e04c0",
+      "curvature_upper_per_m": 0.0029947730881103966
+    },
+    "selection_scope": "minimum centreline span in finite declared grid; not global optimum or construction approval",
+    "brief": {
+      "spacing_m": 4.5,
+      "maximum_span_m": 100,
+      "profile": {
+        "minimum_radius_m": 300.0,
+        "envelope_half_width_m": 1.75,
+        "envelope_gap_m": 0.5,
+        "flatness_m": 0.01,
+        "length_gap_m": 0.0001,
+        "fidelity": "synthetic"
+      }
+    },
+    "trace": [
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 30.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 36.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 40.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 45.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 50.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 60.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 72.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 30.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "radius_bound_not_certified:T1:reverse; not a proof of exact-radius violation"
+      },
+      {
+        "spec": {
+          "spacing_m": 4.5,
+          "turnout_span_m": 36.0,
+          "branch_slope": 0.075,
+          "maximum_span_m": 100,
+          "linked_controller": true
+        },
+        "status": "synthetic_candidate_fitted",
+        "span_m": 96.0,
+        "compile_hash": "ee0354db0b2159788b37e023454cf4c0479136e885077125c8b7b91ac243b921",
+        "curvature_upper_per_m": 0.00312121695637419
+      },
+      {
+        "spec": {
+          "spacing_m": 4.5,
+          "turnout_span_m": 40.0,
+          "branch_slope": 0.075,
+          "maximum_span_m": 100,
+          "linked_controller": true
+        },
+        "status": "synthetic_candidate_fitted",
+        "span_m": 100.0,
+        "compile_hash": "cbdb7ba1a8dbac0cc6fa80400ec5b2e4c94583b0407c637f3b2942f4da4b3db7",
+        "curvature_upper_per_m": 0.0028090952608246593
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 45.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 50.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 60.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 72.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 30.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "radius_bound_not_certified:T1:reverse; not a proof of exact-radius violation"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 36.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "radius_bound_not_certified:T1:reverse; not a proof of exact-radius violation"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 40.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "radius_bound_not_certified:T1:reverse; not a proof of exact-radius violation"
+      },
+      {
+        "spec": {
+          "spacing_m": 4.5,
+          "turnout_span_m": 45.0,
+          "branch_slope": 0.09,
+          "maximum_span_m": 100,
+          "linked_controller": true
+        },
+        "status": "synthetic_candidate_fitted",
+        "span_m": 95.0,
+        "compile_hash": "6d916d4c74072376667c772adfc5080f57da5ae6f7f4eac183c43421524e04c0",
+        "curvature_upper_per_m": 0.0029947730881103966
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 50.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 60.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 72.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 30.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "radius_bound_not_certified:T1:reverse; not a proof of exact-radius violation"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 36.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "radius_bound_not_certified:T1:reverse; not a proof of exact-radius violation"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 40.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "radius_bound_not_certified:T1:reverse; not a proof of exact-radius violation"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 45.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 50.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 60.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 72.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 30.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "radius_bound_not_certified:T1:reverse; not a proof of exact-radius violation"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 36.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "radius_bound_not_certified:T1:reverse; not a proof of exact-radius violation"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 40.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 45.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 50.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 60.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 72.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      }
+    ],
+    "UK_component_compliance": "unassessed",
+    "game_representability": "unknown"
+  },
+  "within_70m": {
+    "schema_version": "0.3.0",
+    "status": "no_candidate_in_enumerated_set",
+    "evaluations": 35,
+    "grid_size": 35,
+    "feasible_candidates": 0,
+    "best_in_evaluated_set": null,
+    "selection_scope": "minimum centreline span in finite declared grid; not global optimum or construction approval",
+    "brief": {
+      "spacing_m": 4.5,
+      "maximum_span_m": 70,
+      "profile": {
+        "minimum_radius_m": 300.0,
+        "envelope_half_width_m": 1.75,
+        "envelope_gap_m": 0.5,
+        "flatness_m": 0.01,
+        "length_gap_m": 0.0001,
+        "fidelity": "synthetic"
+      }
+    },
+    "trace": [
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 30.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 36.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 40.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 45.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 50.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 60.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 72.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 30.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 36.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 40.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 45.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 50.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 60.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.075,
+          "turnout_span_m": 72.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 30.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 36.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 40.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 45.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 50.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 60.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.09,
+          "turnout_span_m": 72.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 30.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 36.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 40.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 45.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 50.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 60.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.1,
+          "turnout_span_m": 72.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 30.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "radius_bound_not_certified:T1:reverse; not a proof of exact-radius violation"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 36.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 40.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 45.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 50.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 60.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      },
+      {
+        "spec": {
+          "branch_slope": 0.12,
+          "turnout_span_m": 72.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "No positive connecting tangent for selected synthetic component"
+      }
+    ],
+    "UK_component_compliance": "unassessed",
+    "game_representability": "unknown"
+  },
+  "one_evaluation": {
+    "schema_version": "0.3.0",
+    "status": "search_exhausted",
+    "evaluations": 1,
+    "grid_size": 35,
+    "feasible_candidates": 0,
+    "best_in_evaluated_set": null,
+    "selection_scope": "minimum centreline span in finite declared grid; not global optimum or construction approval",
+    "brief": {
+      "spacing_m": 4.5,
+      "maximum_span_m": 100,
+      "profile": {
+        "minimum_radius_m": 300.0,
+        "envelope_half_width_m": 1.75,
+        "envelope_gap_m": 0.5,
+        "flatness_m": 0.01,
+        "length_gap_m": 0.0001,
+        "fidelity": "synthetic"
+      }
+    },
+    "trace": [
+      {
+        "spec": {
+          "branch_slope": 0.06,
+          "turnout_span_m": 30.0
+        },
+        "status": "rejected_or_not_certified",
+        "reason": "crossover_exceeds_authorised_span"
+      }
+    ],
+    "UK_component_compliance": "unassessed",
+    "game_representability": "unknown"
+  }
+}

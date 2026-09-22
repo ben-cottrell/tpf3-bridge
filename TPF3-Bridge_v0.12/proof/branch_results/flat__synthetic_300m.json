@@ -1,0 +1,2305 @@
+{
+  "assessment_scope": "whole-pass time-space reservation proof; waits occur outside model; not microscopic queues or live signalling",
+  "assignments": [
+    {
+      "claims": [
+        {
+          "end_ms": 282021,
+          "owner": "T00_branch_in",
+          "resource": "track:return_boundary",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 727425,
+          "owner": "T00_branch_in",
+          "resource": "track:return_connector",
+          "start_ms": 229281,
+          "state": null
+        },
+        {
+          "end_ms": 581301,
+          "owner": "T00_branch_in",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 521801,
+          "state": null
+        },
+        {
+          "end_ms": 733397,
+          "owner": "T00_branch_in",
+          "resource": "track:M:reverse",
+          "start_ms": 674686,
+          "state": null
+        },
+        {
+          "end_ms": 733397,
+          "owner": "T00_branch_in",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 674686,
+          "state": null
+        },
+        {
+          "end_ms": 733397,
+          "owner": "T00_branch_in",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 674686,
+          "state": "R"
+        },
+        {
+          "end_ms": 778136,
+          "owner": "T00_branch_in",
+          "resource": "track:west_merge_exit",
+          "start_ms": 680657,
+          "state": null
+        },
+        {
+          "end_ms": 958325,
+          "owner": "T00_branch_in",
+          "resource": "track:west_exit",
+          "start_ms": 725396,
+          "state": null
+        }
+      ],
+      "clear_ms": 958325,
+      "entry_delay_ms": 0,
+      "entry_ms": 0,
+      "formation_length_m": 300.0,
+      "request_id": "T00_branch_in",
+      "requested_ms": 0,
+      "route": "branch_in",
+      "state_at_horizon": "completed",
+      "witnesses": []
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 108645,
+          "owner": "T00_main_east",
+          "resource": "track:east_approach",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 110137,
+          "owner": "T00_main_east",
+          "resource": "track:D:normal",
+          "start_ms": 89460,
+          "state": null
+        },
+        {
+          "end_ms": 110137,
+          "owner": "T00_main_east",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 89460,
+          "state": null
+        },
+        {
+          "end_ms": 110137,
+          "owner": "T00_main_east",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 89460,
+          "state": "N"
+        },
+        {
+          "end_ms": 265231,
+          "owner": "T00_main_east",
+          "resource": "track:east_continuation",
+          "start_ms": 90951,
+          "state": null
+        },
+        {
+          "end_ms": 136869,
+          "owner": "T00_main_east",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 116020,
+          "state": null
+        }
+      ],
+      "clear_ms": 265231,
+      "entry_delay_ms": 0,
+      "entry_ms": 0,
+      "formation_length_m": 300.0,
+      "request_id": "T00_main_east",
+      "requested_ms": 0,
+      "route": "main_east",
+      "state_at_horizon": "completed",
+      "witnesses": []
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 187708,
+          "owner": "T00_main_west",
+          "resource": "track:west_restore",
+          "start_ms": 90000,
+          "state": null
+        },
+        {
+          "end_ms": 298064,
+          "owner": "T00_main_west",
+          "resource": "track:west_approach",
+          "start_ms": 168522,
+          "state": null
+        },
+        {
+          "end_ms": 299555,
+          "owner": "T00_main_west",
+          "resource": "track:M:normal",
+          "start_ms": 278878,
+          "state": null
+        },
+        {
+          "end_ms": 299555,
+          "owner": "T00_main_west",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 278878,
+          "state": null
+        },
+        {
+          "end_ms": 299555,
+          "owner": "T00_main_west",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 278878,
+          "state": "N"
+        },
+        {
+          "end_ms": 310740,
+          "owner": "T00_main_west",
+          "resource": "track:west_merge_exit",
+          "start_ms": 280369,
+          "state": null
+        },
+        {
+          "end_ms": 355787,
+          "owner": "T00_main_west",
+          "resource": "track:west_exit",
+          "start_ms": 291554,
+          "state": null
+        }
+      ],
+      "clear_ms": 355787,
+      "entry_delay_ms": 0,
+      "entry_ms": 90000,
+      "formation_length_m": 300.0,
+      "request_id": "T00_main_west",
+      "requested_ms": 90000,
+      "route": "main_west",
+      "state_at_horizon": "completed",
+      "witnesses": []
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 446760,
+          "owner": "T00_branch_out",
+          "resource": "track:east_approach",
+          "start_ms": 120000,
+          "state": null
+        },
+        {
+          "end_ms": 452731,
+          "owner": "T00_branch_out",
+          "resource": "track:D:reverse",
+          "start_ms": 394020,
+          "state": null
+        },
+        {
+          "end_ms": 452731,
+          "owner": "T00_branch_out",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 394020,
+          "state": null
+        },
+        {
+          "end_ms": 452731,
+          "owner": "T00_branch_out",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 394020,
+          "state": "R"
+        },
+        {
+          "end_ms": 851369,
+          "owner": "T00_branch_out",
+          "resource": "track:out_connector",
+          "start_ms": 399991,
+          "state": null
+        },
+        {
+          "end_ms": 1075062,
+          "owner": "T00_branch_out",
+          "resource": "track:out_boundary",
+          "start_ms": 798629,
+          "state": null
+        }
+      ],
+      "clear_ms": 1075062,
+      "entry_delay_ms": 0,
+      "entry_ms": 120000,
+      "formation_length_m": 300.0,
+      "request_id": "T00_branch_out",
+      "requested_ms": 120000,
+      "route": "branch_out",
+      "state_at_horizon": "completed",
+      "witnesses": []
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 780165,
+          "owner": "T01_branch_in",
+          "resource": "track:return_boundary",
+          "start_ms": 498144,
+          "state": null
+        },
+        {
+          "end_ms": 1225569,
+          "owner": "T01_branch_in",
+          "resource": "track:return_connector",
+          "start_ms": 727425,
+          "state": null
+        },
+        {
+          "end_ms": 1079445,
+          "owner": "T01_branch_in",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 1019945,
+          "state": null
+        },
+        {
+          "end_ms": 1231541,
+          "owner": "T01_branch_in",
+          "resource": "track:M:reverse",
+          "start_ms": 1172830,
+          "state": null
+        },
+        {
+          "end_ms": 1231541,
+          "owner": "T01_branch_in",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 1172830,
+          "state": null
+        },
+        {
+          "end_ms": 1231541,
+          "owner": "T01_branch_in",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 1172830,
+          "state": "R"
+        },
+        {
+          "end_ms": 1276280,
+          "owner": "T01_branch_in",
+          "resource": "track:west_merge_exit",
+          "start_ms": 1178801,
+          "state": null
+        },
+        {
+          "end_ms": 1456469,
+          "owner": "T01_branch_in",
+          "resource": "track:west_exit",
+          "start_ms": 1223540,
+          "state": null
+        }
+      ],
+      "clear_ms": 1456469,
+      "entry_delay_ms": 258144,
+      "entry_ms": 498144,
+      "formation_length_m": 300.0,
+      "request_id": "T01_branch_in",
+      "requested_ms": 240000,
+      "route": "branch_in",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 282021,
+          "blocking_owner": "T00_branch_in",
+          "requested_entry_ms": 240000,
+          "resource": "track:return_boundary"
+        },
+        {
+          "blocked_until_ms": 727425,
+          "blocking_owner": "T00_branch_in",
+          "requested_entry_ms": 240000,
+          "resource": "track:return_connector"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 573926,
+          "owner": "T01_main_east",
+          "resource": "track:east_approach",
+          "start_ms": 465281,
+          "state": null
+        },
+        {
+          "end_ms": 575418,
+          "owner": "T01_main_east",
+          "resource": "track:D:normal",
+          "start_ms": 554741,
+          "state": null
+        },
+        {
+          "end_ms": 575418,
+          "owner": "T01_main_east",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 554741,
+          "state": null
+        },
+        {
+          "end_ms": 575418,
+          "owner": "T01_main_east",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 554741,
+          "state": "N"
+        },
+        {
+          "end_ms": 730512,
+          "owner": "T01_main_east",
+          "resource": "track:east_continuation",
+          "start_ms": 556232,
+          "state": null
+        },
+        {
+          "end_ms": 602150,
+          "owner": "T01_main_east",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 581301,
+          "state": null
+        }
+      ],
+      "clear_ms": 730512,
+      "entry_delay_ms": 225281,
+      "entry_ms": 465281,
+      "formation_length_m": 300.0,
+      "request_id": "T01_main_east",
+      "requested_ms": 240000,
+      "route": "main_east",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 446760,
+          "blocking_owner": "T00_branch_out",
+          "requested_entry_ms": 240000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 581301,
+          "blocking_owner": "T00_branch_in",
+          "requested_entry_ms": 446760,
+          "resource": "crossing:RETURN_OVER_EAST"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 427708,
+          "owner": "T01_main_west",
+          "resource": "track:west_restore",
+          "start_ms": 330000,
+          "state": null
+        },
+        {
+          "end_ms": 538064,
+          "owner": "T01_main_west",
+          "resource": "track:west_approach",
+          "start_ms": 408522,
+          "state": null
+        },
+        {
+          "end_ms": 539555,
+          "owner": "T01_main_west",
+          "resource": "track:M:normal",
+          "start_ms": 518878,
+          "state": null
+        },
+        {
+          "end_ms": 539555,
+          "owner": "T01_main_west",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 518878,
+          "state": null
+        },
+        {
+          "end_ms": 539555,
+          "owner": "T01_main_west",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 518878,
+          "state": "N"
+        },
+        {
+          "end_ms": 550740,
+          "owner": "T01_main_west",
+          "resource": "track:west_merge_exit",
+          "start_ms": 520369,
+          "state": null
+        },
+        {
+          "end_ms": 595787,
+          "owner": "T01_main_west",
+          "resource": "track:west_exit",
+          "start_ms": 531554,
+          "state": null
+        }
+      ],
+      "clear_ms": 595787,
+      "entry_delay_ms": 0,
+      "entry_ms": 330000,
+      "formation_length_m": 300.0,
+      "request_id": "T01_main_west",
+      "requested_ms": 330000,
+      "route": "main_west",
+      "state_at_horizon": "completed",
+      "witnesses": []
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 900686,
+          "owner": "T01_branch_out",
+          "resource": "track:east_approach",
+          "start_ms": 573926,
+          "state": null
+        },
+        {
+          "end_ms": 906657,
+          "owner": "T01_branch_out",
+          "resource": "track:D:reverse",
+          "start_ms": 847946,
+          "state": null
+        },
+        {
+          "end_ms": 906657,
+          "owner": "T01_branch_out",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 847946,
+          "state": null
+        },
+        {
+          "end_ms": 906657,
+          "owner": "T01_branch_out",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 847946,
+          "state": "R"
+        },
+        {
+          "end_ms": 1305295,
+          "owner": "T01_branch_out",
+          "resource": "track:out_connector",
+          "start_ms": 853917,
+          "state": null
+        },
+        {
+          "end_ms": 1528988,
+          "owner": "T01_branch_out",
+          "resource": "track:out_boundary",
+          "start_ms": 1252555,
+          "state": null
+        }
+      ],
+      "clear_ms": 1528988,
+      "entry_delay_ms": 213926,
+      "entry_ms": 573926,
+      "formation_length_m": 300.0,
+      "request_id": "T01_branch_out",
+      "requested_ms": 360000,
+      "route": "branch_out",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 446760,
+          "blocking_owner": "T00_branch_out",
+          "requested_entry_ms": 360000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 573926,
+          "blocking_owner": "T01_main_east",
+          "requested_entry_ms": 360000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 851369,
+          "blocking_owner": "T00_branch_out",
+          "requested_entry_ms": 360000,
+          "resource": "track:out_connector"
+        },
+        {
+          "blocked_until_ms": 1075062,
+          "blocking_owner": "T00_branch_out",
+          "requested_entry_ms": 360000,
+          "resource": "track:out_boundary"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 1278309,
+          "owner": "T02_branch_in",
+          "resource": "track:return_boundary",
+          "start_ms": 996288,
+          "state": null
+        },
+        {
+          "end_ms": 1723713,
+          "owner": "T02_branch_in",
+          "resource": "track:return_connector",
+          "start_ms": 1225569,
+          "state": null
+        },
+        {
+          "end_ms": 1577589,
+          "owner": "T02_branch_in",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 1518089,
+          "state": null
+        },
+        {
+          "end_ms": 1729685,
+          "owner": "T02_branch_in",
+          "resource": "track:M:reverse",
+          "start_ms": 1670974,
+          "state": null
+        },
+        {
+          "end_ms": 1729685,
+          "owner": "T02_branch_in",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 1670974,
+          "state": null
+        },
+        {
+          "end_ms": 1729685,
+          "owner": "T02_branch_in",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 1670974,
+          "state": "R"
+        },
+        {
+          "end_ms": 1774424,
+          "owner": "T02_branch_in",
+          "resource": "track:west_merge_exit",
+          "start_ms": 1676945,
+          "state": null
+        },
+        {
+          "end_ms": 1954613,
+          "owner": "T02_branch_in",
+          "resource": "track:west_exit",
+          "start_ms": 1721684,
+          "state": null
+        }
+      ],
+      "clear_ms": 1954613,
+      "entry_delay_ms": 516288,
+      "entry_ms": 996288,
+      "formation_length_m": 300.0,
+      "request_id": "T02_branch_in",
+      "requested_ms": 480000,
+      "route": "branch_in",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 780165,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 480000,
+          "resource": "track:return_boundary"
+        },
+        {
+          "blocked_until_ms": 727425,
+          "blocking_owner": "T00_branch_in",
+          "requested_entry_ms": 480000,
+          "resource": "track:return_connector"
+        },
+        {
+          "blocked_until_ms": 1225569,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 480000,
+          "resource": "track:return_connector"
+        },
+        {
+          "blocked_until_ms": 1079445,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 480000,
+          "resource": "crossing:RETURN_OVER_EAST"
+        },
+        {
+          "blocked_until_ms": 1231541,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 480000,
+          "resource": "track:M:reverse"
+        },
+        {
+          "blocked_until_ms": 1231541,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 480000,
+          "resource": "body:M:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 1276280,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 480000,
+          "resource": "track:west_merge_exit"
+        },
+        {
+          "blocked_until_ms": 1456469,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 480000,
+          "resource": "track:west_exit"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 1072070,
+          "owner": "T02_main_east",
+          "resource": "track:east_approach",
+          "start_ms": 963425,
+          "state": null
+        },
+        {
+          "end_ms": 1073562,
+          "owner": "T02_main_east",
+          "resource": "track:D:normal",
+          "start_ms": 1052885,
+          "state": null
+        },
+        {
+          "end_ms": 1073562,
+          "owner": "T02_main_east",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 1052885,
+          "state": null
+        },
+        {
+          "end_ms": 1073562,
+          "owner": "T02_main_east",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 1052885,
+          "state": "N"
+        },
+        {
+          "end_ms": 1228656,
+          "owner": "T02_main_east",
+          "resource": "track:east_continuation",
+          "start_ms": 1054376,
+          "state": null
+        },
+        {
+          "end_ms": 1100294,
+          "owner": "T02_main_east",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 1079445,
+          "state": null
+        }
+      ],
+      "clear_ms": 1228656,
+      "entry_delay_ms": 483425,
+      "entry_ms": 963425,
+      "formation_length_m": 300.0,
+      "request_id": "T02_main_east",
+      "requested_ms": 480000,
+      "route": "main_east",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 573926,
+          "blocking_owner": "T01_main_east",
+          "requested_entry_ms": 480000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 900686,
+          "blocking_owner": "T01_branch_out",
+          "requested_entry_ms": 480000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 575418,
+          "blocking_owner": "T01_main_east",
+          "requested_entry_ms": 480000,
+          "resource": "track:D:normal"
+        },
+        {
+          "blocked_until_ms": 575418,
+          "blocking_owner": "T01_main_east",
+          "requested_entry_ms": 480000,
+          "resource": "body:D:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 730512,
+          "blocking_owner": "T01_main_east",
+          "requested_entry_ms": 480000,
+          "resource": "track:east_continuation"
+        },
+        {
+          "blocked_until_ms": 602150,
+          "blocking_owner": "T01_main_east",
+          "requested_entry_ms": 480000,
+          "resource": "crossing:RETURN_OVER_EAST"
+        },
+        {
+          "blocked_until_ms": 1079445,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 900686,
+          "resource": "crossing:RETURN_OVER_EAST"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 854479,
+          "owner": "T02_main_west",
+          "resource": "track:west_restore",
+          "start_ms": 756771,
+          "state": null
+        },
+        {
+          "end_ms": 964835,
+          "owner": "T02_main_west",
+          "resource": "track:west_approach",
+          "start_ms": 835293,
+          "state": null
+        },
+        {
+          "end_ms": 966326,
+          "owner": "T02_main_west",
+          "resource": "track:M:normal",
+          "start_ms": 945649,
+          "state": null
+        },
+        {
+          "end_ms": 966326,
+          "owner": "T02_main_west",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 945649,
+          "state": null
+        },
+        {
+          "end_ms": 966326,
+          "owner": "T02_main_west",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 945649,
+          "state": "N"
+        },
+        {
+          "end_ms": 977511,
+          "owner": "T02_main_west",
+          "resource": "track:west_merge_exit",
+          "start_ms": 947140,
+          "state": null
+        },
+        {
+          "end_ms": 1022558,
+          "owner": "T02_main_west",
+          "resource": "track:west_exit",
+          "start_ms": 958325,
+          "state": null
+        }
+      ],
+      "clear_ms": 1022558,
+      "entry_delay_ms": 186771,
+      "entry_ms": 756771,
+      "formation_length_m": 300.0,
+      "request_id": "T02_main_west",
+      "requested_ms": 570000,
+      "route": "main_west",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 778136,
+          "blocking_owner": "T00_branch_in",
+          "requested_entry_ms": 570000,
+          "resource": "track:west_merge_exit"
+        },
+        {
+          "blocked_until_ms": 958325,
+          "blocking_owner": "T00_branch_in",
+          "requested_entry_ms": 570000,
+          "resource": "track:west_exit"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 1398830,
+          "owner": "T02_branch_out",
+          "resource": "track:east_approach",
+          "start_ms": 1072070,
+          "state": null
+        },
+        {
+          "end_ms": 1404801,
+          "owner": "T02_branch_out",
+          "resource": "track:D:reverse",
+          "start_ms": 1346090,
+          "state": null
+        },
+        {
+          "end_ms": 1404801,
+          "owner": "T02_branch_out",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 1346090,
+          "state": null
+        },
+        {
+          "end_ms": 1404801,
+          "owner": "T02_branch_out",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 1346090,
+          "state": "R"
+        },
+        {
+          "end_ms": 1803439,
+          "owner": "T02_branch_out",
+          "resource": "track:out_connector",
+          "start_ms": 1352061,
+          "state": null
+        },
+        {
+          "end_ms": 2027132,
+          "owner": "T02_branch_out",
+          "resource": "track:out_boundary",
+          "start_ms": 1750699,
+          "state": null
+        }
+      ],
+      "clear_ms": 2027132,
+      "entry_delay_ms": 472070,
+      "entry_ms": 1072070,
+      "formation_length_m": 300.0,
+      "request_id": "T02_branch_out",
+      "requested_ms": 600000,
+      "route": "branch_out",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 900686,
+          "blocking_owner": "T01_branch_out",
+          "requested_entry_ms": 600000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 906657,
+          "blocking_owner": "T01_branch_out",
+          "requested_entry_ms": 600000,
+          "resource": "track:D:reverse"
+        },
+        {
+          "blocked_until_ms": 906657,
+          "blocking_owner": "T01_branch_out",
+          "requested_entry_ms": 600000,
+          "resource": "body:D:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 1305295,
+          "blocking_owner": "T01_branch_out",
+          "requested_entry_ms": 600000,
+          "resource": "track:out_connector"
+        },
+        {
+          "blocked_until_ms": 1528988,
+          "blocking_owner": "T01_branch_out",
+          "requested_entry_ms": 600000,
+          "resource": "track:out_boundary"
+        },
+        {
+          "blocked_until_ms": 1072070,
+          "blocking_owner": "T02_main_east",
+          "requested_entry_ms": 1025304,
+          "resource": "track:east_approach"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 1776453,
+          "owner": "T03_branch_in",
+          "resource": "track:return_boundary",
+          "start_ms": 1494432,
+          "state": null
+        },
+        {
+          "end_ms": 2221857,
+          "owner": "T03_branch_in",
+          "resource": "track:return_connector",
+          "start_ms": 1723713,
+          "state": null
+        },
+        {
+          "end_ms": 2075733,
+          "owner": "T03_branch_in",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 2016233,
+          "state": null
+        },
+        {
+          "end_ms": 2227829,
+          "owner": "T03_branch_in",
+          "resource": "track:M:reverse",
+          "start_ms": 2169118,
+          "state": null
+        },
+        {
+          "end_ms": 2227829,
+          "owner": "T03_branch_in",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 2169118,
+          "state": null
+        },
+        {
+          "end_ms": 2227829,
+          "owner": "T03_branch_in",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 2169118,
+          "state": "R"
+        },
+        {
+          "end_ms": 2272568,
+          "owner": "T03_branch_in",
+          "resource": "track:west_merge_exit",
+          "start_ms": 2175089,
+          "state": null
+        },
+        {
+          "end_ms": 2452757,
+          "owner": "T03_branch_in",
+          "resource": "track:west_exit",
+          "start_ms": 2219828,
+          "state": null
+        }
+      ],
+      "clear_ms": 2452757,
+      "entry_delay_ms": 774432,
+      "entry_ms": 1494432,
+      "formation_length_m": 300.0,
+      "request_id": "T03_branch_in",
+      "requested_ms": 720000,
+      "route": "branch_in",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 780165,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 720000,
+          "resource": "track:return_boundary"
+        },
+        {
+          "blocked_until_ms": 1278309,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 720000,
+          "resource": "track:return_boundary"
+        },
+        {
+          "blocked_until_ms": 1225569,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 720000,
+          "resource": "track:return_connector"
+        },
+        {
+          "blocked_until_ms": 1723713,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 720000,
+          "resource": "track:return_connector"
+        },
+        {
+          "blocked_until_ms": 1456469,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 720000,
+          "resource": "track:west_exit"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 1570214,
+          "owner": "T03_main_east",
+          "resource": "track:east_approach",
+          "start_ms": 1461569,
+          "state": null
+        },
+        {
+          "end_ms": 1571706,
+          "owner": "T03_main_east",
+          "resource": "track:D:normal",
+          "start_ms": 1551029,
+          "state": null
+        },
+        {
+          "end_ms": 1571706,
+          "owner": "T03_main_east",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 1551029,
+          "state": null
+        },
+        {
+          "end_ms": 1571706,
+          "owner": "T03_main_east",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 1551029,
+          "state": "N"
+        },
+        {
+          "end_ms": 1726800,
+          "owner": "T03_main_east",
+          "resource": "track:east_continuation",
+          "start_ms": 1552520,
+          "state": null
+        },
+        {
+          "end_ms": 1598438,
+          "owner": "T03_main_east",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 1577589,
+          "state": null
+        }
+      ],
+      "clear_ms": 1726800,
+      "entry_delay_ms": 741569,
+      "entry_ms": 1461569,
+      "formation_length_m": 300.0,
+      "request_id": "T03_main_east",
+      "requested_ms": 720000,
+      "route": "main_east",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 900686,
+          "blocking_owner": "T01_branch_out",
+          "requested_entry_ms": 720000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1072070,
+          "blocking_owner": "T02_main_east",
+          "requested_entry_ms": 900686,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1228656,
+          "blocking_owner": "T02_main_east",
+          "requested_entry_ms": 900686,
+          "resource": "track:east_continuation"
+        },
+        {
+          "blocked_until_ms": 1079445,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 900686,
+          "resource": "crossing:RETURN_OVER_EAST"
+        },
+        {
+          "blocked_until_ms": 1398830,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 1137705,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1577589,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 1398830,
+          "resource": "crossing:RETURN_OVER_EAST"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 984021,
+          "owner": "T03_main_west",
+          "resource": "track:west_restore",
+          "start_ms": 886313,
+          "state": null
+        },
+        {
+          "end_ms": 1094377,
+          "owner": "T03_main_west",
+          "resource": "track:west_approach",
+          "start_ms": 964835,
+          "state": null
+        },
+        {
+          "end_ms": 1095868,
+          "owner": "T03_main_west",
+          "resource": "track:M:normal",
+          "start_ms": 1075191,
+          "state": null
+        },
+        {
+          "end_ms": 1095868,
+          "owner": "T03_main_west",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 1075191,
+          "state": null
+        },
+        {
+          "end_ms": 1095868,
+          "owner": "T03_main_west",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 1075191,
+          "state": "N"
+        },
+        {
+          "end_ms": 1107053,
+          "owner": "T03_main_west",
+          "resource": "track:west_merge_exit",
+          "start_ms": 1076682,
+          "state": null
+        },
+        {
+          "end_ms": 1152100,
+          "owner": "T03_main_west",
+          "resource": "track:west_exit",
+          "start_ms": 1087867,
+          "state": null
+        }
+      ],
+      "clear_ms": 1152100,
+      "entry_delay_ms": 76313,
+      "entry_ms": 886313,
+      "formation_length_m": 300.0,
+      "request_id": "T03_main_west",
+      "requested_ms": 810000,
+      "route": "main_west",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 854479,
+          "blocking_owner": "T02_main_west",
+          "requested_entry_ms": 810000,
+          "resource": "track:west_restore"
+        },
+        {
+          "blocked_until_ms": 964835,
+          "blocking_owner": "T02_main_west",
+          "requested_entry_ms": 810000,
+          "resource": "track:west_approach"
+        },
+        {
+          "blocked_until_ms": 1022558,
+          "blocking_owner": "T02_main_west",
+          "requested_entry_ms": 810000,
+          "resource": "track:west_exit"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 1896974,
+          "owner": "T03_branch_out",
+          "resource": "track:east_approach",
+          "start_ms": 1570214,
+          "state": null
+        },
+        {
+          "end_ms": 1902945,
+          "owner": "T03_branch_out",
+          "resource": "track:D:reverse",
+          "start_ms": 1844234,
+          "state": null
+        },
+        {
+          "end_ms": 1902945,
+          "owner": "T03_branch_out",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 1844234,
+          "state": null
+        },
+        {
+          "end_ms": 1902945,
+          "owner": "T03_branch_out",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 1844234,
+          "state": "R"
+        },
+        {
+          "end_ms": 2301583,
+          "owner": "T03_branch_out",
+          "resource": "track:out_connector",
+          "start_ms": 1850205,
+          "state": null
+        },
+        {
+          "end_ms": 2525276,
+          "owner": "T03_branch_out",
+          "resource": "track:out_boundary",
+          "start_ms": 2248843,
+          "state": null
+        }
+      ],
+      "clear_ms": 2525276,
+      "entry_delay_ms": 730214,
+      "entry_ms": 1570214,
+      "formation_length_m": 300.0,
+      "request_id": "T03_branch_out",
+      "requested_ms": 840000,
+      "route": "branch_out",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 900686,
+          "blocking_owner": "T01_branch_out",
+          "requested_entry_ms": 840000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1072070,
+          "blocking_owner": "T02_main_east",
+          "requested_entry_ms": 840000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1398830,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 840000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1305295,
+          "blocking_owner": "T01_branch_out",
+          "requested_entry_ms": 840000,
+          "resource": "track:out_connector"
+        },
+        {
+          "blocked_until_ms": 1803439,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 840000,
+          "resource": "track:out_connector"
+        },
+        {
+          "blocked_until_ms": 1528988,
+          "blocking_owner": "T01_branch_out",
+          "requested_entry_ms": 840000,
+          "resource": "track:out_boundary"
+        },
+        {
+          "blocked_until_ms": 2027132,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 840000,
+          "resource": "track:out_boundary"
+        },
+        {
+          "blocked_until_ms": 1570214,
+          "blocking_owner": "T03_main_east",
+          "requested_entry_ms": 1523448,
+          "resource": "track:east_approach"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 2274597,
+          "owner": "T04_branch_in",
+          "resource": "track:return_boundary",
+          "start_ms": 1992576,
+          "state": null
+        },
+        {
+          "end_ms": 2720001,
+          "owner": "T04_branch_in",
+          "resource": "track:return_connector",
+          "start_ms": 2221857,
+          "state": null
+        },
+        {
+          "end_ms": 2573877,
+          "owner": "T04_branch_in",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 2514377,
+          "state": null
+        },
+        {
+          "end_ms": 2725973,
+          "owner": "T04_branch_in",
+          "resource": "track:M:reverse",
+          "start_ms": 2667262,
+          "state": null
+        },
+        {
+          "end_ms": 2725973,
+          "owner": "T04_branch_in",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 2667262,
+          "state": null
+        },
+        {
+          "end_ms": 2725973,
+          "owner": "T04_branch_in",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 2667262,
+          "state": "R"
+        },
+        {
+          "end_ms": 2770712,
+          "owner": "T04_branch_in",
+          "resource": "track:west_merge_exit",
+          "start_ms": 2673233,
+          "state": null
+        },
+        {
+          "end_ms": 2950901,
+          "owner": "T04_branch_in",
+          "resource": "track:west_exit",
+          "start_ms": 2717972,
+          "state": null
+        }
+      ],
+      "clear_ms": 2950901,
+      "entry_delay_ms": 1032576,
+      "entry_ms": 1992576,
+      "formation_length_m": 300.0,
+      "request_id": "T04_branch_in",
+      "requested_ms": 960000,
+      "route": "branch_in",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 1278309,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 960000,
+          "resource": "track:return_boundary"
+        },
+        {
+          "blocked_until_ms": 1225569,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 960000,
+          "resource": "track:return_connector"
+        },
+        {
+          "blocked_until_ms": 1723713,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 960000,
+          "resource": "track:return_connector"
+        },
+        {
+          "blocked_until_ms": 1577589,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 960000,
+          "resource": "crossing:RETURN_OVER_EAST"
+        },
+        {
+          "blocked_until_ms": 1729685,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 960000,
+          "resource": "track:M:reverse"
+        },
+        {
+          "blocked_until_ms": 1729685,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 960000,
+          "resource": "body:M:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 1774424,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 960000,
+          "resource": "track:west_merge_exit"
+        },
+        {
+          "blocked_until_ms": 1954613,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 960000,
+          "resource": "track:west_exit"
+        },
+        {
+          "blocked_until_ms": 1776453,
+          "blocking_owner": "T03_branch_in",
+          "requested_entry_ms": 1494432,
+          "resource": "track:return_boundary"
+        },
+        {
+          "blocked_until_ms": 2221857,
+          "blocking_owner": "T03_branch_in",
+          "requested_entry_ms": 1494432,
+          "resource": "track:return_connector"
+        },
+        {
+          "blocked_until_ms": 2075733,
+          "blocking_owner": "T03_branch_in",
+          "requested_entry_ms": 1494432,
+          "resource": "crossing:RETURN_OVER_EAST"
+        },
+        {
+          "blocked_until_ms": 2227829,
+          "blocking_owner": "T03_branch_in",
+          "requested_entry_ms": 1494432,
+          "resource": "track:M:reverse"
+        },
+        {
+          "blocked_until_ms": 2227829,
+          "blocking_owner": "T03_branch_in",
+          "requested_entry_ms": 1494432,
+          "resource": "body:M:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 2272568,
+          "blocking_owner": "T03_branch_in",
+          "requested_entry_ms": 1494432,
+          "resource": "track:west_merge_exit"
+        },
+        {
+          "blocked_until_ms": 2452757,
+          "blocking_owner": "T03_branch_in",
+          "requested_entry_ms": 1494432,
+          "resource": "track:west_exit"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 2068358,
+          "owner": "T04_main_east",
+          "resource": "track:east_approach",
+          "start_ms": 1959713,
+          "state": null
+        },
+        {
+          "end_ms": 2069850,
+          "owner": "T04_main_east",
+          "resource": "track:D:normal",
+          "start_ms": 2049173,
+          "state": null
+        },
+        {
+          "end_ms": 2069850,
+          "owner": "T04_main_east",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 2049173,
+          "state": null
+        },
+        {
+          "end_ms": 2069850,
+          "owner": "T04_main_east",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 2049173,
+          "state": "N"
+        },
+        {
+          "end_ms": 2224944,
+          "owner": "T04_main_east",
+          "resource": "track:east_continuation",
+          "start_ms": 2050664,
+          "state": null
+        },
+        {
+          "end_ms": 2096582,
+          "owner": "T04_main_east",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 2075733,
+          "state": null
+        }
+      ],
+      "clear_ms": 2224944,
+      "entry_delay_ms": 999713,
+      "entry_ms": 1959713,
+      "formation_length_m": 300.0,
+      "request_id": "T04_main_east",
+      "requested_ms": 960000,
+      "route": "main_east",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 1072070,
+          "blocking_owner": "T02_main_east",
+          "requested_entry_ms": 960000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1073562,
+          "blocking_owner": "T02_main_east",
+          "requested_entry_ms": 960000,
+          "resource": "track:D:normal"
+        },
+        {
+          "blocked_until_ms": 1073562,
+          "blocking_owner": "T02_main_east",
+          "requested_entry_ms": 960000,
+          "resource": "body:D:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 1228656,
+          "blocking_owner": "T02_main_east",
+          "requested_entry_ms": 960000,
+          "resource": "track:east_continuation"
+        },
+        {
+          "blocked_until_ms": 1079445,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 960000,
+          "resource": "crossing:RETURN_OVER_EAST"
+        },
+        {
+          "blocked_until_ms": 1100294,
+          "blocking_owner": "T02_main_east",
+          "requested_entry_ms": 960000,
+          "resource": "crossing:RETURN_OVER_EAST"
+        },
+        {
+          "blocked_until_ms": 1398830,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 1137705,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1570214,
+          "blocking_owner": "T03_main_east",
+          "requested_entry_ms": 1398830,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1726800,
+          "blocking_owner": "T03_main_east",
+          "requested_entry_ms": 1398830,
+          "resource": "track:east_continuation"
+        },
+        {
+          "blocked_until_ms": 1577589,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 1398830,
+          "resource": "crossing:RETURN_OVER_EAST"
+        },
+        {
+          "blocked_until_ms": 1896974,
+          "blocking_owner": "T03_branch_out",
+          "requested_entry_ms": 1635849,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 2075733,
+          "blocking_owner": "T03_branch_in",
+          "requested_entry_ms": 1896974,
+          "resource": "crossing:RETURN_OVER_EAST"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 1352623,
+          "owner": "T04_main_west",
+          "resource": "track:west_restore",
+          "start_ms": 1254915,
+          "state": null
+        },
+        {
+          "end_ms": 1462979,
+          "owner": "T04_main_west",
+          "resource": "track:west_approach",
+          "start_ms": 1333437,
+          "state": null
+        },
+        {
+          "end_ms": 1464470,
+          "owner": "T04_main_west",
+          "resource": "track:M:normal",
+          "start_ms": 1443793,
+          "state": null
+        },
+        {
+          "end_ms": 1464470,
+          "owner": "T04_main_west",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 1443793,
+          "state": null
+        },
+        {
+          "end_ms": 1464470,
+          "owner": "T04_main_west",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 1443793,
+          "state": "N"
+        },
+        {
+          "end_ms": 1475655,
+          "owner": "T04_main_west",
+          "resource": "track:west_merge_exit",
+          "start_ms": 1445284,
+          "state": null
+        },
+        {
+          "end_ms": 1520702,
+          "owner": "T04_main_west",
+          "resource": "track:west_exit",
+          "start_ms": 1456469,
+          "state": null
+        }
+      ],
+      "clear_ms": 1520702,
+      "entry_delay_ms": 204915,
+      "entry_ms": 1254915,
+      "formation_length_m": 300.0,
+      "request_id": "T04_main_west",
+      "requested_ms": 1050000,
+      "route": "main_west",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 1276280,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 1050000,
+          "resource": "track:west_merge_exit"
+        },
+        {
+          "blocked_until_ms": 1456469,
+          "blocking_owner": "T01_branch_in",
+          "requested_entry_ms": 1050000,
+          "resource": "track:west_exit"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 2395118,
+          "owner": "T04_branch_out",
+          "resource": "track:east_approach",
+          "start_ms": 2068358,
+          "state": null
+        },
+        {
+          "end_ms": 2401089,
+          "owner": "T04_branch_out",
+          "resource": "track:D:reverse",
+          "start_ms": 2342378,
+          "state": null
+        },
+        {
+          "end_ms": 2401089,
+          "owner": "T04_branch_out",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 2342378,
+          "state": null
+        },
+        {
+          "end_ms": 2401089,
+          "owner": "T04_branch_out",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 2342378,
+          "state": "R"
+        },
+        {
+          "end_ms": 2799727,
+          "owner": "T04_branch_out",
+          "resource": "track:out_connector",
+          "start_ms": 2348349,
+          "state": null
+        },
+        {
+          "end_ms": 3023420,
+          "owner": "T04_branch_out",
+          "resource": "track:out_boundary",
+          "start_ms": 2746987,
+          "state": null
+        }
+      ],
+      "clear_ms": 3023420,
+      "entry_delay_ms": 988358,
+      "entry_ms": 2068358,
+      "formation_length_m": 300.0,
+      "request_id": "T04_branch_out",
+      "requested_ms": 1080000,
+      "route": "branch_out",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 1398830,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 1080000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1404801,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 1080000,
+          "resource": "track:D:reverse"
+        },
+        {
+          "blocked_until_ms": 1404801,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 1080000,
+          "resource": "body:D:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 1803439,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 1080000,
+          "resource": "track:out_connector"
+        },
+        {
+          "blocked_until_ms": 2027132,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 1080000,
+          "resource": "track:out_boundary"
+        },
+        {
+          "blocked_until_ms": 1570214,
+          "blocking_owner": "T03_main_east",
+          "requested_entry_ms": 1523448,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1896974,
+          "blocking_owner": "T03_branch_out",
+          "requested_entry_ms": 1523448,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1902945,
+          "blocking_owner": "T03_branch_out",
+          "requested_entry_ms": 1523448,
+          "resource": "track:D:reverse"
+        },
+        {
+          "blocked_until_ms": 1902945,
+          "blocking_owner": "T03_branch_out",
+          "requested_entry_ms": 1523448,
+          "resource": "body:D:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 2301583,
+          "blocking_owner": "T03_branch_out",
+          "requested_entry_ms": 1523448,
+          "resource": "track:out_connector"
+        },
+        {
+          "blocked_until_ms": 2525276,
+          "blocking_owner": "T03_branch_out",
+          "requested_entry_ms": 1523448,
+          "resource": "track:out_boundary"
+        },
+        {
+          "blocked_until_ms": 2068358,
+          "blocking_owner": "T04_main_east",
+          "requested_entry_ms": 2021592,
+          "resource": "track:east_approach"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 2772741,
+          "owner": "T05_branch_in",
+          "resource": "track:return_boundary",
+          "start_ms": 2490720,
+          "state": null
+        },
+        {
+          "end_ms": 3218145,
+          "owner": "T05_branch_in",
+          "resource": "track:return_connector",
+          "start_ms": 2720001,
+          "state": null
+        },
+        {
+          "end_ms": 3072021,
+          "owner": "T05_branch_in",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 3012521,
+          "state": null
+        },
+        {
+          "end_ms": 3224117,
+          "owner": "T05_branch_in",
+          "resource": "track:M:reverse",
+          "start_ms": 3165406,
+          "state": null
+        },
+        {
+          "end_ms": 3224117,
+          "owner": "T05_branch_in",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 3165406,
+          "state": null
+        },
+        {
+          "end_ms": 3224117,
+          "owner": "T05_branch_in",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 3165406,
+          "state": "R"
+        },
+        {
+          "end_ms": 3268856,
+          "owner": "T05_branch_in",
+          "resource": "track:west_merge_exit",
+          "start_ms": 3171377,
+          "state": null
+        },
+        {
+          "end_ms": 3449045,
+          "owner": "T05_branch_in",
+          "resource": "track:west_exit",
+          "start_ms": 3216116,
+          "state": null
+        }
+      ],
+      "clear_ms": 3449045,
+      "entry_delay_ms": 1290720,
+      "entry_ms": 2490720,
+      "formation_length_m": 300.0,
+      "request_id": "T05_branch_in",
+      "requested_ms": 1200000,
+      "route": "branch_in",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 1278309,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 1200000,
+          "resource": "track:return_boundary"
+        },
+        {
+          "blocked_until_ms": 1723713,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 1200000,
+          "resource": "track:return_connector"
+        },
+        {
+          "blocked_until_ms": 2221857,
+          "blocking_owner": "T03_branch_in",
+          "requested_entry_ms": 1200000,
+          "resource": "track:return_connector"
+        },
+        {
+          "blocked_until_ms": 1954613,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 1200000,
+          "resource": "track:west_exit"
+        },
+        {
+          "blocked_until_ms": 2274597,
+          "blocking_owner": "T04_branch_in",
+          "requested_entry_ms": 1992576,
+          "resource": "track:return_boundary"
+        },
+        {
+          "blocked_until_ms": 2720001,
+          "blocking_owner": "T04_branch_in",
+          "requested_entry_ms": 1992576,
+          "resource": "track:return_connector"
+        },
+        {
+          "blocked_until_ms": 2573877,
+          "blocking_owner": "T04_branch_in",
+          "requested_entry_ms": 1992576,
+          "resource": "crossing:RETURN_OVER_EAST"
+        },
+        {
+          "blocked_until_ms": 2725973,
+          "blocking_owner": "T04_branch_in",
+          "requested_entry_ms": 1992576,
+          "resource": "track:M:reverse"
+        },
+        {
+          "blocked_until_ms": 2725973,
+          "blocking_owner": "T04_branch_in",
+          "requested_entry_ms": 1992576,
+          "resource": "body:M:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 2770712,
+          "blocking_owner": "T04_branch_in",
+          "requested_entry_ms": 1992576,
+          "resource": "track:west_merge_exit"
+        },
+        {
+          "blocked_until_ms": 2950901,
+          "blocking_owner": "T04_branch_in",
+          "requested_entry_ms": 1992576,
+          "resource": "track:west_exit"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 2566502,
+          "owner": "T05_main_east",
+          "resource": "track:east_approach",
+          "start_ms": 2457857,
+          "state": null
+        },
+        {
+          "end_ms": 2567994,
+          "owner": "T05_main_east",
+          "resource": "track:D:normal",
+          "start_ms": 2547317,
+          "state": null
+        },
+        {
+          "end_ms": 2567994,
+          "owner": "T05_main_east",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 2547317,
+          "state": null
+        },
+        {
+          "end_ms": 2567994,
+          "owner": "T05_main_east",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 2547317,
+          "state": "N"
+        },
+        {
+          "end_ms": 2723088,
+          "owner": "T05_main_east",
+          "resource": "track:east_continuation",
+          "start_ms": 2548808,
+          "state": null
+        },
+        {
+          "end_ms": 2594726,
+          "owner": "T05_main_east",
+          "resource": "crossing:RETURN_OVER_EAST",
+          "start_ms": 2573877,
+          "state": null
+        }
+      ],
+      "clear_ms": 2723088,
+      "entry_delay_ms": 1257857,
+      "entry_ms": 2457857,
+      "formation_length_m": 300.0,
+      "request_id": "T05_main_east",
+      "requested_ms": 1200000,
+      "route": "main_east",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 1398830,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 1200000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1570214,
+          "blocking_owner": "T03_main_east",
+          "requested_entry_ms": 1398830,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1726800,
+          "blocking_owner": "T03_main_east",
+          "requested_entry_ms": 1398830,
+          "resource": "track:east_continuation"
+        },
+        {
+          "blocked_until_ms": 1577589,
+          "blocking_owner": "T02_branch_in",
+          "requested_entry_ms": 1398830,
+          "resource": "crossing:RETURN_OVER_EAST"
+        },
+        {
+          "blocked_until_ms": 1896974,
+          "blocking_owner": "T03_branch_out",
+          "requested_entry_ms": 1635849,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 2068358,
+          "blocking_owner": "T04_main_east",
+          "requested_entry_ms": 1896974,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 2224944,
+          "blocking_owner": "T04_main_east",
+          "requested_entry_ms": 1896974,
+          "resource": "track:east_continuation"
+        },
+        {
+          "blocked_until_ms": 2075733,
+          "blocking_owner": "T03_branch_in",
+          "requested_entry_ms": 1896974,
+          "resource": "crossing:RETURN_OVER_EAST"
+        },
+        {
+          "blocked_until_ms": 2395118,
+          "blocking_owner": "T04_branch_out",
+          "requested_entry_ms": 2133993,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 2573877,
+          "blocking_owner": "T04_branch_in",
+          "requested_entry_ms": 2395118,
+          "resource": "crossing:RETURN_OVER_EAST"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 1482165,
+          "owner": "T05_main_west",
+          "resource": "track:west_restore",
+          "start_ms": 1384457,
+          "state": null
+        },
+        {
+          "end_ms": 1592521,
+          "owner": "T05_main_west",
+          "resource": "track:west_approach",
+          "start_ms": 1462979,
+          "state": null
+        },
+        {
+          "end_ms": 1594012,
+          "owner": "T05_main_west",
+          "resource": "track:M:normal",
+          "start_ms": 1573335,
+          "state": null
+        },
+        {
+          "end_ms": 1594012,
+          "owner": "T05_main_west",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 1573335,
+          "state": null
+        },
+        {
+          "end_ms": 1594012,
+          "owner": "T05_main_west",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 1573335,
+          "state": "N"
+        },
+        {
+          "end_ms": 1605197,
+          "owner": "T05_main_west",
+          "resource": "track:west_merge_exit",
+          "start_ms": 1574826,
+          "state": null
+        },
+        {
+          "end_ms": 1650244,
+          "owner": "T05_main_west",
+          "resource": "track:west_exit",
+          "start_ms": 1586011,
+          "state": null
+        }
+      ],
+      "clear_ms": 1650244,
+      "entry_delay_ms": 94457,
+      "entry_ms": 1384457,
+      "formation_length_m": 300.0,
+      "request_id": "T05_main_west",
+      "requested_ms": 1290000,
+      "route": "main_west",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 1352623,
+          "blocking_owner": "T04_main_west",
+          "requested_entry_ms": 1290000,
+          "resource": "track:west_restore"
+        },
+        {
+          "blocked_until_ms": 1462979,
+          "blocking_owner": "T04_main_west",
+          "requested_entry_ms": 1290000,
+          "resource": "track:west_approach"
+        },
+        {
+          "blocked_until_ms": 1520702,
+          "blocking_owner": "T04_main_west",
+          "requested_entry_ms": 1290000,
+          "resource": "track:west_exit"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 2893262,
+          "owner": "T05_branch_out",
+          "resource": "track:east_approach",
+          "start_ms": 2566502,
+          "state": null
+        },
+        {
+          "end_ms": 2899233,
+          "owner": "T05_branch_out",
+          "resource": "track:D:reverse",
+          "start_ms": 2840522,
+          "state": null
+        },
+        {
+          "end_ms": 2899233,
+          "owner": "T05_branch_out",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "start_ms": 2840522,
+          "state": null
+        },
+        {
+          "end_ms": 2899233,
+          "owner": "T05_branch_out",
+          "resource": "state:D:T40_CTRL",
+          "start_ms": 2840522,
+          "state": "R"
+        },
+        {
+          "end_ms": 3297871,
+          "owner": "T05_branch_out",
+          "resource": "track:out_connector",
+          "start_ms": 2846493,
+          "state": null
+        },
+        {
+          "end_ms": 3521564,
+          "owner": "T05_branch_out",
+          "resource": "track:out_boundary",
+          "start_ms": 3245131,
+          "state": null
+        }
+      ],
+      "clear_ms": 3521564,
+      "entry_delay_ms": 1246502,
+      "entry_ms": 2566502,
+      "formation_length_m": 300.0,
+      "request_id": "T05_branch_out",
+      "requested_ms": 1320000,
+      "route": "branch_out",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 1398830,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 1320000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1570214,
+          "blocking_owner": "T03_main_east",
+          "requested_entry_ms": 1320000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1896974,
+          "blocking_owner": "T03_branch_out",
+          "requested_entry_ms": 1320000,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 1803439,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 1320000,
+          "resource": "track:out_connector"
+        },
+        {
+          "blocked_until_ms": 2301583,
+          "blocking_owner": "T03_branch_out",
+          "requested_entry_ms": 1320000,
+          "resource": "track:out_connector"
+        },
+        {
+          "blocked_until_ms": 2027132,
+          "blocking_owner": "T02_branch_out",
+          "requested_entry_ms": 1320000,
+          "resource": "track:out_boundary"
+        },
+        {
+          "blocked_until_ms": 2525276,
+          "blocking_owner": "T03_branch_out",
+          "requested_entry_ms": 1320000,
+          "resource": "track:out_boundary"
+        },
+        {
+          "blocked_until_ms": 2068358,
+          "blocking_owner": "T04_main_east",
+          "requested_entry_ms": 2021592,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 2395118,
+          "blocking_owner": "T04_branch_out",
+          "requested_entry_ms": 2021592,
+          "resource": "track:east_approach"
+        },
+        {
+          "blocked_until_ms": 2401089,
+          "blocking_owner": "T04_branch_out",
+          "requested_entry_ms": 2021592,
+          "resource": "track:D:reverse"
+        },
+        {
+          "blocked_until_ms": 2401089,
+          "blocking_owner": "T04_branch_out",
+          "requested_entry_ms": 2021592,
+          "resource": "body:D:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 2799727,
+          "blocking_owner": "T04_branch_out",
+          "requested_entry_ms": 2021592,
+          "resource": "track:out_connector"
+        },
+        {
+          "blocked_until_ms": 3023420,
+          "blocking_owner": "T04_branch_out",
+          "requested_entry_ms": 2021592,
+          "resource": "track:out_boundary"
+        },
+        {
+          "blocked_until_ms": 2566502,
+          "blocking_owner": "T05_main_east",
+          "requested_entry_ms": 2519736,
+          "resource": "track:east_approach"
+        }
+      ]
+    }
+  ],
+  "calendar_evaluations": 65,
+  "candidate_hash": "35b0bdb4d9729d9d72886a4fa3bdac8518bf94a54c11de698d188dc4d51c8c16",
+  "completed": 24,
+  "conflict_witness_counts": {
+    "body:D:SYNTH_IMPORT_T40": 6,
+    "body:M:SYNTH_IMPORT_T40": 4,
+    "crossing:RETURN_OVER_EAST": 16,
+    "track:D:normal": 2,
+    "track:D:reverse": 4,
+    "track:M:reverse": 4,
+    "track:east_approach": 33,
+    "track:east_continuation": 6,
+    "track:out_boundary": 9,
+    "track:out_connector": 9,
+    "track:return_boundary": 8,
+    "track:return_connector": 11,
+    "track:west_approach": 2,
+    "track:west_exit": 10,
+    "track:west_merge_exit": 6,
+    "track:west_restore": 2
+  },
+  "construction_authorised": false,
+  "fixed_block_claims": [],
+  "grade_sensitive_performance": false,
+  "independent_check": {
+    "errors": [],
+    "passed": true,
+    "scope": "independent output/resource checks; timing template reused, physical model not independently validated"
+  },
+  "mode": "flat",
+  "performance_hash": "542e15e9f6d802cf5eb2588a36fd15d09b4ff273d405fd54b15e06947fa832a8",
+  "required": 24,
+  "residual": 0,
+  "resource_hash": "f6891c0c143ecea79795080f32e92c18a771075585a59343cf1d492412a8f216",
+  "result_hash": "7d2721ff7bcb0523ddbb8c0907785e83b944834b5d13bedf00f1d4abd1064cb3",
+  "scenario_hash": "dc978787bd1bca155e19cc86a3f1a1f5391b562eab2c4c3c1a474198c7b1ae45",
+  "scenario_id": "synthetic_300m",
+  "scheduled": 24,
+  "terrain_or_game_validated": false,
+  "total_entry_delay_ms_scheduled_only": 11793531,
+  "unscheduled": 0,
+  "unserved": [],
+  "version": "0.10.0"
+}

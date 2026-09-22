@@ -1,0 +1,180 @@
+{
+  "release_version": "0.3.0",
+  "checked_at_date": "2026-09-20",
+  "successful": true,
+  "checks": {
+    "local_markdown_links": 350,
+    "local_markdown_fragments": 201,
+    "json_files_parsed": 53,
+    "python_files_compiled": 21,
+    "tested_source_and_fixture_hashes": 29,
+    "legacy_scenario_regressions": 21,
+    "legacy_code_and_fixture_byte_comparisons": 16
+  },
+  "test_summary": {
+    "tests_run": 176,
+    "legacy_v02_tests_run": 83,
+    "geometry_v03_tests_run": 93,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "successful": true,
+    "python": "3.13.5"
+  },
+  "legacy_scenario_results": [
+    {
+      "path": "proof/results/bank_a_platforms_closed__banked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/bank_a_platforms_closed__common.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/bank_a_platforms_closed__linked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/bunched__banked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/bunched__common.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/bunched__linked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/late_stock_cycle__banked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/late_stock_cycle__common.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/late_stock_cycle__linked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/long_trains__banked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/long_trains__common.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/long_trains__linked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/nominal__banked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/nominal__common.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/nominal__linked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/platform_p1_closed__banked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/platform_p1_closed__common.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/platform_p1_closed__linked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/short_horizon__banked.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/short_horizon__common.json",
+      "json_identical": true
+    },
+    {
+      "path": "proof/results/short_horizon__linked.json",
+      "json_identical": true
+    }
+  ],
+  "legacy_source_results": [
+    {
+      "path": "proof/fixtures/bank_a_platforms_closed.json",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/fixtures/bunched.json",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/fixtures/late_stock_cycle.json",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/fixtures/long_trains.json",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/fixtures/nominal.json",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/fixtures/platform_p1_closed.json",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/fixtures/short_horizon.json",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/railproof/__init__.py",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/railproof/demo.py",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/railproof/engine.py",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/railproof/geometry.py",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/railproof/model.py",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/railproof/rules.py",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/tests/test_core.py",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/tests/test_geometry_rules.py",
+      "byte_identical": true
+    },
+    {
+      "path": "proof/tests/test_scenarios.py",
+      "byte_identical": true
+    }
+  ],
+  "external_links_all_revalidated": false,
+  "full_UK_engineering_compliance_assessed": false,
+  "game_tested": false,
+  "errors": []
+}

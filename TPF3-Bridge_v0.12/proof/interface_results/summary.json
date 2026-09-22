@@ -1,0 +1,145 @@
+{
+  "all_independent_checks_passed": true,
+  "all_platform_centreline_hulls_disjoint": true,
+  "authentic_complete_turnout_imported": false,
+  "boarding_faces": 8,
+  "comparison_count": 9,
+  "comparison_rows": [
+    {
+      "case": "initial",
+      "completed": 24,
+      "delay_s_scheduled_only": 0.0,
+      "excluded_faces": [
+        "B1"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "nominal",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "initial",
+      "completed": 12,
+      "delay_s_scheduled_only": 0.0,
+      "excluded_faces": [
+        "B1"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_a_platforms_closed",
+      "scheduled": 12,
+      "unscheduled": 12
+    },
+    {
+      "case": "initial",
+      "completed": 24,
+      "delay_s_scheduled_only": 15366.846,
+      "excluded_faces": [
+        "B1"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_b_platforms_closed",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "oversize",
+      "completed": 24,
+      "delay_s_scheduled_only": 0.0,
+      "excluded_faces": [
+        "B1",
+        "B2"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "nominal",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "oversize",
+      "completed": 12,
+      "delay_s_scheduled_only": 0.0,
+      "excluded_faces": [
+        "B1",
+        "B2"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_a_platforms_closed",
+      "scheduled": 12,
+      "unscheduled": 12
+    },
+    {
+      "case": "oversize",
+      "completed": 24,
+      "delay_s_scheduled_only": 15366.846,
+      "excluded_faces": [
+        "B1",
+        "B2"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_b_platforms_closed",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "locally_refitted",
+      "completed": 24,
+      "delay_s_scheduled_only": 0.0,
+      "excluded_faces": [],
+      "required": 24,
+      "residual": 0,
+      "scenario": "nominal",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "locally_refitted",
+      "completed": 24,
+      "delay_s_scheduled_only": 16547.982,
+      "excluded_faces": [],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_a_platforms_closed",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "locally_refitted",
+      "completed": 24,
+      "delay_s_scheduled_only": 15366.846,
+      "excluded_faces": [],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_b_platforms_closed",
+      "scheduled": 24,
+      "unscheduled": 0
+    }
+  ],
+  "compile_hash": "cd9af2d7222d97d1469a72b017fc03df57ee4fae0530aea371be55b9e7074c42",
+  "construction_authorised": false,
+  "current_full_platform_standard_reviewed": false,
+  "current_uk_compliance": "unassessed",
+  "fixture_sha256": "b88e97b7de2bbd564a7b43871af1ea8785419e4b63c3f2cc0f25d33c30a641d1",
+  "game": "not_tested",
+  "island_widths_m": [
+    9.090000000000003,
+    9.090000000000002,
+    9.090000000000002,
+    9.090000000000003
+  ],
+  "islands": 4,
+  "local_fit_status": "fitted_within_reference_model",
+  "model_or_game_api_calls_by_runner": 0,
+  "operating_fixture_hash": "5e58baddc76707ca83146186961d277057916ec456f21bfc3ede620066cfe2a2",
+  "original_plan_with_platform_reservations": "pass_within_scope",
+  "oversize_fit_status": "infeasible_fixed_section",
+  "plan_credit_saving_measured": false,
+  "platform_assessment_hash": "d016acc40952f751d16b4221d23f879028eeec6a7633925c9fe8e2802ccb6b0e",
+  "schema_version": "0.8.0",
+  "track_and_resources_unchanged": true
+}

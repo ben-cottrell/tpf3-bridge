@@ -1,0 +1,59 @@
+{
+  "analytic_body_inner_y_m": 398.5387453098287,
+  "centreline_at_x0_y_m": 400.0,
+  "continuous_gap_lower_bound_m": -0.06808726936269253,
+  "full_UK_gauging": "unassessed",
+  "may_remove_existing_resource": false,
+  "minimum_sample_gap_m": 0.0,
+  "obstacle_polygon": [
+    [
+      -0.25,
+      398.5417453098287
+    ],
+    [
+      0.25,
+      398.5417453098287
+    ],
+    [
+      0.25,
+      398.5517453098287
+    ],
+    [
+      -0.25,
+      398.5517453098287
+    ]
+  ],
+  "platform_interface": "not_assessed; no vertical profile or boarding gap evaluation",
+  "pose_index": 316,
+  "purpose": "Small obstruction reaches body inthrow despite positive track-centreline distance",
+  "status": "sampled_body_contact",
+  "sweep": {
+    "actual_maximum_step_m": 0.09999999781818183,
+    "between_pose_padding_m": 0.06808726936269253,
+    "body": {
+      "bogie_centres_m": 14.0,
+      "fidelity": "reference_informed_assumptions",
+      "lateral_allowance_m": 0.0,
+      "length_m": 20.0,
+      "profile_id": "desiro_city_thameslink_catalogue_2014",
+      "width_m": 2.8
+    },
+    "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+    "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+    "dynamic_3D_gauging": "unassessed",
+    "front_bogie_interval_m": [
+      20.0,
+      85.99999856000001
+    ],
+    "heading_span_rad": 0.2393999999998671,
+    "parent_curve_body_error_bound": "unassessed",
+    "parent_curve_hull_error_m": 0.0,
+    "parent_geometry_hash": "",
+    "path_hash": "c5e85a8906eb28cb8a9bbc4d329562e21655b5c6b02c3502149c9b993cb4470c",
+    "path_length_m": 95.99999856000001,
+    "path_origin": "authored circular polyline; not a georeferenced railway",
+    "pose_count": 661,
+    "schema_version": "0.5.0",
+    "whole_formation": "not_modelled"
+  }
+}

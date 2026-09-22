@@ -1,0 +1,56 @@
+{
+  "release": "0.12.0",
+  "review_date": "2026-09-21",
+  "native_game_api_acquired": false,
+  "native_game_probes_executed": false,
+  "source_records": [
+    {
+      "source_id": "S071",
+      "title": "MCP specification overview",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28",
+      "review_scope": "Overview, protocol roles, per-request metadata model and optional extensions. No host compatibility or running bridge inferred."
+    },
+    {
+      "source_id": "S072",
+      "title": "MCP tools",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/server/tools",
+      "review_scope": "Tool definitions, input/output schemas, structured results, naming and state-handle guidance. Railway descriptors in this package are original proposed contracts, not copied implementation."
+    },
+    {
+      "source_id": "S073",
+      "title": "MCP resources",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/server/resources",
+      "review_scope": "Resource identity and retrieval model. Supports a distinction between compact tool results and separately retrieved detail; no server implementation demonstrated."
+    },
+    {
+      "source_id": "S074",
+      "title": "MCP transport overview",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports",
+      "review_scope": "Transport/version separation and compatibility notes. The reviewed revision differs from older connection-scoped handshake behaviour; actual host support remains a test."
+    },
+    {
+      "source_id": "S075",
+      "title": "MCP stdio transport",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio",
+      "review_scope": "Subprocess stdio framing, stderr/stdout separation, cancellation and version compatibility. Does not establish that a particular ChatGPT/Astra host launches local subprocesses."
+    },
+    {
+      "source_id": "S076",
+      "title": "MCP Streamable HTTP transport",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http",
+      "review_scope": "Version-specific transport, local binding, Origin checking and authentication requirements. No public endpoint, tunnel, transport or host connection is deployed here."
+    },
+    {
+      "source_id": "S077",
+      "title": "MCP security best practices",
+      "url": "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices",
+      "review_scope": "Security context for local/proxied tools and trusted boundaries. The bridge design adds its own save-scoped authorisation; schema validation is not authentication."
+    },
+    {
+      "source_id": "S078",
+      "title": "JSON Schema Draft 2020-12",
+      "url": "https://json-schema.org/draft/2020-12",
+      "review_scope": "Official schema-draft index and specification reference. The delivered contract uses this schema dialect; semantic railway/permission validation remains separate."
+    }
+  ]
+}

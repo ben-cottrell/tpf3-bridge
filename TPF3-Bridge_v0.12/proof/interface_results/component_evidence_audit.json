@@ -1,0 +1,108 @@
+{
+  "authentic_complete_turnout_imported": false,
+  "construction_authorised": false,
+  "records": [
+    {
+      "component_description": "CEN56 113A shallow-depth G-type switch and crossing",
+      "construction_authorised": false,
+      "eligible_for_station_placement": false,
+      "full_turnout_geometry_imported": false,
+      "geometry": null,
+      "geometry_missing": [
+        "toe_datum",
+        "full_route_curves",
+        "switch_to_crossing_spacing",
+        "end_ports",
+        "rail_reference_conversion",
+        "hardware_and_bearer_envelope"
+      ],
+      "id": "WCML_G_TYPE_FIELD_STUDY_2022",
+      "quantities": {
+        "reported_crossing_ratio_denominator": 28.0,
+        "reported_facing_through_line_speed_kmh": 200.0,
+        "reported_nominal_gauge_mm": 1435.0,
+        "reported_switch_radius_m": 1650.0,
+        "reported_trailing_diverging_line_speed_kmh": 105.0
+      },
+      "quantity_semantics": {
+        "reported_crossing_ratio_denominator": {
+          "dimension": "dimensionless",
+          "scope": "reported_crossing_ratio"
+        },
+        "reported_facing_through_line_speed_kmh": {
+          "dimension": "speed",
+          "scope": "reported_facing_through_line_speed"
+        },
+        "reported_nominal_gauge_mm": {
+          "dimension": "length",
+          "scope": "reported_track_gauge"
+        },
+        "reported_switch_radius_m": {
+          "dimension": "length",
+          "scope": "reported_local_switch_radius"
+        },
+        "reported_trailing_diverging_line_speed_kmh": {
+          "dimension": "speed",
+          "scope": "reported_trailing_diverging_line_speed"
+        }
+      },
+      "record_hash": "1115d6397949160ad697e0adb7e250cfa4239668075e4be6ea703c5e3f28bdf2",
+      "scope": "dated_field_installation_not_product_family_approval",
+      "source_figure_is_dimensional_component_drawing": false,
+      "source_id": "S067",
+      "source_locator": "Section 2, paragraphs 1 and last: studied CEN56 113A shallow-depth G-type installation",
+      "speed_kind": "reported_local_line_speed_not_general_rating",
+      "speed_usable_as_general_rating": false,
+      "status": "reference_only_missing_geometry"
+    },
+    {
+      "component_description": "REPOINT movable stub rail based on an NR60 inclined C-switch drawing",
+      "construction_authorised": false,
+      "eligible_for_station_placement": false,
+      "full_turnout_geometry_imported": false,
+      "geometry": null,
+      "geometry_missing": [
+        "complete_conventional_component",
+        "route_curves",
+        "crossing",
+        "ports",
+        "hardware_envelope"
+      ],
+      "id": "REPOINT_NR60_C_INSPIRED_BEAM_2024",
+      "quantities": {
+        "movable_stub_beam_length_m": 7.8
+      },
+      "quantity_semantics": {
+        "movable_stub_beam_length_m": {
+          "dimension": "length",
+          "scope": "research_movable_stub_beam_not_complete_turnout"
+        }
+      },
+      "record_hash": "45c34f0f1b4abd924cba03a47159f1853b430af5bc0c01a56386d4cc003bac5e",
+      "scope": "research_stub_switch_model_not_conventional_turnout_geometry",
+      "source_figure_is_dimensional_component_drawing": false,
+      "source_id": "S068",
+      "source_locator": "Section 2.2: movable stub beams based on NR60 inclined C-switch drawing REPW2001",
+      "speed_kind": "not_supplied",
+      "speed_usable_as_general_rating": false,
+      "status": "reference_only_missing_geometry"
+    }
+  ],
+  "station_pointwork_unchanged": true,
+  "wrong_scope_comparisons": [
+    {
+      "candidate_quantity_scope": "synthetic_branch_exit_tangent_reciprocal",
+      "construction_authorised": false,
+      "reason": "different_component_or_measurement_scope",
+      "source_quantity_scope": "reported_crossing_ratio",
+      "status": "not_comparable"
+    },
+    {
+      "candidate_quantity_scope": "complete_authored_turnout_longitudinal_span",
+      "construction_authorised": false,
+      "reason": "different_component_or_measurement_scope",
+      "source_quantity_scope": "research_movable_stub_beam_not_complete_turnout",
+      "status": "not_comparable"
+    }
+  ]
+}

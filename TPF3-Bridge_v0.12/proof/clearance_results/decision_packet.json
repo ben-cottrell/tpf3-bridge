@@ -1,0 +1,13 @@
+{
+  "construction_authorised": false,
+  "full_UK_gauging": "unassessed",
+  "material_findings": [
+    "Published width replaces an arbitrary width only in a separate declared study.",
+    "Bogie spacing and exact body outline remain explicit assumptions.",
+    "Body sweep reports do not delete existing conflict resources.",
+    "Published unit lengths now drive scalar fit and tail-clear calculations."
+  ],
+  "next_gate": "Verified bogie/outline data and an authorised component drawing; then multi-bank composition.",
+  "result_ref": "clearance_results/summary.json",
+  "status": "offline_evidence_ready_not_build_authorised"
+}

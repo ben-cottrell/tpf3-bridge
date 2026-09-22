@@ -1,0 +1,56 @@
+{
+  "fixed_track_centres_m": 12.0,
+  "minimum_centres_for_oversize_facility_m": 12.11,
+  "same_facility_above_100mph": {
+    "actual_island_width_m": 9.090000000000002,
+    "authorised_centre_y_m": [
+      10.0,
+      14.0
+    ],
+    "certificate_scope": "fixed_facing_edges_fixed_facility_size_and_x",
+    "construction_authorised": false,
+    "evaluations": 1,
+    "extra_width_needed_m": 0.9099999999999984,
+    "facility_resized": false,
+    "island_geometry_hash": "6a9b9618052141c57a044daa23724f39caf9cc60c8b9f228cb18893834a8a676",
+    "island_id": "IB12",
+    "original_facility": {
+      "centre_x_m": 810.0,
+      "centre_y_m": 12.0,
+      "length_m": 20.0,
+      "width_m": 4.0
+    },
+    "physical_centre_interval_m": [
+      12.455,
+      11.545000000000002
+    ],
+    "required_island_width_m": 10.0,
+    "selected": null,
+    "status": "infeasible_fixed_section",
+    "track_moved": false
+  },
+  "same_facility_at_100mph": {
+    "check": "usable_width",
+    "clause": "2.3.1, 2.3.3, 2.3.4; exceptional narrow cases not implemented",
+    "construction_authorised": false,
+    "current_uk_compliance": "unassessed",
+    "demand_capacity_status": "unassessed",
+    "edge_obstacle_clearances_m": [
+      2.5,
+      2.5
+    ],
+    "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+    "exceptional_reductions_applied": false,
+    "minimum_width_m": 4.0,
+    "permissible_or_enhanced_speeds_mph": [
+      100.0,
+      100.0
+    ],
+    "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+    "source_id": "S064",
+    "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+    "status": "reference_requirement_value"
+  },
+  "speed_is_independent_of_motion_target": true,
+  "track_movement_authorised": false
+}

@@ -1,0 +1,67 @@
+{
+  "schema_version": "0.7.0",
+  "fidelity": "reference_informed_vehicle_dimensions_synthetic_station",
+  "vehicle_assumptions": {
+    "use_nominal_length_as_rectangular_body": true,
+    "bogie_centres_m": 14.0,
+    "lateral_allowance_m": 0.0,
+    "vertical_scope": "level_zero_cant_plan_only"
+  },
+  "pairs": 12,
+  "pair_interval_ms": 300000,
+  "group_b_offset_ms": 90000,
+  "planned_turnaround_offset_ms": 700000,
+  "dwell_ms": 60000,
+  "turnback_ms": 180000,
+  "dispatch_ms": 20000,
+  "horizon_ms": 14400000,
+  "max_wait_ms": 14400000,
+  "evaluation_budget": 200000,
+  "motion": {
+    "speed_mps": 6.7056,
+    "acceleration_mps2": 0.6,
+    "braking_mps2": 0.7,
+    "setup_ms": 5000,
+    "release_ms": 3000,
+    "provenance": "project_selected_uncalibrated_level_track_profile"
+  },
+  "sweep_step_m": 3.0,
+  "max_poses": 3000,
+  "max_pairs": 2000000,
+  "scenarios": [
+    "nominal",
+    "bunched",
+    "bank_a_platforms_closed",
+    "bank_b_platforms_closed",
+    "a_fan_closed",
+    "a_arrival_closed",
+    "published_long_units",
+    "synthetic_300m",
+    "all_platforms_closed",
+    "short_horizon",
+    "zero_budget",
+    "a_bank_closed_recovery_forbidden",
+    "a_bank_closed_inner_b1_closed",
+    "a_bank_closed_300m",
+    "b_bank_closed_300m",
+    "b_fan_closed"
+  ],
+  "search_domain": {
+    "first_fan_toe_x_m": [
+      205.0,
+      215.0,
+      225.0
+    ],
+    "fan_turnout_span_m": [
+      65.0,
+      70.0,
+      75.0
+    ],
+    "fan_toe_step_m": [
+      70.0,
+      75.0,
+      80.0
+    ]
+  },
+  "geometry_budget": 100
+}

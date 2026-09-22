@@ -1,0 +1,896 @@
+{
+  "version": "0.12.0",
+  "source": "06_passenger_engine_specification.md",
+  "rule": "IDs retained; classification changes mandatory scope, not historical evidence",
+  "requirements": [
+    {
+      "requirement_id": "BRF-001",
+      "historical_text": "The compiler SHALL retain the user's site boundary, station function, era/profile, service priorities and requested operating capabilities as a versioned brief.",
+      "historical_acceptance": "Round-trip serialisation preserves all explicit choices.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "contracts/bridge.schema.json"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "BRF-002",
+      "historical_text": "It SHALL distinguish hard constraints, preferences, inferred defaults and unknowns.",
+      "historical_acceptance": "A missing maximum gradient cannot become an unmarked hard-coded UK value.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "contracts/bridge.schema.json"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "BRF-003",
+      "historical_text": "It SHALL define which changes Python may make autonomously and which require approval.",
+      "historical_acceptance": "A local repair cannot enlarge the site or reduce a required service without escalation.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "contracts/bridge.schema.json"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "BRF-004",
+      "historical_text": "It SHALL distinguish reconstruction, reference-inspired generation and wholly synthetic design.",
+      "historical_acceptance": "Every output and benchmark carries its mode and evidence scope.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "contracts/bridge.schema.json"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "DAT-001",
+      "historical_text": "The model SHALL separate station complex, rail subsystem, level, platform road, platform edge, berth and passenger label.",
+      "historical_acceptance": "Glasgow/Willesden-inspired fixtures cannot form a false common rail throat.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railproof/model.py",
+        "proof/railgeom/network.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "DAT-002",
+      "historical_text": "Physical asset IDs SHALL be independent of labels and engine entity IDs.",
+      "historical_acceptance": "Renumbering and game rebuilds preserve traceable identity.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railproof/model.py",
+        "proof/railgeom/network.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "DAT-003",
+      "historical_text": "Berths SHALL use explicit usable intervals, train-fit constraints and permitted occupation configurations.",
+      "historical_acceptance": "A full-length train invalidates conflicting split-berth allocations.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railproof/model.py",
+        "proof/railgeom/network.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "DAT-004",
+      "historical_text": "Rail connections SHALL use typed ports and permitted connectivity, not coordinate coincidence.",
+      "historical_acceptance": "A diamond has no invented turning route; separated levels stay separate.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railproof/model.py",
+        "proof/railgeom/network.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "DAT-005",
+      "historical_text": "The model SHALL retain direction permissions, operating role, system and traction/gauge compatibility independently.",
+      "historical_acceptance": "A geometrically reachable but incompatible platform is rejected.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railproof/model.py",
+        "proof/railgeom/network.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "DAT-006",
+      "historical_text": "Terrain, structures, track geometry and passenger circulation SHALL share a declared coordinate transform and units.",
+      "historical_acceptance": "Round-trip conversion meets a profile-defined numerical tolerance.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railproof/model.py",
+        "proof/railgeom/network.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "DAT-007",
+      "historical_text": "Every infrastructure snapshot SHALL have a coherent version and declared valid period.",
+      "historical_acceptance": "Old pointwork cannot be silently combined with future signalling.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railproof/model.py",
+        "proof/railgeom/network.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "DAT-008",
+      "historical_text": "Observations SHALL carry timestamps, snapshot IDs, coverage and quality status.",
+      "historical_acceptance": "Missing telemetry remains unknown rather than interpreted as no trains.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railproof/model.py",
+        "proof/railgeom/network.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "TOP-001",
+      "historical_text": "The planner SHALL derive a required movement/eligibility matrix before fitting geometry.",
+      "historical_acceptance": "Every mandatory movement has a legal candidate or a specific failure.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/composition.py",
+        "proof/railbranch/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "TOP-002",
+      "historical_text": "It SHALL support nonuniform platform roles and asymmetric approaches.",
+      "historical_acceptance": "A mixed through/bay fixture is not forced into a mirrored fan.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/composition.py",
+        "proof/railbranch/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "TOP-003",
+      "historical_text": "It SHALL generate grouped ladders and bounded cross-group access as alternatives to universal connectivity.",
+      "historical_acceptance": "Alternatives have explicit movement differences and conflict witnesses.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/composition.py",
+        "proof/railbranch/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "TOP-004",
+      "historical_text": "Through-service candidates SHALL include both arrival and departure feasibility.",
+      "historical_acceptance": "A reachable platform with an impossible exit is rejected.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/composition.py",
+        "proof/railbranch/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "TOP-005",
+      "historical_text": "Turning and empty-stock movements SHALL be part of the topology requirement when requested.",
+      "historical_acceptance": "A passenger-only path count cannot hide an impossible next working.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/composition.py",
+        "proof/railbranch/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "TOP-006",
+      "historical_text": "Grade separation SHALL name the movement conflict being removed and include downstream interfaces.",
+      "historical_acceptance": "A relieved crossing is not reported as solved when its queue moves to the next merge.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/composition.py",
+        "proof/railbranch/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "TOP-007",
+      "historical_text": "The model boundary SHALL include consequential junctions and extend or flag itself when queues reach the boundary.",
+      "historical_acceptance": "Externalised delay is visible in candidate comparisons.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/composition.py",
+        "proof/railbranch/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "TOP-008",
+      "historical_text": "Independent movements SHALL be demonstrated using resource compatibility, not visual separation alone.",
+      "historical_acceptance": "A point/protection conflict can invalidate non-overlapping drawn paths.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/composition.py",
+        "proof/railbranch/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "GEO-001",
+      "historical_text": "The geometry kernel SHALL store plan alignment, vertical profile, curvature and cant separately from engine splines.",
+      "historical_acceptance": "Engineering quantities survive export/import within stated tolerance.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railgeom/curves.py",
+        "proof/railcorridor/geometry.py",
+        "proof/railterrain/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "GEO-002",
+      "historical_text": "Connections SHALL enforce the appropriate position, heading, curvature and grade boundary conditions.",
+      "historical_acceptance": "The validator reports the location and magnitude of each discontinuity.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railgeom/curves.py",
+        "proof/railcorridor/geometry.py",
+        "proof/railterrain/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "GEO-003",
+      "historical_text": "Turnouts and crossings SHALL be catalogue components with complete route geometry and applicability metadata.",
+      "historical_acceptance": "A crossing angle alone cannot establish a route speed.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railgeom/curves.py",
+        "proof/railcorridor/geometry.py",
+        "proof/railterrain/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "GEO-004",
+      "historical_text": "Crossovers, scissors and throat ladders SHALL be solved and checked as complete assemblies.",
+      "historical_acceptance": "Individually valid points cannot conceal an invalid connecting reverse curve.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railgeom/curves.py",
+        "proof/railcorridor/geometry.py",
+        "proof/railterrain/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "GEO-005",
+      "historical_text": "Horizontal, vertical and cant constraints SHALL be checked jointly for the selected train/profile set.",
+      "historical_acceptance": "A combined-geometry violation is detected despite valid isolated subchecks.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railgeom/curves.py",
+        "proof/railcorridor/geometry.py",
+        "proof/railterrain/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "GEO-006",
+      "historical_text": "Vehicle clearance SHALL use a declared swept-envelope model and include structures, adjacent tracks and platform interfaces.",
+      "historical_acceptance": "A centreline-only clearance pass cannot override an envelope collision.",
+      "v012_disposition": "core",
+      "interpretation": "Keep practical collision/envelope checks; full certified dynamic/3D gauging is an optional specialist gate, not a blanket ordinary-build blocker.",
+      "reference_locations": [
+        "proof/railgeom/curves.py",
+        "proof/railcorridor/geometry.py",
+        "proof/railterrain/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "GEO-007",
+      "historical_text": "Platform fitting SHALL distinguish boarding length, track extent, stopping tolerance and any permitted selective-door policy.",
+      "historical_acceptance": "A nominally long track cannot count as an adequately long boarding platform.",
+      "v012_disposition": "conditional",
+      "interpretation": "Use for station/platform/structure tasks; frozen station internals need not be redesigned for a plain-track link.",
+      "reference_locations": [
+        "proof/railgeom/curves.py",
+        "proof/railcorridor/geometry.py",
+        "proof/railterrain/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "GEO-008",
+      "historical_text": "Flyover/diveunder design SHALL include approach ramps, vertical transitions, structure depth, crossing envelope and terrain/civil reservations.",
+      "historical_acceptance": "A clear crossing centre cannot hide an approach or full-envelope conflict.",
+      "v012_disposition": "conditional",
+      "interpretation": "Required for a requested grade separation; actual supported structures must replace reservation-only mocks.",
+      "reference_locations": [
+        "proof/railgeom/curves.py",
+        "proof/railcorridor/geometry.py",
+        "proof/railterrain/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "GEO-009",
+      "historical_text": "Passenger structures and access space SHALL be reserved during rail/civil generation.",
+      "historical_acceptance": "A pier or ladder cannot silently remove the only permitted passenger path.",
+      "v012_disposition": "conditional",
+      "interpretation": "Use for station/platform/structure tasks; frozen station internals need not be redesigned for a plain-track link.",
+      "reference_locations": [
+        "proof/railgeom/curves.py",
+        "proof/railcorridor/geometry.py",
+        "proof/railterrain/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "GEO-010",
+      "historical_text": "Compression, mirroring or engine snapping SHALL trigger relevant revalidation.",
+      "historical_acceptance": "A scaled reference is not accepted solely because its unscaled parent passed.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railgeom/curves.py",
+        "proof/railcorridor/geometry.py",
+        "proof/railterrain/geometry.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-001",
+      "historical_text": "Services SHALL carry train length, performance profile, route eligibility and stopping pattern.",
+      "historical_acceptance": "Performance and fit are not inferred from one generic train.",
+      "v012_disposition": "core",
+      "interpretation": "Train length and compatibility core; traction/braking performance detail optional and empirical game behaviour authoritative.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-002",
+      "historical_text": "A platform allocation SHALL include arrival route, berth interval, readiness and onward route/activity.",
+      "historical_acceptance": "An occupied or inaccessible exit causes an explicit infeasibility result.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-003",
+      "historical_text": "Temporal resources SHALL cover running sections, point requirements, crossing zones and modelled protection.",
+      "historical_acceptance": "Every conflict explanation names the incompatible requirements.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-004",
+      "historical_text": "Release SHALL account for train tail position and the selected route-release model.",
+      "historical_acceptance": "The crossing stays unavailable until its relevant release condition holds.",
+      "v012_disposition": "core",
+      "interpretation": "Retain train-tail clearance and waiting-length logic; exact timed signalling release follows the game adapter, not a required new physics model.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-005",
+      "historical_text": "Dwell, dispatch and turnround SHALL be separate activities with applicable scenario/profile parameters.",
+      "historical_acceptance": "A terminating train cannot depart using only a through-stop dwell.",
+      "v012_disposition": "optional_analysis",
+      "interpretation": "Apply when the selected operating diagnostic needs it; do not run an independent timetable/stock/spatial-queue simulation for every construction request.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-006",
+      "historical_text": "Rolling-stock dependencies and empty-stock moves SHALL be represented when enabled.",
+      "historical_acceptance": "Delayed incoming stock propagates to its next working unless an explicit substitute exists.",
+      "v012_disposition": "optional_analysis",
+      "interpretation": "Apply when the selected operating diagnostic needs it; do not run an independent timetable/stock/spatial-queue simulation for every construction request.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-007",
+      "historical_text": "Reversal, permissive occupation, coupling and splitting SHALL require explicit profile and engine support.",
+      "historical_acceptance": "Unsupported behaviours are not achieved by teleportation or duplicate train identities.",
+      "v012_disposition": "optional_analysis",
+      "interpretation": "Apply when the selected operating diagnostic needs it; do not run an independent timetable/stock/spatial-queue simulation for every construction request.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-008",
+      "historical_text": "Approach holding positions SHALL have usable length, stopping and release constraints.",
+      "historical_acceptance": "An overlength waiting train is not treated as clear of the upstream resource.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-009",
+      "historical_text": "The simulator SHALL model queues and blocking across connected stations/junctions.",
+      "historical_acceptance": "A downstream dwell perturbation can block an upstream resource.",
+      "v012_disposition": "optional_analysis",
+      "interpretation": "Apply when the selected operating diagnostic needs it; do not run an independent timetable/stock/spatial-queue simulation for every construction request.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-010",
+      "historical_text": "Scenario runs SHALL be reproducible using immutable inputs, seeds and model versions.",
+      "historical_acceptance": "Replay produces the same deterministic event sequence for a fixed configuration.",
+      "v012_disposition": "optional_analysis",
+      "interpretation": "Apply when the selected operating diagnostic needs it; do not run an independent timetable/stock/spatial-queue simulation for every construction request.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-011",
+      "historical_text": "Performance reports SHALL state warm-up, observation horizon, residual queues and completed/cancelled work.",
+      "historical_acceptance": "A short horizon cannot hide unfinished trains or delayed spillback.",
+      "v012_disposition": "optional_analysis",
+      "interpretation": "Apply when the selected operating diagnostic needs it; do not run an independent timetable/stock/spatial-queue simulation for every construction request.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPS-012",
+      "historical_text": "UK-inspired and game-calibrated operating models SHALL remain distinguishable.",
+      "historical_acceptance": "A game reservation discrepancy is reported without rewriting the engineering assessment.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railbranch/operations.py",
+        "proof/railops/sectional.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "PAX-001",
+      "historical_text": "The system SHALL maintain a passenger graph separate from rail connectivity.",
+      "historical_acceptance": "A pedestrian interchange cannot create a train route.",
+      "v012_disposition": "core",
+      "interpretation": "Keep rail and game passenger connections distinct; do not require a crowd simulator.",
+      "reference_locations": [
+        "proof/railinterface/platforms.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "PAX-002",
+      "historical_text": "Passenger demand SHALL support station entry/exit and service-to-service transfers by time period.",
+      "historical_acceptance": "Simultaneous arrivals generate the correct modelled transfer demand.",
+      "v012_disposition": "optional_deferred",
+      "interpretation": "Detailed passenger demand/circulation and platform-facility simulation are not first-build prerequisites.",
+      "reference_locations": [
+        "proof/railinterface/platforms.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "PAX-003",
+      "historical_text": "Walking, waiting, queues and vertical travel SHALL use declared capacities/behaviour profiles, not unlimited instantaneous links.",
+      "historical_acceptance": "A constrained connection can become the passenger bottleneck.",
+      "v012_disposition": "optional_deferred",
+      "interpretation": "Detailed passenger demand/circulation and platform-facility simulation are not first-build prerequisites.",
+      "reference_locations": [
+        "proof/railinterface/platforms.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "PAX-004",
+      "historical_text": "Accessible paths SHALL be evaluated independently from unrestricted shortest paths.",
+      "historical_acceptance": "Lift failure cannot be “solved” by directing the accessible cohort up stairs.",
+      "v012_disposition": "conditional",
+      "interpretation": "Use game passenger-access connectivity when a station task requires it; detailed lift/accessible-route simulation deferred.",
+      "reference_locations": [
+        "proof/railinterface/platforms.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "PAX-005",
+      "historical_text": "Platform usable area SHALL exclude reserved edge zones, structures, furniture and circulation obstacles as specified by the selected profile.",
+      "historical_acceptance": "Gross area cannot conceal a local pinch point.",
+      "v012_disposition": "optional_deferred",
+      "interpretation": "Detailed passenger demand/circulation and platform-facility simulation are not first-build prerequisites.",
+      "reference_locations": [
+        "proof/railinterface/platforms.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "PAX-006",
+      "historical_text": "Platform reassignment SHALL include announcement/redirection and transfer consequences where the passenger model is enabled.",
+      "historical_acceptance": "A late cross-group change has an explicit modelled cost or unassessed flag.",
+      "v012_disposition": "optional_deferred",
+      "interpretation": "Detailed passenger demand/circulation and platform-facility simulation are not first-build prerequisites.",
+      "reference_locations": [
+        "proof/railinterface/platforms.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "PAX-007",
+      "historical_text": "Boarding/alighting and dwell coupling SHALL use calibrated or clearly synthetic assumptions.",
+      "historical_acceptance": "Unknown door/boarding behaviour is not presented as measured station performance.",
+      "v012_disposition": "optional_deferred",
+      "interpretation": "Detailed passenger demand/circulation and platform-facility simulation are not first-build prerequisites.",
+      "reference_locations": [
+        "proof/railinterface/platforms.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "PAX-008",
+      "historical_text": "Normal, disturbed and reduced-access scenarios SHALL be reported separately; emergency analysis SHALL not imply certification.",
+      "historical_acceptance": "Lift loss, crowd surge and closure scenarios retain their distinct validity status.",
+      "v012_disposition": "optional_deferred",
+      "interpretation": "Detailed passenger demand/circulation and platform-facility simulation are not first-build prerequisites.",
+      "reference_locations": [
+        "proof/railinterface/platforms.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPT-001",
+      "historical_text": "Search SHALL apply hard feasibility checks before preference scoring.",
+      "historical_acceptance": "An attractive infeasible candidate cannot beat a feasible one through weighted averaging.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/search.py",
+        "proof/railterrain/planning.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPT-002",
+      "historical_text": "The planner SHALL compare materially different topology families before expensive detailed fitting.",
+      "historical_acceptance": "Search does not spend its full budget varying one fundamentally unsuitable fan.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/search.py",
+        "proof/railterrain/planning.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPT-003",
+      "historical_text": "Results SHALL be cached using all correctness-relevant versions and assumptions.",
+      "historical_acceptance": "A changed train length, rule issue or capability invalidates affected results.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/search.py",
+        "proof/railterrain/planning.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPT-004",
+      "historical_text": "Local repair SHALL have explicit time/evaluation/attempt budgets and preserve the brief.",
+      "historical_acceptance": "Budget exhaustion returns a bounded-search result, not a false impossibility proof.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/search.py",
+        "proof/railterrain/planning.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPT-005",
+      "historical_text": "Candidate evaluation SHALL include disturbances and expose important sensitivity.",
+      "historical_acceptance": "A nominal-only success is not labelled robust operation.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/search.py",
+        "proof/railterrain/planning.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OPT-006",
+      "historical_text": "The decision packet SHALL contain a small nondominated set, material trade-offs and an approval question only where needed.",
+      "historical_acceptance": "Routine spline retries never become separate Astra decision requests.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railcompact/search.py",
+        "proof/railterrain/planning.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EXE-001",
+      "historical_text": "A capability manifest SHALL distinguish supported, unsupported and unknown operations, with evidence.",
+      "historical_acceptance": "A published feature is not treated as a tested callable API.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/adapter.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EXE-002",
+      "historical_text": "Design output SHALL compile into capability-qualified operations without inventing engine functions.",
+      "historical_acceptance": "Unsupported specialwork has an explicit rejection or declared alternative.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/adapter.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EXE-003",
+      "historical_text": "Each plan SHALL bind to a world version and authorised edit region.",
+      "historical_acceptance": "A stale world or out-of-scope edit aborts or requires revalidation.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/adapter.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EXE-004",
+      "historical_text": "Execution SHALL use staged validation and checkpoints appropriate to actual engine facilities.",
+      "historical_acceptance": "The system makes no atomic transaction/rollback promise without demonstrated support.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/adapter.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EXE-005",
+      "historical_text": "Operation IDs and acknowledgements SHALL support reconciliation after timeout/reconnect.",
+      "historical_acceptance": "Retrying an uncertain acknowledgement cannot duplicate construction silently.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/adapter.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EXE-006",
+      "historical_text": "The adapter SHALL report realised assets and mappings back to canonical IDs.",
+      "historical_acceptance": "Engine snapping/resegmentation is discoverable and measurable.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/adapter.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EXE-007",
+      "historical_text": "Realised geometry, connectivity and required routes SHALL be checked after construction.",
+      "historical_acceptance": "Accepted commands alone cannot establish a successful design.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/adapter.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EXE-008",
+      "historical_text": "Partial failure SHALL preserve a recovery record and stop unsafe automatic continuation.",
+      "historical_acceptance": "A compensation action is labelled compensation, not guaranteed rollback.",
+      "v012_disposition": "core",
+      "interpretation": "Stop unsafe automatic continuation relative to the authorised game edit; partial effects persist without an invented rollback.",
+      "reference_locations": [
+        "proof/railterrain/adapter.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OBS-001",
+      "historical_text": "Full traces SHALL remain local and queryable by stable result references.",
+      "historical_acceptance": "Astra can drill into a decision without receiving the entire event log by default.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/demo.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OBS-002",
+      "historical_text": "Reports SHALL identify bottleneck resources, scenarios, evidence gaps and rejected required movements.",
+      "historical_acceptance": "“Station congested” alone is not an adequate failure explanation.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/demo.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OBS-003",
+      "historical_text": "Model calibration SHALL compare predicted and observed metrics with uncertainty and coverage.",
+      "historical_acceptance": "A poor or unobservable fit prevents a calibrated-capacity claim.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/demo.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OBS-004",
+      "historical_text": "Change-driven observations SHALL support region/time summaries and bounded event digests.",
+      "historical_acceptance": "No continuous full-world polling stream is sent to Astra unnecessarily.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/demo.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OBS-005",
+      "historical_text": "Usage experiments SHALL record model interactions, tokens/observations where available, and actual credits only when measured.",
+      "historical_acceptance": "Wall-clock time is not converted into an invented plan-credit saving.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/demo.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "OBS-006",
+      "historical_text": "Every result SHALL distinguish planned, simulated, constructed and observed status.",
+      "historical_acceptance": "A prospective benefit cannot appear as an achieved result.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "proof/railterrain/demo.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EVD-001",
+      "historical_text": "Executable rules SHALL retain source, issue, clause/locator, applicability, units and review status.",
+      "historical_acceptance": "An unverified catalogue synopsis cannot become a hard numerical standard.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "evidence/",
+        "proof/railclear/catalogue.py",
+        "proof/railops/uk_profiles.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EVD-002",
+      "historical_text": "Missing applicable evidence SHALL produce `unassessed`, not `pass`.",
+      "historical_acceptance": "The report can pass a synthetic game check while retaining an unassessed UK check.",
+      "v012_disposition": "core",
+      "interpretation": "Unknowns remain visible; only selected mandatory task gates block. Optional real-world certification is not automatically mandatory.",
+      "reference_locations": [
+        "evidence/",
+        "proof/railclear/catalogue.py",
+        "proof/railops/uk_profiles.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EVD-003",
+      "historical_text": "Conflicting claims SHALL remain visible until resolved by scope/date/evidence.",
+      "historical_acceptance": "Bristol/Lime Street-style inventory conflicts are not silently averaged.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "evidence/",
+        "proof/railclear/catalogue.py",
+        "proof/railops/uk_profiles.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EVD-004",
+      "historical_text": "Reference geometry SHALL identify measured, schematic, estimated and synthetic origins.",
+      "historical_acceptance": "A passenger map cannot silently become surveyed metre coordinates.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "evidence/",
+        "proof/railclear/catalogue.py",
+        "proof/railops/uk_profiles.py"
+      ],
+      "production_status": "not_live_game_verified"
+    },
+    {
+      "requirement_id": "EVD-005",
+      "historical_text": "Reference-inspired tests SHALL state their synthetic status and avoid real-site capacity claims.",
+      "historical_acceptance": "The benchmark name, report and exported artifact agree on fidelity.",
+      "v012_disposition": "core",
+      "interpretation": "Retain for the requested construction task; offline evidence does not establish native support.",
+      "reference_locations": [
+        "evidence/",
+        "proof/railclear/catalogue.py",
+        "proof/railops/uk_profiles.py"
+      ],
+      "production_status": "not_live_game_verified"
+    }
+  ]
+}

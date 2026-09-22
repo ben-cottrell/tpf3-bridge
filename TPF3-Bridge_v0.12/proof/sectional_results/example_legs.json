@@ -1,0 +1,3124 @@
+{
+  "whole_route": {
+    "in": {
+      "route_id": "P4:in",
+      "route_length_m": 1056.7315819005157,
+      "train_length_m": 160,
+      "direction": "in",
+      "mode": "whole_route",
+      "motion": {
+        "distance_m": 1216.7315819005157,
+        "stop_at_end": true,
+        "duration_s": 191.82778316851608,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "start_s": 0.0,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_speed_mps": 0.0,
+            "acceleration_mps2": 0.6
+          },
+          {
+            "start_s": 11.176,
+            "duration_s": 171.07235459708753,
+            "start_m": 37.4708928,
+            "start_speed_mps": 6.7056,
+            "acceleration_mps2": 0.0
+          },
+          {
+            "start_s": 182.2483545970875,
+            "duration_s": 9.579428571428572,
+            "start_m": 1184.61367378623,
+            "start_speed_mps": 6.7056,
+            "acceleration_mps2": -0.7
+          }
+        ]
+      },
+      "profile": {
+        "speed_mps": 6.7056,
+        "acceleration_mps2": 0.6,
+        "braking_mps2": 0.7,
+        "setup_ms": 5000,
+        "release_ms": 3000,
+        "provenance": "project_selected_uncalibrated_level_track_profile"
+      },
+      "motion_end_ms": 196828,
+      "release_end_ms": 199828,
+      "resource_footprints": [
+        {
+          "resource": "component_body:ACCESS",
+          "state": null,
+          "start_m": 320.00000001,
+          "end_m": 380.00000002,
+          "edges": [
+            "ACCESS:normal"
+          ]
+        },
+        {
+          "resource": "component_body:F1",
+          "state": null,
+          "start_m": 450.00000004000003,
+          "end_m": 500.0927188328841,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "control:ACCESS",
+          "state": "N",
+          "start_m": 320.00000001,
+          "end_m": 380.00000002,
+          "edges": [
+            "ACCESS:normal"
+          ]
+        },
+        {
+          "resource": "control:F1",
+          "state": "R",
+          "start_m": 450.00000004000003,
+          "end_m": 500.0927188328841,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "state": null,
+          "start_m": 320.00000001,
+          "end_m": 400.00000003,
+          "edges": [
+            "ACCESS:normal",
+            "access_common"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "state": null,
+          "start_m": 320.00000001,
+          "end_m": 380.00000002,
+          "edges": [
+            "ACCESS:normal"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:normal|arrival_lead",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 380.00000002,
+          "edges": [
+            "ACCESS:normal",
+            "arrival_lead"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "state": null,
+          "start_m": 380.00000002,
+          "end_m": 400.00000003,
+          "edges": [
+            "access_common"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 320.00000001,
+          "edges": [
+            "arrival_lead"
+          ]
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null,
+          "start_m": 500.0927188328841,
+          "end_m": 811.6388630976317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null,
+          "start_m": 400.00000003,
+          "end_m": 450.00000004000003,
+          "edges": [
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "state": null,
+          "start_m": 450.00000004000003,
+          "end_m": 811.6388630976317,
+          "edges": [
+            "F1:reverse",
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null,
+          "start_m": 400.00000003,
+          "end_m": 500.0927188328841,
+          "edges": [
+            "F1:reverse",
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null,
+          "start_m": 450.00000004000003,
+          "end_m": 500.0927188328841,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "state": null,
+          "start_m": 380.00000002,
+          "end_m": 450.00000004000003,
+          "edges": [
+            "access_common",
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 320.00000001,
+          "edges": [
+            "arrival_lead"
+          ]
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "state": null,
+          "start_m": 500.0927188328841,
+          "end_m": 861.7315818905157,
+          "edges": [
+            "diagonal_0",
+            "return_0"
+          ]
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null,
+          "start_m": 500.0927188328841,
+          "end_m": 811.6388630976317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "state": null,
+          "start_m": 811.6388630976317,
+          "end_m": 1056.7315819005157,
+          "edges": [
+            "lead_P4",
+            "return_0"
+          ]
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "state": null,
+          "start_m": 861.7315818905157,
+          "end_m": 1056.7315819005157,
+          "edges": [
+            "lead_P4"
+          ]
+        },
+        {
+          "resource": "track:ACCESS:normal",
+          "state": null,
+          "start_m": 320.00000001,
+          "end_m": 380.00000002,
+          "edges": [
+            "ACCESS:normal"
+          ]
+        },
+        {
+          "resource": "track:F1:reverse",
+          "state": null,
+          "start_m": 450.00000004000003,
+          "end_m": 500.0927188328841,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "track:access_common",
+          "state": null,
+          "start_m": 380.00000002,
+          "end_m": 400.00000003,
+          "edges": [
+            "access_common"
+          ]
+        },
+        {
+          "resource": "track:arrival_lead",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 320.00000001,
+          "edges": [
+            "arrival_lead"
+          ]
+        },
+        {
+          "resource": "track:diagonal_0",
+          "state": null,
+          "start_m": 500.0927188328841,
+          "end_m": 811.6388630976317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "track:lead_P4",
+          "state": null,
+          "start_m": 861.7315818905157,
+          "end_m": 1056.7315819005157,
+          "edges": [
+            "lead_P4"
+          ]
+        },
+        {
+          "resource": "track:return_0",
+          "state": null,
+          "start_m": 811.6388630976317,
+          "end_m": 861.7315818905157,
+          "edges": [
+            "return_0"
+          ]
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null,
+          "start_m": 400.00000003,
+          "end_m": 450.00000004000003,
+          "edges": [
+            "spine_0"
+          ]
+        }
+      ],
+      "relative_claims": [
+        {
+          "resource": "component_body:ACCESS",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "control:ACCESS",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": "N"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:normal|arrival_lead",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:ACCESS:normal",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:access_common",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:arrival_lead",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        }
+      ],
+      "physical_occupancy_approximations": [
+        {
+          "resource": "component_body:ACCESS",
+          "state": null,
+          "front_enters_ms": 58309,
+          "tail_clears_ms": 91118,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "component_body:F1",
+          "state": null,
+          "front_enters_ms": 77696,
+          "tail_clears_ms": 109028,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "control:ACCESS",
+          "state": "N",
+          "front_enters_ms": 58309,
+          "tail_clears_ms": 91118,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "control:F1",
+          "state": "R",
+          "front_enters_ms": 77696,
+          "tail_clears_ms": 109028,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "state": null,
+          "front_enters_ms": 58309,
+          "tail_clears_ms": 94101,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "state": null,
+          "front_enters_ms": 58309,
+          "tail_clears_ms": 91118,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:ACCESS:normal|arrival_lead",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 91118,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "state": null,
+          "front_enters_ms": 67257,
+          "tail_clears_ms": 94101,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 82170,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null,
+          "front_enters_ms": 85166,
+          "tail_clears_ms": 155488,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null,
+          "front_enters_ms": 70239,
+          "tail_clears_ms": 101557,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "state": null,
+          "front_enters_ms": 77696,
+          "tail_clears_ms": 155488,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null,
+          "front_enters_ms": 70239,
+          "tail_clears_ms": 109028,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null,
+          "front_enters_ms": 77696,
+          "tail_clears_ms": 109028,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "state": null,
+          "front_enters_ms": 67257,
+          "tail_clears_ms": 101557,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 82170,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "state": null,
+          "front_enters_ms": 85166,
+          "tail_clears_ms": 162958,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null,
+          "front_enters_ms": 85166,
+          "tail_clears_ms": 155488,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "state": null,
+          "front_enters_ms": 131626,
+          "tail_clears_ms": 196828,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "state": null,
+          "front_enters_ms": 139097,
+          "tail_clears_ms": 196828,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "track:ACCESS:normal",
+          "state": null,
+          "front_enters_ms": 58309,
+          "tail_clears_ms": 91118,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "track:F1:reverse",
+          "state": null,
+          "front_enters_ms": 77696,
+          "tail_clears_ms": 109028,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "track:access_common",
+          "state": null,
+          "front_enters_ms": 67257,
+          "tail_clears_ms": 94101,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "track:arrival_lead",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 82170,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "track:diagonal_0",
+          "state": null,
+          "front_enters_ms": 85166,
+          "tail_clears_ms": 155488,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "track:lead_P4",
+          "state": null,
+          "front_enters_ms": 139097,
+          "tail_clears_ms": 196828,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "track:return_0",
+          "state": null,
+          "front_enters_ms": 131626,
+          "tail_clears_ms": 162958,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null,
+          "front_enters_ms": 70239,
+          "tail_clears_ms": 101557,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        }
+      ],
+      "path_metric": "sum_of_geometry_upper_length_bounds; operational surrogate",
+      "section_authority": "synthetic_edge_release; not an interlocking design",
+      "boundary_assumption": "stop with rear at platform marker; front inside storage"
+    },
+    "out": {
+      "route_id": "P4:out",
+      "route_length_m": 1057.1616305385674,
+      "train_length_m": 160,
+      "direction": "out",
+      "mode": "whole_route",
+      "motion": {
+        "distance_m": 1217.1616305385674,
+        "stop_at_end": false,
+        "duration_s": 187.1022016431889,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "start_s": 0.0,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_speed_mps": 0.0,
+            "acceleration_mps2": 0.6
+          },
+          {
+            "start_s": 11.176,
+            "duration_s": 175.9262016431889,
+            "start_m": 37.4708928,
+            "start_speed_mps": 6.7056,
+            "acceleration_mps2": 0.0
+          }
+        ]
+      },
+      "profile": {
+        "speed_mps": 6.7056,
+        "acceleration_mps2": 0.6,
+        "braking_mps2": 0.7,
+        "setup_ms": 5000,
+        "release_ms": 3000,
+        "provenance": "project_selected_uncalibrated_level_track_profile"
+      },
+      "motion_end_ms": 192103,
+      "release_end_ms": 195103,
+      "resource_footprints": [
+        {
+          "resource": "component_body:ACCESS",
+          "state": null,
+          "start_m": 676.7315818805158,
+          "end_m": 736.8028358651976,
+          "edges": [
+            "ACCESS:reverse"
+          ]
+        },
+        {
+          "resource": "component_body:F1",
+          "state": null,
+          "start_m": 556.6388630676317,
+          "end_m": 606.7315818605158,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "control:ACCESS",
+          "state": "R",
+          "start_m": 676.7315818805158,
+          "end_m": 736.8028358651976,
+          "edges": [
+            "ACCESS:reverse"
+          ]
+        },
+        {
+          "resource": "control:F1",
+          "state": "R",
+          "start_m": 556.6388630676317,
+          "end_m": 606.7315818605158,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "state": null,
+          "start_m": 656.7315818705158,
+          "end_m": 676.7315818805158,
+          "edges": [
+            "access_common"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "state": null,
+          "start_m": 736.8028358651976,
+          "end_m": 827.0903765438857,
+          "edges": [
+            "access_diagonal"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "state": null,
+          "start_m": 656.7315818705158,
+          "end_m": 736.8028358651976,
+          "edges": [
+            "ACCESS:reverse",
+            "access_common"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_diagonal",
+          "state": null,
+          "start_m": 676.7315818805158,
+          "end_m": 827.0903765438857,
+          "edges": [
+            "ACCESS:reverse",
+            "access_diagonal"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "state": null,
+          "start_m": 676.7315818805158,
+          "end_m": 736.8028358651976,
+          "edges": [
+            "ACCESS:reverse"
+          ]
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null,
+          "start_m": 245.09271880288406,
+          "end_m": 556.6388630676317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null,
+          "start_m": 606.7315818605158,
+          "end_m": 656.7315818705158,
+          "edges": [
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "state": null,
+          "start_m": 245.09271880288406,
+          "end_m": 606.7315818605158,
+          "edges": [
+            "F1:reverse",
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null,
+          "start_m": 556.6388630676317,
+          "end_m": 656.7315818705158,
+          "edges": [
+            "F1:reverse",
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null,
+          "start_m": 556.6388630676317,
+          "end_m": 606.7315818605158,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "state": null,
+          "start_m": 606.7315818605158,
+          "end_m": 676.7315818805158,
+          "edges": [
+            "access_common",
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:access_diagonal|access_return",
+          "state": null,
+          "start_m": 736.8028358651976,
+          "end_m": 887.1616305285675,
+          "edges": [
+            "access_diagonal",
+            "access_return"
+          ]
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "state": null,
+          "start_m": 736.8028358651976,
+          "end_m": 827.0903765438857,
+          "edges": [
+            "access_diagonal"
+          ]
+        },
+        {
+          "resource": "proximity:access_return|departure_lead",
+          "state": null,
+          "start_m": 827.0903765438857,
+          "end_m": 1057.1616305385674,
+          "edges": [
+            "access_return",
+            "departure_lead"
+          ]
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "state": null,
+          "start_m": 195.00000001,
+          "end_m": 556.6388630676317,
+          "edges": [
+            "diagonal_0",
+            "return_0"
+          ]
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null,
+          "start_m": 245.09271880288406,
+          "end_m": 556.6388630676317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 245.09271880288406,
+          "edges": [
+            "lead_P4",
+            "return_0"
+          ]
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 195.00000001,
+          "edges": [
+            "lead_P4"
+          ]
+        },
+        {
+          "resource": "track:ACCESS:reverse",
+          "state": null,
+          "start_m": 676.7315818805158,
+          "end_m": 736.8028358651976,
+          "edges": [
+            "ACCESS:reverse"
+          ]
+        },
+        {
+          "resource": "track:F1:reverse",
+          "state": null,
+          "start_m": 556.6388630676317,
+          "end_m": 606.7315818605158,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "track:access_common",
+          "state": null,
+          "start_m": 656.7315818705158,
+          "end_m": 676.7315818805158,
+          "edges": [
+            "access_common"
+          ]
+        },
+        {
+          "resource": "track:access_diagonal",
+          "state": null,
+          "start_m": 736.8028358651976,
+          "end_m": 827.0903765438857,
+          "edges": [
+            "access_diagonal"
+          ]
+        },
+        {
+          "resource": "track:access_return",
+          "state": null,
+          "start_m": 827.0903765438857,
+          "end_m": 887.1616305285675,
+          "edges": [
+            "access_return"
+          ]
+        },
+        {
+          "resource": "track:departure_lead",
+          "state": null,
+          "start_m": 887.1616305285675,
+          "end_m": 1057.1616305385674,
+          "edges": [
+            "departure_lead"
+          ]
+        },
+        {
+          "resource": "track:diagonal_0",
+          "state": null,
+          "start_m": 245.09271880288406,
+          "end_m": 556.6388630676317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "track:lead_P4",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 195.00000001,
+          "edges": [
+            "lead_P4"
+          ]
+        },
+        {
+          "resource": "track:return_0",
+          "state": null,
+          "start_m": 195.00000001,
+          "end_m": 245.09271880288406,
+          "edges": [
+            "return_0"
+          ]
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null,
+          "start_m": 606.7315818605158,
+          "end_m": 656.7315818705158,
+          "edges": [
+            "spine_0"
+          ]
+        }
+      ],
+      "relative_claims": [
+        {
+          "resource": "component_body:ACCESS",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "control:ACCESS",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_diagonal",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_diagonal|access_return",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_return|departure_lead",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:ACCESS:reverse",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:access_common",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:access_diagonal",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:access_return",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:departure_lead",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        }
+      ],
+      "physical_occupancy_approximations": [
+        {
+          "resource": "component_body:ACCESS",
+          "state": null,
+          "front_enters_ms": 111508,
+          "tail_clears_ms": 144328,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "component_body:F1",
+          "state": null,
+          "front_enters_ms": 93599,
+          "tail_clears_ms": 124930,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "control:ACCESS",
+          "state": "R",
+          "front_enters_ms": 111508,
+          "tail_clears_ms": 144328,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "control:F1",
+          "state": "R",
+          "front_enters_ms": 93599,
+          "tail_clears_ms": 124930,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "state": null,
+          "front_enters_ms": 108525,
+          "tail_clears_ms": 135370,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "state": null,
+          "front_enters_ms": 120466,
+          "tail_clears_ms": 157792,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "state": null,
+          "front_enters_ms": 108525,
+          "tail_clears_ms": 144328,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_diagonal",
+          "state": null,
+          "front_enters_ms": 111508,
+          "tail_clears_ms": 157792,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "state": null,
+          "front_enters_ms": 111508,
+          "tail_clears_ms": 144328,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null,
+          "front_enters_ms": 47138,
+          "tail_clears_ms": 117460,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null,
+          "front_enters_ms": 101069,
+          "tail_clears_ms": 132387,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "state": null,
+          "front_enters_ms": 47138,
+          "tail_clears_ms": 124930,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null,
+          "front_enters_ms": 93599,
+          "tail_clears_ms": 132387,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null,
+          "front_enters_ms": 93599,
+          "tail_clears_ms": 124930,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "state": null,
+          "front_enters_ms": 101069,
+          "tail_clears_ms": 135370,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:access_diagonal|access_return",
+          "state": null,
+          "front_enters_ms": 120466,
+          "tail_clears_ms": 166751,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "state": null,
+          "front_enters_ms": 120466,
+          "tail_clears_ms": 157792,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:access_return|departure_lead",
+          "state": null,
+          "front_enters_ms": 133931,
+          "tail_clears_ms": 192103,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "state": null,
+          "front_enters_ms": 39668,
+          "tail_clears_ms": 117460,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null,
+          "front_enters_ms": 47138,
+          "tail_clears_ms": 117460,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 71000,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 63529,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "track:ACCESS:reverse",
+          "state": null,
+          "front_enters_ms": 111508,
+          "tail_clears_ms": 144328,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "track:F1:reverse",
+          "state": null,
+          "front_enters_ms": 93599,
+          "tail_clears_ms": 124930,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "track:access_common",
+          "state": null,
+          "front_enters_ms": 108525,
+          "tail_clears_ms": 135370,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "track:access_diagonal",
+          "state": null,
+          "front_enters_ms": 120466,
+          "tail_clears_ms": 157792,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "track:access_return",
+          "state": null,
+          "front_enters_ms": 133931,
+          "tail_clears_ms": 166751,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "track:departure_lead",
+          "state": null,
+          "front_enters_ms": 142889,
+          "tail_clears_ms": 192103,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "track:diagonal_0",
+          "state": null,
+          "front_enters_ms": 47138,
+          "tail_clears_ms": 117460,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "track:lead_P4",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 63529,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "track:return_0",
+          "state": null,
+          "front_enters_ms": 39668,
+          "tail_clears_ms": 71000,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null,
+          "front_enters_ms": 101069,
+          "tail_clears_ms": 132387,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        }
+      ],
+      "path_metric": "sum_of_geometry_upper_length_bounds; operational surrogate",
+      "section_authority": "synthetic_edge_release; not an interlocking design",
+      "boundary_assumption": "continue one train length beyond exit on unmodelled clear line"
+    }
+  },
+  "sectional_release": {
+    "in": {
+      "route_id": "P4:in",
+      "route_length_m": 1056.7315819005157,
+      "train_length_m": 160,
+      "direction": "in",
+      "mode": "sectional_release",
+      "motion": {
+        "distance_m": 1216.7315819005157,
+        "stop_at_end": true,
+        "duration_s": 191.82778316851608,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "start_s": 0.0,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_speed_mps": 0.0,
+            "acceleration_mps2": 0.6
+          },
+          {
+            "start_s": 11.176,
+            "duration_s": 171.07235459708753,
+            "start_m": 37.4708928,
+            "start_speed_mps": 6.7056,
+            "acceleration_mps2": 0.0
+          },
+          {
+            "start_s": 182.2483545970875,
+            "duration_s": 9.579428571428572,
+            "start_m": 1184.61367378623,
+            "start_speed_mps": 6.7056,
+            "acceleration_mps2": -0.7
+          }
+        ]
+      },
+      "profile": {
+        "speed_mps": 6.7056,
+        "acceleration_mps2": 0.6,
+        "braking_mps2": 0.7,
+        "setup_ms": 5000,
+        "release_ms": 3000,
+        "provenance": "project_selected_uncalibrated_level_track_profile"
+      },
+      "motion_end_ms": 196828,
+      "release_end_ms": 199828,
+      "resource_footprints": [
+        {
+          "resource": "component_body:ACCESS",
+          "state": null,
+          "start_m": 320.00000001,
+          "end_m": 380.00000002,
+          "edges": [
+            "ACCESS:normal"
+          ]
+        },
+        {
+          "resource": "component_body:F1",
+          "state": null,
+          "start_m": 450.00000004000003,
+          "end_m": 500.0927188328841,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "control:ACCESS",
+          "state": "N",
+          "start_m": 320.00000001,
+          "end_m": 380.00000002,
+          "edges": [
+            "ACCESS:normal"
+          ]
+        },
+        {
+          "resource": "control:F1",
+          "state": "R",
+          "start_m": 450.00000004000003,
+          "end_m": 500.0927188328841,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "state": null,
+          "start_m": 320.00000001,
+          "end_m": 400.00000003,
+          "edges": [
+            "ACCESS:normal",
+            "access_common"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "state": null,
+          "start_m": 320.00000001,
+          "end_m": 380.00000002,
+          "edges": [
+            "ACCESS:normal"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:normal|arrival_lead",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 380.00000002,
+          "edges": [
+            "ACCESS:normal",
+            "arrival_lead"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "state": null,
+          "start_m": 380.00000002,
+          "end_m": 400.00000003,
+          "edges": [
+            "access_common"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 320.00000001,
+          "edges": [
+            "arrival_lead"
+          ]
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null,
+          "start_m": 500.0927188328841,
+          "end_m": 811.6388630976317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null,
+          "start_m": 400.00000003,
+          "end_m": 450.00000004000003,
+          "edges": [
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "state": null,
+          "start_m": 450.00000004000003,
+          "end_m": 811.6388630976317,
+          "edges": [
+            "F1:reverse",
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null,
+          "start_m": 400.00000003,
+          "end_m": 500.0927188328841,
+          "edges": [
+            "F1:reverse",
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null,
+          "start_m": 450.00000004000003,
+          "end_m": 500.0927188328841,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "state": null,
+          "start_m": 380.00000002,
+          "end_m": 450.00000004000003,
+          "edges": [
+            "access_common",
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 320.00000001,
+          "edges": [
+            "arrival_lead"
+          ]
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "state": null,
+          "start_m": 500.0927188328841,
+          "end_m": 861.7315818905157,
+          "edges": [
+            "diagonal_0",
+            "return_0"
+          ]
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null,
+          "start_m": 500.0927188328841,
+          "end_m": 811.6388630976317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "state": null,
+          "start_m": 811.6388630976317,
+          "end_m": 1056.7315819005157,
+          "edges": [
+            "lead_P4",
+            "return_0"
+          ]
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "state": null,
+          "start_m": 861.7315818905157,
+          "end_m": 1056.7315819005157,
+          "edges": [
+            "lead_P4"
+          ]
+        },
+        {
+          "resource": "track:ACCESS:normal",
+          "state": null,
+          "start_m": 320.00000001,
+          "end_m": 380.00000002,
+          "edges": [
+            "ACCESS:normal"
+          ]
+        },
+        {
+          "resource": "track:F1:reverse",
+          "state": null,
+          "start_m": 450.00000004000003,
+          "end_m": 500.0927188328841,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "track:access_common",
+          "state": null,
+          "start_m": 380.00000002,
+          "end_m": 400.00000003,
+          "edges": [
+            "access_common"
+          ]
+        },
+        {
+          "resource": "track:arrival_lead",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 320.00000001,
+          "edges": [
+            "arrival_lead"
+          ]
+        },
+        {
+          "resource": "track:diagonal_0",
+          "state": null,
+          "start_m": 500.0927188328841,
+          "end_m": 811.6388630976317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "track:lead_P4",
+          "state": null,
+          "start_m": 861.7315818905157,
+          "end_m": 1056.7315819005157,
+          "edges": [
+            "lead_P4"
+          ]
+        },
+        {
+          "resource": "track:return_0",
+          "state": null,
+          "start_m": 811.6388630976317,
+          "end_m": 861.7315818905157,
+          "edges": [
+            "return_0"
+          ]
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null,
+          "start_m": 400.00000003,
+          "end_m": 450.00000004000003,
+          "edges": [
+            "spine_0"
+          ]
+        }
+      ],
+      "relative_claims": [
+        {
+          "resource": "component_body:ACCESS",
+          "start_ms": 0,
+          "end_ms": 94118,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 0,
+          "end_ms": 112028,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "control:ACCESS",
+          "start_ms": 0,
+          "end_ms": 94118,
+          "owner": "relative_leg",
+          "state": "N"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 0,
+          "end_ms": 112028,
+          "owner": "relative_leg",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "start_ms": 0,
+          "end_ms": 97101,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "start_ms": 0,
+          "end_ms": 94118,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:normal|arrival_lead",
+          "start_ms": 0,
+          "end_ms": 94118,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "start_ms": 0,
+          "end_ms": 97101,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "start_ms": 0,
+          "end_ms": 85170,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 0,
+          "end_ms": 158488,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 0,
+          "end_ms": 104557,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 0,
+          "end_ms": 158488,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 0,
+          "end_ms": 112028,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 0,
+          "end_ms": 112028,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "start_ms": 0,
+          "end_ms": 104557,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "start_ms": 0,
+          "end_ms": 85170,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 0,
+          "end_ms": 165958,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 0,
+          "end_ms": 158488,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:ACCESS:normal",
+          "start_ms": 0,
+          "end_ms": 94118,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 0,
+          "end_ms": 112028,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:access_common",
+          "start_ms": 0,
+          "end_ms": 97101,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:arrival_lead",
+          "start_ms": 0,
+          "end_ms": 85170,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 0,
+          "end_ms": 158488,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 0,
+          "end_ms": 199828,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 0,
+          "end_ms": 165958,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 0,
+          "end_ms": 104557,
+          "owner": "relative_leg",
+          "state": null
+        }
+      ],
+      "physical_occupancy_approximations": [
+        {
+          "resource": "component_body:ACCESS",
+          "state": null,
+          "front_enters_ms": 58309,
+          "tail_clears_ms": 91118,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 94118
+        },
+        {
+          "resource": "component_body:F1",
+          "state": null,
+          "front_enters_ms": 77696,
+          "tail_clears_ms": 109028,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 112028
+        },
+        {
+          "resource": "control:ACCESS",
+          "state": "N",
+          "front_enters_ms": 58309,
+          "tail_clears_ms": 91118,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 94118
+        },
+        {
+          "resource": "control:F1",
+          "state": "R",
+          "front_enters_ms": 77696,
+          "tail_clears_ms": 109028,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 112028
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "state": null,
+          "front_enters_ms": 58309,
+          "tail_clears_ms": 94101,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 97101
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "state": null,
+          "front_enters_ms": 58309,
+          "tail_clears_ms": 91118,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 94118
+        },
+        {
+          "resource": "proximity:ACCESS:normal|arrival_lead",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 91118,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 94118
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "state": null,
+          "front_enters_ms": 67257,
+          "tail_clears_ms": 94101,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 97101
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 82170,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 85170
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null,
+          "front_enters_ms": 85166,
+          "tail_clears_ms": 155488,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 158488
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null,
+          "front_enters_ms": 70239,
+          "tail_clears_ms": 101557,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 104557
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "state": null,
+          "front_enters_ms": 77696,
+          "tail_clears_ms": 155488,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 158488
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null,
+          "front_enters_ms": 70239,
+          "tail_clears_ms": 109028,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 112028
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null,
+          "front_enters_ms": 77696,
+          "tail_clears_ms": 109028,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 112028
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "state": null,
+          "front_enters_ms": 67257,
+          "tail_clears_ms": 101557,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 104557
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 82170,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 85170
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "state": null,
+          "front_enters_ms": 85166,
+          "tail_clears_ms": 162958,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 165958
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null,
+          "front_enters_ms": 85166,
+          "tail_clears_ms": 155488,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 158488
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "state": null,
+          "front_enters_ms": 131626,
+          "tail_clears_ms": 196828,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "state": null,
+          "front_enters_ms": 139097,
+          "tail_clears_ms": 196828,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "track:ACCESS:normal",
+          "state": null,
+          "front_enters_ms": 58309,
+          "tail_clears_ms": 91118,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 94118
+        },
+        {
+          "resource": "track:F1:reverse",
+          "state": null,
+          "front_enters_ms": 77696,
+          "tail_clears_ms": 109028,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 112028
+        },
+        {
+          "resource": "track:access_common",
+          "state": null,
+          "front_enters_ms": 67257,
+          "tail_clears_ms": 94101,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 97101
+        },
+        {
+          "resource": "track:arrival_lead",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 82170,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 85170
+        },
+        {
+          "resource": "track:diagonal_0",
+          "state": null,
+          "front_enters_ms": 85166,
+          "tail_clears_ms": 155488,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 158488
+        },
+        {
+          "resource": "track:lead_P4",
+          "state": null,
+          "front_enters_ms": 139097,
+          "tail_clears_ms": 196828,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 199828
+        },
+        {
+          "resource": "track:return_0",
+          "state": null,
+          "front_enters_ms": 131626,
+          "tail_clears_ms": 162958,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 165958
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null,
+          "front_enters_ms": 70239,
+          "tail_clears_ms": 101557,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 104557
+        }
+      ],
+      "path_metric": "sum_of_geometry_upper_length_bounds; operational surrogate",
+      "section_authority": "synthetic_edge_release; not an interlocking design",
+      "boundary_assumption": "stop with rear at platform marker; front inside storage"
+    },
+    "out": {
+      "route_id": "P4:out",
+      "route_length_m": 1057.1616305385674,
+      "train_length_m": 160,
+      "direction": "out",
+      "mode": "sectional_release",
+      "motion": {
+        "distance_m": 1217.1616305385674,
+        "stop_at_end": false,
+        "duration_s": 187.1022016431889,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "start_s": 0.0,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_speed_mps": 0.0,
+            "acceleration_mps2": 0.6
+          },
+          {
+            "start_s": 11.176,
+            "duration_s": 175.9262016431889,
+            "start_m": 37.4708928,
+            "start_speed_mps": 6.7056,
+            "acceleration_mps2": 0.0
+          }
+        ]
+      },
+      "profile": {
+        "speed_mps": 6.7056,
+        "acceleration_mps2": 0.6,
+        "braking_mps2": 0.7,
+        "setup_ms": 5000,
+        "release_ms": 3000,
+        "provenance": "project_selected_uncalibrated_level_track_profile"
+      },
+      "motion_end_ms": 192103,
+      "release_end_ms": 195103,
+      "resource_footprints": [
+        {
+          "resource": "component_body:ACCESS",
+          "state": null,
+          "start_m": 676.7315818805158,
+          "end_m": 736.8028358651976,
+          "edges": [
+            "ACCESS:reverse"
+          ]
+        },
+        {
+          "resource": "component_body:F1",
+          "state": null,
+          "start_m": 556.6388630676317,
+          "end_m": 606.7315818605158,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "control:ACCESS",
+          "state": "R",
+          "start_m": 676.7315818805158,
+          "end_m": 736.8028358651976,
+          "edges": [
+            "ACCESS:reverse"
+          ]
+        },
+        {
+          "resource": "control:F1",
+          "state": "R",
+          "start_m": 556.6388630676317,
+          "end_m": 606.7315818605158,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "state": null,
+          "start_m": 656.7315818705158,
+          "end_m": 676.7315818805158,
+          "edges": [
+            "access_common"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "state": null,
+          "start_m": 736.8028358651976,
+          "end_m": 827.0903765438857,
+          "edges": [
+            "access_diagonal"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "state": null,
+          "start_m": 656.7315818705158,
+          "end_m": 736.8028358651976,
+          "edges": [
+            "ACCESS:reverse",
+            "access_common"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_diagonal",
+          "state": null,
+          "start_m": 676.7315818805158,
+          "end_m": 827.0903765438857,
+          "edges": [
+            "ACCESS:reverse",
+            "access_diagonal"
+          ]
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "state": null,
+          "start_m": 676.7315818805158,
+          "end_m": 736.8028358651976,
+          "edges": [
+            "ACCESS:reverse"
+          ]
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null,
+          "start_m": 245.09271880288406,
+          "end_m": 556.6388630676317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null,
+          "start_m": 606.7315818605158,
+          "end_m": 656.7315818705158,
+          "edges": [
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "state": null,
+          "start_m": 245.09271880288406,
+          "end_m": 606.7315818605158,
+          "edges": [
+            "F1:reverse",
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null,
+          "start_m": 556.6388630676317,
+          "end_m": 656.7315818705158,
+          "edges": [
+            "F1:reverse",
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null,
+          "start_m": 556.6388630676317,
+          "end_m": 606.7315818605158,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "state": null,
+          "start_m": 606.7315818605158,
+          "end_m": 676.7315818805158,
+          "edges": [
+            "access_common",
+            "spine_0"
+          ]
+        },
+        {
+          "resource": "proximity:access_diagonal|access_return",
+          "state": null,
+          "start_m": 736.8028358651976,
+          "end_m": 887.1616305285675,
+          "edges": [
+            "access_diagonal",
+            "access_return"
+          ]
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "state": null,
+          "start_m": 736.8028358651976,
+          "end_m": 827.0903765438857,
+          "edges": [
+            "access_diagonal"
+          ]
+        },
+        {
+          "resource": "proximity:access_return|departure_lead",
+          "state": null,
+          "start_m": 827.0903765438857,
+          "end_m": 1057.1616305385674,
+          "edges": [
+            "access_return",
+            "departure_lead"
+          ]
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "state": null,
+          "start_m": 195.00000001,
+          "end_m": 556.6388630676317,
+          "edges": [
+            "diagonal_0",
+            "return_0"
+          ]
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null,
+          "start_m": 245.09271880288406,
+          "end_m": 556.6388630676317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 245.09271880288406,
+          "edges": [
+            "lead_P4",
+            "return_0"
+          ]
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 195.00000001,
+          "edges": [
+            "lead_P4"
+          ]
+        },
+        {
+          "resource": "track:ACCESS:reverse",
+          "state": null,
+          "start_m": 676.7315818805158,
+          "end_m": 736.8028358651976,
+          "edges": [
+            "ACCESS:reverse"
+          ]
+        },
+        {
+          "resource": "track:F1:reverse",
+          "state": null,
+          "start_m": 556.6388630676317,
+          "end_m": 606.7315818605158,
+          "edges": [
+            "F1:reverse"
+          ]
+        },
+        {
+          "resource": "track:access_common",
+          "state": null,
+          "start_m": 656.7315818705158,
+          "end_m": 676.7315818805158,
+          "edges": [
+            "access_common"
+          ]
+        },
+        {
+          "resource": "track:access_diagonal",
+          "state": null,
+          "start_m": 736.8028358651976,
+          "end_m": 827.0903765438857,
+          "edges": [
+            "access_diagonal"
+          ]
+        },
+        {
+          "resource": "track:access_return",
+          "state": null,
+          "start_m": 827.0903765438857,
+          "end_m": 887.1616305285675,
+          "edges": [
+            "access_return"
+          ]
+        },
+        {
+          "resource": "track:departure_lead",
+          "state": null,
+          "start_m": 887.1616305285675,
+          "end_m": 1057.1616305385674,
+          "edges": [
+            "departure_lead"
+          ]
+        },
+        {
+          "resource": "track:diagonal_0",
+          "state": null,
+          "start_m": 245.09271880288406,
+          "end_m": 556.6388630676317,
+          "edges": [
+            "diagonal_0"
+          ]
+        },
+        {
+          "resource": "track:lead_P4",
+          "state": null,
+          "start_m": 0.0,
+          "end_m": 195.00000001,
+          "edges": [
+            "lead_P4"
+          ]
+        },
+        {
+          "resource": "track:return_0",
+          "state": null,
+          "start_m": 195.00000001,
+          "end_m": 245.09271880288406,
+          "edges": [
+            "return_0"
+          ]
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null,
+          "start_m": 606.7315818605158,
+          "end_m": 656.7315818705158,
+          "edges": [
+            "spine_0"
+          ]
+        }
+      ],
+      "relative_claims": [
+        {
+          "resource": "component_body:ACCESS",
+          "start_ms": 0,
+          "end_ms": 147328,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "component_body:F1",
+          "start_ms": 0,
+          "end_ms": 127930,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "control:ACCESS",
+          "start_ms": 0,
+          "end_ms": 147328,
+          "owner": "relative_leg",
+          "state": "R"
+        },
+        {
+          "resource": "control:F1",
+          "start_ms": 0,
+          "end_ms": 127930,
+          "owner": "relative_leg",
+          "state": "R"
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "start_ms": 0,
+          "end_ms": 138370,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "start_ms": 0,
+          "end_ms": 160792,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "start_ms": 0,
+          "end_ms": 147328,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_diagonal",
+          "start_ms": 0,
+          "end_ms": 160792,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "start_ms": 0,
+          "end_ms": 147328,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "start_ms": 0,
+          "end_ms": 120460,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "start_ms": 0,
+          "end_ms": 135387,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "start_ms": 0,
+          "end_ms": 127930,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "start_ms": 0,
+          "end_ms": 135387,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "start_ms": 0,
+          "end_ms": 127930,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "start_ms": 0,
+          "end_ms": 138370,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_diagonal|access_return",
+          "start_ms": 0,
+          "end_ms": 169751,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "start_ms": 0,
+          "end_ms": 160792,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:access_return|departure_lead",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "start_ms": 0,
+          "end_ms": 120460,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "start_ms": 0,
+          "end_ms": 120460,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "start_ms": 0,
+          "end_ms": 74000,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "start_ms": 0,
+          "end_ms": 66529,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:ACCESS:reverse",
+          "start_ms": 0,
+          "end_ms": 147328,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:F1:reverse",
+          "start_ms": 0,
+          "end_ms": 127930,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:access_common",
+          "start_ms": 0,
+          "end_ms": 138370,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:access_diagonal",
+          "start_ms": 0,
+          "end_ms": 160792,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:access_return",
+          "start_ms": 0,
+          "end_ms": 169751,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:departure_lead",
+          "start_ms": 0,
+          "end_ms": 195103,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:diagonal_0",
+          "start_ms": 0,
+          "end_ms": 120460,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:lead_P4",
+          "start_ms": 0,
+          "end_ms": 66529,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:return_0",
+          "start_ms": 0,
+          "end_ms": 74000,
+          "owner": "relative_leg",
+          "state": null
+        },
+        {
+          "resource": "track:spine_0",
+          "start_ms": 0,
+          "end_ms": 135387,
+          "owner": "relative_leg",
+          "state": null
+        }
+      ],
+      "physical_occupancy_approximations": [
+        {
+          "resource": "component_body:ACCESS",
+          "state": null,
+          "front_enters_ms": 111508,
+          "tail_clears_ms": 144328,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 147328
+        },
+        {
+          "resource": "component_body:F1",
+          "state": null,
+          "front_enters_ms": 93599,
+          "tail_clears_ms": 124930,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 127930
+        },
+        {
+          "resource": "control:ACCESS",
+          "state": "R",
+          "front_enters_ms": 111508,
+          "tail_clears_ms": 144328,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 147328
+        },
+        {
+          "resource": "control:F1",
+          "state": "R",
+          "front_enters_ms": 93599,
+          "tail_clears_ms": 124930,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 127930
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_common",
+          "state": null,
+          "front_enters_ms": 108525,
+          "tail_clears_ms": 135370,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 138370
+        },
+        {
+          "resource": "proximity:ACCESS:normal|access_diagonal",
+          "state": null,
+          "front_enters_ms": 120466,
+          "tail_clears_ms": 157792,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 160792
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_common",
+          "state": null,
+          "front_enters_ms": 108525,
+          "tail_clears_ms": 144328,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 147328
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|access_diagonal",
+          "state": null,
+          "front_enters_ms": 111508,
+          "tail_clears_ms": 157792,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 160792
+        },
+        {
+          "resource": "proximity:ACCESS:reverse|arrival_lead",
+          "state": null,
+          "front_enters_ms": 111508,
+          "tail_clears_ms": 144328,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 147328
+        },
+        {
+          "resource": "proximity:F1:normal|diagonal_0",
+          "state": null,
+          "front_enters_ms": 47138,
+          "tail_clears_ms": 117460,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 120460
+        },
+        {
+          "resource": "proximity:F1:normal|spine_0",
+          "state": null,
+          "front_enters_ms": 101069,
+          "tail_clears_ms": 132387,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 135387
+        },
+        {
+          "resource": "proximity:F1:reverse|diagonal_0",
+          "state": null,
+          "front_enters_ms": 47138,
+          "tail_clears_ms": 124930,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 127930
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_0",
+          "state": null,
+          "front_enters_ms": 93599,
+          "tail_clears_ms": 132387,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 135387
+        },
+        {
+          "resource": "proximity:F1:reverse|spine_1",
+          "state": null,
+          "front_enters_ms": 93599,
+          "tail_clears_ms": 124930,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 127930
+        },
+        {
+          "resource": "proximity:access_common|spine_0",
+          "state": null,
+          "front_enters_ms": 101069,
+          "tail_clears_ms": 135370,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 138370
+        },
+        {
+          "resource": "proximity:access_diagonal|access_return",
+          "state": null,
+          "front_enters_ms": 120466,
+          "tail_clears_ms": 166751,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 169751
+        },
+        {
+          "resource": "proximity:access_diagonal|arrival_lead",
+          "state": null,
+          "front_enters_ms": 120466,
+          "tail_clears_ms": 157792,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 160792
+        },
+        {
+          "resource": "proximity:access_return|departure_lead",
+          "state": null,
+          "front_enters_ms": 133931,
+          "tail_clears_ms": 192103,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "proximity:diagonal_0|return_0",
+          "state": null,
+          "front_enters_ms": 39668,
+          "tail_clears_ms": 117460,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 120460
+        },
+        {
+          "resource": "proximity:diagonal_0|spine_1",
+          "state": null,
+          "front_enters_ms": 47138,
+          "tail_clears_ms": 117460,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 120460
+        },
+        {
+          "resource": "proximity:lead_P4|return_0",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 71000,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 74000
+        },
+        {
+          "resource": "proximity:lead_P4|storage_P4",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 63529,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 66529
+        },
+        {
+          "resource": "track:ACCESS:reverse",
+          "state": null,
+          "front_enters_ms": 111508,
+          "tail_clears_ms": 144328,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 147328
+        },
+        {
+          "resource": "track:F1:reverse",
+          "state": null,
+          "front_enters_ms": 93599,
+          "tail_clears_ms": 124930,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 127930
+        },
+        {
+          "resource": "track:access_common",
+          "state": null,
+          "front_enters_ms": 108525,
+          "tail_clears_ms": 135370,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 138370
+        },
+        {
+          "resource": "track:access_diagonal",
+          "state": null,
+          "front_enters_ms": 120466,
+          "tail_clears_ms": 157792,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 160792
+        },
+        {
+          "resource": "track:access_return",
+          "state": null,
+          "front_enters_ms": 133931,
+          "tail_clears_ms": 166751,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 169751
+        },
+        {
+          "resource": "track:departure_lead",
+          "state": null,
+          "front_enters_ms": 142889,
+          "tail_clears_ms": 192103,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 195103
+        },
+        {
+          "resource": "track:diagonal_0",
+          "state": null,
+          "front_enters_ms": 47138,
+          "tail_clears_ms": 117460,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 120460
+        },
+        {
+          "resource": "track:lead_P4",
+          "state": null,
+          "front_enters_ms": 5000,
+          "tail_clears_ms": 63529,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 66529
+        },
+        {
+          "resource": "track:return_0",
+          "state": null,
+          "front_enters_ms": 39668,
+          "tail_clears_ms": 71000,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 74000
+        },
+        {
+          "resource": "track:spine_0",
+          "state": null,
+          "front_enters_ms": 101069,
+          "tail_clears_ms": 132387,
+          "lock_acquired_ms": 0,
+          "lock_released_ms": 135387
+        }
+      ],
+      "path_metric": "sum_of_geometry_upper_length_bounds; operational surrogate",
+      "section_authority": "synthetic_edge_release; not an interlocking design",
+      "boundary_assumption": "continue one train length beyond exit on unmodelled clear line"
+    }
+  }
+}

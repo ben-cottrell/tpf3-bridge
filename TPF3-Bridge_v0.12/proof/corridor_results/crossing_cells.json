@@ -1,0 +1,4074 @@
+[
+  {
+    "accepted_for_cell_comparison": true,
+    "bounds": {
+      "arithmetic": "floating analytical bounds; not interval arithmetic",
+      "curvature_rate_upper": 0.0,
+      "grade_upper": 0.0,
+      "plan_curvature_upper": 0.0,
+      "segments": [
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -650.0,
+          "x1": -50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -50.0,
+          "x1": 50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": 50.0,
+          "x1": 650.0
+        }
+      ],
+      "vertical_curvature_upper": 0.0
+    },
+    "branch_polyline": [
+      [
+        5400,
+        -650.0,
+        20.0
+      ],
+      [
+        5400,
+        -625.0,
+        20.0
+      ],
+      [
+        5400,
+        -600.0,
+        20.0
+      ],
+      [
+        5400,
+        -575.0,
+        20.0
+      ],
+      [
+        5400,
+        -550.0,
+        20.0
+      ],
+      [
+        5400,
+        -525.0,
+        20.0
+      ],
+      [
+        5400,
+        -500.0,
+        20.0
+      ],
+      [
+        5400,
+        -475.0,
+        20.0
+      ],
+      [
+        5400,
+        -450.0,
+        20.0
+      ],
+      [
+        5400,
+        -425.0,
+        20.0
+      ],
+      [
+        5400,
+        -400.0,
+        20.0
+      ],
+      [
+        5400,
+        -375.0,
+        20.0
+      ],
+      [
+        5400,
+        -350.0,
+        20.0
+      ],
+      [
+        5400,
+        -325.0,
+        20.0
+      ],
+      [
+        5400,
+        -300.0,
+        20.0
+      ],
+      [
+        5400,
+        -275.0,
+        20.0
+      ],
+      [
+        5400,
+        -250.0,
+        20.0
+      ],
+      [
+        5400,
+        -225.0,
+        20.0
+      ],
+      [
+        5400,
+        -200.0,
+        20.0
+      ],
+      [
+        5400,
+        -175.0,
+        20.0
+      ],
+      [
+        5400,
+        -150.0,
+        20.0
+      ],
+      [
+        5400,
+        -125.0,
+        20.0
+      ],
+      [
+        5400,
+        -100.0,
+        20.0
+      ],
+      [
+        5400,
+        -75.0,
+        20.0
+      ],
+      [
+        5400,
+        -50.0,
+        20.0
+      ],
+      [
+        5400,
+        -25.0,
+        20.0
+      ],
+      [
+        5400,
+        0.0,
+        20.0
+      ],
+      [
+        5400,
+        25.0,
+        20.0
+      ],
+      [
+        5400,
+        50.0,
+        20.0
+      ],
+      [
+        5400,
+        75.0,
+        20.0
+      ],
+      [
+        5400,
+        100.0,
+        20.0
+      ],
+      [
+        5400,
+        125.0,
+        20.0
+      ],
+      [
+        5400,
+        150.0,
+        20.0
+      ],
+      [
+        5400,
+        175.0,
+        20.0
+      ],
+      [
+        5400,
+        200.0,
+        20.0
+      ],
+      [
+        5400,
+        225.0,
+        20.0
+      ],
+      [
+        5400,
+        250.0,
+        20.0
+      ],
+      [
+        5400,
+        275.0,
+        20.0
+      ],
+      [
+        5400,
+        300.0,
+        20.0
+      ],
+      [
+        5400,
+        325.0,
+        20.0
+      ],
+      [
+        5400,
+        350.0,
+        20.0
+      ],
+      [
+        5400,
+        375.0,
+        20.0
+      ],
+      [
+        5400,
+        400.0,
+        20.0
+      ],
+      [
+        5400,
+        425.0,
+        20.0
+      ],
+      [
+        5400,
+        450.0,
+        20.0
+      ],
+      [
+        5400,
+        475.0,
+        20.0
+      ],
+      [
+        5400,
+        500.0,
+        20.0
+      ],
+      [
+        5400,
+        525.0,
+        20.0
+      ],
+      [
+        5400,
+        550.0,
+        20.0
+      ],
+      [
+        5400,
+        575.0,
+        20.0
+      ],
+      [
+        5400,
+        600.0,
+        20.0
+      ],
+      [
+        5400,
+        625.0,
+        20.0
+      ],
+      [
+        5400,
+        650.0,
+        20.0
+      ]
+    ],
+    "branch_ports": [
+      [
+        5400,
+        -650.0,
+        20.0
+      ],
+      [
+        5400,
+        650.0,
+        20.0
+      ]
+    ],
+    "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+    "cell_hash": "b24e7b43518d61d173d001f85ce85c0f0469b73a7822726c7dfc680c3f5bc893",
+    "clearance_margin_m": null,
+    "construction_authorised": false,
+    "crossing_conflicts_with_main": 2,
+    "crossing_footprint_interval_m": [
+      -3.7,
+      3.7
+    ],
+    "crossing_separated_within_model": false,
+    "crossing_x_m": 5400,
+    "envelope_budget_origin": "project study allowances, not a universal UK bridge clearance",
+    "full_branch_junction_connected": false,
+    "game_constructed": false,
+    "height_m": 0,
+    "main_rail_z_m": 20,
+    "max_grade_pass": true,
+    "minimum_rail_separation_m": 0.0,
+    "missing_connection_interfaces": [
+      "upstream turnout and connecting alignment",
+      "downstream branch continuation/merge"
+    ],
+    "mode": "flat",
+    "pair_checks": [
+      {
+        "a": "main_east",
+        "b": "main_west",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_east",
+        "b": "branch",
+        "shared_exclusive_resources": [
+          "crossing_east"
+        ]
+      },
+      {
+        "a": "main_west",
+        "b": "branch",
+        "shared_exclusive_resources": [
+          "crossing_west"
+        ]
+      }
+    ],
+    "plateau_length_m": 100,
+    "project_cell_geometry_pass": true,
+    "ramp_length_m": 600,
+    "required_project_separation_m": 6.8,
+    "resource_sets": {
+      "branch": [
+        "branch_track",
+        "crossing_east",
+        "crossing_west"
+      ],
+      "main_east": [
+        "crossing_east",
+        "main_east_track"
+      ],
+      "main_west": [
+        "crossing_west",
+        "main_west_track"
+      ]
+    },
+    "site_reservation_pass": true,
+    "total_approach_span_m": 1300.0,
+    "turning_connections_at_crossing": [],
+    "unassessed": [
+      "actual vehicle/structure gauge",
+      "bridge/tunnel asset fit",
+      "terrain and piers at crossing",
+      "drainage/groundwater for diveunder",
+      "real signal protection and section boundaries"
+    ],
+    "version": "0.9.0",
+    "vertical_radius_pass": true
+  },
+  {
+    "accepted_for_cell_comparison": true,
+    "bounds": {
+      "arithmetic": "floating analytical bounds; not interval arithmetic",
+      "curvature_rate_upper": 0.0,
+      "grade_upper": 0.0,
+      "plan_curvature_upper": 0.0,
+      "segments": [
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -800.0,
+          "x1": -50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -50.0,
+          "x1": 50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": 50.0,
+          "x1": 800.0
+        }
+      ],
+      "vertical_curvature_upper": 0.0
+    },
+    "branch_polyline": [
+      [
+        5400,
+        -800.0,
+        20.0
+      ],
+      [
+        5400,
+        -775.0,
+        20.0
+      ],
+      [
+        5400,
+        -750.0,
+        20.0
+      ],
+      [
+        5400,
+        -725.0,
+        20.0
+      ],
+      [
+        5400,
+        -700.0,
+        20.0
+      ],
+      [
+        5400,
+        -675.0,
+        20.0
+      ],
+      [
+        5400,
+        -650.0,
+        20.0
+      ],
+      [
+        5400,
+        -625.0,
+        20.0
+      ],
+      [
+        5400,
+        -600.0,
+        20.0
+      ],
+      [
+        5400,
+        -575.0,
+        20.0
+      ],
+      [
+        5400,
+        -550.0,
+        20.0
+      ],
+      [
+        5400,
+        -525.0,
+        20.0
+      ],
+      [
+        5400,
+        -500.0,
+        20.0
+      ],
+      [
+        5400,
+        -475.0,
+        20.0
+      ],
+      [
+        5400,
+        -450.0,
+        20.0
+      ],
+      [
+        5400,
+        -425.0,
+        20.0
+      ],
+      [
+        5400,
+        -400.0,
+        20.0
+      ],
+      [
+        5400,
+        -375.0,
+        20.0
+      ],
+      [
+        5400,
+        -350.0,
+        20.0
+      ],
+      [
+        5400,
+        -325.0,
+        20.0
+      ],
+      [
+        5400,
+        -300.0,
+        20.0
+      ],
+      [
+        5400,
+        -275.0,
+        20.0
+      ],
+      [
+        5400,
+        -250.0,
+        20.0
+      ],
+      [
+        5400,
+        -225.0,
+        20.0
+      ],
+      [
+        5400,
+        -200.0,
+        20.0
+      ],
+      [
+        5400,
+        -175.0,
+        20.0
+      ],
+      [
+        5400,
+        -150.0,
+        20.0
+      ],
+      [
+        5400,
+        -125.0,
+        20.0
+      ],
+      [
+        5400,
+        -100.0,
+        20.0
+      ],
+      [
+        5400,
+        -75.0,
+        20.0
+      ],
+      [
+        5400,
+        -50.0,
+        20.0
+      ],
+      [
+        5400,
+        -25.0,
+        20.0
+      ],
+      [
+        5400,
+        0.0,
+        20.0
+      ],
+      [
+        5400,
+        25.0,
+        20.0
+      ],
+      [
+        5400,
+        50.0,
+        20.0
+      ],
+      [
+        5400,
+        75.0,
+        20.0
+      ],
+      [
+        5400,
+        100.0,
+        20.0
+      ],
+      [
+        5400,
+        125.0,
+        20.0
+      ],
+      [
+        5400,
+        150.0,
+        20.0
+      ],
+      [
+        5400,
+        175.0,
+        20.0
+      ],
+      [
+        5400,
+        200.0,
+        20.0
+      ],
+      [
+        5400,
+        225.0,
+        20.0
+      ],
+      [
+        5400,
+        250.0,
+        20.0
+      ],
+      [
+        5400,
+        275.0,
+        20.0
+      ],
+      [
+        5400,
+        300.0,
+        20.0
+      ],
+      [
+        5400,
+        325.0,
+        20.0
+      ],
+      [
+        5400,
+        350.0,
+        20.0
+      ],
+      [
+        5400,
+        375.0,
+        20.0
+      ],
+      [
+        5400,
+        400.0,
+        20.0
+      ],
+      [
+        5400,
+        425.0,
+        20.0
+      ],
+      [
+        5400,
+        450.0,
+        20.0
+      ],
+      [
+        5400,
+        475.0,
+        20.0
+      ],
+      [
+        5400,
+        500.0,
+        20.0
+      ],
+      [
+        5400,
+        525.0,
+        20.0
+      ],
+      [
+        5400,
+        550.0,
+        20.0
+      ],
+      [
+        5400,
+        575.0,
+        20.0
+      ],
+      [
+        5400,
+        600.0,
+        20.0
+      ],
+      [
+        5400,
+        625.0,
+        20.0
+      ],
+      [
+        5400,
+        650.0,
+        20.0
+      ],
+      [
+        5400,
+        675.0,
+        20.0
+      ],
+      [
+        5400,
+        700.0,
+        20.0
+      ],
+      [
+        5400,
+        725.0,
+        20.0
+      ],
+      [
+        5400,
+        750.0,
+        20.0
+      ],
+      [
+        5400,
+        775.0,
+        20.0
+      ],
+      [
+        5400,
+        800.0,
+        20.0
+      ]
+    ],
+    "branch_ports": [
+      [
+        5400,
+        -800.0,
+        20.0
+      ],
+      [
+        5400,
+        800.0,
+        20.0
+      ]
+    ],
+    "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+    "cell_hash": "219a71c0b73c52becb8119a5e58df427164c45b49e9e9f41e65416bc51a57a8f",
+    "clearance_margin_m": null,
+    "construction_authorised": false,
+    "crossing_conflicts_with_main": 2,
+    "crossing_footprint_interval_m": [
+      -3.7,
+      3.7
+    ],
+    "crossing_separated_within_model": false,
+    "crossing_x_m": 5400,
+    "envelope_budget_origin": "project study allowances, not a universal UK bridge clearance",
+    "full_branch_junction_connected": false,
+    "game_constructed": false,
+    "height_m": 0,
+    "main_rail_z_m": 20,
+    "max_grade_pass": true,
+    "minimum_rail_separation_m": 0.0,
+    "missing_connection_interfaces": [
+      "upstream turnout and connecting alignment",
+      "downstream branch continuation/merge"
+    ],
+    "mode": "flat",
+    "pair_checks": [
+      {
+        "a": "main_east",
+        "b": "main_west",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_east",
+        "b": "branch",
+        "shared_exclusive_resources": [
+          "crossing_east"
+        ]
+      },
+      {
+        "a": "main_west",
+        "b": "branch",
+        "shared_exclusive_resources": [
+          "crossing_west"
+        ]
+      }
+    ],
+    "plateau_length_m": 100,
+    "project_cell_geometry_pass": true,
+    "ramp_length_m": 750,
+    "required_project_separation_m": 6.8,
+    "resource_sets": {
+      "branch": [
+        "branch_track",
+        "crossing_east",
+        "crossing_west"
+      ],
+      "main_east": [
+        "crossing_east",
+        "main_east_track"
+      ],
+      "main_west": [
+        "crossing_west",
+        "main_west_track"
+      ]
+    },
+    "site_reservation_pass": true,
+    "total_approach_span_m": 1600.0,
+    "turning_connections_at_crossing": [],
+    "unassessed": [
+      "actual vehicle/structure gauge",
+      "bridge/tunnel asset fit",
+      "terrain and piers at crossing",
+      "drainage/groundwater for diveunder",
+      "real signal protection and section boundaries"
+    ],
+    "version": "0.9.0",
+    "vertical_radius_pass": true
+  },
+  {
+    "accepted_for_cell_comparison": true,
+    "bounds": {
+      "arithmetic": "floating analytical bounds; not interval arithmetic",
+      "curvature_rate_upper": 0.0,
+      "grade_upper": 0.0,
+      "plan_curvature_upper": 0.0,
+      "segments": [
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -950.0,
+          "x1": -50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -50.0,
+          "x1": 50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": 50.0,
+          "x1": 950.0
+        }
+      ],
+      "vertical_curvature_upper": 0.0
+    },
+    "branch_polyline": [
+      [
+        5400,
+        -950.0,
+        20.0
+      ],
+      [
+        5400,
+        -925.0,
+        20.0
+      ],
+      [
+        5400,
+        -900.0,
+        20.0
+      ],
+      [
+        5400,
+        -875.0,
+        20.0
+      ],
+      [
+        5400,
+        -850.0,
+        20.0
+      ],
+      [
+        5400,
+        -825.0,
+        20.0
+      ],
+      [
+        5400,
+        -800.0,
+        20.0
+      ],
+      [
+        5400,
+        -775.0,
+        20.0
+      ],
+      [
+        5400,
+        -750.0,
+        20.0
+      ],
+      [
+        5400,
+        -725.0,
+        20.0
+      ],
+      [
+        5400,
+        -700.0,
+        20.0
+      ],
+      [
+        5400,
+        -675.0,
+        20.0
+      ],
+      [
+        5400,
+        -650.0,
+        20.0
+      ],
+      [
+        5400,
+        -625.0,
+        20.0
+      ],
+      [
+        5400,
+        -600.0,
+        20.0
+      ],
+      [
+        5400,
+        -575.0,
+        20.0
+      ],
+      [
+        5400,
+        -550.0,
+        20.0
+      ],
+      [
+        5400,
+        -525.0,
+        20.0
+      ],
+      [
+        5400,
+        -500.0,
+        20.0
+      ],
+      [
+        5400,
+        -475.0,
+        20.0
+      ],
+      [
+        5400,
+        -450.0,
+        20.0
+      ],
+      [
+        5400,
+        -425.0,
+        20.0
+      ],
+      [
+        5400,
+        -400.0,
+        20.0
+      ],
+      [
+        5400,
+        -375.0,
+        20.0
+      ],
+      [
+        5400,
+        -350.0,
+        20.0
+      ],
+      [
+        5400,
+        -325.0,
+        20.0
+      ],
+      [
+        5400,
+        -300.0,
+        20.0
+      ],
+      [
+        5400,
+        -275.0,
+        20.0
+      ],
+      [
+        5400,
+        -250.0,
+        20.0
+      ],
+      [
+        5400,
+        -225.0,
+        20.0
+      ],
+      [
+        5400,
+        -200.0,
+        20.0
+      ],
+      [
+        5400,
+        -175.0,
+        20.0
+      ],
+      [
+        5400,
+        -150.0,
+        20.0
+      ],
+      [
+        5400,
+        -125.0,
+        20.0
+      ],
+      [
+        5400,
+        -100.0,
+        20.0
+      ],
+      [
+        5400,
+        -75.0,
+        20.0
+      ],
+      [
+        5400,
+        -50.0,
+        20.0
+      ],
+      [
+        5400,
+        -25.0,
+        20.0
+      ],
+      [
+        5400,
+        0.0,
+        20.0
+      ],
+      [
+        5400,
+        25.0,
+        20.0
+      ],
+      [
+        5400,
+        50.0,
+        20.0
+      ],
+      [
+        5400,
+        75.0,
+        20.0
+      ],
+      [
+        5400,
+        100.0,
+        20.0
+      ],
+      [
+        5400,
+        125.0,
+        20.0
+      ],
+      [
+        5400,
+        150.0,
+        20.0
+      ],
+      [
+        5400,
+        175.0,
+        20.0
+      ],
+      [
+        5400,
+        200.0,
+        20.0
+      ],
+      [
+        5400,
+        225.0,
+        20.0
+      ],
+      [
+        5400,
+        250.0,
+        20.0
+      ],
+      [
+        5400,
+        275.0,
+        20.0
+      ],
+      [
+        5400,
+        300.0,
+        20.0
+      ],
+      [
+        5400,
+        325.0,
+        20.0
+      ],
+      [
+        5400,
+        350.0,
+        20.0
+      ],
+      [
+        5400,
+        375.0,
+        20.0
+      ],
+      [
+        5400,
+        400.0,
+        20.0
+      ],
+      [
+        5400,
+        425.0,
+        20.0
+      ],
+      [
+        5400,
+        450.0,
+        20.0
+      ],
+      [
+        5400,
+        475.0,
+        20.0
+      ],
+      [
+        5400,
+        500.0,
+        20.0
+      ],
+      [
+        5400,
+        525.0,
+        20.0
+      ],
+      [
+        5400,
+        550.0,
+        20.0
+      ],
+      [
+        5400,
+        575.0,
+        20.0
+      ],
+      [
+        5400,
+        600.0,
+        20.0
+      ],
+      [
+        5400,
+        625.0,
+        20.0
+      ],
+      [
+        5400,
+        650.0,
+        20.0
+      ],
+      [
+        5400,
+        675.0,
+        20.0
+      ],
+      [
+        5400,
+        700.0,
+        20.0
+      ],
+      [
+        5400,
+        725.0,
+        20.0
+      ],
+      [
+        5400,
+        750.0,
+        20.0
+      ],
+      [
+        5400,
+        775.0,
+        20.0
+      ],
+      [
+        5400,
+        800.0,
+        20.0
+      ],
+      [
+        5400,
+        825.0,
+        20.0
+      ],
+      [
+        5400,
+        850.0,
+        20.0
+      ],
+      [
+        5400,
+        875.0,
+        20.0
+      ],
+      [
+        5400,
+        900.0,
+        20.0
+      ],
+      [
+        5400,
+        925.0,
+        20.0
+      ],
+      [
+        5400,
+        950.0,
+        20.0
+      ]
+    ],
+    "branch_ports": [
+      [
+        5400,
+        -950.0,
+        20.0
+      ],
+      [
+        5400,
+        950.0,
+        20.0
+      ]
+    ],
+    "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+    "cell_hash": "93dd2717e1006bf703c04ac5f5e1eb62f50dae1789740df452191d0df53bf443",
+    "clearance_margin_m": null,
+    "construction_authorised": false,
+    "crossing_conflicts_with_main": 2,
+    "crossing_footprint_interval_m": [
+      -3.7,
+      3.7
+    ],
+    "crossing_separated_within_model": false,
+    "crossing_x_m": 5400,
+    "envelope_budget_origin": "project study allowances, not a universal UK bridge clearance",
+    "full_branch_junction_connected": false,
+    "game_constructed": false,
+    "height_m": 0,
+    "main_rail_z_m": 20,
+    "max_grade_pass": true,
+    "minimum_rail_separation_m": 0.0,
+    "missing_connection_interfaces": [
+      "upstream turnout and connecting alignment",
+      "downstream branch continuation/merge"
+    ],
+    "mode": "flat",
+    "pair_checks": [
+      {
+        "a": "main_east",
+        "b": "main_west",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_east",
+        "b": "branch",
+        "shared_exclusive_resources": [
+          "crossing_east"
+        ]
+      },
+      {
+        "a": "main_west",
+        "b": "branch",
+        "shared_exclusive_resources": [
+          "crossing_west"
+        ]
+      }
+    ],
+    "plateau_length_m": 100,
+    "project_cell_geometry_pass": true,
+    "ramp_length_m": 900,
+    "required_project_separation_m": 6.8,
+    "resource_sets": {
+      "branch": [
+        "branch_track",
+        "crossing_east",
+        "crossing_west"
+      ],
+      "main_east": [
+        "crossing_east",
+        "main_east_track"
+      ],
+      "main_west": [
+        "crossing_west",
+        "main_west_track"
+      ]
+    },
+    "site_reservation_pass": true,
+    "total_approach_span_m": 1900.0,
+    "turning_connections_at_crossing": [],
+    "unassessed": [
+      "actual vehicle/structure gauge",
+      "bridge/tunnel asset fit",
+      "terrain and piers at crossing",
+      "drainage/groundwater for diveunder",
+      "real signal protection and section boundaries"
+    ],
+    "version": "0.9.0",
+    "vertical_radius_pass": true
+  },
+  {
+    "accepted_for_cell_comparison": false,
+    "bounds": {
+      "arithmetic": "floating analytical bounds; not interval arithmetic",
+      "curvature_rate_upper": 0.0,
+      "grade_upper": 0.02343750000234375,
+      "plan_curvature_upper": 0.0,
+      "segments": [
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0234375,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.00012028130608117205,
+          "travel_dx_metric_upper": 1.0002746204949169,
+          "vertical_curvature_upper": 0.00012028130608117205,
+          "x0": -650.0,
+          "x1": -50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -50.0,
+          "x1": 50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0234375,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.00012028130608117205,
+          "travel_dx_metric_upper": 1.0002746204949169,
+          "vertical_curvature_upper": 0.00012028130608117205,
+          "x0": 50.0,
+          "x1": 650.0
+        }
+      ],
+      "vertical_curvature_upper": 0.00012028130609320018
+    },
+    "branch_polyline": [
+      [
+        5400,
+        -650.0,
+        20.0
+      ],
+      [
+        5400,
+        -625.0,
+        20.005091914424188
+      ],
+      [
+        5400,
+        -600.0,
+        20.038158275462962
+      ],
+      [
+        5400,
+        -575.0,
+        20.120391845703125
+      ],
+      [
+        5400,
+        -550.0,
+        20.266203703703702
+      ],
+      [
+        5400,
+        -525.0,
+        20.483901412398726
+      ],
+      [
+        5400,
+        -500.0,
+        20.7763671875
+      ],
+      [
+        5400,
+        -475.0,
+        21.141736065899885
+      ],
+      [
+        5400,
+        -450.0,
+        21.574074074074073
+      ],
+      [
+        5400,
+        -425.0,
+        22.064056396484375
+      ],
+      [
+        5400,
+        -400.0,
+        22.59964554398148
+      ],
+      [
+        5400,
+        -375.0,
+        23.166769522207755
+      ],
+      [
+        5400,
+        -350.0,
+        23.75
+      ],
+      [
+        5400,
+        -325.0,
+        24.333230477792245
+      ],
+      [
+        5400,
+        -300.0,
+        24.90035445601852
+      ],
+      [
+        5400,
+        -275.0,
+        25.435943603515625
+      ],
+      [
+        5400,
+        -250.0,
+        25.925925925925927
+      ],
+      [
+        5400,
+        -225.0,
+        26.358263934100115
+      ],
+      [
+        5400,
+        -200.0,
+        26.7236328125
+      ],
+      [
+        5400,
+        -175.0,
+        27.016098587601277
+      ],
+      [
+        5400,
+        -150.0,
+        27.233796296296294
+      ],
+      [
+        5400,
+        -125.0,
+        27.379608154296875
+      ],
+      [
+        5400,
+        -100.0,
+        27.461841724537045
+      ],
+      [
+        5400,
+        -75.0,
+        27.49490808557581
+      ],
+      [
+        5400,
+        -50.0,
+        27.5
+      ],
+      [
+        5400,
+        -25.0,
+        27.5
+      ],
+      [
+        5400,
+        0.0,
+        27.5
+      ],
+      [
+        5400,
+        25.0,
+        27.5
+      ],
+      [
+        5400,
+        50.0,
+        27.5
+      ],
+      [
+        5400,
+        75.0,
+        27.494908085575812
+      ],
+      [
+        5400,
+        100.0,
+        27.461841724537038
+      ],
+      [
+        5400,
+        125.0,
+        27.379608154296875
+      ],
+      [
+        5400,
+        150.0,
+        27.233796296296298
+      ],
+      [
+        5400,
+        175.0,
+        27.016098587601274
+      ],
+      [
+        5400,
+        200.0,
+        26.7236328125
+      ],
+      [
+        5400,
+        225.0,
+        26.358263934100115
+      ],
+      [
+        5400,
+        250.0,
+        25.925925925925927
+      ],
+      [
+        5400,
+        275.0,
+        25.435943603515625
+      ],
+      [
+        5400,
+        300.0,
+        24.90035445601852
+      ],
+      [
+        5400,
+        325.0,
+        24.333230477792245
+      ],
+      [
+        5400,
+        350.0,
+        23.75
+      ],
+      [
+        5400,
+        375.0,
+        23.166769522207755
+      ],
+      [
+        5400,
+        400.0,
+        22.59964554398148
+      ],
+      [
+        5400,
+        425.0,
+        22.064056396484375
+      ],
+      [
+        5400,
+        450.0,
+        21.574074074074073
+      ],
+      [
+        5400,
+        475.0,
+        21.141736065899885
+      ],
+      [
+        5400,
+        500.0,
+        20.7763671875
+      ],
+      [
+        5400,
+        525.0,
+        20.483901412398723
+      ],
+      [
+        5400,
+        550.0,
+        20.266203703703706
+      ],
+      [
+        5400,
+        575.0,
+        20.120391845703125
+      ],
+      [
+        5400,
+        600.0,
+        20.038158275462955
+      ],
+      [
+        5400,
+        625.0,
+        20.00509191442419
+      ],
+      [
+        5400,
+        650.0,
+        20.0
+      ]
+    ],
+    "branch_ports": [
+      [
+        5400,
+        -650.0,
+        20.0
+      ],
+      [
+        5400,
+        650.0,
+        20.0
+      ]
+    ],
+    "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+    "cell_hash": "2fce2866a0bcec811c427cf98988fcaa14ac782531d879e2461f771b6ee2ead9",
+    "clearance_margin_m": 0.7000000000000002,
+    "construction_authorised": false,
+    "crossing_conflicts_with_main": 2,
+    "crossing_footprint_interval_m": [
+      -3.7,
+      3.7
+    ],
+    "crossing_separated_within_model": false,
+    "crossing_x_m": 5400,
+    "envelope_budget_origin": "project study allowances, not a universal UK bridge clearance",
+    "full_branch_junction_connected": false,
+    "game_constructed": false,
+    "height_m": 7.5,
+    "main_rail_z_m": 20,
+    "max_grade_pass": false,
+    "minimum_rail_separation_m": 7.5,
+    "missing_connection_interfaces": [
+      "upstream turnout and connecting alignment",
+      "downstream branch continuation/merge"
+    ],
+    "mode": "flyover",
+    "pair_checks": [
+      {
+        "a": "main_east",
+        "b": "main_west",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_east",
+        "b": "branch",
+        "shared_exclusive_resources": [
+          "crossing_east"
+        ]
+      },
+      {
+        "a": "main_west",
+        "b": "branch",
+        "shared_exclusive_resources": [
+          "crossing_west"
+        ]
+      }
+    ],
+    "plateau_length_m": 100,
+    "project_cell_geometry_pass": false,
+    "ramp_length_m": 600,
+    "required_project_separation_m": 6.8,
+    "resource_sets": {
+      "branch": [
+        "branch_track",
+        "crossing_east",
+        "crossing_west"
+      ],
+      "main_east": [
+        "crossing_east",
+        "main_east_track"
+      ],
+      "main_west": [
+        "crossing_west",
+        "main_west_track"
+      ]
+    },
+    "site_reservation_pass": true,
+    "total_approach_span_m": 1300.0,
+    "turning_connections_at_crossing": [],
+    "unassessed": [
+      "actual vehicle/structure gauge",
+      "bridge/tunnel asset fit",
+      "terrain and piers at crossing",
+      "drainage/groundwater for diveunder",
+      "real signal protection and section boundaries"
+    ],
+    "version": "0.9.0",
+    "vertical_radius_pass": true
+  },
+  {
+    "accepted_for_cell_comparison": true,
+    "bounds": {
+      "arithmetic": "floating analytical bounds; not interval arithmetic",
+      "curvature_rate_upper": 0.0,
+      "grade_upper": 0.018750000001875,
+      "plan_curvature_upper": 0.0,
+      "segments": [
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.01875,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 7.698003589195011e-05,
+          "travel_dx_metric_upper": 1.0001757658031911,
+          "vertical_curvature_upper": 7.698003589195011e-05,
+          "x0": -800.0,
+          "x1": -50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -50.0,
+          "x1": 50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.01875,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 7.698003589195011e-05,
+          "travel_dx_metric_upper": 1.0001757658031911,
+          "vertical_curvature_upper": 7.698003589195011e-05,
+          "x0": 50.0,
+          "x1": 800.0
+        }
+      ],
+      "vertical_curvature_upper": 7.698003589964811e-05
+    },
+    "branch_polyline": [
+      [
+        5400,
+        -800.0,
+        20.0
+      ],
+      [
+        5400,
+        -775.0,
+        20.00264074074074
+      ],
+      [
+        5400,
+        -750.0,
+        20.02005925925926
+      ],
+      [
+        5400,
+        -725.0,
+        20.0642
+      ],
+      [
+        5400,
+        -700.0,
+        20.144118518518518
+      ],
+      [
+        5400,
+        -675.0,
+        20.266203703703702
+      ],
+      [
+        5400,
+        -650.0,
+        20.4344
+      ],
+      [
+        5400,
+        -625.0,
+        20.65042962962963
+      ],
+      [
+        5400,
+        -600.0,
+        20.914014814814816
+      ],
+      [
+        5400,
+        -575.0,
+        21.2231
+      ],
+      [
+        5400,
+        -550.0,
+        21.574074074074073
+      ],
+      [
+        5400,
+        -525.0,
+        21.96199259259259
+      ],
+      [
+        5400,
+        -500.0,
+        22.3808
+      ],
+      [
+        5400,
+        -475.0,
+        22.823551851851853
+      ],
+      [
+        5400,
+        -450.0,
+        23.282637037037038
+      ],
+      [
+        5400,
+        -425.0,
+        23.75
+      ],
+      [
+        5400,
+        -400.0,
+        24.217362962962962
+      ],
+      [
+        5400,
+        -375.0,
+        24.676448148148147
+      ],
+      [
+        5400,
+        -350.0,
+        25.1192
+      ],
+      [
+        5400,
+        -325.0,
+        25.538007407407406
+      ],
+      [
+        5400,
+        -300.0,
+        25.925925925925927
+      ],
+      [
+        5400,
+        -275.0,
+        26.276899999999998
+      ],
+      [
+        5400,
+        -250.0,
+        26.585985185185184
+      ],
+      [
+        5400,
+        -225.0,
+        26.849570370370373
+      ],
+      [
+        5400,
+        -200.0,
+        27.0656
+      ],
+      [
+        5400,
+        -175.0,
+        27.233796296296294
+      ],
+      [
+        5400,
+        -150.0,
+        27.35588148148148
+      ],
+      [
+        5400,
+        -125.0,
+        27.4358
+      ],
+      [
+        5400,
+        -100.0,
+        27.47994074074074
+      ],
+      [
+        5400,
+        -75.0,
+        27.497359259259262
+      ],
+      [
+        5400,
+        -50.0,
+        27.5
+      ],
+      [
+        5400,
+        -25.0,
+        27.5
+      ],
+      [
+        5400,
+        0.0,
+        27.5
+      ],
+      [
+        5400,
+        25.0,
+        27.5
+      ],
+      [
+        5400,
+        50.0,
+        27.5
+      ],
+      [
+        5400,
+        75.0,
+        27.49735925925926
+      ],
+      [
+        5400,
+        100.0,
+        27.47994074074074
+      ],
+      [
+        5400,
+        125.0,
+        27.4358
+      ],
+      [
+        5400,
+        150.0,
+        27.355881481481482
+      ],
+      [
+        5400,
+        175.0,
+        27.233796296296298
+      ],
+      [
+        5400,
+        200.0,
+        27.0656
+      ],
+      [
+        5400,
+        225.0,
+        26.84957037037037
+      ],
+      [
+        5400,
+        250.0,
+        26.585985185185184
+      ],
+      [
+        5400,
+        275.0,
+        26.2769
+      ],
+      [
+        5400,
+        300.0,
+        25.925925925925927
+      ],
+      [
+        5400,
+        325.0,
+        25.53800740740741
+      ],
+      [
+        5400,
+        350.0,
+        25.1192
+      ],
+      [
+        5400,
+        375.0,
+        24.676448148148147
+      ],
+      [
+        5400,
+        400.0,
+        24.217362962962962
+      ],
+      [
+        5400,
+        425.0,
+        23.75
+      ],
+      [
+        5400,
+        450.0,
+        23.282637037037038
+      ],
+      [
+        5400,
+        475.0,
+        22.823551851851853
+      ],
+      [
+        5400,
+        500.0,
+        22.3808
+      ],
+      [
+        5400,
+        525.0,
+        21.961992592592594
+      ],
+      [
+        5400,
+        550.0,
+        21.574074074074073
+      ],
+      [
+        5400,
+        575.0,
+        21.223100000000002
+      ],
+      [
+        5400,
+        600.0,
+        20.914014814814816
+      ],
+      [
+        5400,
+        625.0,
+        20.650429629629627
+      ],
+      [
+        5400,
+        650.0,
+        20.4344
+      ],
+      [
+        5400,
+        675.0,
+        20.266203703703706
+      ],
+      [
+        5400,
+        700.0,
+        20.14411851851852
+      ],
+      [
+        5400,
+        725.0,
+        20.0642
+      ],
+      [
+        5400,
+        750.0,
+        20.02005925925926
+      ],
+      [
+        5400,
+        775.0,
+        20.002640740740738
+      ],
+      [
+        5400,
+        800.0,
+        20.0
+      ]
+    ],
+    "branch_ports": [
+      [
+        5400,
+        -800.0,
+        20.0
+      ],
+      [
+        5400,
+        800.0,
+        20.0
+      ]
+    ],
+    "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+    "cell_hash": "b008a10b2869aca2ea096ba7c01b9c1d68d6d0be9df3b76023321630d6702375",
+    "clearance_margin_m": 0.7000000000000002,
+    "construction_authorised": false,
+    "crossing_conflicts_with_main": 0,
+    "crossing_footprint_interval_m": [
+      -3.7,
+      3.7
+    ],
+    "crossing_separated_within_model": true,
+    "crossing_x_m": 5400,
+    "envelope_budget_origin": "project study allowances, not a universal UK bridge clearance",
+    "full_branch_junction_connected": false,
+    "game_constructed": false,
+    "height_m": 7.5,
+    "main_rail_z_m": 20,
+    "max_grade_pass": true,
+    "minimum_rail_separation_m": 7.5,
+    "missing_connection_interfaces": [
+      "upstream turnout and connecting alignment",
+      "downstream branch continuation/merge"
+    ],
+    "mode": "flyover",
+    "pair_checks": [
+      {
+        "a": "main_east",
+        "b": "main_west",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_east",
+        "b": "branch",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_west",
+        "b": "branch",
+        "shared_exclusive_resources": []
+      }
+    ],
+    "plateau_length_m": 100,
+    "project_cell_geometry_pass": true,
+    "ramp_length_m": 750,
+    "required_project_separation_m": 6.8,
+    "resource_sets": {
+      "branch": [
+        "branch_track"
+      ],
+      "main_east": [
+        "main_east_track"
+      ],
+      "main_west": [
+        "main_west_track"
+      ]
+    },
+    "site_reservation_pass": true,
+    "total_approach_span_m": 1600.0,
+    "turning_connections_at_crossing": [],
+    "unassessed": [
+      "actual vehicle/structure gauge",
+      "bridge/tunnel asset fit",
+      "terrain and piers at crossing",
+      "drainage/groundwater for diveunder",
+      "real signal protection and section boundaries"
+    ],
+    "version": "0.9.0",
+    "vertical_radius_pass": true
+  },
+  {
+    "accepted_for_cell_comparison": true,
+    "bounds": {
+      "arithmetic": "floating analytical bounds; not interval arithmetic",
+      "curvature_rate_upper": 0.0,
+      "grade_upper": 0.0156250000015625,
+      "plan_curvature_upper": 0.0,
+      "segments": [
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.015625,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 5.345835825829869e-05,
+          "travel_dx_metric_upper": 1.0001220628628287,
+          "vertical_curvature_upper": 5.345835825829869e-05,
+          "x0": -950.0,
+          "x1": -50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -50.0,
+          "x1": 50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.015625,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 5.345835825829869e-05,
+          "travel_dx_metric_upper": 1.0001220628628287,
+          "vertical_curvature_upper": 5.345835825829869e-05,
+          "x0": 50.0,
+          "x1": 950.0
+        }
+      ],
+      "vertical_curvature_upper": 5.345835826364452e-05
+    },
+    "branch_polyline": [
+      [
+        5400,
+        -950.0,
+        20.0
+      ],
+      [
+        5400,
+        -925.0,
+        20.001541274910455
+      ],
+      [
+        5400,
+        -900.0,
+        20.01181222374638
+      ],
+      [
+        5400,
+        -875.0,
+        20.038158275462962
+      ],
+      [
+        5400,
+        -850.0,
+        20.08649596098156
+      ],
+      [
+        5400,
+        -825.0,
+        20.161402219316795
+      ],
+      [
+        5400,
+        -800.0,
+        20.266203703703702
+      ],
+      [
+        5400,
+        -775.0,
+        20.403066087724813
+      ],
+      [
+        5400,
+        -750.0,
+        20.57308337143728
+      ],
+      [
+        5400,
+        -725.0,
+        20.7763671875
+      ],
+      [
+        5400,
+        -700.0,
+        21.012136107300716
+      ],
+      [
+        5400,
+        -675.0,
+        21.27880494708314
+      ],
+      [
+        5400,
+        -650.0,
+        21.574074074074073
+      ],
+      [
+        5400,
+        -625.0,
+        21.8950187126105
+      ],
+      [
+        5400,
+        -600.0,
+        22.238178250266728
+      ],
+      [
+        5400,
+        -575.0,
+        22.59964554398148
+      ],
+      [
+        5400,
+        -550.0,
+        22.97515622618503
+      ],
+      [
+        5400,
+        -525.0,
+        23.360178010926305
+      ],
+      [
+        5400,
+        -500.0,
+        23.75
+      ],
+      [
+        5400,
+        -475.0,
+        24.139821989073695
+      ],
+      [
+        5400,
+        -450.0,
+        24.52484377381497
+      ],
+      [
+        5400,
+        -425.0,
+        24.90035445601852
+      ],
+      [
+        5400,
+        -400.0,
+        25.261821749733272
+      ],
+      [
+        5400,
+        -375.0,
+        25.604981287389496
+      ],
+      [
+        5400,
+        -350.0,
+        25.925925925925927
+      ],
+      [
+        5400,
+        -325.0,
+        26.22119505291686
+      ],
+      [
+        5400,
+        -300.0,
+        26.48786389269928
+      ],
+      [
+        5400,
+        -275.0,
+        26.7236328125
+      ],
+      [
+        5400,
+        -250.0,
+        26.926916628562722
+      ],
+      [
+        5400,
+        -225.0,
+        27.096933912275187
+      ],
+      [
+        5400,
+        -200.0,
+        27.233796296296294
+      ],
+      [
+        5400,
+        -175.0,
+        27.33859778068321
+      ],
+      [
+        5400,
+        -150.0,
+        27.413504039018438
+      ],
+      [
+        5400,
+        -125.0,
+        27.461841724537045
+      ],
+      [
+        5400,
+        -100.0,
+        27.488187776253618
+      ],
+      [
+        5400,
+        -75.0,
+        27.498458725089534
+      ],
+      [
+        5400,
+        -50.0,
+        27.5
+      ],
+      [
+        5400,
+        -25.0,
+        27.5
+      ],
+      [
+        5400,
+        0.0,
+        27.5
+      ],
+      [
+        5400,
+        25.0,
+        27.5
+      ],
+      [
+        5400,
+        50.0,
+        27.5
+      ],
+      [
+        5400,
+        75.0,
+        27.498458725089545
+      ],
+      [
+        5400,
+        100.0,
+        27.48818777625362
+      ],
+      [
+        5400,
+        125.0,
+        27.461841724537038
+      ],
+      [
+        5400,
+        150.0,
+        27.41350403901844
+      ],
+      [
+        5400,
+        175.0,
+        27.338597780683205
+      ],
+      [
+        5400,
+        200.0,
+        27.233796296296298
+      ],
+      [
+        5400,
+        225.0,
+        27.096933912275187
+      ],
+      [
+        5400,
+        250.0,
+        26.92691662856272
+      ],
+      [
+        5400,
+        275.0,
+        26.7236328125
+      ],
+      [
+        5400,
+        300.0,
+        26.487863892699284
+      ],
+      [
+        5400,
+        325.0,
+        26.22119505291686
+      ],
+      [
+        5400,
+        350.0,
+        25.925925925925927
+      ],
+      [
+        5400,
+        375.0,
+        25.6049812873895
+      ],
+      [
+        5400,
+        400.0,
+        25.261821749733272
+      ],
+      [
+        5400,
+        425.0,
+        24.90035445601852
+      ],
+      [
+        5400,
+        450.0,
+        24.52484377381497
+      ],
+      [
+        5400,
+        475.0,
+        24.139821989073695
+      ],
+      [
+        5400,
+        500.0,
+        23.75
+      ],
+      [
+        5400,
+        525.0,
+        23.360178010926305
+      ],
+      [
+        5400,
+        550.0,
+        22.97515622618503
+      ],
+      [
+        5400,
+        575.0,
+        22.59964554398148
+      ],
+      [
+        5400,
+        600.0,
+        22.238178250266728
+      ],
+      [
+        5400,
+        625.0,
+        21.895018712610504
+      ],
+      [
+        5400,
+        650.0,
+        21.574074074074073
+      ],
+      [
+        5400,
+        675.0,
+        21.27880494708314
+      ],
+      [
+        5400,
+        700.0,
+        21.01213610730072
+      ],
+      [
+        5400,
+        725.0,
+        20.7763671875
+      ],
+      [
+        5400,
+        750.0,
+        20.573083371437278
+      ],
+      [
+        5400,
+        775.0,
+        20.403066087724813
+      ],
+      [
+        5400,
+        800.0,
+        20.266203703703706
+      ],
+      [
+        5400,
+        825.0,
+        20.16140221931679
+      ],
+      [
+        5400,
+        850.0,
+        20.086495960981562
+      ],
+      [
+        5400,
+        875.0,
+        20.038158275462955
+      ],
+      [
+        5400,
+        900.0,
+        20.011812223746382
+      ],
+      [
+        5400,
+        925.0,
+        20.001541274910466
+      ],
+      [
+        5400,
+        950.0,
+        20.0
+      ]
+    ],
+    "branch_ports": [
+      [
+        5400,
+        -950.0,
+        20.0
+      ],
+      [
+        5400,
+        950.0,
+        20.0
+      ]
+    ],
+    "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+    "cell_hash": "4a94e37319986165b70a3f832a99846acfc60b00508529cea78bdb4832e0a8b7",
+    "clearance_margin_m": 0.7000000000000002,
+    "construction_authorised": false,
+    "crossing_conflicts_with_main": 0,
+    "crossing_footprint_interval_m": [
+      -3.7,
+      3.7
+    ],
+    "crossing_separated_within_model": true,
+    "crossing_x_m": 5400,
+    "envelope_budget_origin": "project study allowances, not a universal UK bridge clearance",
+    "full_branch_junction_connected": false,
+    "game_constructed": false,
+    "height_m": 7.5,
+    "main_rail_z_m": 20,
+    "max_grade_pass": true,
+    "minimum_rail_separation_m": 7.5,
+    "missing_connection_interfaces": [
+      "upstream turnout and connecting alignment",
+      "downstream branch continuation/merge"
+    ],
+    "mode": "flyover",
+    "pair_checks": [
+      {
+        "a": "main_east",
+        "b": "main_west",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_east",
+        "b": "branch",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_west",
+        "b": "branch",
+        "shared_exclusive_resources": []
+      }
+    ],
+    "plateau_length_m": 100,
+    "project_cell_geometry_pass": true,
+    "ramp_length_m": 900,
+    "required_project_separation_m": 6.8,
+    "resource_sets": {
+      "branch": [
+        "branch_track"
+      ],
+      "main_east": [
+        "main_east_track"
+      ],
+      "main_west": [
+        "main_west_track"
+      ]
+    },
+    "site_reservation_pass": true,
+    "total_approach_span_m": 1900.0,
+    "turning_connections_at_crossing": [],
+    "unassessed": [
+      "actual vehicle/structure gauge",
+      "bridge/tunnel asset fit",
+      "terrain and piers at crossing",
+      "drainage/groundwater for diveunder",
+      "real signal protection and section boundaries"
+    ],
+    "version": "0.9.0",
+    "vertical_radius_pass": true
+  },
+  {
+    "accepted_for_cell_comparison": false,
+    "bounds": {
+      "arithmetic": "floating analytical bounds; not interval arithmetic",
+      "curvature_rate_upper": 0.0,
+      "grade_upper": 0.02343750000234375,
+      "plan_curvature_upper": 0.0,
+      "segments": [
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0234375,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.00012028130608117205,
+          "travel_dx_metric_upper": 1.0002746204949169,
+          "vertical_curvature_upper": 0.00012028130608117205,
+          "x0": -650.0,
+          "x1": -50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -50.0,
+          "x1": 50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0234375,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.00012028130608117205,
+          "travel_dx_metric_upper": 1.0002746204949169,
+          "vertical_curvature_upper": 0.00012028130608117205,
+          "x0": 50.0,
+          "x1": 650.0
+        }
+      ],
+      "vertical_curvature_upper": 0.00012028130609320018
+    },
+    "branch_polyline": [
+      [
+        5400,
+        -650.0,
+        20.0
+      ],
+      [
+        5400,
+        -625.0,
+        19.994908085575812
+      ],
+      [
+        5400,
+        -600.0,
+        19.961841724537038
+      ],
+      [
+        5400,
+        -575.0,
+        19.879608154296875
+      ],
+      [
+        5400,
+        -550.0,
+        19.733796296296298
+      ],
+      [
+        5400,
+        -525.0,
+        19.516098587601274
+      ],
+      [
+        5400,
+        -500.0,
+        19.2236328125
+      ],
+      [
+        5400,
+        -475.0,
+        18.858263934100115
+      ],
+      [
+        5400,
+        -450.0,
+        18.425925925925927
+      ],
+      [
+        5400,
+        -425.0,
+        17.935943603515625
+      ],
+      [
+        5400,
+        -400.0,
+        17.40035445601852
+      ],
+      [
+        5400,
+        -375.0,
+        16.833230477792245
+      ],
+      [
+        5400,
+        -350.0,
+        16.25
+      ],
+      [
+        5400,
+        -325.0,
+        15.666769522207755
+      ],
+      [
+        5400,
+        -300.0,
+        15.099645543981481
+      ],
+      [
+        5400,
+        -275.0,
+        14.564056396484375
+      ],
+      [
+        5400,
+        -250.0,
+        14.074074074074073
+      ],
+      [
+        5400,
+        -225.0,
+        13.641736065899885
+      ],
+      [
+        5400,
+        -200.0,
+        13.2763671875
+      ],
+      [
+        5400,
+        -175.0,
+        12.983901412398723
+      ],
+      [
+        5400,
+        -150.0,
+        12.766203703703706
+      ],
+      [
+        5400,
+        -125.0,
+        12.620391845703125
+      ],
+      [
+        5400,
+        -100.0,
+        12.538158275462957
+      ],
+      [
+        5400,
+        -75.0,
+        12.505091914424192
+      ],
+      [
+        5400,
+        -50.0,
+        12.5
+      ],
+      [
+        5400,
+        -25.0,
+        12.5
+      ],
+      [
+        5400,
+        0.0,
+        12.5
+      ],
+      [
+        5400,
+        25.0,
+        12.5
+      ],
+      [
+        5400,
+        50.0,
+        12.5
+      ],
+      [
+        5400,
+        75.0,
+        12.50509191442419
+      ],
+      [
+        5400,
+        100.0,
+        12.538158275462964
+      ],
+      [
+        5400,
+        125.0,
+        12.620391845703125
+      ],
+      [
+        5400,
+        150.0,
+        12.766203703703704
+      ],
+      [
+        5400,
+        175.0,
+        12.983901412398726
+      ],
+      [
+        5400,
+        200.0,
+        13.2763671875
+      ],
+      [
+        5400,
+        225.0,
+        13.641736065899885
+      ],
+      [
+        5400,
+        250.0,
+        14.074074074074074
+      ],
+      [
+        5400,
+        275.0,
+        14.564056396484375
+      ],
+      [
+        5400,
+        300.0,
+        15.099645543981481
+      ],
+      [
+        5400,
+        325.0,
+        15.666769522207755
+      ],
+      [
+        5400,
+        350.0,
+        16.25
+      ],
+      [
+        5400,
+        375.0,
+        16.833230477792245
+      ],
+      [
+        5400,
+        400.0,
+        17.40035445601852
+      ],
+      [
+        5400,
+        425.0,
+        17.935943603515625
+      ],
+      [
+        5400,
+        450.0,
+        18.425925925925927
+      ],
+      [
+        5400,
+        475.0,
+        18.858263934100115
+      ],
+      [
+        5400,
+        500.0,
+        19.2236328125
+      ],
+      [
+        5400,
+        525.0,
+        19.516098587601277
+      ],
+      [
+        5400,
+        550.0,
+        19.733796296296294
+      ],
+      [
+        5400,
+        575.0,
+        19.879608154296875
+      ],
+      [
+        5400,
+        600.0,
+        19.961841724537045
+      ],
+      [
+        5400,
+        625.0,
+        19.99490808557581
+      ],
+      [
+        5400,
+        650.0,
+        20.0
+      ]
+    ],
+    "branch_ports": [
+      [
+        5400,
+        -650.0,
+        20.0
+      ],
+      [
+        5400,
+        650.0,
+        20.0
+      ]
+    ],
+    "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+    "cell_hash": "62ed633a27595b333f8756faa68bd56eb97aabd43f08437f3d9069419ead051e",
+    "clearance_margin_m": 0.7000000000000002,
+    "construction_authorised": false,
+    "crossing_conflicts_with_main": 2,
+    "crossing_footprint_interval_m": [
+      -3.7,
+      3.7
+    ],
+    "crossing_separated_within_model": false,
+    "crossing_x_m": 5400,
+    "envelope_budget_origin": "project study allowances, not a universal UK bridge clearance",
+    "full_branch_junction_connected": false,
+    "game_constructed": false,
+    "height_m": 7.5,
+    "main_rail_z_m": 20,
+    "max_grade_pass": false,
+    "minimum_rail_separation_m": 7.5,
+    "missing_connection_interfaces": [
+      "upstream turnout and connecting alignment",
+      "downstream branch continuation/merge"
+    ],
+    "mode": "diveunder",
+    "pair_checks": [
+      {
+        "a": "main_east",
+        "b": "main_west",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_east",
+        "b": "branch",
+        "shared_exclusive_resources": [
+          "crossing_east"
+        ]
+      },
+      {
+        "a": "main_west",
+        "b": "branch",
+        "shared_exclusive_resources": [
+          "crossing_west"
+        ]
+      }
+    ],
+    "plateau_length_m": 100,
+    "project_cell_geometry_pass": false,
+    "ramp_length_m": 600,
+    "required_project_separation_m": 6.8,
+    "resource_sets": {
+      "branch": [
+        "branch_track",
+        "crossing_east",
+        "crossing_west"
+      ],
+      "main_east": [
+        "crossing_east",
+        "main_east_track"
+      ],
+      "main_west": [
+        "crossing_west",
+        "main_west_track"
+      ]
+    },
+    "site_reservation_pass": true,
+    "total_approach_span_m": 1300.0,
+    "turning_connections_at_crossing": [],
+    "unassessed": [
+      "actual vehicle/structure gauge",
+      "bridge/tunnel asset fit",
+      "terrain and piers at crossing",
+      "drainage/groundwater for diveunder",
+      "real signal protection and section boundaries"
+    ],
+    "version": "0.9.0",
+    "vertical_radius_pass": true
+  },
+  {
+    "accepted_for_cell_comparison": true,
+    "bounds": {
+      "arithmetic": "floating analytical bounds; not interval arithmetic",
+      "curvature_rate_upper": 0.0,
+      "grade_upper": 0.018750000001875,
+      "plan_curvature_upper": 0.0,
+      "segments": [
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.01875,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 7.698003589195011e-05,
+          "travel_dx_metric_upper": 1.0001757658031911,
+          "vertical_curvature_upper": 7.698003589195011e-05,
+          "x0": -800.0,
+          "x1": -50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -50.0,
+          "x1": 50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.01875,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 7.698003589195011e-05,
+          "travel_dx_metric_upper": 1.0001757658031911,
+          "vertical_curvature_upper": 7.698003589195011e-05,
+          "x0": 50.0,
+          "x1": 800.0
+        }
+      ],
+      "vertical_curvature_upper": 7.698003589964811e-05
+    },
+    "branch_polyline": [
+      [
+        5400,
+        -800.0,
+        20.0
+      ],
+      [
+        5400,
+        -775.0,
+        19.99735925925926
+      ],
+      [
+        5400,
+        -750.0,
+        19.97994074074074
+      ],
+      [
+        5400,
+        -725.0,
+        19.9358
+      ],
+      [
+        5400,
+        -700.0,
+        19.855881481481482
+      ],
+      [
+        5400,
+        -675.0,
+        19.733796296296298
+      ],
+      [
+        5400,
+        -650.0,
+        19.5656
+      ],
+      [
+        5400,
+        -625.0,
+        19.34957037037037
+      ],
+      [
+        5400,
+        -600.0,
+        19.085985185185184
+      ],
+      [
+        5400,
+        -575.0,
+        18.7769
+      ],
+      [
+        5400,
+        -550.0,
+        18.425925925925927
+      ],
+      [
+        5400,
+        -525.0,
+        18.03800740740741
+      ],
+      [
+        5400,
+        -500.0,
+        17.6192
+      ],
+      [
+        5400,
+        -475.0,
+        17.176448148148147
+      ],
+      [
+        5400,
+        -450.0,
+        16.717362962962962
+      ],
+      [
+        5400,
+        -425.0,
+        16.25
+      ],
+      [
+        5400,
+        -400.0,
+        15.782637037037038
+      ],
+      [
+        5400,
+        -375.0,
+        15.323551851851853
+      ],
+      [
+        5400,
+        -350.0,
+        14.8808
+      ],
+      [
+        5400,
+        -325.0,
+        14.461992592592592
+      ],
+      [
+        5400,
+        -300.0,
+        14.074074074074073
+      ],
+      [
+        5400,
+        -275.0,
+        13.7231
+      ],
+      [
+        5400,
+        -250.0,
+        13.414014814814816
+      ],
+      [
+        5400,
+        -225.0,
+        13.150429629629627
+      ],
+      [
+        5400,
+        -200.0,
+        12.9344
+      ],
+      [
+        5400,
+        -175.0,
+        12.766203703703706
+      ],
+      [
+        5400,
+        -150.0,
+        12.644118518518521
+      ],
+      [
+        5400,
+        -125.0,
+        12.564200000000001
+      ],
+      [
+        5400,
+        -100.0,
+        12.52005925925926
+      ],
+      [
+        5400,
+        -75.0,
+        12.502640740740738
+      ],
+      [
+        5400,
+        -50.0,
+        12.5
+      ],
+      [
+        5400,
+        -25.0,
+        12.5
+      ],
+      [
+        5400,
+        0.0,
+        12.5
+      ],
+      [
+        5400,
+        25.0,
+        12.5
+      ],
+      [
+        5400,
+        50.0,
+        12.5
+      ],
+      [
+        5400,
+        75.0,
+        12.502640740740741
+      ],
+      [
+        5400,
+        100.0,
+        12.52005925925926
+      ],
+      [
+        5400,
+        125.0,
+        12.5642
+      ],
+      [
+        5400,
+        150.0,
+        12.644118518518518
+      ],
+      [
+        5400,
+        175.0,
+        12.766203703703704
+      ],
+      [
+        5400,
+        200.0,
+        12.9344
+      ],
+      [
+        5400,
+        225.0,
+        13.15042962962963
+      ],
+      [
+        5400,
+        250.0,
+        13.414014814814815
+      ],
+      [
+        5400,
+        275.0,
+        13.7231
+      ],
+      [
+        5400,
+        300.0,
+        14.074074074074074
+      ],
+      [
+        5400,
+        325.0,
+        14.461992592592592
+      ],
+      [
+        5400,
+        350.0,
+        14.8808
+      ],
+      [
+        5400,
+        375.0,
+        15.323551851851851
+      ],
+      [
+        5400,
+        400.0,
+        15.782637037037038
+      ],
+      [
+        5400,
+        425.0,
+        16.25
+      ],
+      [
+        5400,
+        450.0,
+        16.717362962962962
+      ],
+      [
+        5400,
+        475.0,
+        17.176448148148147
+      ],
+      [
+        5400,
+        500.0,
+        17.6192
+      ],
+      [
+        5400,
+        525.0,
+        18.038007407407406
+      ],
+      [
+        5400,
+        550.0,
+        18.425925925925927
+      ],
+      [
+        5400,
+        575.0,
+        18.776899999999998
+      ],
+      [
+        5400,
+        600.0,
+        19.085985185185184
+      ],
+      [
+        5400,
+        625.0,
+        19.349570370370373
+      ],
+      [
+        5400,
+        650.0,
+        19.5656
+      ],
+      [
+        5400,
+        675.0,
+        19.733796296296294
+      ],
+      [
+        5400,
+        700.0,
+        19.85588148148148
+      ],
+      [
+        5400,
+        725.0,
+        19.9358
+      ],
+      [
+        5400,
+        750.0,
+        19.97994074074074
+      ],
+      [
+        5400,
+        775.0,
+        19.997359259259262
+      ],
+      [
+        5400,
+        800.0,
+        20.0
+      ]
+    ],
+    "branch_ports": [
+      [
+        5400,
+        -800.0,
+        20.0
+      ],
+      [
+        5400,
+        800.0,
+        20.0
+      ]
+    ],
+    "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+    "cell_hash": "1ce4c70361f4e8cb90bb9d4b667d68baae9aac5183b68edb1e8776369aaf8815",
+    "clearance_margin_m": 0.7000000000000002,
+    "construction_authorised": false,
+    "crossing_conflicts_with_main": 0,
+    "crossing_footprint_interval_m": [
+      -3.7,
+      3.7
+    ],
+    "crossing_separated_within_model": true,
+    "crossing_x_m": 5400,
+    "envelope_budget_origin": "project study allowances, not a universal UK bridge clearance",
+    "full_branch_junction_connected": false,
+    "game_constructed": false,
+    "height_m": 7.5,
+    "main_rail_z_m": 20,
+    "max_grade_pass": true,
+    "minimum_rail_separation_m": 7.5,
+    "missing_connection_interfaces": [
+      "upstream turnout and connecting alignment",
+      "downstream branch continuation/merge"
+    ],
+    "mode": "diveunder",
+    "pair_checks": [
+      {
+        "a": "main_east",
+        "b": "main_west",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_east",
+        "b": "branch",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_west",
+        "b": "branch",
+        "shared_exclusive_resources": []
+      }
+    ],
+    "plateau_length_m": 100,
+    "project_cell_geometry_pass": true,
+    "ramp_length_m": 750,
+    "required_project_separation_m": 6.8,
+    "resource_sets": {
+      "branch": [
+        "branch_track"
+      ],
+      "main_east": [
+        "main_east_track"
+      ],
+      "main_west": [
+        "main_west_track"
+      ]
+    },
+    "site_reservation_pass": true,
+    "total_approach_span_m": 1600.0,
+    "turning_connections_at_crossing": [],
+    "unassessed": [
+      "actual vehicle/structure gauge",
+      "bridge/tunnel asset fit",
+      "terrain and piers at crossing",
+      "drainage/groundwater for diveunder",
+      "real signal protection and section boundaries"
+    ],
+    "version": "0.9.0",
+    "vertical_radius_pass": true
+  },
+  {
+    "accepted_for_cell_comparison": true,
+    "bounds": {
+      "arithmetic": "floating analytical bounds; not interval arithmetic",
+      "curvature_rate_upper": 0.0,
+      "grade_upper": 0.0156250000015625,
+      "plan_curvature_upper": 0.0,
+      "segments": [
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.015625,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 5.345835825829869e-05,
+          "travel_dx_metric_upper": 1.0001220628628287,
+          "vertical_curvature_upper": 5.345835825829869e-05,
+          "x0": -950.0,
+          "x1": -50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.0,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 0.0,
+          "travel_dx_metric_upper": 1.0,
+          "vertical_curvature_upper": 0.0,
+          "x0": -50.0,
+          "x1": 50.0
+        },
+        {
+          "curvature_rate_upper": 0.0,
+          "grade_upper": 0.015625,
+          "plan_curvature_upper": 0.0,
+          "position_second_derivative_upper": 5.345835825829869e-05,
+          "travel_dx_metric_upper": 1.0001220628628287,
+          "vertical_curvature_upper": 5.345835825829869e-05,
+          "x0": 50.0,
+          "x1": 950.0
+        }
+      ],
+      "vertical_curvature_upper": 5.345835826364452e-05
+    },
+    "branch_polyline": [
+      [
+        5400,
+        -950.0,
+        20.0
+      ],
+      [
+        5400,
+        -925.0,
+        19.998458725089545
+      ],
+      [
+        5400,
+        -900.0,
+        19.98818777625362
+      ],
+      [
+        5400,
+        -875.0,
+        19.961841724537038
+      ],
+      [
+        5400,
+        -850.0,
+        19.91350403901844
+      ],
+      [
+        5400,
+        -825.0,
+        19.838597780683205
+      ],
+      [
+        5400,
+        -800.0,
+        19.733796296296298
+      ],
+      [
+        5400,
+        -775.0,
+        19.596933912275187
+      ],
+      [
+        5400,
+        -750.0,
+        19.42691662856272
+      ],
+      [
+        5400,
+        -725.0,
+        19.2236328125
+      ],
+      [
+        5400,
+        -700.0,
+        18.987863892699284
+      ],
+      [
+        5400,
+        -675.0,
+        18.72119505291686
+      ],
+      [
+        5400,
+        -650.0,
+        18.425925925925927
+      ],
+      [
+        5400,
+        -625.0,
+        18.1049812873895
+      ],
+      [
+        5400,
+        -600.0,
+        17.761821749733272
+      ],
+      [
+        5400,
+        -575.0,
+        17.40035445601852
+      ],
+      [
+        5400,
+        -550.0,
+        17.02484377381497
+      ],
+      [
+        5400,
+        -525.0,
+        16.639821989073695
+      ],
+      [
+        5400,
+        -500.0,
+        16.25
+      ],
+      [
+        5400,
+        -475.0,
+        15.860178010926306
+      ],
+      [
+        5400,
+        -450.0,
+        15.475156226185032
+      ],
+      [
+        5400,
+        -425.0,
+        15.099645543981481
+      ],
+      [
+        5400,
+        -400.0,
+        14.738178250266726
+      ],
+      [
+        5400,
+        -375.0,
+        14.395018712610504
+      ],
+      [
+        5400,
+        -350.0,
+        14.074074074074073
+      ],
+      [
+        5400,
+        -325.0,
+        13.778804947083142
+      ],
+      [
+        5400,
+        -300.0,
+        13.512136107300718
+      ],
+      [
+        5400,
+        -275.0,
+        13.2763671875
+      ],
+      [
+        5400,
+        -250.0,
+        13.073083371437278
+      ],
+      [
+        5400,
+        -225.0,
+        12.903066087724813
+      ],
+      [
+        5400,
+        -200.0,
+        12.766203703703706
+      ],
+      [
+        5400,
+        -175.0,
+        12.66140221931679
+      ],
+      [
+        5400,
+        -150.0,
+        12.586495960981562
+      ],
+      [
+        5400,
+        -125.0,
+        12.538158275462957
+      ],
+      [
+        5400,
+        -100.0,
+        12.511812223746382
+      ],
+      [
+        5400,
+        -75.0,
+        12.501541274910464
+      ],
+      [
+        5400,
+        -50.0,
+        12.5
+      ],
+      [
+        5400,
+        -25.0,
+        12.5
+      ],
+      [
+        5400,
+        0.0,
+        12.5
+      ],
+      [
+        5400,
+        25.0,
+        12.5
+      ],
+      [
+        5400,
+        50.0,
+        12.5
+      ],
+      [
+        5400,
+        75.0,
+        12.501541274910455
+      ],
+      [
+        5400,
+        100.0,
+        12.51181222374638
+      ],
+      [
+        5400,
+        125.0,
+        12.538158275462964
+      ],
+      [
+        5400,
+        150.0,
+        12.586495960981559
+      ],
+      [
+        5400,
+        175.0,
+        12.661402219316797
+      ],
+      [
+        5400,
+        200.0,
+        12.766203703703704
+      ],
+      [
+        5400,
+        225.0,
+        12.903066087724813
+      ],
+      [
+        5400,
+        250.0,
+        13.073083371437281
+      ],
+      [
+        5400,
+        275.0,
+        13.2763671875
+      ],
+      [
+        5400,
+        300.0,
+        13.512136107300716
+      ],
+      [
+        5400,
+        325.0,
+        13.778804947083144
+      ],
+      [
+        5400,
+        350.0,
+        14.074074074074074
+      ],
+      [
+        5400,
+        375.0,
+        14.3950187126105
+      ],
+      [
+        5400,
+        400.0,
+        14.738178250266728
+      ],
+      [
+        5400,
+        425.0,
+        15.099645543981481
+      ],
+      [
+        5400,
+        450.0,
+        15.475156226185032
+      ],
+      [
+        5400,
+        475.0,
+        15.860178010926306
+      ],
+      [
+        5400,
+        500.0,
+        16.25
+      ],
+      [
+        5400,
+        525.0,
+        16.639821989073695
+      ],
+      [
+        5400,
+        550.0,
+        17.02484377381497
+      ],
+      [
+        5400,
+        575.0,
+        17.40035445601852
+      ],
+      [
+        5400,
+        600.0,
+        17.761821749733272
+      ],
+      [
+        5400,
+        625.0,
+        18.104981287389496
+      ],
+      [
+        5400,
+        650.0,
+        18.425925925925927
+      ],
+      [
+        5400,
+        675.0,
+        18.72119505291686
+      ],
+      [
+        5400,
+        700.0,
+        18.98786389269928
+      ],
+      [
+        5400,
+        725.0,
+        19.2236328125
+      ],
+      [
+        5400,
+        750.0,
+        19.426916628562722
+      ],
+      [
+        5400,
+        775.0,
+        19.596933912275187
+      ],
+      [
+        5400,
+        800.0,
+        19.733796296296294
+      ],
+      [
+        5400,
+        825.0,
+        19.83859778068321
+      ],
+      [
+        5400,
+        850.0,
+        19.913504039018438
+      ],
+      [
+        5400,
+        875.0,
+        19.961841724537045
+      ],
+      [
+        5400,
+        900.0,
+        19.988187776253618
+      ],
+      [
+        5400,
+        925.0,
+        19.998458725089534
+      ],
+      [
+        5400,
+        950.0,
+        20.0
+      ]
+    ],
+    "branch_ports": [
+      [
+        5400,
+        -950.0,
+        20.0
+      ],
+      [
+        5400,
+        950.0,
+        20.0
+      ]
+    ],
+    "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+    "cell_hash": "0d5dcef2e5824827d430a7a7dec2aae61995991ffb0645e8f2fda25eb4938f86",
+    "clearance_margin_m": 0.7000000000000002,
+    "construction_authorised": false,
+    "crossing_conflicts_with_main": 0,
+    "crossing_footprint_interval_m": [
+      -3.7,
+      3.7
+    ],
+    "crossing_separated_within_model": true,
+    "crossing_x_m": 5400,
+    "envelope_budget_origin": "project study allowances, not a universal UK bridge clearance",
+    "full_branch_junction_connected": false,
+    "game_constructed": false,
+    "height_m": 7.5,
+    "main_rail_z_m": 20,
+    "max_grade_pass": true,
+    "minimum_rail_separation_m": 7.5,
+    "missing_connection_interfaces": [
+      "upstream turnout and connecting alignment",
+      "downstream branch continuation/merge"
+    ],
+    "mode": "diveunder",
+    "pair_checks": [
+      {
+        "a": "main_east",
+        "b": "main_west",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_east",
+        "b": "branch",
+        "shared_exclusive_resources": []
+      },
+      {
+        "a": "main_west",
+        "b": "branch",
+        "shared_exclusive_resources": []
+      }
+    ],
+    "plateau_length_m": 100,
+    "project_cell_geometry_pass": true,
+    "ramp_length_m": 900,
+    "required_project_separation_m": 6.8,
+    "resource_sets": {
+      "branch": [
+        "branch_track"
+      ],
+      "main_east": [
+        "main_east_track"
+      ],
+      "main_west": [
+        "main_west_track"
+      ]
+    },
+    "site_reservation_pass": true,
+    "total_approach_span_m": 1900.0,
+    "turning_connections_at_crossing": [],
+    "unassessed": [
+      "actual vehicle/structure gauge",
+      "bridge/tunnel asset fit",
+      "terrain and piers at crossing",
+      "drainage/groundwater for diveunder",
+      "real signal protection and section boundaries"
+    ],
+    "version": "0.9.0",
+    "vertical_radius_pass": true
+  }
+]

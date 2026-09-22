@@ -1,0 +1,691 @@
+{
+  "assessment_hash": "d016acc40952f751d16b4221d23f879028eeec6a7633925c9fe8e2802ccb6b0e",
+  "compile_hash": "cd9af2d7222d97d1469a72b017fc03df57ee4fae0530aea371be55b9e7074c42",
+  "construction_authorised": false,
+  "current_uk_compliance": "unassessed",
+  "faces": {
+    "A1": {
+      "boarding_length_m": 260.0,
+      "edge_end_xyz_m": [
+        970.0,
+        -40.545,
+        0.915
+      ],
+      "edge_start_xyz_m": [
+        710.0,
+        -40.545,
+        0.915
+      ],
+      "height_check": {
+        "check": "platform_height",
+        "clause": "2.1.1-2.1.3; G2.1.13 excludes extra build/maintenance allowance from design",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "perpendicular_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 915.0,
+        "permitted_interval_mm": [
+          900.0,
+          915.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "stage": "design",
+        "status": "reference_clause_pass"
+      },
+      "height_mm": 915.0,
+      "island_id": "IA12",
+      "nearest_rail_offset_mm": 737.5,
+      "offset_check": {
+        "check": "platform_offset",
+        "clause": "2.2.1 and G2.2.8; not a universal curved-platform minimum",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "nearest_rail_running_edge_14mm_below_rail_head_projected_parallel_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 737.5,
+        "minimum_origin": "explicit_standard_case_reference",
+        "permitted_interval_mm": [
+          730.0,
+          745.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "permissible_or_enhanced_speed_mph": 15.0,
+      "platform_id": "A1",
+      "side": 1,
+      "track_y_m": -42.0
+    },
+    "A2": {
+      "boarding_length_m": 260.0,
+      "edge_end_xyz_m": [
+        970.0,
+        -31.455,
+        0.915
+      ],
+      "edge_start_xyz_m": [
+        710.0,
+        -31.455,
+        0.915
+      ],
+      "height_check": {
+        "check": "platform_height",
+        "clause": "2.1.1-2.1.3; G2.1.13 excludes extra build/maintenance allowance from design",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "perpendicular_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 915.0,
+        "permitted_interval_mm": [
+          900.0,
+          915.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "stage": "design",
+        "status": "reference_clause_pass"
+      },
+      "height_mm": 915.0,
+      "island_id": "IA12",
+      "nearest_rail_offset_mm": 737.5,
+      "offset_check": {
+        "check": "platform_offset",
+        "clause": "2.2.1 and G2.2.8; not a universal curved-platform minimum",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "nearest_rail_running_edge_14mm_below_rail_head_projected_parallel_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 737.5,
+        "minimum_origin": "explicit_standard_case_reference",
+        "permitted_interval_mm": [
+          730.0,
+          745.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "permissible_or_enhanced_speed_mph": 15.0,
+      "platform_id": "A2",
+      "side": -1,
+      "track_y_m": -30.0
+    },
+    "A3": {
+      "boarding_length_m": 320.0,
+      "edge_end_xyz_m": [
+        970.0,
+        -16.545,
+        0.915
+      ],
+      "edge_start_xyz_m": [
+        650.0,
+        -16.545,
+        0.915
+      ],
+      "height_check": {
+        "check": "platform_height",
+        "clause": "2.1.1-2.1.3; G2.1.13 excludes extra build/maintenance allowance from design",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "perpendicular_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 915.0,
+        "permitted_interval_mm": [
+          900.0,
+          915.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "stage": "design",
+        "status": "reference_clause_pass"
+      },
+      "height_mm": 915.0,
+      "island_id": "IA34",
+      "nearest_rail_offset_mm": 737.5,
+      "offset_check": {
+        "check": "platform_offset",
+        "clause": "2.2.1 and G2.2.8; not a universal curved-platform minimum",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "nearest_rail_running_edge_14mm_below_rail_head_projected_parallel_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 737.5,
+        "minimum_origin": "explicit_standard_case_reference",
+        "permitted_interval_mm": [
+          730.0,
+          745.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "permissible_or_enhanced_speed_mph": 15.0,
+      "platform_id": "A3",
+      "side": 1,
+      "track_y_m": -18.0
+    },
+    "A4": {
+      "boarding_length_m": 320.0,
+      "edge_end_xyz_m": [
+        970.0,
+        -7.455,
+        0.915
+      ],
+      "edge_start_xyz_m": [
+        650.0,
+        -7.455,
+        0.915
+      ],
+      "height_check": {
+        "check": "platform_height",
+        "clause": "2.1.1-2.1.3; G2.1.13 excludes extra build/maintenance allowance from design",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "perpendicular_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 915.0,
+        "permitted_interval_mm": [
+          900.0,
+          915.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "stage": "design",
+        "status": "reference_clause_pass"
+      },
+      "height_mm": 915.0,
+      "island_id": "IA34",
+      "nearest_rail_offset_mm": 737.5,
+      "offset_check": {
+        "check": "platform_offset",
+        "clause": "2.2.1 and G2.2.8; not a universal curved-platform minimum",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "nearest_rail_running_edge_14mm_below_rail_head_projected_parallel_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 737.5,
+        "minimum_origin": "explicit_standard_case_reference",
+        "permitted_interval_mm": [
+          730.0,
+          745.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "permissible_or_enhanced_speed_mph": 15.0,
+      "platform_id": "A4",
+      "side": -1,
+      "track_y_m": -6.0
+    },
+    "B1": {
+      "boarding_length_m": 260.0,
+      "edge_end_xyz_m": [
+        970.0,
+        7.455,
+        0.915
+      ],
+      "edge_start_xyz_m": [
+        710.0,
+        7.455,
+        0.915
+      ],
+      "height_check": {
+        "check": "platform_height",
+        "clause": "2.1.1-2.1.3; G2.1.13 excludes extra build/maintenance allowance from design",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "perpendicular_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 915.0,
+        "permitted_interval_mm": [
+          900.0,
+          915.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "stage": "design",
+        "status": "reference_clause_pass"
+      },
+      "height_mm": 915.0,
+      "island_id": "IB12",
+      "nearest_rail_offset_mm": 737.5,
+      "offset_check": {
+        "check": "platform_offset",
+        "clause": "2.2.1 and G2.2.8; not a universal curved-platform minimum",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "nearest_rail_running_edge_14mm_below_rail_head_projected_parallel_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 737.5,
+        "minimum_origin": "explicit_standard_case_reference",
+        "permitted_interval_mm": [
+          730.0,
+          745.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "permissible_or_enhanced_speed_mph": 15.0,
+      "platform_id": "B1",
+      "side": 1,
+      "track_y_m": 6.0
+    },
+    "B2": {
+      "boarding_length_m": 260.0,
+      "edge_end_xyz_m": [
+        970.0,
+        16.545,
+        0.915
+      ],
+      "edge_start_xyz_m": [
+        710.0,
+        16.545,
+        0.915
+      ],
+      "height_check": {
+        "check": "platform_height",
+        "clause": "2.1.1-2.1.3; G2.1.13 excludes extra build/maintenance allowance from design",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "perpendicular_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 915.0,
+        "permitted_interval_mm": [
+          900.0,
+          915.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "stage": "design",
+        "status": "reference_clause_pass"
+      },
+      "height_mm": 915.0,
+      "island_id": "IB12",
+      "nearest_rail_offset_mm": 737.5,
+      "offset_check": {
+        "check": "platform_offset",
+        "clause": "2.2.1 and G2.2.8; not a universal curved-platform minimum",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "nearest_rail_running_edge_14mm_below_rail_head_projected_parallel_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 737.5,
+        "minimum_origin": "explicit_standard_case_reference",
+        "permitted_interval_mm": [
+          730.0,
+          745.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "permissible_or_enhanced_speed_mph": 15.0,
+      "platform_id": "B2",
+      "side": -1,
+      "track_y_m": 18.0
+    },
+    "B3": {
+      "boarding_length_m": 320.0,
+      "edge_end_xyz_m": [
+        970.0,
+        31.455,
+        0.915
+      ],
+      "edge_start_xyz_m": [
+        650.0,
+        31.455,
+        0.915
+      ],
+      "height_check": {
+        "check": "platform_height",
+        "clause": "2.1.1-2.1.3; G2.1.13 excludes extra build/maintenance allowance from design",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "perpendicular_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 915.0,
+        "permitted_interval_mm": [
+          900.0,
+          915.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "stage": "design",
+        "status": "reference_clause_pass"
+      },
+      "height_mm": 915.0,
+      "island_id": "IB34",
+      "nearest_rail_offset_mm": 737.5,
+      "offset_check": {
+        "check": "platform_offset",
+        "clause": "2.2.1 and G2.2.8; not a universal curved-platform minimum",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "nearest_rail_running_edge_14mm_below_rail_head_projected_parallel_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 737.5,
+        "minimum_origin": "explicit_standard_case_reference",
+        "permitted_interval_mm": [
+          730.0,
+          745.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "permissible_or_enhanced_speed_mph": 15.0,
+      "platform_id": "B3",
+      "side": 1,
+      "track_y_m": 30.0
+    },
+    "B4": {
+      "boarding_length_m": 320.0,
+      "edge_end_xyz_m": [
+        970.0,
+        40.545,
+        0.915
+      ],
+      "edge_start_xyz_m": [
+        650.0,
+        40.545,
+        0.915
+      ],
+      "height_check": {
+        "check": "platform_height",
+        "clause": "2.1.1-2.1.3; G2.1.13 excludes extra build/maintenance allowance from design",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "perpendicular_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 915.0,
+        "permitted_interval_mm": [
+          900.0,
+          915.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "stage": "design",
+        "status": "reference_clause_pass"
+      },
+      "height_mm": 915.0,
+      "island_id": "IB34",
+      "nearest_rail_offset_mm": 737.5,
+      "offset_check": {
+        "check": "platform_offset",
+        "clause": "2.2.1 and G2.2.8; not a universal curved-platform minimum",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "datum": "nearest_rail_running_edge_14mm_below_rail_head_projected_parallel_to_rail_plane",
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "measured_mm": 737.5,
+        "minimum_origin": "explicit_standard_case_reference",
+        "permitted_interval_mm": [
+          730.0,
+          745.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "permissible_or_enhanced_speed_mph": 15.0,
+      "platform_id": "B4",
+      "side": -1,
+      "track_y_m": 42.0
+    }
+  },
+  "family": "scissors",
+  "full_platform_interface": "unassessed",
+  "islands": [
+    {
+      "boarding_x_m": [
+        710.0,
+        970.0
+      ],
+      "centreline_hull_check": {
+        "possible_edge_ids": [],
+        "status": "disjoint_hulls"
+      },
+      "elevation_m": 0.915,
+      "full_platform_interface": "unassessed",
+      "id": "IA12",
+      "platform_ids": [
+        "A1",
+        "A2"
+      ],
+      "surface_bounds_xy_m": [
+        710.0,
+        970.0,
+        -40.545,
+        -31.455
+      ],
+      "surface_scope": "boarding_slab_reservation_only_no_foundation_or_full_access",
+      "track_y_m": [
+        -42.0,
+        -30.0
+      ],
+      "width_check": {
+        "actual_width_m": 9.090000000000003,
+        "check": "usable_width",
+        "clause": "2.3.1, 2.3.3, 2.3.4; exceptional narrow cases not implemented",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "demand_capacity_status": "unassessed",
+        "edge_obstacle_clearances_m": [
+          2.5,
+          2.5
+        ],
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "exceptional_reductions_applied": false,
+        "minimum_width_m": 4.0,
+        "permissible_or_enhanced_speeds_mph": [
+          15.0,
+          15.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "width_m": 9.090000000000003
+    },
+    {
+      "boarding_x_m": [
+        650.0,
+        970.0
+      ],
+      "centreline_hull_check": {
+        "possible_edge_ids": [],
+        "status": "disjoint_hulls"
+      },
+      "elevation_m": 0.915,
+      "full_platform_interface": "unassessed",
+      "id": "IA34",
+      "platform_ids": [
+        "A3",
+        "A4"
+      ],
+      "surface_bounds_xy_m": [
+        650.0,
+        970.0,
+        -16.545,
+        -7.455
+      ],
+      "surface_scope": "boarding_slab_reservation_only_no_foundation_or_full_access",
+      "track_y_m": [
+        -18.0,
+        -6.0
+      ],
+      "width_check": {
+        "actual_width_m": 9.090000000000002,
+        "check": "usable_width",
+        "clause": "2.3.1, 2.3.3, 2.3.4; exceptional narrow cases not implemented",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "demand_capacity_status": "unassessed",
+        "edge_obstacle_clearances_m": [
+          2.5,
+          2.5
+        ],
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "exceptional_reductions_applied": false,
+        "minimum_width_m": 4.0,
+        "permissible_or_enhanced_speeds_mph": [
+          15.0,
+          15.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "width_m": 9.090000000000002
+    },
+    {
+      "boarding_x_m": [
+        710.0,
+        970.0
+      ],
+      "centreline_hull_check": {
+        "possible_edge_ids": [],
+        "status": "disjoint_hulls"
+      },
+      "elevation_m": 0.915,
+      "full_platform_interface": "unassessed",
+      "id": "IB12",
+      "platform_ids": [
+        "B1",
+        "B2"
+      ],
+      "surface_bounds_xy_m": [
+        710.0,
+        970.0,
+        7.455,
+        16.545
+      ],
+      "surface_scope": "boarding_slab_reservation_only_no_foundation_or_full_access",
+      "track_y_m": [
+        6.0,
+        18.0
+      ],
+      "width_check": {
+        "actual_width_m": 9.090000000000002,
+        "check": "usable_width",
+        "clause": "2.3.1, 2.3.3, 2.3.4; exceptional narrow cases not implemented",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "demand_capacity_status": "unassessed",
+        "edge_obstacle_clearances_m": [
+          2.5,
+          2.5
+        ],
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "exceptional_reductions_applied": false,
+        "minimum_width_m": 4.0,
+        "permissible_or_enhanced_speeds_mph": [
+          15.0,
+          15.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "width_m": 9.090000000000002
+    },
+    {
+      "boarding_x_m": [
+        650.0,
+        970.0
+      ],
+      "centreline_hull_check": {
+        "possible_edge_ids": [],
+        "status": "disjoint_hulls"
+      },
+      "elevation_m": 0.915,
+      "full_platform_interface": "unassessed",
+      "id": "IB34",
+      "platform_ids": [
+        "B3",
+        "B4"
+      ],
+      "surface_bounds_xy_m": [
+        650.0,
+        970.0,
+        31.455,
+        40.545
+      ],
+      "surface_scope": "boarding_slab_reservation_only_no_foundation_or_full_access",
+      "track_y_m": [
+        30.0,
+        42.0
+      ],
+      "width_check": {
+        "actual_width_m": 9.090000000000003,
+        "check": "usable_width",
+        "clause": "2.3.1, 2.3.3, 2.3.4; exceptional narrow cases not implemented",
+        "construction_authorised": false,
+        "current_uk_compliance": "unassessed",
+        "demand_capacity_status": "unassessed",
+        "edge_obstacle_clearances_m": [
+          2.5,
+          2.5
+        ],
+        "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+        "exceptional_reductions_applied": false,
+        "minimum_width_m": 4.0,
+        "permissible_or_enhanced_speeds_mph": [
+          15.0,
+          15.0
+        ],
+        "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+        "source_id": "S064",
+        "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+        "status": "reference_clause_pass"
+      },
+      "width_m": 9.090000000000003
+    }
+  ],
+  "profile": {
+    "applicability_confirmed": true,
+    "gauge_mm": 1435.0,
+    "height_mm": 915.0,
+    "nearest_rail_offset_mm": 737.5,
+    "offset_case": "explicit_standard_case_reference",
+    "resolved_minimum_offset_mm": 730.0
+  },
+  "profile_hash": "096d2867458060d00bde6f77f32344b53f96a1c4bb5f9dacf7ea237db4012317",
+  "rail_geometry_mutated": false,
+  "reference_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+  "schema_version": "0.8.0",
+  "source_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+  "unassessed": [
+    "current_full_standard_comparison",
+    "lower_sector_and_vehicle_step",
+    "dynamic_gauging",
+    "demand_sizing",
+    "accessible_connection_to_concourse",
+    "tactile_and_edge_treatment",
+    "platform_ends_buffer_and_overrun",
+    "foundation_drainage_structures"
+  ]
+}

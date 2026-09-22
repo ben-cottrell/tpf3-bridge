@@ -1,0 +1,9 @@
+{
+  "scope_ref": "test-region",
+  "categories": [
+    "status",
+    "assets"
+  ],
+  "cursor": null,
+  "max_items": 50
+}

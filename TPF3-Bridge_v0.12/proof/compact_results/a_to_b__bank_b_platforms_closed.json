@@ -1,0 +1,6345 @@
+{
+  "all_required_completed_within_horizon": false,
+  "all_required_scheduled": false,
+  "allow_recovery": true,
+  "assessments": {
+    "UK_component_and_vehicle_gauging": "unassessed",
+    "braking_curve_validation": "uncalibrated",
+    "eight_platform_station": "composed_synthetic; original_site_conformance_checked_separately",
+    "explicit_four_approach_geometry": "compiled_synthetic",
+    "full_UK_engineering_profile": "incomplete; selected rule checks do not promote this assembly",
+    "game_construction": "not_tested",
+    "kinematics": "analytic_constant_acceleration_level_track_only",
+    "passenger_circulation": "unassessed",
+    "real_interlocking": "unassessed",
+    "reservation_invariants": "pass",
+    "sectional_release": "synthetic_edge_sections",
+    "shared_throat": "per-bank fan plus any used recovery-link resources; combined compiler",
+    "spatial_queues": "unassessed; waiting_outside_model is a temporal count"
+  },
+  "assignments": [
+    {
+      "arrival_motion": {
+        "distance_m": 879.905104220842,
+        "duration_s": 141.59715836541514,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 120.84172979398657,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 847.7871961065563,
+            "start_s": 132.01772979398658,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 146598,
+      "claims": [
+        {
+          "end_ms": 844745,
+          "owner": "A01",
+          "resource": "berth:A1",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 67636,
+          "owner": "A01",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 820885,
+          "owner": "A01",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 78864,
+          "owner": "A01",
+          "resource": "component_body:A:F1",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 814174,
+          "owner": "A01",
+          "resource": "component_body:A:F1",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 820885,
+          "owner": "A01",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 700000,
+          "state": "N"
+        },
+        {
+          "end_ms": 67636,
+          "owner": "A01",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 0,
+          "state": "R"
+        },
+        {
+          "end_ms": 78864,
+          "owner": "A01",
+          "resource": "control:A:F1",
+          "start_ms": 0,
+          "state": "R"
+        },
+        {
+          "end_ms": 814174,
+          "owner": "A01",
+          "resource": "control:A:F1",
+          "start_ms": 700000,
+          "state": "R"
+        },
+        {
+          "end_ms": 68382,
+          "owner": "A01",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 820885,
+          "owner": "A01",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 61665,
+          "owner": "A01",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 820885,
+          "owner": "A01",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 844745,
+          "owner": "A01",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 68382,
+          "owner": "A01",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 814919,
+          "owner": "A01",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 67636,
+          "owner": "A01",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 67636,
+          "owner": "A01",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 844745,
+          "owner": "A01",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 68382,
+          "owner": "A01",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 814919,
+          "owner": "A01",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 78864,
+          "owner": "A01",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 814919,
+          "owner": "A01",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 104500,
+          "owner": "A01",
+          "resource": "proximity:A:F1:reverse|A:diagonal_0",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 814174,
+          "owner": "A01",
+          "resource": "proximity:A:F1:reverse|A:diagonal_0",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 61665,
+          "owner": "A01",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 61665,
+          "owner": "A01",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 844745,
+          "owner": "A01",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 114982,
+          "owner": "A01",
+          "resource": "proximity:A:diagonal_0|A:return_0",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 803691,
+          "owner": "A01",
+          "resource": "proximity:A:diagonal_0|A:return_0",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 149598,
+          "owner": "A01",
+          "resource": "proximity:A:lead_P4|A:return_0",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 778056,
+          "owner": "A01",
+          "resource": "proximity:A:lead_P4|A:return_0",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 844745,
+          "owner": "A01",
+          "resource": "proximity:A:lead_P4|A:storage_P4",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 820885,
+          "owner": "A01",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 67636,
+          "owner": "A01",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 78864,
+          "owner": "A01",
+          "resource": "track:A:F1:reverse",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 814174,
+          "owner": "A01",
+          "resource": "track:A:F1:reverse",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 68382,
+          "owner": "A01",
+          "resource": "track:A:access_common",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 814919,
+          "owner": "A01",
+          "resource": "track:A:access_common",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 61665,
+          "owner": "A01",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 43719,
+          "owner": "A01",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 844745,
+          "owner": "A01",
+          "resource": "track:A:departure_lead",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 104500,
+          "owner": "A01",
+          "resource": "track:A:diagonal_0",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 803691,
+          "owner": "A01",
+          "resource": "track:A:diagonal_0",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 149598,
+          "owner": "A01",
+          "resource": "track:A:lead_P4",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 767573,
+          "owner": "A01",
+          "resource": "track:A:lead_P4",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 114982,
+          "owner": "A01",
+          "resource": "track:A:return_0",
+          "start_ms": 0,
+          "state": null
+        },
+        {
+          "end_ms": 778056,
+          "owner": "A01",
+          "resource": "track:A:return_0",
+          "start_ms": 700000,
+          "state": null
+        },
+        {
+          "end_ms": 844745,
+          "owner": "A01",
+          "resource": "track:A:storage_P4",
+          "start_ms": 0,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 879.4845535026508,
+        "duration_s": 136.74472773542274,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 125.56872773542275,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 705000,
+      "departure_ms": 700000,
+      "entry_motion_ms": 5000,
+      "entry_ms": 0,
+      "exit_clear_ms": 844745,
+      "incoming_distance_m": 717.905104220842,
+      "incoming_release_end_ms": 149598,
+      "incoming_route": "A:A1:in",
+      "outgoing_distance_m": 717.4845535026508,
+      "outgoing_kind": "passenger",
+      "outgoing_route": "A:A1:out",
+      "planned_departure_ms": 700000,
+      "platform_id": "A1",
+      "recovery_legs": 0,
+      "requested_entry_ms": 0,
+      "stock_id": "SA01",
+      "tail_exits_ms": 841745,
+      "train_length_m": 162.0,
+      "visit_id": "A01",
+      "witnesses": []
+    },
+    {
+      "arrival_motion": {
+        "distance_m": 879.0101105762152,
+        "duration_s": 141.46368878109354,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 120.70826020966499,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 846.8922024619295,
+            "start_s": 131.88426020966497,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 446464,
+      "claims": [
+        {
+          "end_ms": 1144612,
+          "owner": "A02",
+          "resource": "berth:A2",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 367636,
+          "owner": "A02",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1120751,
+          "owner": "A02",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 378821,
+          "owner": "A02",
+          "resource": "component_body:A:F1",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1114040,
+          "owner": "A02",
+          "resource": "component_body:A:F1",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 390049,
+          "owner": "A02",
+          "resource": "component_body:A:F2",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1102856,
+          "owner": "A02",
+          "resource": "component_body:A:F2",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 1120751,
+          "owner": "A02",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 1000000,
+          "state": "N"
+        },
+        {
+          "end_ms": 367636,
+          "owner": "A02",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 300000,
+          "state": "R"
+        },
+        {
+          "end_ms": 378821,
+          "owner": "A02",
+          "resource": "control:A:F1",
+          "start_ms": 300000,
+          "state": "N"
+        },
+        {
+          "end_ms": 1114040,
+          "owner": "A02",
+          "resource": "control:A:F1",
+          "start_ms": 1000000,
+          "state": "N"
+        },
+        {
+          "end_ms": 390049,
+          "owner": "A02",
+          "resource": "control:A:F2",
+          "start_ms": 300000,
+          "state": "R"
+        },
+        {
+          "end_ms": 1102856,
+          "owner": "A02",
+          "resource": "control:A:F2",
+          "start_ms": 1000000,
+          "state": "R"
+        },
+        {
+          "end_ms": 368382,
+          "owner": "A02",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1120751,
+          "owner": "A02",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 361665,
+          "owner": "A02",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1120751,
+          "owner": "A02",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 1144612,
+          "owner": "A02",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 368382,
+          "owner": "A02",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1114786,
+          "owner": "A02",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 367636,
+          "owner": "A02",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 367636,
+          "owner": "A02",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1144612,
+          "owner": "A02",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 378821,
+          "owner": "A02",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1114786,
+          "owner": "A02",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 379566,
+          "owner": "A02",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1114040,
+          "owner": "A02",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 368382,
+          "owner": "A02",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1114786,
+          "owner": "A02",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 379566,
+          "owner": "A02",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1103601,
+          "owner": "A02",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 403621,
+          "owner": "A02",
+          "resource": "proximity:A:F2:reverse|A:diagonal_1",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1102856,
+          "owner": "A02",
+          "resource": "proximity:A:F2:reverse|A:diagonal_1",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 390049,
+          "owner": "A02",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1103601,
+          "owner": "A02",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 361665,
+          "owner": "A02",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 361665,
+          "owner": "A02",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1144612,
+          "owner": "A02",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 414103,
+          "owner": "A02",
+          "resource": "proximity:A:diagonal_1|A:return_1",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1092373,
+          "owner": "A02",
+          "resource": "proximity:A:diagonal_1|A:return_1",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 449464,
+          "owner": "A02",
+          "resource": "proximity:A:lead_P3|A:return_1",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1078801,
+          "owner": "A02",
+          "resource": "proximity:A:lead_P3|A:return_1",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 1144612,
+          "owner": "A02",
+          "resource": "proximity:A:lead_P3|A:storage_P3",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1120751,
+          "owner": "A02",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 367636,
+          "owner": "A02",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 378821,
+          "owner": "A02",
+          "resource": "track:A:F1:normal",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1114040,
+          "owner": "A02",
+          "resource": "track:A:F1:normal",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 390049,
+          "owner": "A02",
+          "resource": "track:A:F2:reverse",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1102856,
+          "owner": "A02",
+          "resource": "track:A:F2:reverse",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 368382,
+          "owner": "A02",
+          "resource": "track:A:access_common",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1114786,
+          "owner": "A02",
+          "resource": "track:A:access_common",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 361665,
+          "owner": "A02",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 343719,
+          "owner": "A02",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1144612,
+          "owner": "A02",
+          "resource": "track:A:departure_lead",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 403621,
+          "owner": "A02",
+          "resource": "track:A:diagonal_1",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1092373,
+          "owner": "A02",
+          "resource": "track:A:diagonal_1",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 449464,
+          "owner": "A02",
+          "resource": "track:A:lead_P3",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1068319,
+          "owner": "A02",
+          "resource": "track:A:lead_P3",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 414103,
+          "owner": "A02",
+          "resource": "track:A:return_1",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1078801,
+          "owner": "A02",
+          "resource": "track:A:return_1",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 379566,
+          "owner": "A02",
+          "resource": "track:A:spine_1",
+          "start_ms": 300000,
+          "state": null
+        },
+        {
+          "end_ms": 1103601,
+          "owner": "A02",
+          "resource": "track:A:spine_1",
+          "start_ms": 1000000,
+          "state": null
+        },
+        {
+          "end_ms": 1144612,
+          "owner": "A02",
+          "resource": "track:A:storage_P3",
+          "start_ms": 300000,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 878.5895598580239,
+        "duration_s": 136.61125815110117,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 125.43525815110117,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 1005000,
+      "departure_ms": 1000000,
+      "entry_motion_ms": 305000,
+      "entry_ms": 300000,
+      "exit_clear_ms": 1144612,
+      "incoming_distance_m": 717.0101105762152,
+      "incoming_release_end_ms": 449464,
+      "incoming_route": "A:A2:in",
+      "outgoing_distance_m": 716.5895598580239,
+      "outgoing_kind": "passenger",
+      "outgoing_route": "A:A2:out",
+      "planned_departure_ms": 1000000,
+      "platform_id": "A2",
+      "recovery_legs": 0,
+      "requested_entry_ms": 300000,
+      "stock_id": "SA02",
+      "tail_exits_ms": 1141612,
+      "train_length_m": 162.0,
+      "visit_id": "A02",
+      "witnesses": []
+    },
+    {
+      "arrival_motion": {
+        "distance_m": 818.1151169315885,
+        "duration_s": 132.38247402855438,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 111.62704545712582,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 785.9972088173029,
+            "start_s": 122.80304545712582,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 737383,
+      "claims": [
+        {
+          "end_ms": 1435531,
+          "owner": "A03",
+          "resource": "berth:A3",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 667636,
+          "owner": "A03",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1411670,
+          "owner": "A03",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 678821,
+          "owner": "A03",
+          "resource": "component_body:A:F1",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1404959,
+          "owner": "A03",
+          "resource": "component_body:A:F1",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 690005,
+          "owner": "A03",
+          "resource": "component_body:A:F2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1393774,
+          "owner": "A03",
+          "resource": "component_body:A:F2",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 701233,
+          "owner": "A03",
+          "resource": "component_body:A:F3",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1382590,
+          "owner": "A03",
+          "resource": "component_body:A:F3",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 1411670,
+          "owner": "A03",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 1300000,
+          "state": "N"
+        },
+        {
+          "end_ms": 667636,
+          "owner": "A03",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 600000,
+          "state": "R"
+        },
+        {
+          "end_ms": 678821,
+          "owner": "A03",
+          "resource": "control:A:F1",
+          "start_ms": 600000,
+          "state": "N"
+        },
+        {
+          "end_ms": 1404959,
+          "owner": "A03",
+          "resource": "control:A:F1",
+          "start_ms": 1300000,
+          "state": "N"
+        },
+        {
+          "end_ms": 690005,
+          "owner": "A03",
+          "resource": "control:A:F2",
+          "start_ms": 600000,
+          "state": "N"
+        },
+        {
+          "end_ms": 1393774,
+          "owner": "A03",
+          "resource": "control:A:F2",
+          "start_ms": 1300000,
+          "state": "N"
+        },
+        {
+          "end_ms": 701233,
+          "owner": "A03",
+          "resource": "control:A:F3",
+          "start_ms": 600000,
+          "state": "R"
+        },
+        {
+          "end_ms": 1382590,
+          "owner": "A03",
+          "resource": "control:A:F3",
+          "start_ms": 1300000,
+          "state": "R"
+        },
+        {
+          "end_ms": 668382,
+          "owner": "A03",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1411670,
+          "owner": "A03",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 661665,
+          "owner": "A03",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1411670,
+          "owner": "A03",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 1435531,
+          "owner": "A03",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 668382,
+          "owner": "A03",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1405705,
+          "owner": "A03",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 667636,
+          "owner": "A03",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 667636,
+          "owner": "A03",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1435531,
+          "owner": "A03",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 678821,
+          "owner": "A03",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1405705,
+          "owner": "A03",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 679566,
+          "owner": "A03",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1404959,
+          "owner": "A03",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 668382,
+          "owner": "A03",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1405705,
+          "owner": "A03",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 690005,
+          "owner": "A03",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1394520,
+          "owner": "A03",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 690751,
+          "owner": "A03",
+          "resource": "proximity:A:F2:normal|A:spine_2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1393774,
+          "owner": "A03",
+          "resource": "proximity:A:F2:normal|A:spine_2",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 679566,
+          "owner": "A03",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1394520,
+          "owner": "A03",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 690751,
+          "owner": "A03",
+          "resource": "proximity:A:F3:normal|A:spine_2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1383335,
+          "owner": "A03",
+          "resource": "proximity:A:F3:normal|A:spine_2",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 702741,
+          "owner": "A03",
+          "resource": "proximity:A:F3:reverse|A:diagonal_2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1382590,
+          "owner": "A03",
+          "resource": "proximity:A:F3:reverse|A:diagonal_2",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 701233,
+          "owner": "A03",
+          "resource": "proximity:A:F3:reverse|A:spine_2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1383335,
+          "owner": "A03",
+          "resource": "proximity:A:F3:reverse|A:spine_2",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 661665,
+          "owner": "A03",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 661665,
+          "owner": "A03",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1435531,
+          "owner": "A03",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 713224,
+          "owner": "A03",
+          "resource": "proximity:A:diagonal_2|A:return_2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1372107,
+          "owner": "A03",
+          "resource": "proximity:A:diagonal_2|A:return_2",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 740383,
+          "owner": "A03",
+          "resource": "proximity:A:lead_P2|A:return_2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1370599,
+          "owner": "A03",
+          "resource": "proximity:A:lead_P2|A:return_2",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 1435531,
+          "owner": "A03",
+          "resource": "proximity:A:lead_P2|A:storage_P2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1411670,
+          "owner": "A03",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 667636,
+          "owner": "A03",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 678821,
+          "owner": "A03",
+          "resource": "track:A:F1:normal",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1404959,
+          "owner": "A03",
+          "resource": "track:A:F1:normal",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 690005,
+          "owner": "A03",
+          "resource": "track:A:F2:normal",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1393774,
+          "owner": "A03",
+          "resource": "track:A:F2:normal",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 701233,
+          "owner": "A03",
+          "resource": "track:A:F3:reverse",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1382590,
+          "owner": "A03",
+          "resource": "track:A:F3:reverse",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 668382,
+          "owner": "A03",
+          "resource": "track:A:access_common",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1405705,
+          "owner": "A03",
+          "resource": "track:A:access_common",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 661665,
+          "owner": "A03",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 643719,
+          "owner": "A03",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1435531,
+          "owner": "A03",
+          "resource": "track:A:departure_lead",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 702741,
+          "owner": "A03",
+          "resource": "track:A:diagonal_2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1372107,
+          "owner": "A03",
+          "resource": "track:A:diagonal_2",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 740383,
+          "owner": "A03",
+          "resource": "track:A:lead_P2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1360117,
+          "owner": "A03",
+          "resource": "track:A:lead_P2",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 713224,
+          "owner": "A03",
+          "resource": "track:A:return_2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1370599,
+          "owner": "A03",
+          "resource": "track:A:return_2",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 679566,
+          "owner": "A03",
+          "resource": "track:A:spine_1",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1394520,
+          "owner": "A03",
+          "resource": "track:A:spine_1",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 690751,
+          "owner": "A03",
+          "resource": "track:A:spine_2",
+          "start_ms": 600000,
+          "state": null
+        },
+        {
+          "end_ms": 1383335,
+          "owner": "A03",
+          "resource": "track:A:spine_2",
+          "start_ms": 1300000,
+          "state": null
+        },
+        {
+          "end_ms": 1435531,
+          "owner": "A03",
+          "resource": "track:A:storage_P2",
+          "start_ms": 600000,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 817.6945662133973,
+        "duration_s": 127.530043398562,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 116.354043398562,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 1305000,
+      "departure_ms": 1300000,
+      "entry_motion_ms": 605000,
+      "entry_ms": 600000,
+      "exit_clear_ms": 1435531,
+      "incoming_distance_m": 656.1151169315885,
+      "incoming_release_end_ms": 740383,
+      "incoming_route": "A:A3:in",
+      "outgoing_distance_m": 655.6945662133973,
+      "outgoing_kind": "passenger",
+      "outgoing_route": "A:A3:out",
+      "planned_departure_ms": 1300000,
+      "platform_id": "A3",
+      "recovery_legs": 0,
+      "requested_entry_ms": 600000,
+      "stock_id": "SA03",
+      "tail_exits_ms": 1432531,
+      "train_length_m": 162.0,
+      "visit_id": "A03",
+      "witnesses": []
+    },
+    {
+      "arrival_motion": {
+        "distance_m": 879.905104220842,
+        "duration_s": 141.59715836541514,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 120.84172979398657,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 847.7871961065563,
+            "start_s": 132.01772979398658,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 1046598,
+      "claims": [
+        {
+          "end_ms": 1744745,
+          "owner": "A04",
+          "resource": "berth:A1",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 967636,
+          "owner": "A04",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1720885,
+          "owner": "A04",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 978864,
+          "owner": "A04",
+          "resource": "component_body:A:F1",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1714174,
+          "owner": "A04",
+          "resource": "component_body:A:F1",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 1720885,
+          "owner": "A04",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 1600000,
+          "state": "N"
+        },
+        {
+          "end_ms": 967636,
+          "owner": "A04",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 900000,
+          "state": "R"
+        },
+        {
+          "end_ms": 978864,
+          "owner": "A04",
+          "resource": "control:A:F1",
+          "start_ms": 900000,
+          "state": "R"
+        },
+        {
+          "end_ms": 1714174,
+          "owner": "A04",
+          "resource": "control:A:F1",
+          "start_ms": 1600000,
+          "state": "R"
+        },
+        {
+          "end_ms": 968382,
+          "owner": "A04",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1720885,
+          "owner": "A04",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 961665,
+          "owner": "A04",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1720885,
+          "owner": "A04",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 1744745,
+          "owner": "A04",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 968382,
+          "owner": "A04",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1714919,
+          "owner": "A04",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 967636,
+          "owner": "A04",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 967636,
+          "owner": "A04",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1744745,
+          "owner": "A04",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 968382,
+          "owner": "A04",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1714919,
+          "owner": "A04",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 978864,
+          "owner": "A04",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1714919,
+          "owner": "A04",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 1004500,
+          "owner": "A04",
+          "resource": "proximity:A:F1:reverse|A:diagonal_0",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1714174,
+          "owner": "A04",
+          "resource": "proximity:A:F1:reverse|A:diagonal_0",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 961665,
+          "owner": "A04",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 961665,
+          "owner": "A04",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1744745,
+          "owner": "A04",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 1014982,
+          "owner": "A04",
+          "resource": "proximity:A:diagonal_0|A:return_0",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1703691,
+          "owner": "A04",
+          "resource": "proximity:A:diagonal_0|A:return_0",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 1049598,
+          "owner": "A04",
+          "resource": "proximity:A:lead_P4|A:return_0",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1678056,
+          "owner": "A04",
+          "resource": "proximity:A:lead_P4|A:return_0",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 1744745,
+          "owner": "A04",
+          "resource": "proximity:A:lead_P4|A:storage_P4",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1720885,
+          "owner": "A04",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 967636,
+          "owner": "A04",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 978864,
+          "owner": "A04",
+          "resource": "track:A:F1:reverse",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1714174,
+          "owner": "A04",
+          "resource": "track:A:F1:reverse",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 968382,
+          "owner": "A04",
+          "resource": "track:A:access_common",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1714919,
+          "owner": "A04",
+          "resource": "track:A:access_common",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 961665,
+          "owner": "A04",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 943719,
+          "owner": "A04",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1744745,
+          "owner": "A04",
+          "resource": "track:A:departure_lead",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 1004500,
+          "owner": "A04",
+          "resource": "track:A:diagonal_0",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1703691,
+          "owner": "A04",
+          "resource": "track:A:diagonal_0",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 1049598,
+          "owner": "A04",
+          "resource": "track:A:lead_P4",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1667573,
+          "owner": "A04",
+          "resource": "track:A:lead_P4",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 1014982,
+          "owner": "A04",
+          "resource": "track:A:return_0",
+          "start_ms": 900000,
+          "state": null
+        },
+        {
+          "end_ms": 1678056,
+          "owner": "A04",
+          "resource": "track:A:return_0",
+          "start_ms": 1600000,
+          "state": null
+        },
+        {
+          "end_ms": 1744745,
+          "owner": "A04",
+          "resource": "track:A:storage_P4",
+          "start_ms": 900000,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 879.4845535026508,
+        "duration_s": 136.74472773542274,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 125.56872773542275,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 1605000,
+      "departure_ms": 1600000,
+      "entry_motion_ms": 905000,
+      "entry_ms": 900000,
+      "exit_clear_ms": 1744745,
+      "incoming_distance_m": 717.905104220842,
+      "incoming_release_end_ms": 1049598,
+      "incoming_route": "A:A1:in",
+      "outgoing_distance_m": 717.4845535026508,
+      "outgoing_kind": "passenger",
+      "outgoing_route": "A:A1:out",
+      "planned_departure_ms": 1600000,
+      "platform_id": "A1",
+      "recovery_legs": 0,
+      "requested_entry_ms": 900000,
+      "stock_id": "SA04",
+      "tail_exits_ms": 1741745,
+      "train_length_m": 162.0,
+      "visit_id": "A04",
+      "witnesses": []
+    },
+    {
+      "arrival_motion": {
+        "distance_m": 879.0101105762152,
+        "duration_s": 141.46368878109354,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 120.70826020966499,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 846.8922024619295,
+            "start_s": 131.88426020966497,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 1346464,
+      "claims": [
+        {
+          "end_ms": 2044612,
+          "owner": "A05",
+          "resource": "berth:A2",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 1267636,
+          "owner": "A05",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2020751,
+          "owner": "A05",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1278821,
+          "owner": "A05",
+          "resource": "component_body:A:F1",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2014040,
+          "owner": "A05",
+          "resource": "component_body:A:F1",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1290049,
+          "owner": "A05",
+          "resource": "component_body:A:F2",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2002856,
+          "owner": "A05",
+          "resource": "component_body:A:F2",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 2020751,
+          "owner": "A05",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 1900000,
+          "state": "N"
+        },
+        {
+          "end_ms": 1267636,
+          "owner": "A05",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 1200000,
+          "state": "R"
+        },
+        {
+          "end_ms": 1278821,
+          "owner": "A05",
+          "resource": "control:A:F1",
+          "start_ms": 1200000,
+          "state": "N"
+        },
+        {
+          "end_ms": 2014040,
+          "owner": "A05",
+          "resource": "control:A:F1",
+          "start_ms": 1900000,
+          "state": "N"
+        },
+        {
+          "end_ms": 1290049,
+          "owner": "A05",
+          "resource": "control:A:F2",
+          "start_ms": 1200000,
+          "state": "R"
+        },
+        {
+          "end_ms": 2002856,
+          "owner": "A05",
+          "resource": "control:A:F2",
+          "start_ms": 1900000,
+          "state": "R"
+        },
+        {
+          "end_ms": 1268382,
+          "owner": "A05",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2020751,
+          "owner": "A05",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1261665,
+          "owner": "A05",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2020751,
+          "owner": "A05",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 2044612,
+          "owner": "A05",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1268382,
+          "owner": "A05",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2014786,
+          "owner": "A05",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1267636,
+          "owner": "A05",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 1267636,
+          "owner": "A05",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2044612,
+          "owner": "A05",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1278821,
+          "owner": "A05",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2014786,
+          "owner": "A05",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1279566,
+          "owner": "A05",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2014040,
+          "owner": "A05",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1268382,
+          "owner": "A05",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2014786,
+          "owner": "A05",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1279566,
+          "owner": "A05",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2003601,
+          "owner": "A05",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1303621,
+          "owner": "A05",
+          "resource": "proximity:A:F2:reverse|A:diagonal_1",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2002856,
+          "owner": "A05",
+          "resource": "proximity:A:F2:reverse|A:diagonal_1",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1290049,
+          "owner": "A05",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2003601,
+          "owner": "A05",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1261665,
+          "owner": "A05",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 1261665,
+          "owner": "A05",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2044612,
+          "owner": "A05",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1314103,
+          "owner": "A05",
+          "resource": "proximity:A:diagonal_1|A:return_1",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 1992373,
+          "owner": "A05",
+          "resource": "proximity:A:diagonal_1|A:return_1",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1349464,
+          "owner": "A05",
+          "resource": "proximity:A:lead_P3|A:return_1",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 1978801,
+          "owner": "A05",
+          "resource": "proximity:A:lead_P3|A:return_1",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 2044612,
+          "owner": "A05",
+          "resource": "proximity:A:lead_P3|A:storage_P3",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2020751,
+          "owner": "A05",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1267636,
+          "owner": "A05",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 1278821,
+          "owner": "A05",
+          "resource": "track:A:F1:normal",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2014040,
+          "owner": "A05",
+          "resource": "track:A:F1:normal",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1290049,
+          "owner": "A05",
+          "resource": "track:A:F2:reverse",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2002856,
+          "owner": "A05",
+          "resource": "track:A:F2:reverse",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1268382,
+          "owner": "A05",
+          "resource": "track:A:access_common",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2014786,
+          "owner": "A05",
+          "resource": "track:A:access_common",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1261665,
+          "owner": "A05",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 1243719,
+          "owner": "A05",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2044612,
+          "owner": "A05",
+          "resource": "track:A:departure_lead",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1303621,
+          "owner": "A05",
+          "resource": "track:A:diagonal_1",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 1992373,
+          "owner": "A05",
+          "resource": "track:A:diagonal_1",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1349464,
+          "owner": "A05",
+          "resource": "track:A:lead_P3",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 1968319,
+          "owner": "A05",
+          "resource": "track:A:lead_P3",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1314103,
+          "owner": "A05",
+          "resource": "track:A:return_1",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 1978801,
+          "owner": "A05",
+          "resource": "track:A:return_1",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 1279566,
+          "owner": "A05",
+          "resource": "track:A:spine_1",
+          "start_ms": 1200000,
+          "state": null
+        },
+        {
+          "end_ms": 2003601,
+          "owner": "A05",
+          "resource": "track:A:spine_1",
+          "start_ms": 1900000,
+          "state": null
+        },
+        {
+          "end_ms": 2044612,
+          "owner": "A05",
+          "resource": "track:A:storage_P3",
+          "start_ms": 1200000,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 878.5895598580239,
+        "duration_s": 136.61125815110117,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 125.43525815110117,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 1905000,
+      "departure_ms": 1900000,
+      "entry_motion_ms": 1205000,
+      "entry_ms": 1200000,
+      "exit_clear_ms": 2044612,
+      "incoming_distance_m": 717.0101105762152,
+      "incoming_release_end_ms": 1349464,
+      "incoming_route": "A:A2:in",
+      "outgoing_distance_m": 716.5895598580239,
+      "outgoing_kind": "passenger",
+      "outgoing_route": "A:A2:out",
+      "planned_departure_ms": 1900000,
+      "platform_id": "A2",
+      "recovery_legs": 0,
+      "requested_entry_ms": 1200000,
+      "stock_id": "SA05",
+      "tail_exits_ms": 2041612,
+      "train_length_m": 162.0,
+      "visit_id": "A05",
+      "witnesses": []
+    },
+    {
+      "arrival_motion": {
+        "distance_m": 818.1151169315885,
+        "duration_s": 132.38247402855438,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 111.62704545712582,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 785.9972088173029,
+            "start_s": 122.80304545712582,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 1637383,
+      "claims": [
+        {
+          "end_ms": 2335531,
+          "owner": "A06",
+          "resource": "berth:A3",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 1567636,
+          "owner": "A06",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2311670,
+          "owner": "A06",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1578821,
+          "owner": "A06",
+          "resource": "component_body:A:F1",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2304959,
+          "owner": "A06",
+          "resource": "component_body:A:F1",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1590005,
+          "owner": "A06",
+          "resource": "component_body:A:F2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2293774,
+          "owner": "A06",
+          "resource": "component_body:A:F2",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1601233,
+          "owner": "A06",
+          "resource": "component_body:A:F3",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2282590,
+          "owner": "A06",
+          "resource": "component_body:A:F3",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 2311670,
+          "owner": "A06",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 2200000,
+          "state": "N"
+        },
+        {
+          "end_ms": 1567636,
+          "owner": "A06",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 1500000,
+          "state": "R"
+        },
+        {
+          "end_ms": 1578821,
+          "owner": "A06",
+          "resource": "control:A:F1",
+          "start_ms": 1500000,
+          "state": "N"
+        },
+        {
+          "end_ms": 2304959,
+          "owner": "A06",
+          "resource": "control:A:F1",
+          "start_ms": 2200000,
+          "state": "N"
+        },
+        {
+          "end_ms": 1590005,
+          "owner": "A06",
+          "resource": "control:A:F2",
+          "start_ms": 1500000,
+          "state": "N"
+        },
+        {
+          "end_ms": 2293774,
+          "owner": "A06",
+          "resource": "control:A:F2",
+          "start_ms": 2200000,
+          "state": "N"
+        },
+        {
+          "end_ms": 1601233,
+          "owner": "A06",
+          "resource": "control:A:F3",
+          "start_ms": 1500000,
+          "state": "R"
+        },
+        {
+          "end_ms": 2282590,
+          "owner": "A06",
+          "resource": "control:A:F3",
+          "start_ms": 2200000,
+          "state": "R"
+        },
+        {
+          "end_ms": 1568382,
+          "owner": "A06",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2311670,
+          "owner": "A06",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1561665,
+          "owner": "A06",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2311670,
+          "owner": "A06",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 2335531,
+          "owner": "A06",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1568382,
+          "owner": "A06",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2305705,
+          "owner": "A06",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1567636,
+          "owner": "A06",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 1567636,
+          "owner": "A06",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2335531,
+          "owner": "A06",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1578821,
+          "owner": "A06",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2305705,
+          "owner": "A06",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1579566,
+          "owner": "A06",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2304959,
+          "owner": "A06",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1568382,
+          "owner": "A06",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2305705,
+          "owner": "A06",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1590005,
+          "owner": "A06",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2294520,
+          "owner": "A06",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1590751,
+          "owner": "A06",
+          "resource": "proximity:A:F2:normal|A:spine_2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2293774,
+          "owner": "A06",
+          "resource": "proximity:A:F2:normal|A:spine_2",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1579566,
+          "owner": "A06",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2294520,
+          "owner": "A06",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1590751,
+          "owner": "A06",
+          "resource": "proximity:A:F3:normal|A:spine_2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2283335,
+          "owner": "A06",
+          "resource": "proximity:A:F3:normal|A:spine_2",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1602741,
+          "owner": "A06",
+          "resource": "proximity:A:F3:reverse|A:diagonal_2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2282590,
+          "owner": "A06",
+          "resource": "proximity:A:F3:reverse|A:diagonal_2",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1601233,
+          "owner": "A06",
+          "resource": "proximity:A:F3:reverse|A:spine_2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2283335,
+          "owner": "A06",
+          "resource": "proximity:A:F3:reverse|A:spine_2",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1561665,
+          "owner": "A06",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 1561665,
+          "owner": "A06",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2335531,
+          "owner": "A06",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1613224,
+          "owner": "A06",
+          "resource": "proximity:A:diagonal_2|A:return_2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2272107,
+          "owner": "A06",
+          "resource": "proximity:A:diagonal_2|A:return_2",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1640383,
+          "owner": "A06",
+          "resource": "proximity:A:lead_P2|A:return_2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2270599,
+          "owner": "A06",
+          "resource": "proximity:A:lead_P2|A:return_2",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 2335531,
+          "owner": "A06",
+          "resource": "proximity:A:lead_P2|A:storage_P2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2311670,
+          "owner": "A06",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1567636,
+          "owner": "A06",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 1578821,
+          "owner": "A06",
+          "resource": "track:A:F1:normal",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2304959,
+          "owner": "A06",
+          "resource": "track:A:F1:normal",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1590005,
+          "owner": "A06",
+          "resource": "track:A:F2:normal",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2293774,
+          "owner": "A06",
+          "resource": "track:A:F2:normal",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1601233,
+          "owner": "A06",
+          "resource": "track:A:F3:reverse",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2282590,
+          "owner": "A06",
+          "resource": "track:A:F3:reverse",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1568382,
+          "owner": "A06",
+          "resource": "track:A:access_common",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2305705,
+          "owner": "A06",
+          "resource": "track:A:access_common",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1561665,
+          "owner": "A06",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 1543719,
+          "owner": "A06",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2335531,
+          "owner": "A06",
+          "resource": "track:A:departure_lead",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1602741,
+          "owner": "A06",
+          "resource": "track:A:diagonal_2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2272107,
+          "owner": "A06",
+          "resource": "track:A:diagonal_2",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1640383,
+          "owner": "A06",
+          "resource": "track:A:lead_P2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2260117,
+          "owner": "A06",
+          "resource": "track:A:lead_P2",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1613224,
+          "owner": "A06",
+          "resource": "track:A:return_2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2270599,
+          "owner": "A06",
+          "resource": "track:A:return_2",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1579566,
+          "owner": "A06",
+          "resource": "track:A:spine_1",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2294520,
+          "owner": "A06",
+          "resource": "track:A:spine_1",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 1590751,
+          "owner": "A06",
+          "resource": "track:A:spine_2",
+          "start_ms": 1500000,
+          "state": null
+        },
+        {
+          "end_ms": 2283335,
+          "owner": "A06",
+          "resource": "track:A:spine_2",
+          "start_ms": 2200000,
+          "state": null
+        },
+        {
+          "end_ms": 2335531,
+          "owner": "A06",
+          "resource": "track:A:storage_P2",
+          "start_ms": 1500000,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 817.6945662133973,
+        "duration_s": 127.530043398562,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 116.354043398562,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 2205000,
+      "departure_ms": 2200000,
+      "entry_motion_ms": 1505000,
+      "entry_ms": 1500000,
+      "exit_clear_ms": 2335531,
+      "incoming_distance_m": 656.1151169315885,
+      "incoming_release_end_ms": 1640383,
+      "incoming_route": "A:A3:in",
+      "outgoing_distance_m": 655.6945662133973,
+      "outgoing_kind": "empty_stock",
+      "outgoing_route": "A:A3:out",
+      "planned_departure_ms": 2200000,
+      "platform_id": "A3",
+      "recovery_legs": 0,
+      "requested_entry_ms": 1500000,
+      "stock_id": "SA06",
+      "tail_exits_ms": 2332531,
+      "train_length_m": 162.0,
+      "visit_id": "A06",
+      "witnesses": []
+    },
+    {
+      "arrival_motion": {
+        "distance_m": 879.905104220842,
+        "duration_s": 141.59715836541514,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 120.84172979398657,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 847.7871961065563,
+            "start_s": 132.01772979398658,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 1946598,
+      "claims": [
+        {
+          "end_ms": 2644745,
+          "owner": "A07",
+          "resource": "berth:A1",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 1867636,
+          "owner": "A07",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2620885,
+          "owner": "A07",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1878864,
+          "owner": "A07",
+          "resource": "component_body:A:F1",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2614174,
+          "owner": "A07",
+          "resource": "component_body:A:F1",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 2620885,
+          "owner": "A07",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 2500000,
+          "state": "N"
+        },
+        {
+          "end_ms": 1867636,
+          "owner": "A07",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 1800000,
+          "state": "R"
+        },
+        {
+          "end_ms": 1878864,
+          "owner": "A07",
+          "resource": "control:A:F1",
+          "start_ms": 1800000,
+          "state": "R"
+        },
+        {
+          "end_ms": 2614174,
+          "owner": "A07",
+          "resource": "control:A:F1",
+          "start_ms": 2500000,
+          "state": "R"
+        },
+        {
+          "end_ms": 1868382,
+          "owner": "A07",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2620885,
+          "owner": "A07",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1861665,
+          "owner": "A07",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2620885,
+          "owner": "A07",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 2644745,
+          "owner": "A07",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1868382,
+          "owner": "A07",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2614919,
+          "owner": "A07",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1867636,
+          "owner": "A07",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 1867636,
+          "owner": "A07",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2644745,
+          "owner": "A07",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1868382,
+          "owner": "A07",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2614919,
+          "owner": "A07",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1878864,
+          "owner": "A07",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2614919,
+          "owner": "A07",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1904500,
+          "owner": "A07",
+          "resource": "proximity:A:F1:reverse|A:diagonal_0",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2614174,
+          "owner": "A07",
+          "resource": "proximity:A:F1:reverse|A:diagonal_0",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1861665,
+          "owner": "A07",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 1861665,
+          "owner": "A07",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2644745,
+          "owner": "A07",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1914982,
+          "owner": "A07",
+          "resource": "proximity:A:diagonal_0|A:return_0",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2603691,
+          "owner": "A07",
+          "resource": "proximity:A:diagonal_0|A:return_0",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1949598,
+          "owner": "A07",
+          "resource": "proximity:A:lead_P4|A:return_0",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2578056,
+          "owner": "A07",
+          "resource": "proximity:A:lead_P4|A:return_0",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 2644745,
+          "owner": "A07",
+          "resource": "proximity:A:lead_P4|A:storage_P4",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2620885,
+          "owner": "A07",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1867636,
+          "owner": "A07",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 1878864,
+          "owner": "A07",
+          "resource": "track:A:F1:reverse",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2614174,
+          "owner": "A07",
+          "resource": "track:A:F1:reverse",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1868382,
+          "owner": "A07",
+          "resource": "track:A:access_common",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2614919,
+          "owner": "A07",
+          "resource": "track:A:access_common",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1861665,
+          "owner": "A07",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 1843719,
+          "owner": "A07",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2644745,
+          "owner": "A07",
+          "resource": "track:A:departure_lead",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1904500,
+          "owner": "A07",
+          "resource": "track:A:diagonal_0",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2603691,
+          "owner": "A07",
+          "resource": "track:A:diagonal_0",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1949598,
+          "owner": "A07",
+          "resource": "track:A:lead_P4",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2567573,
+          "owner": "A07",
+          "resource": "track:A:lead_P4",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 1914982,
+          "owner": "A07",
+          "resource": "track:A:return_0",
+          "start_ms": 1800000,
+          "state": null
+        },
+        {
+          "end_ms": 2578056,
+          "owner": "A07",
+          "resource": "track:A:return_0",
+          "start_ms": 2500000,
+          "state": null
+        },
+        {
+          "end_ms": 2644745,
+          "owner": "A07",
+          "resource": "track:A:storage_P4",
+          "start_ms": 1800000,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 879.4845535026508,
+        "duration_s": 136.74472773542274,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 125.56872773542275,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 2505000,
+      "departure_ms": 2500000,
+      "entry_motion_ms": 1805000,
+      "entry_ms": 1800000,
+      "exit_clear_ms": 2644745,
+      "incoming_distance_m": 717.905104220842,
+      "incoming_release_end_ms": 1949598,
+      "incoming_route": "A:A1:in",
+      "outgoing_distance_m": 717.4845535026508,
+      "outgoing_kind": "passenger",
+      "outgoing_route": "A:A1:out",
+      "planned_departure_ms": 2500000,
+      "platform_id": "A1",
+      "recovery_legs": 0,
+      "requested_entry_ms": 1800000,
+      "stock_id": "SA07",
+      "tail_exits_ms": 2641745,
+      "train_length_m": 162.0,
+      "visit_id": "A07",
+      "witnesses": []
+    },
+    {
+      "arrival_motion": {
+        "distance_m": 879.0101105762152,
+        "duration_s": 141.46368878109354,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 120.70826020966499,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 846.8922024619295,
+            "start_s": 131.88426020966497,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 2246464,
+      "claims": [
+        {
+          "end_ms": 2944612,
+          "owner": "A08",
+          "resource": "berth:A2",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2167636,
+          "owner": "A08",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2920751,
+          "owner": "A08",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2178821,
+          "owner": "A08",
+          "resource": "component_body:A:F1",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2914040,
+          "owner": "A08",
+          "resource": "component_body:A:F1",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2190049,
+          "owner": "A08",
+          "resource": "component_body:A:F2",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2902856,
+          "owner": "A08",
+          "resource": "component_body:A:F2",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2920751,
+          "owner": "A08",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 2800000,
+          "state": "N"
+        },
+        {
+          "end_ms": 2167636,
+          "owner": "A08",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 2100000,
+          "state": "R"
+        },
+        {
+          "end_ms": 2178821,
+          "owner": "A08",
+          "resource": "control:A:F1",
+          "start_ms": 2100000,
+          "state": "N"
+        },
+        {
+          "end_ms": 2914040,
+          "owner": "A08",
+          "resource": "control:A:F1",
+          "start_ms": 2800000,
+          "state": "N"
+        },
+        {
+          "end_ms": 2190049,
+          "owner": "A08",
+          "resource": "control:A:F2",
+          "start_ms": 2100000,
+          "state": "R"
+        },
+        {
+          "end_ms": 2902856,
+          "owner": "A08",
+          "resource": "control:A:F2",
+          "start_ms": 2800000,
+          "state": "R"
+        },
+        {
+          "end_ms": 2168382,
+          "owner": "A08",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2920751,
+          "owner": "A08",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2161665,
+          "owner": "A08",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2920751,
+          "owner": "A08",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2944612,
+          "owner": "A08",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2168382,
+          "owner": "A08",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2914786,
+          "owner": "A08",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2167636,
+          "owner": "A08",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2167636,
+          "owner": "A08",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2944612,
+          "owner": "A08",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2178821,
+          "owner": "A08",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2914786,
+          "owner": "A08",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2179566,
+          "owner": "A08",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2914040,
+          "owner": "A08",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2168382,
+          "owner": "A08",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2914786,
+          "owner": "A08",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2179566,
+          "owner": "A08",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2903601,
+          "owner": "A08",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2203621,
+          "owner": "A08",
+          "resource": "proximity:A:F2:reverse|A:diagonal_1",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2902856,
+          "owner": "A08",
+          "resource": "proximity:A:F2:reverse|A:diagonal_1",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2190049,
+          "owner": "A08",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2903601,
+          "owner": "A08",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2161665,
+          "owner": "A08",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2161665,
+          "owner": "A08",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2944612,
+          "owner": "A08",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2214103,
+          "owner": "A08",
+          "resource": "proximity:A:diagonal_1|A:return_1",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2892373,
+          "owner": "A08",
+          "resource": "proximity:A:diagonal_1|A:return_1",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2249464,
+          "owner": "A08",
+          "resource": "proximity:A:lead_P3|A:return_1",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2878801,
+          "owner": "A08",
+          "resource": "proximity:A:lead_P3|A:return_1",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2944612,
+          "owner": "A08",
+          "resource": "proximity:A:lead_P3|A:storage_P3",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2920751,
+          "owner": "A08",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2167636,
+          "owner": "A08",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2178821,
+          "owner": "A08",
+          "resource": "track:A:F1:normal",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2914040,
+          "owner": "A08",
+          "resource": "track:A:F1:normal",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2190049,
+          "owner": "A08",
+          "resource": "track:A:F2:reverse",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2902856,
+          "owner": "A08",
+          "resource": "track:A:F2:reverse",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2168382,
+          "owner": "A08",
+          "resource": "track:A:access_common",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2914786,
+          "owner": "A08",
+          "resource": "track:A:access_common",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2161665,
+          "owner": "A08",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2143719,
+          "owner": "A08",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2944612,
+          "owner": "A08",
+          "resource": "track:A:departure_lead",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2203621,
+          "owner": "A08",
+          "resource": "track:A:diagonal_1",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2892373,
+          "owner": "A08",
+          "resource": "track:A:diagonal_1",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2249464,
+          "owner": "A08",
+          "resource": "track:A:lead_P3",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2868319,
+          "owner": "A08",
+          "resource": "track:A:lead_P3",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2214103,
+          "owner": "A08",
+          "resource": "track:A:return_1",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2878801,
+          "owner": "A08",
+          "resource": "track:A:return_1",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2179566,
+          "owner": "A08",
+          "resource": "track:A:spine_1",
+          "start_ms": 2100000,
+          "state": null
+        },
+        {
+          "end_ms": 2903601,
+          "owner": "A08",
+          "resource": "track:A:spine_1",
+          "start_ms": 2800000,
+          "state": null
+        },
+        {
+          "end_ms": 2944612,
+          "owner": "A08",
+          "resource": "track:A:storage_P3",
+          "start_ms": 2100000,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 878.5895598580239,
+        "duration_s": 136.61125815110117,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 125.43525815110117,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 2805000,
+      "departure_ms": 2800000,
+      "entry_motion_ms": 2105000,
+      "entry_ms": 2100000,
+      "exit_clear_ms": 2944612,
+      "incoming_distance_m": 717.0101105762152,
+      "incoming_release_end_ms": 2249464,
+      "incoming_route": "A:A2:in",
+      "outgoing_distance_m": 716.5895598580239,
+      "outgoing_kind": "passenger",
+      "outgoing_route": "A:A2:out",
+      "planned_departure_ms": 2800000,
+      "platform_id": "A2",
+      "recovery_legs": 0,
+      "requested_entry_ms": 2100000,
+      "stock_id": "SA08",
+      "tail_exits_ms": 2941612,
+      "train_length_m": 162.0,
+      "visit_id": "A08",
+      "witnesses": []
+    },
+    {
+      "arrival_motion": {
+        "distance_m": 818.1151169315885,
+        "duration_s": 132.38247402855438,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 111.62704545712582,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 785.9972088173029,
+            "start_s": 122.80304545712582,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 2537383,
+      "claims": [
+        {
+          "end_ms": 3235531,
+          "owner": "A09",
+          "resource": "berth:A3",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 2467636,
+          "owner": "A09",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3211670,
+          "owner": "A09",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2478821,
+          "owner": "A09",
+          "resource": "component_body:A:F1",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3204959,
+          "owner": "A09",
+          "resource": "component_body:A:F1",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2490005,
+          "owner": "A09",
+          "resource": "component_body:A:F2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3193774,
+          "owner": "A09",
+          "resource": "component_body:A:F2",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2501233,
+          "owner": "A09",
+          "resource": "component_body:A:F3",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3182590,
+          "owner": "A09",
+          "resource": "component_body:A:F3",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 3211670,
+          "owner": "A09",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 3100000,
+          "state": "N"
+        },
+        {
+          "end_ms": 2467636,
+          "owner": "A09",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 2400000,
+          "state": "R"
+        },
+        {
+          "end_ms": 2478821,
+          "owner": "A09",
+          "resource": "control:A:F1",
+          "start_ms": 2400000,
+          "state": "N"
+        },
+        {
+          "end_ms": 3204959,
+          "owner": "A09",
+          "resource": "control:A:F1",
+          "start_ms": 3100000,
+          "state": "N"
+        },
+        {
+          "end_ms": 2490005,
+          "owner": "A09",
+          "resource": "control:A:F2",
+          "start_ms": 2400000,
+          "state": "N"
+        },
+        {
+          "end_ms": 3193774,
+          "owner": "A09",
+          "resource": "control:A:F2",
+          "start_ms": 3100000,
+          "state": "N"
+        },
+        {
+          "end_ms": 2501233,
+          "owner": "A09",
+          "resource": "control:A:F3",
+          "start_ms": 2400000,
+          "state": "R"
+        },
+        {
+          "end_ms": 3182590,
+          "owner": "A09",
+          "resource": "control:A:F3",
+          "start_ms": 3100000,
+          "state": "R"
+        },
+        {
+          "end_ms": 2468382,
+          "owner": "A09",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3211670,
+          "owner": "A09",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2461665,
+          "owner": "A09",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3211670,
+          "owner": "A09",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 3235531,
+          "owner": "A09",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2468382,
+          "owner": "A09",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3205705,
+          "owner": "A09",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2467636,
+          "owner": "A09",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 2467636,
+          "owner": "A09",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3235531,
+          "owner": "A09",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2478821,
+          "owner": "A09",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3205705,
+          "owner": "A09",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2479566,
+          "owner": "A09",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3204959,
+          "owner": "A09",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2468382,
+          "owner": "A09",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3205705,
+          "owner": "A09",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2490005,
+          "owner": "A09",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3194520,
+          "owner": "A09",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2490751,
+          "owner": "A09",
+          "resource": "proximity:A:F2:normal|A:spine_2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3193774,
+          "owner": "A09",
+          "resource": "proximity:A:F2:normal|A:spine_2",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2479566,
+          "owner": "A09",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3194520,
+          "owner": "A09",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2490751,
+          "owner": "A09",
+          "resource": "proximity:A:F3:normal|A:spine_2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3183335,
+          "owner": "A09",
+          "resource": "proximity:A:F3:normal|A:spine_2",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2502741,
+          "owner": "A09",
+          "resource": "proximity:A:F3:reverse|A:diagonal_2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3182590,
+          "owner": "A09",
+          "resource": "proximity:A:F3:reverse|A:diagonal_2",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2501233,
+          "owner": "A09",
+          "resource": "proximity:A:F3:reverse|A:spine_2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3183335,
+          "owner": "A09",
+          "resource": "proximity:A:F3:reverse|A:spine_2",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2461665,
+          "owner": "A09",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 2461665,
+          "owner": "A09",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3235531,
+          "owner": "A09",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2513224,
+          "owner": "A09",
+          "resource": "proximity:A:diagonal_2|A:return_2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3172107,
+          "owner": "A09",
+          "resource": "proximity:A:diagonal_2|A:return_2",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2540383,
+          "owner": "A09",
+          "resource": "proximity:A:lead_P2|A:return_2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3170599,
+          "owner": "A09",
+          "resource": "proximity:A:lead_P2|A:return_2",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 3235531,
+          "owner": "A09",
+          "resource": "proximity:A:lead_P2|A:storage_P2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3211670,
+          "owner": "A09",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2467636,
+          "owner": "A09",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 2478821,
+          "owner": "A09",
+          "resource": "track:A:F1:normal",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3204959,
+          "owner": "A09",
+          "resource": "track:A:F1:normal",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2490005,
+          "owner": "A09",
+          "resource": "track:A:F2:normal",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3193774,
+          "owner": "A09",
+          "resource": "track:A:F2:normal",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2501233,
+          "owner": "A09",
+          "resource": "track:A:F3:reverse",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3182590,
+          "owner": "A09",
+          "resource": "track:A:F3:reverse",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2468382,
+          "owner": "A09",
+          "resource": "track:A:access_common",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3205705,
+          "owner": "A09",
+          "resource": "track:A:access_common",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2461665,
+          "owner": "A09",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 2443719,
+          "owner": "A09",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3235531,
+          "owner": "A09",
+          "resource": "track:A:departure_lead",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2502741,
+          "owner": "A09",
+          "resource": "track:A:diagonal_2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3172107,
+          "owner": "A09",
+          "resource": "track:A:diagonal_2",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2540383,
+          "owner": "A09",
+          "resource": "track:A:lead_P2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3160117,
+          "owner": "A09",
+          "resource": "track:A:lead_P2",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2513224,
+          "owner": "A09",
+          "resource": "track:A:return_2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3170599,
+          "owner": "A09",
+          "resource": "track:A:return_2",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2479566,
+          "owner": "A09",
+          "resource": "track:A:spine_1",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3194520,
+          "owner": "A09",
+          "resource": "track:A:spine_1",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 2490751,
+          "owner": "A09",
+          "resource": "track:A:spine_2",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 3183335,
+          "owner": "A09",
+          "resource": "track:A:spine_2",
+          "start_ms": 3100000,
+          "state": null
+        },
+        {
+          "end_ms": 3235531,
+          "owner": "A09",
+          "resource": "track:A:storage_P2",
+          "start_ms": 2400000,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 817.6945662133973,
+        "duration_s": 127.530043398562,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 116.354043398562,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 3105000,
+      "departure_ms": 3100000,
+      "entry_motion_ms": 2405000,
+      "entry_ms": 2400000,
+      "exit_clear_ms": 3235531,
+      "incoming_distance_m": 656.1151169315885,
+      "incoming_release_end_ms": 2540383,
+      "incoming_route": "A:A3:in",
+      "outgoing_distance_m": 655.6945662133973,
+      "outgoing_kind": "passenger",
+      "outgoing_route": "A:A3:out",
+      "planned_departure_ms": 3100000,
+      "platform_id": "A3",
+      "recovery_legs": 0,
+      "requested_entry_ms": 2400000,
+      "stock_id": "SA09",
+      "tail_exits_ms": 3232531,
+      "train_length_m": 162.0,
+      "visit_id": "A09",
+      "witnesses": []
+    },
+    {
+      "arrival_motion": {
+        "distance_m": 879.905104220842,
+        "duration_s": 141.59715836541514,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 120.84172979398657,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 847.7871961065563,
+            "start_s": 132.01772979398658,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 2846598,
+      "claims": [
+        {
+          "end_ms": 3544745,
+          "owner": "A10",
+          "resource": "berth:A1",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 2767636,
+          "owner": "A10",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3520885,
+          "owner": "A10",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2778864,
+          "owner": "A10",
+          "resource": "component_body:A:F1",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3514174,
+          "owner": "A10",
+          "resource": "component_body:A:F1",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 3520885,
+          "owner": "A10",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 3400000,
+          "state": "N"
+        },
+        {
+          "end_ms": 2767636,
+          "owner": "A10",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 2700000,
+          "state": "R"
+        },
+        {
+          "end_ms": 2778864,
+          "owner": "A10",
+          "resource": "control:A:F1",
+          "start_ms": 2700000,
+          "state": "R"
+        },
+        {
+          "end_ms": 3514174,
+          "owner": "A10",
+          "resource": "control:A:F1",
+          "start_ms": 3400000,
+          "state": "R"
+        },
+        {
+          "end_ms": 2768382,
+          "owner": "A10",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3520885,
+          "owner": "A10",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2761665,
+          "owner": "A10",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3520885,
+          "owner": "A10",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 3544745,
+          "owner": "A10",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2768382,
+          "owner": "A10",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3514919,
+          "owner": "A10",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2767636,
+          "owner": "A10",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 2767636,
+          "owner": "A10",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3544745,
+          "owner": "A10",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2768382,
+          "owner": "A10",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3514919,
+          "owner": "A10",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2778864,
+          "owner": "A10",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3514919,
+          "owner": "A10",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2804500,
+          "owner": "A10",
+          "resource": "proximity:A:F1:reverse|A:diagonal_0",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3514174,
+          "owner": "A10",
+          "resource": "proximity:A:F1:reverse|A:diagonal_0",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2761665,
+          "owner": "A10",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 2761665,
+          "owner": "A10",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3544745,
+          "owner": "A10",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2814982,
+          "owner": "A10",
+          "resource": "proximity:A:diagonal_0|A:return_0",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3503691,
+          "owner": "A10",
+          "resource": "proximity:A:diagonal_0|A:return_0",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2849598,
+          "owner": "A10",
+          "resource": "proximity:A:lead_P4|A:return_0",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3478056,
+          "owner": "A10",
+          "resource": "proximity:A:lead_P4|A:return_0",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 3544745,
+          "owner": "A10",
+          "resource": "proximity:A:lead_P4|A:storage_P4",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3520885,
+          "owner": "A10",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2767636,
+          "owner": "A10",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 2778864,
+          "owner": "A10",
+          "resource": "track:A:F1:reverse",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3514174,
+          "owner": "A10",
+          "resource": "track:A:F1:reverse",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2768382,
+          "owner": "A10",
+          "resource": "track:A:access_common",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3514919,
+          "owner": "A10",
+          "resource": "track:A:access_common",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2761665,
+          "owner": "A10",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 2743719,
+          "owner": "A10",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3544745,
+          "owner": "A10",
+          "resource": "track:A:departure_lead",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2804500,
+          "owner": "A10",
+          "resource": "track:A:diagonal_0",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3503691,
+          "owner": "A10",
+          "resource": "track:A:diagonal_0",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2849598,
+          "owner": "A10",
+          "resource": "track:A:lead_P4",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3467573,
+          "owner": "A10",
+          "resource": "track:A:lead_P4",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 2814982,
+          "owner": "A10",
+          "resource": "track:A:return_0",
+          "start_ms": 2700000,
+          "state": null
+        },
+        {
+          "end_ms": 3478056,
+          "owner": "A10",
+          "resource": "track:A:return_0",
+          "start_ms": 3400000,
+          "state": null
+        },
+        {
+          "end_ms": 3544745,
+          "owner": "A10",
+          "resource": "track:A:storage_P4",
+          "start_ms": 2700000,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 879.4845535026508,
+        "duration_s": 136.74472773542274,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 125.56872773542275,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 3405000,
+      "departure_ms": 3400000,
+      "entry_motion_ms": 2705000,
+      "entry_ms": 2700000,
+      "exit_clear_ms": 3544745,
+      "incoming_distance_m": 717.905104220842,
+      "incoming_release_end_ms": 2849598,
+      "incoming_route": "A:A1:in",
+      "outgoing_distance_m": 717.4845535026508,
+      "outgoing_kind": "passenger",
+      "outgoing_route": "A:A1:out",
+      "planned_departure_ms": 3400000,
+      "platform_id": "A1",
+      "recovery_legs": 0,
+      "requested_entry_ms": 2700000,
+      "stock_id": "SA10",
+      "tail_exits_ms": 3541745,
+      "train_length_m": 162.0,
+      "visit_id": "A10",
+      "witnesses": []
+    },
+    {
+      "arrival_motion": {
+        "distance_m": 879.0101105762152,
+        "duration_s": 141.46368878109354,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 120.70826020966499,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 846.8922024619295,
+            "start_s": 131.88426020966497,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 3146464,
+      "claims": [
+        {
+          "end_ms": 3844612,
+          "owner": "A11",
+          "resource": "berth:A2",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3067636,
+          "owner": "A11",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3820751,
+          "owner": "A11",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3078821,
+          "owner": "A11",
+          "resource": "component_body:A:F1",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3814040,
+          "owner": "A11",
+          "resource": "component_body:A:F1",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3090049,
+          "owner": "A11",
+          "resource": "component_body:A:F2",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3802856,
+          "owner": "A11",
+          "resource": "component_body:A:F2",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3820751,
+          "owner": "A11",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 3700000,
+          "state": "N"
+        },
+        {
+          "end_ms": 3067636,
+          "owner": "A11",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 3000000,
+          "state": "R"
+        },
+        {
+          "end_ms": 3078821,
+          "owner": "A11",
+          "resource": "control:A:F1",
+          "start_ms": 3000000,
+          "state": "N"
+        },
+        {
+          "end_ms": 3814040,
+          "owner": "A11",
+          "resource": "control:A:F1",
+          "start_ms": 3700000,
+          "state": "N"
+        },
+        {
+          "end_ms": 3090049,
+          "owner": "A11",
+          "resource": "control:A:F2",
+          "start_ms": 3000000,
+          "state": "R"
+        },
+        {
+          "end_ms": 3802856,
+          "owner": "A11",
+          "resource": "control:A:F2",
+          "start_ms": 3700000,
+          "state": "R"
+        },
+        {
+          "end_ms": 3068382,
+          "owner": "A11",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3820751,
+          "owner": "A11",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3061665,
+          "owner": "A11",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3820751,
+          "owner": "A11",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3844612,
+          "owner": "A11",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3068382,
+          "owner": "A11",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3814786,
+          "owner": "A11",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3067636,
+          "owner": "A11",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3067636,
+          "owner": "A11",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3844612,
+          "owner": "A11",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3078821,
+          "owner": "A11",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3814786,
+          "owner": "A11",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3079566,
+          "owner": "A11",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3814040,
+          "owner": "A11",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3068382,
+          "owner": "A11",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3814786,
+          "owner": "A11",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3079566,
+          "owner": "A11",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3803601,
+          "owner": "A11",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3103621,
+          "owner": "A11",
+          "resource": "proximity:A:F2:reverse|A:diagonal_1",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3802856,
+          "owner": "A11",
+          "resource": "proximity:A:F2:reverse|A:diagonal_1",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3090049,
+          "owner": "A11",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3803601,
+          "owner": "A11",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3061665,
+          "owner": "A11",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3061665,
+          "owner": "A11",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3844612,
+          "owner": "A11",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3114103,
+          "owner": "A11",
+          "resource": "proximity:A:diagonal_1|A:return_1",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3792373,
+          "owner": "A11",
+          "resource": "proximity:A:diagonal_1|A:return_1",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3149464,
+          "owner": "A11",
+          "resource": "proximity:A:lead_P3|A:return_1",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3778801,
+          "owner": "A11",
+          "resource": "proximity:A:lead_P3|A:return_1",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3844612,
+          "owner": "A11",
+          "resource": "proximity:A:lead_P3|A:storage_P3",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3820751,
+          "owner": "A11",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3067636,
+          "owner": "A11",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3078821,
+          "owner": "A11",
+          "resource": "track:A:F1:normal",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3814040,
+          "owner": "A11",
+          "resource": "track:A:F1:normal",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3090049,
+          "owner": "A11",
+          "resource": "track:A:F2:reverse",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3802856,
+          "owner": "A11",
+          "resource": "track:A:F2:reverse",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3068382,
+          "owner": "A11",
+          "resource": "track:A:access_common",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3814786,
+          "owner": "A11",
+          "resource": "track:A:access_common",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3061665,
+          "owner": "A11",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3043719,
+          "owner": "A11",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3844612,
+          "owner": "A11",
+          "resource": "track:A:departure_lead",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3103621,
+          "owner": "A11",
+          "resource": "track:A:diagonal_1",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3792373,
+          "owner": "A11",
+          "resource": "track:A:diagonal_1",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3149464,
+          "owner": "A11",
+          "resource": "track:A:lead_P3",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3768319,
+          "owner": "A11",
+          "resource": "track:A:lead_P3",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3114103,
+          "owner": "A11",
+          "resource": "track:A:return_1",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3778801,
+          "owner": "A11",
+          "resource": "track:A:return_1",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3079566,
+          "owner": "A11",
+          "resource": "track:A:spine_1",
+          "start_ms": 3000000,
+          "state": null
+        },
+        {
+          "end_ms": 3803601,
+          "owner": "A11",
+          "resource": "track:A:spine_1",
+          "start_ms": 3700000,
+          "state": null
+        },
+        {
+          "end_ms": 3844612,
+          "owner": "A11",
+          "resource": "track:A:storage_P3",
+          "start_ms": 3000000,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 878.5895598580239,
+        "duration_s": 136.61125815110117,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 125.43525815110117,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 3705000,
+      "departure_ms": 3700000,
+      "entry_motion_ms": 3005000,
+      "entry_ms": 3000000,
+      "exit_clear_ms": 3844612,
+      "incoming_distance_m": 717.0101105762152,
+      "incoming_release_end_ms": 3149464,
+      "incoming_route": "A:A2:in",
+      "outgoing_distance_m": 716.5895598580239,
+      "outgoing_kind": "passenger",
+      "outgoing_route": "A:A2:out",
+      "planned_departure_ms": 3700000,
+      "platform_id": "A2",
+      "recovery_legs": 0,
+      "requested_entry_ms": 3000000,
+      "stock_id": "SA11",
+      "tail_exits_ms": 3841612,
+      "train_length_m": 162.0,
+      "visit_id": "A11",
+      "witnesses": []
+    },
+    {
+      "arrival_motion": {
+        "distance_m": 818.1151169315885,
+        "duration_s": 132.38247402855438,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 111.62704545712582,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          },
+          {
+            "acceleration_mps2": -0.7,
+            "duration_s": 9.579428571428572,
+            "start_m": 785.9972088173029,
+            "start_s": 122.80304545712582,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": true
+      },
+      "berthed_ms": 3437383,
+      "claims": [
+        {
+          "end_ms": 4135531,
+          "owner": "A12",
+          "resource": "berth:A3",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 3367636,
+          "owner": "A12",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4111670,
+          "owner": "A12",
+          "resource": "component_body:A:ACCESS:SYNTH_IMPORT_T40",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3378821,
+          "owner": "A12",
+          "resource": "component_body:A:F1",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4104959,
+          "owner": "A12",
+          "resource": "component_body:A:F1",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3390005,
+          "owner": "A12",
+          "resource": "component_body:A:F2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4093774,
+          "owner": "A12",
+          "resource": "component_body:A:F2",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3401233,
+          "owner": "A12",
+          "resource": "component_body:A:F3",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4082590,
+          "owner": "A12",
+          "resource": "component_body:A:F3",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 4111670,
+          "owner": "A12",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 4000000,
+          "state": "N"
+        },
+        {
+          "end_ms": 3367636,
+          "owner": "A12",
+          "resource": "control:A:ACCESS:T40_CTRL",
+          "start_ms": 3300000,
+          "state": "R"
+        },
+        {
+          "end_ms": 3378821,
+          "owner": "A12",
+          "resource": "control:A:F1",
+          "start_ms": 3300000,
+          "state": "N"
+        },
+        {
+          "end_ms": 4104959,
+          "owner": "A12",
+          "resource": "control:A:F1",
+          "start_ms": 4000000,
+          "state": "N"
+        },
+        {
+          "end_ms": 3390005,
+          "owner": "A12",
+          "resource": "control:A:F2",
+          "start_ms": 3300000,
+          "state": "N"
+        },
+        {
+          "end_ms": 4093774,
+          "owner": "A12",
+          "resource": "control:A:F2",
+          "start_ms": 4000000,
+          "state": "N"
+        },
+        {
+          "end_ms": 3401233,
+          "owner": "A12",
+          "resource": "control:A:F3",
+          "start_ms": 3300000,
+          "state": "R"
+        },
+        {
+          "end_ms": 4082590,
+          "owner": "A12",
+          "resource": "control:A:F3",
+          "start_ms": 4000000,
+          "state": "R"
+        },
+        {
+          "end_ms": 3368382,
+          "owner": "A12",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4111670,
+          "owner": "A12",
+          "resource": "proximity:A:ACCESS:normal|A:access_common",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3361665,
+          "owner": "A12",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4111670,
+          "owner": "A12",
+          "resource": "proximity:A:ACCESS:normal|A:access_diagonal",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 4135531,
+          "owner": "A12",
+          "resource": "proximity:A:ACCESS:normal|A:departure_lead",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3368382,
+          "owner": "A12",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4105705,
+          "owner": "A12",
+          "resource": "proximity:A:ACCESS:reverse|A:access_common",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3367636,
+          "owner": "A12",
+          "resource": "proximity:A:ACCESS:reverse|A:access_diagonal",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 3367636,
+          "owner": "A12",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4135531,
+          "owner": "A12",
+          "resource": "proximity:A:ACCESS:reverse|A:departure_lead",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3378821,
+          "owner": "A12",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4105705,
+          "owner": "A12",
+          "resource": "proximity:A:F1:normal|A:access_common",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3379566,
+          "owner": "A12",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4104959,
+          "owner": "A12",
+          "resource": "proximity:A:F1:normal|A:spine_1",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3368382,
+          "owner": "A12",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4105705,
+          "owner": "A12",
+          "resource": "proximity:A:F1:reverse|A:access_common",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3390005,
+          "owner": "A12",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4094520,
+          "owner": "A12",
+          "resource": "proximity:A:F2:normal|A:spine_1",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3390751,
+          "owner": "A12",
+          "resource": "proximity:A:F2:normal|A:spine_2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4093774,
+          "owner": "A12",
+          "resource": "proximity:A:F2:normal|A:spine_2",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3379566,
+          "owner": "A12",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4094520,
+          "owner": "A12",
+          "resource": "proximity:A:F2:reverse|A:spine_1",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3390751,
+          "owner": "A12",
+          "resource": "proximity:A:F3:normal|A:spine_2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4083335,
+          "owner": "A12",
+          "resource": "proximity:A:F3:normal|A:spine_2",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3402741,
+          "owner": "A12",
+          "resource": "proximity:A:F3:reverse|A:diagonal_2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4082590,
+          "owner": "A12",
+          "resource": "proximity:A:F3:reverse|A:diagonal_2",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3401233,
+          "owner": "A12",
+          "resource": "proximity:A:F3:reverse|A:spine_2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4083335,
+          "owner": "A12",
+          "resource": "proximity:A:F3:reverse|A:spine_2",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3361665,
+          "owner": "A12",
+          "resource": "proximity:A:access_diagonal|A:arrival_lead",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 3361665,
+          "owner": "A12",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4135531,
+          "owner": "A12",
+          "resource": "proximity:A:access_diagonal|A:departure_lead",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3413224,
+          "owner": "A12",
+          "resource": "proximity:A:diagonal_2|A:return_2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4072107,
+          "owner": "A12",
+          "resource": "proximity:A:diagonal_2|A:return_2",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3440383,
+          "owner": "A12",
+          "resource": "proximity:A:lead_P2|A:return_2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4070599,
+          "owner": "A12",
+          "resource": "proximity:A:lead_P2|A:return_2",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 4135531,
+          "owner": "A12",
+          "resource": "proximity:A:lead_P2|A:storage_P2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4111670,
+          "owner": "A12",
+          "resource": "track:A:ACCESS:normal",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3367636,
+          "owner": "A12",
+          "resource": "track:A:ACCESS:reverse",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 3378821,
+          "owner": "A12",
+          "resource": "track:A:F1:normal",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4104959,
+          "owner": "A12",
+          "resource": "track:A:F1:normal",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3390005,
+          "owner": "A12",
+          "resource": "track:A:F2:normal",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4093774,
+          "owner": "A12",
+          "resource": "track:A:F2:normal",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3401233,
+          "owner": "A12",
+          "resource": "track:A:F3:reverse",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4082590,
+          "owner": "A12",
+          "resource": "track:A:F3:reverse",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3368382,
+          "owner": "A12",
+          "resource": "track:A:access_common",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4105705,
+          "owner": "A12",
+          "resource": "track:A:access_common",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3361665,
+          "owner": "A12",
+          "resource": "track:A:access_diagonal",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 3343719,
+          "owner": "A12",
+          "resource": "track:A:arrival_lead",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4135531,
+          "owner": "A12",
+          "resource": "track:A:departure_lead",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3402741,
+          "owner": "A12",
+          "resource": "track:A:diagonal_2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4072107,
+          "owner": "A12",
+          "resource": "track:A:diagonal_2",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3440383,
+          "owner": "A12",
+          "resource": "track:A:lead_P2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4060117,
+          "owner": "A12",
+          "resource": "track:A:lead_P2",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3413224,
+          "owner": "A12",
+          "resource": "track:A:return_2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4070599,
+          "owner": "A12",
+          "resource": "track:A:return_2",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3379566,
+          "owner": "A12",
+          "resource": "track:A:spine_1",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4094520,
+          "owner": "A12",
+          "resource": "track:A:spine_1",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 3390751,
+          "owner": "A12",
+          "resource": "track:A:spine_2",
+          "start_ms": 3300000,
+          "state": null
+        },
+        {
+          "end_ms": 4083335,
+          "owner": "A12",
+          "resource": "track:A:spine_2",
+          "start_ms": 4000000,
+          "state": null
+        },
+        {
+          "end_ms": 4135531,
+          "owner": "A12",
+          "resource": "track:A:storage_P2",
+          "start_ms": 3300000,
+          "state": null
+        }
+      ],
+      "departure_delay_ms": 0,
+      "departure_motion": {
+        "distance_m": 817.6945662133973,
+        "duration_s": 127.530043398562,
+        "peak_speed_mps": 6.7056,
+        "phases": [
+          {
+            "acceleration_mps2": 0.6,
+            "duration_s": 11.176,
+            "start_m": 0.0,
+            "start_s": 0.0,
+            "start_speed_mps": 0.0
+          },
+          {
+            "acceleration_mps2": 0.0,
+            "duration_s": 116.354043398562,
+            "start_m": 37.4708928,
+            "start_s": 11.176,
+            "start_speed_mps": 6.7056
+          }
+        ],
+        "stop_at_end": false
+      },
+      "departure_motion_ms": 4005000,
+      "departure_ms": 4000000,
+      "entry_motion_ms": 3305000,
+      "entry_ms": 3300000,
+      "exit_clear_ms": 4135531,
+      "incoming_distance_m": 656.1151169315885,
+      "incoming_release_end_ms": 3440383,
+      "incoming_route": "A:A3:in",
+      "outgoing_distance_m": 655.6945662133973,
+      "outgoing_kind": "empty_stock",
+      "outgoing_route": "A:A3:out",
+      "planned_departure_ms": 4000000,
+      "platform_id": "A3",
+      "recovery_legs": 0,
+      "requested_entry_ms": 3300000,
+      "stock_id": "SA12",
+      "tail_exits_ms": 4132531,
+      "train_length_m": 162.0,
+      "visit_id": "A12",
+      "witnesses": []
+    }
+  ],
+  "candidate_assessment_hash": "9d00bdaacc8d48b94e1293a75b0c8cd76cd6a05370e5c6b8834b9055f3653861",
+  "candidate_evaluations": 171,
+  "closed_edges": [],
+  "closed_platforms": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+  ],
+  "compile_hash": "fa97d0d7fc7025f412e147d9e920941cff52ad67dc0ce43dadf86571b62f9569",
+  "completed_within_horizon": 12,
+  "construction_authorised": false,
+  "family": "a_to_b",
+  "fidelity": "synthetic_geometry_and_release; selected_UK_values_separate",
+  "formation_origin": "retained_S060_published_unit_length",
+  "horizon_ms": 14400000,
+  "independent_check": {
+    "checker": "independent_interval_sweep_and_complete_visit_invariants_v06",
+    "compile_hash": "fa97d0d7fc7025f412e147d9e920941cff52ad67dc0ce43dadf86571b62f9569",
+    "conflict_witnesses": [],
+    "errors": [],
+    "required_visits": 24,
+    "scope": "reservation verification; not real-world or game validation",
+    "status": "pass"
+  },
+  "mode": "sectional_release",
+  "model_version": "0.6.0",
+  "plan_contract_passed": true,
+  "profile": {
+    "acceleration_mps2": 0.6,
+    "braking_mps2": 0.7,
+    "provenance": "project_selected_uncalibrated_level_track_profile",
+    "release_ms": 3000,
+    "setup_ms": 5000,
+    "speed_mps": 6.7056
+  },
+  "rejected": [
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B01"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B02"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B03"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B04"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B05"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B06"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B07"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B08"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B09"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B10"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B11"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B12"
+    }
+  ],
+  "release_version": "0.7.0",
+  "required_visits": 24,
+  "scenario_hash": "21558ce4089c4e55574c30fa91e58007dd27bbcbc5ab0ce3098834e89a87f0bd",
+  "scenario_id": "bank_b_platforms_closed",
+  "scheduled_residual_at_horizon": 0,
+  "scheduled_states_at_horizon": {
+    "arrival_setup": 0,
+    "arriving": 0,
+    "berthed": 0,
+    "completed": 12,
+    "departing": 0,
+    "departure_setup": 0,
+    "not_yet_due": 0,
+    "release_hold": 0,
+    "waiting_outside_model": 0
+  },
+  "scheduled_visits": 12,
+  "total_departure_delay_ms": 0,
+  "total_recovery_legs": 0,
+  "unscheduled_visits": 12,
+  "vehicle_record_hash": "40bdbe8de0c14359c11f282436b095d693d302a12ca54047133af4bda641e331"
+}

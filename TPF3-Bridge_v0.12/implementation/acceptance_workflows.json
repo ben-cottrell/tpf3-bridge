@@ -1,0 +1,77 @@
+{
+  "version": "0.12.0",
+  "status": "specified_not_executed",
+  "workflows": [
+    {
+      "id": "WF-01",
+      "name": "Double-track link between existing stubs",
+      "required_probes": [
+        "GP-01",
+        "GP-02",
+        "GP-03",
+        "GP-04",
+        "GP-05",
+        "GP-06",
+        "GP-07",
+        "GP-11",
+        "GP-12"
+      ],
+      "acceptance": [
+        "two directed connections preserve all four native boundary ports",
+        "no unlisted demolition",
+        "actual asset geometry/topology read back",
+        "summary records remaining unobserved behaviour"
+      ]
+    },
+    {
+      "id": "WF-02",
+      "name": "Simple passenger branch",
+      "required_probes": [
+        "GP-08"
+      ],
+      "acceptance": [
+        "normal and diverging required paths usable",
+        "geometric crossing has no invented turn",
+        "shared merge and holding-length limits retained"
+      ]
+    },
+    {
+      "id": "WF-03",
+      "name": "Bridge or tunnel corridor",
+      "required_probes": [
+        "GP-09"
+      ],
+      "acceptance": [
+        "supported native structure asset selected",
+        "full approaches and endpoint geometry checked",
+        "terrain successor snapshot matches authorised effects"
+      ]
+    },
+    {
+      "id": "WF-04",
+      "name": "Signals and representative passage",
+      "required_probes": [
+        "GP-10",
+        "GP-14"
+      ],
+      "acceptance": [
+        "configured direction is observed",
+        "waiting train length clears intended conflict",
+        "no claim of observed passage for unobserved movements"
+      ]
+    },
+    {
+      "id": "WF-05",
+      "name": "Controlled replacement on disposable save",
+      "required_probes": [
+        "GP-13",
+        "GP-15"
+      ],
+      "acceptance": [
+        "whitelisted changes only",
+        "preserved neighbouring movement matrix",
+        "ambiguous partial state stops without fabricated rollback"
+      ]
+    }
+  ]
+}

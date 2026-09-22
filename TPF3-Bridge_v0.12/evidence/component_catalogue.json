@@ -1,0 +1,84 @@
+{
+  "schema_version": "0.3.0",
+  "fidelity": "synthetic",
+  "origin": "Original TPF3-Bridge authored model; not extracted UK component dimensions",
+  "component_id": "synthetic_eased_turnout_v1",
+  "ports": [
+    "T",
+    "N",
+    "R"
+  ],
+  "legal_traversals": [
+    [
+      "T",
+      "N"
+    ],
+    [
+      "N",
+      "T"
+    ],
+    [
+      "T",
+      "R"
+    ],
+    [
+      "R",
+      "T"
+    ]
+  ],
+  "normal_curve": "x=L*u; y=0",
+  "divergent_curve": "x=L*u; y=m*L*(u**3-u**4/2); 0<=u<=1",
+  "constraints": [
+    "L>0",
+    "m>0",
+    "level geometry",
+    "zero cant",
+    "authored monotone catalogue only"
+  ],
+  "state_map": {
+    "T-N": "N",
+    "T-R": "R"
+  },
+  "default_crossover": {
+    "spacing_m": 4.5,
+    "turnout_span_m": 40.0,
+    "branch_slope": 0.075,
+    "maximum_span_m": 120.0
+  },
+  "default_fan": {
+    "platform_count": 4,
+    "spacing_m": 12.0,
+    "turnout_span_m": 50.0,
+    "branch_slope": 0.1,
+    "first_toe_x_m": 50.0,
+    "toe_step_m": 150.0,
+    "platform_start_x_m": 650.0,
+    "boarding_length_m": 260.0,
+    "margin_m": 5.0
+  },
+  "profile": {
+    "minimum_radius_m": 300.0,
+    "envelope_half_width_m": 1.75,
+    "envelope_gap_m": 0.5,
+    "flatness_m": 0.01,
+    "length_gap_m": 0.0001
+  },
+  "not_modelled": [
+    "switch blades",
+    "crossing nose",
+    "check rails",
+    "sleepers and fastenings",
+    "dynamic rolling-stock gauges",
+    "real control tables",
+    "train speed rating",
+    "TPF3 assets"
+  ],
+  "admission": "implemented_synthetic_subassembly_only",
+  "source_rule_ids": [],
+  "reference_context_only": [
+    "S045",
+    "S047",
+    "S055"
+  ],
+  "source_context_is_not_dimension_provenance": true
+}

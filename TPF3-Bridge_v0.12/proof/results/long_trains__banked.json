@@ -1,0 +1,2131 @@
+{
+  "model_version": "0.2.0",
+  "fidelity": "synthetic_resource_templates",
+  "family": "banked",
+  "required_visits": 24,
+  "scheduled_visits": 24,
+  "completed_within_horizon": 24,
+  "scheduled_residual_at_horizon": 0,
+  "unscheduled_visits": 0,
+  "all_required_scheduled": true,
+  "all_required_completed_within_horizon": true,
+  "horizon_ms": 3600000,
+  "total_departure_delay_ms": 1422000,
+  "maximum_departure_delay_ms": 223500,
+  "total_external_entry_wait_ms": 1212000,
+  "cross_bank_legs": 0,
+  "candidate_evaluations": 388,
+  "assignments": [
+    {
+      "visit_id": "V01",
+      "stock_id": "S01",
+      "platform_id": "P3",
+      "entry_ms": 0,
+      "berthed_ms": 65500,
+      "departure_ms": 325500,
+      "exit_clear_ms": 391000,
+      "departure_delay_ms": 17500,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 0,
+          "end_ms": 65500,
+          "owner": "V01",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 0,
+          "end_ms": 65500,
+          "owner": "V01",
+          "state": null
+        },
+        {
+          "resource": "berth:P3",
+          "start_ms": 0,
+          "end_ms": 391000,
+          "owner": "V01",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 325500,
+          "end_ms": 391000,
+          "owner": "V01",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 325500,
+          "end_ms": 391000,
+          "owner": "V01",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "visit_id": "V02",
+      "stock_id": "S02",
+      "platform_id": "P7",
+      "entry_ms": 60000,
+      "berthed_ms": 125500,
+      "departure_ms": 385500,
+      "exit_clear_ms": 451000,
+      "departure_delay_ms": 17500,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 60000,
+          "end_ms": 125500,
+          "owner": "V02",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 60000,
+          "end_ms": 125500,
+          "owner": "V02",
+          "state": null
+        },
+        {
+          "resource": "berth:P7",
+          "start_ms": 60000,
+          "end_ms": 451000,
+          "owner": "V02",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 385500,
+          "end_ms": 451000,
+          "owner": "V02",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 385500,
+          "end_ms": 451000,
+          "owner": "V02",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "visit_id": "V03",
+      "stock_id": "S03",
+      "platform_id": "P1",
+      "entry_ms": 150000,
+      "berthed_ms": 198000,
+      "departure_ms": 458000,
+      "exit_clear_ms": 506000,
+      "departure_delay_ms": 0,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 150000,
+          "end_ms": 198000,
+          "owner": "V03",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 150000,
+          "end_ms": 198000,
+          "owner": "V03",
+          "state": null
+        },
+        {
+          "resource": "berth:P1",
+          "start_ms": 150000,
+          "end_ms": 506000,
+          "owner": "V03",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 458000,
+          "end_ms": 506000,
+          "owner": "V03",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 458000,
+          "end_ms": 506000,
+          "owner": "V03",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "visit_id": "V04",
+      "stock_id": "S04",
+      "platform_id": "P5",
+      "entry_ms": 210000,
+      "berthed_ms": 258000,
+      "departure_ms": 518000,
+      "exit_clear_ms": 566000,
+      "departure_delay_ms": 0,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 210000,
+          "end_ms": 258000,
+          "owner": "V04",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 210000,
+          "end_ms": 258000,
+          "owner": "V04",
+          "state": null
+        },
+        {
+          "resource": "berth:P5",
+          "start_ms": 210000,
+          "end_ms": 566000,
+          "owner": "V04",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 518000,
+          "end_ms": 566000,
+          "owner": "V04",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 518000,
+          "end_ms": 566000,
+          "owner": "V04",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "visit_id": "V05",
+      "stock_id": "S05",
+      "platform_id": "P2",
+      "entry_ms": 391000,
+      "berthed_ms": 439000,
+      "departure_ms": 699000,
+      "exit_clear_ms": 747000,
+      "departure_delay_ms": 91000,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 391000,
+          "end_ms": 439000,
+          "owner": "V05",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 391000,
+          "end_ms": 439000,
+          "owner": "V05",
+          "state": null
+        },
+        {
+          "resource": "berth:P2",
+          "start_ms": 391000,
+          "end_ms": 747000,
+          "owner": "V05",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 699000,
+          "end_ms": 747000,
+          "owner": "V05",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 699000,
+          "end_ms": 747000,
+          "owner": "V05",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:A",
+          "start_ms": 325500,
+          "end_ms": 391000,
+          "owner": "V01",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V06",
+      "stock_id": "S06",
+      "platform_id": "P6",
+      "entry_ms": 451000,
+      "berthed_ms": 499000,
+      "departure_ms": 759000,
+      "exit_clear_ms": 807000,
+      "departure_delay_ms": 91000,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 451000,
+          "end_ms": 499000,
+          "owner": "V06",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 451000,
+          "end_ms": 499000,
+          "owner": "V06",
+          "state": null
+        },
+        {
+          "resource": "berth:P6",
+          "start_ms": 451000,
+          "end_ms": 807000,
+          "owner": "V06",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 759000,
+          "end_ms": 807000,
+          "owner": "V06",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 759000,
+          "end_ms": 807000,
+          "owner": "V06",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:B",
+          "start_ms": 385500,
+          "end_ms": 451000,
+          "owner": "V02",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V07",
+      "stock_id": "S07",
+      "platform_id": "P3",
+      "entry_ms": 506000,
+      "berthed_ms": 571500,
+      "departure_ms": 831500,
+      "exit_clear_ms": 897000,
+      "departure_delay_ms": 73500,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 506000,
+          "end_ms": 571500,
+          "owner": "V07",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 506000,
+          "end_ms": 571500,
+          "owner": "V07",
+          "state": null
+        },
+        {
+          "resource": "berth:P3",
+          "start_ms": 506000,
+          "end_ms": 897000,
+          "owner": "V07",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 831500,
+          "end_ms": 897000,
+          "owner": "V07",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 831500,
+          "end_ms": 897000,
+          "owner": "V07",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:A",
+          "start_ms": 458000,
+          "end_ms": 506000,
+          "owner": "V03",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V08",
+      "stock_id": "S08",
+      "platform_id": "P7",
+      "entry_ms": 566000,
+      "berthed_ms": 631500,
+      "departure_ms": 891500,
+      "exit_clear_ms": 957000,
+      "departure_delay_ms": 73500,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 566000,
+          "end_ms": 631500,
+          "owner": "V08",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 566000,
+          "end_ms": 631500,
+          "owner": "V08",
+          "state": null
+        },
+        {
+          "resource": "berth:P7",
+          "start_ms": 566000,
+          "end_ms": 957000,
+          "owner": "V08",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 891500,
+          "end_ms": 957000,
+          "owner": "V08",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 891500,
+          "end_ms": 957000,
+          "owner": "V08",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:B",
+          "start_ms": 518000,
+          "end_ms": 566000,
+          "owner": "V04",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V09",
+      "stock_id": "S09",
+      "platform_id": "P1",
+      "entry_ms": 600000,
+      "berthed_ms": 648000,
+      "departure_ms": 908000,
+      "exit_clear_ms": 956000,
+      "departure_delay_ms": 0,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 600000,
+          "end_ms": 648000,
+          "owner": "V09",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 600000,
+          "end_ms": 648000,
+          "owner": "V09",
+          "state": null
+        },
+        {
+          "resource": "berth:P1",
+          "start_ms": 600000,
+          "end_ms": 956000,
+          "owner": "V09",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 908000,
+          "end_ms": 956000,
+          "owner": "V09",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 908000,
+          "end_ms": 956000,
+          "owner": "V09",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "visit_id": "V10",
+      "stock_id": "S10",
+      "platform_id": "P5",
+      "entry_ms": 660000,
+      "berthed_ms": 708000,
+      "departure_ms": 968000,
+      "exit_clear_ms": 1016000,
+      "departure_delay_ms": 0,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 660000,
+          "end_ms": 708000,
+          "owner": "V10",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 660000,
+          "end_ms": 708000,
+          "owner": "V10",
+          "state": null
+        },
+        {
+          "resource": "berth:P5",
+          "start_ms": 660000,
+          "end_ms": 1016000,
+          "owner": "V10",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 968000,
+          "end_ms": 1016000,
+          "owner": "V10",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 968000,
+          "end_ms": 1016000,
+          "owner": "V10",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "visit_id": "V11",
+      "stock_id": "S11",
+      "platform_id": "P2",
+      "entry_ms": 750000,
+      "berthed_ms": 798000,
+      "departure_ms": 1058000,
+      "exit_clear_ms": 1106000,
+      "departure_delay_ms": 0,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "empty_stock",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 750000,
+          "end_ms": 798000,
+          "owner": "V11",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 750000,
+          "end_ms": 798000,
+          "owner": "V11",
+          "state": null
+        },
+        {
+          "resource": "berth:P2",
+          "start_ms": 750000,
+          "end_ms": 1106000,
+          "owner": "V11",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 1058000,
+          "end_ms": 1106000,
+          "owner": "V11",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1058000,
+          "end_ms": 1106000,
+          "owner": "V11",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "visit_id": "V12",
+      "stock_id": "S12",
+      "platform_id": "P6",
+      "entry_ms": 810000,
+      "berthed_ms": 858000,
+      "departure_ms": 1118000,
+      "exit_clear_ms": 1166000,
+      "departure_delay_ms": 0,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "empty_stock",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 810000,
+          "end_ms": 858000,
+          "owner": "V12",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 810000,
+          "end_ms": 858000,
+          "owner": "V12",
+          "state": null
+        },
+        {
+          "resource": "berth:P6",
+          "start_ms": 810000,
+          "end_ms": 1166000,
+          "owner": "V12",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 1118000,
+          "end_ms": 1166000,
+          "owner": "V12",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1118000,
+          "end_ms": 1166000,
+          "owner": "V12",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "visit_id": "V13",
+      "stock_id": "S13",
+      "platform_id": "P3",
+      "entry_ms": 956000,
+      "berthed_ms": 1021500,
+      "departure_ms": 1281500,
+      "exit_clear_ms": 1347000,
+      "departure_delay_ms": 73500,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 956000,
+          "end_ms": 1021500,
+          "owner": "V13",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 956000,
+          "end_ms": 1021500,
+          "owner": "V13",
+          "state": null
+        },
+        {
+          "resource": "berth:P3",
+          "start_ms": 956000,
+          "end_ms": 1347000,
+          "owner": "V13",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 1281500,
+          "end_ms": 1347000,
+          "owner": "V13",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1281500,
+          "end_ms": 1347000,
+          "owner": "V13",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:A",
+          "start_ms": 908000,
+          "end_ms": 956000,
+          "owner": "V09",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V14",
+      "stock_id": "S14",
+      "platform_id": "P7",
+      "entry_ms": 1016000,
+      "berthed_ms": 1081500,
+      "departure_ms": 1341500,
+      "exit_clear_ms": 1407000,
+      "departure_delay_ms": 73500,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 1016000,
+          "end_ms": 1081500,
+          "owner": "V14",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1016000,
+          "end_ms": 1081500,
+          "owner": "V14",
+          "state": null
+        },
+        {
+          "resource": "berth:P7",
+          "start_ms": 1016000,
+          "end_ms": 1407000,
+          "owner": "V14",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 1341500,
+          "end_ms": 1407000,
+          "owner": "V14",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1341500,
+          "end_ms": 1407000,
+          "owner": "V14",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:B",
+          "start_ms": 968000,
+          "end_ms": 1016000,
+          "owner": "V10",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V15",
+      "stock_id": "S15",
+      "platform_id": "P1",
+      "entry_ms": 1106000,
+      "berthed_ms": 1154000,
+      "departure_ms": 1414000,
+      "exit_clear_ms": 1462000,
+      "departure_delay_ms": 56000,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 1106000,
+          "end_ms": 1154000,
+          "owner": "V15",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1106000,
+          "end_ms": 1154000,
+          "owner": "V15",
+          "state": null
+        },
+        {
+          "resource": "berth:P1",
+          "start_ms": 1106000,
+          "end_ms": 1462000,
+          "owner": "V15",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 1414000,
+          "end_ms": 1462000,
+          "owner": "V15",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1414000,
+          "end_ms": 1462000,
+          "owner": "V15",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:A",
+          "start_ms": 1058000,
+          "end_ms": 1106000,
+          "owner": "V11",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V16",
+      "stock_id": "S16",
+      "platform_id": "P5",
+      "entry_ms": 1166000,
+      "berthed_ms": 1214000,
+      "departure_ms": 1474000,
+      "exit_clear_ms": 1522000,
+      "departure_delay_ms": 56000,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 1166000,
+          "end_ms": 1214000,
+          "owner": "V16",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1166000,
+          "end_ms": 1214000,
+          "owner": "V16",
+          "state": null
+        },
+        {
+          "resource": "berth:P5",
+          "start_ms": 1166000,
+          "end_ms": 1522000,
+          "owner": "V16",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 1474000,
+          "end_ms": 1522000,
+          "owner": "V16",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1474000,
+          "end_ms": 1522000,
+          "owner": "V16",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:B",
+          "start_ms": 1118000,
+          "end_ms": 1166000,
+          "owner": "V12",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V17",
+      "stock_id": "S17",
+      "platform_id": "P2",
+      "entry_ms": 1200000,
+      "berthed_ms": 1248000,
+      "departure_ms": 1508000,
+      "exit_clear_ms": 1556000,
+      "departure_delay_ms": 0,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 1200000,
+          "end_ms": 1248000,
+          "owner": "V17",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1200000,
+          "end_ms": 1248000,
+          "owner": "V17",
+          "state": null
+        },
+        {
+          "resource": "berth:P2",
+          "start_ms": 1200000,
+          "end_ms": 1556000,
+          "owner": "V17",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 1508000,
+          "end_ms": 1556000,
+          "owner": "V17",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1508000,
+          "end_ms": 1556000,
+          "owner": "V17",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "visit_id": "V18",
+      "stock_id": "S18",
+      "platform_id": "P6",
+      "entry_ms": 1260000,
+      "berthed_ms": 1308000,
+      "departure_ms": 1568000,
+      "exit_clear_ms": 1616000,
+      "departure_delay_ms": 0,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 1260000,
+          "end_ms": 1308000,
+          "owner": "V18",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1260000,
+          "end_ms": 1308000,
+          "owner": "V18",
+          "state": null
+        },
+        {
+          "resource": "berth:P6",
+          "start_ms": 1260000,
+          "end_ms": 1616000,
+          "owner": "V18",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 1568000,
+          "end_ms": 1616000,
+          "owner": "V18",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1568000,
+          "end_ms": 1616000,
+          "owner": "V18",
+          "state": null
+        }
+      ],
+      "witnesses": []
+    },
+    {
+      "visit_id": "V19",
+      "stock_id": "S19",
+      "platform_id": "P3",
+      "entry_ms": 1556000,
+      "berthed_ms": 1621500,
+      "departure_ms": 1881500,
+      "exit_clear_ms": 1947000,
+      "departure_delay_ms": 223500,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 1556000,
+          "end_ms": 1621500,
+          "owner": "V19",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1556000,
+          "end_ms": 1621500,
+          "owner": "V19",
+          "state": null
+        },
+        {
+          "resource": "berth:P3",
+          "start_ms": 1556000,
+          "end_ms": 1947000,
+          "owner": "V19",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 1881500,
+          "end_ms": 1947000,
+          "owner": "V19",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1881500,
+          "end_ms": 1947000,
+          "owner": "V19",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:A",
+          "start_ms": 1414000,
+          "end_ms": 1462000,
+          "owner": "V15",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1508000,
+          "end_ms": 1556000,
+          "owner": "V17",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V20",
+      "stock_id": "S20",
+      "platform_id": "P7",
+      "entry_ms": 1616000,
+      "berthed_ms": 1681500,
+      "departure_ms": 1941500,
+      "exit_clear_ms": 2007000,
+      "departure_delay_ms": 223500,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 1616000,
+          "end_ms": 1681500,
+          "owner": "V20",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1616000,
+          "end_ms": 1681500,
+          "owner": "V20",
+          "state": null
+        },
+        {
+          "resource": "berth:P7",
+          "start_ms": 1616000,
+          "end_ms": 2007000,
+          "owner": "V20",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 1941500,
+          "end_ms": 2007000,
+          "owner": "V20",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1941500,
+          "end_ms": 2007000,
+          "owner": "V20",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:B",
+          "start_ms": 1474000,
+          "end_ms": 1522000,
+          "owner": "V16",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1568000,
+          "end_ms": 1616000,
+          "owner": "V18",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V21",
+      "stock_id": "S21",
+      "platform_id": "P1",
+      "entry_ms": 1621500,
+      "berthed_ms": 1669500,
+      "departure_ms": 1947000,
+      "exit_clear_ms": 1995000,
+      "departure_delay_ms": 139000,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 1621500,
+          "end_ms": 1669500,
+          "owner": "V21",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1621500,
+          "end_ms": 1669500,
+          "owner": "V21",
+          "state": null
+        },
+        {
+          "resource": "berth:P1",
+          "start_ms": 1621500,
+          "end_ms": 1995000,
+          "owner": "V21",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 1947000,
+          "end_ms": 1995000,
+          "owner": "V21",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1947000,
+          "end_ms": 1995000,
+          "owner": "V21",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:A",
+          "start_ms": 1508000,
+          "end_ms": 1556000,
+          "owner": "V17",
+          "state": null
+        },
+        {
+          "resource": "portal:A:in",
+          "start_ms": 1556000,
+          "end_ms": 1621500,
+          "owner": "V19",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1556000,
+          "end_ms": 1621500,
+          "owner": "V19",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 1881500,
+          "end_ms": 1947000,
+          "owner": "V19",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1881500,
+          "end_ms": 1947000,
+          "owner": "V19",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V22",
+      "stock_id": "S22",
+      "platform_id": "P5",
+      "entry_ms": 1681500,
+      "berthed_ms": 1729500,
+      "departure_ms": 2007000,
+      "exit_clear_ms": 2055000,
+      "departure_delay_ms": 139000,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "passenger",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 1681500,
+          "end_ms": 1729500,
+          "owner": "V22",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1681500,
+          "end_ms": 1729500,
+          "owner": "V22",
+          "state": null
+        },
+        {
+          "resource": "berth:P5",
+          "start_ms": 1681500,
+          "end_ms": 2055000,
+          "owner": "V22",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 2007000,
+          "end_ms": 2055000,
+          "owner": "V22",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 2007000,
+          "end_ms": 2055000,
+          "owner": "V22",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "throat:B",
+          "start_ms": 1568000,
+          "end_ms": 1616000,
+          "owner": "V18",
+          "state": null
+        },
+        {
+          "resource": "portal:B:in",
+          "start_ms": 1616000,
+          "end_ms": 1681500,
+          "owner": "V20",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1616000,
+          "end_ms": 1681500,
+          "owner": "V20",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 1941500,
+          "end_ms": 2007000,
+          "owner": "V20",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1941500,
+          "end_ms": 2007000,
+          "owner": "V20",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V23",
+      "stock_id": "S23",
+      "platform_id": "P2",
+      "entry_ms": 1669500,
+      "berthed_ms": 1717500,
+      "departure_ms": 1995000,
+      "exit_clear_ms": 2043000,
+      "departure_delay_ms": 37000,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "empty_stock",
+      "claims": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 1669500,
+          "end_ms": 1717500,
+          "owner": "V23",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1669500,
+          "end_ms": 1717500,
+          "owner": "V23",
+          "state": null
+        },
+        {
+          "resource": "berth:P2",
+          "start_ms": 1669500,
+          "end_ms": 2043000,
+          "owner": "V23",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 1995000,
+          "end_ms": 2043000,
+          "owner": "V23",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1995000,
+          "end_ms": 2043000,
+          "owner": "V23",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "portal:A:in",
+          "start_ms": 1621500,
+          "end_ms": 1669500,
+          "owner": "V21",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1621500,
+          "end_ms": 1669500,
+          "owner": "V21",
+          "state": null
+        },
+        {
+          "resource": "portal:A:out",
+          "start_ms": 1947000,
+          "end_ms": 1995000,
+          "owner": "V21",
+          "state": null
+        },
+        {
+          "resource": "throat:A",
+          "start_ms": 1947000,
+          "end_ms": 1995000,
+          "owner": "V21",
+          "state": null
+        }
+      ]
+    },
+    {
+      "visit_id": "V24",
+      "stock_id": "S24",
+      "platform_id": "P6",
+      "entry_ms": 1729500,
+      "berthed_ms": 1777500,
+      "departure_ms": 2055000,
+      "exit_clear_ms": 2103000,
+      "departure_delay_ms": 37000,
+      "cross_bank_legs": 0,
+      "outgoing_kind": "empty_stock",
+      "claims": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 1729500,
+          "end_ms": 1777500,
+          "owner": "V24",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1729500,
+          "end_ms": 1777500,
+          "owner": "V24",
+          "state": null
+        },
+        {
+          "resource": "berth:P6",
+          "start_ms": 1729500,
+          "end_ms": 2103000,
+          "owner": "V24",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 2055000,
+          "end_ms": 2103000,
+          "owner": "V24",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 2055000,
+          "end_ms": 2103000,
+          "owner": "V24",
+          "state": null
+        }
+      ],
+      "witnesses": [
+        {
+          "resource": "portal:B:in",
+          "start_ms": 1681500,
+          "end_ms": 1729500,
+          "owner": "V22",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 1681500,
+          "end_ms": 1729500,
+          "owner": "V22",
+          "state": null
+        },
+        {
+          "resource": "portal:B:out",
+          "start_ms": 2007000,
+          "end_ms": 2055000,
+          "owner": "V22",
+          "state": null
+        },
+        {
+          "resource": "throat:B",
+          "start_ms": 2007000,
+          "end_ms": 2055000,
+          "owner": "V22",
+          "state": null
+        }
+      ]
+    }
+  ],
+  "rejected": [],
+  "trace": [
+    {
+      "at_ms": 0,
+      "kind": "entry",
+      "visit_id": "V01",
+      "stock_id": "S01",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 60000,
+      "kind": "entry",
+      "visit_id": "V02",
+      "stock_id": "S02",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 65500,
+      "kind": "berthed",
+      "visit_id": "V01",
+      "stock_id": "S01",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 125500,
+      "kind": "berthed",
+      "visit_id": "V02",
+      "stock_id": "S02",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 150000,
+      "kind": "entry",
+      "visit_id": "V03",
+      "stock_id": "S03",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 198000,
+      "kind": "berthed",
+      "visit_id": "V03",
+      "stock_id": "S03",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 210000,
+      "kind": "entry",
+      "visit_id": "V04",
+      "stock_id": "S04",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 258000,
+      "kind": "berthed",
+      "visit_id": "V04",
+      "stock_id": "S04",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 325500,
+      "kind": "departure",
+      "visit_id": "V01",
+      "stock_id": "S01",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 385500,
+      "kind": "departure",
+      "visit_id": "V02",
+      "stock_id": "S02",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 391000,
+      "kind": "exit_clear",
+      "visit_id": "V01",
+      "stock_id": "S01",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 391000,
+      "kind": "entry",
+      "visit_id": "V05",
+      "stock_id": "S05",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 439000,
+      "kind": "berthed",
+      "visit_id": "V05",
+      "stock_id": "S05",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 451000,
+      "kind": "exit_clear",
+      "visit_id": "V02",
+      "stock_id": "S02",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 451000,
+      "kind": "entry",
+      "visit_id": "V06",
+      "stock_id": "S06",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 458000,
+      "kind": "departure",
+      "visit_id": "V03",
+      "stock_id": "S03",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 499000,
+      "kind": "berthed",
+      "visit_id": "V06",
+      "stock_id": "S06",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 506000,
+      "kind": "exit_clear",
+      "visit_id": "V03",
+      "stock_id": "S03",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 506000,
+      "kind": "entry",
+      "visit_id": "V07",
+      "stock_id": "S07",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 518000,
+      "kind": "departure",
+      "visit_id": "V04",
+      "stock_id": "S04",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 566000,
+      "kind": "exit_clear",
+      "visit_id": "V04",
+      "stock_id": "S04",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 566000,
+      "kind": "entry",
+      "visit_id": "V08",
+      "stock_id": "S08",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 571500,
+      "kind": "berthed",
+      "visit_id": "V07",
+      "stock_id": "S07",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 600000,
+      "kind": "entry",
+      "visit_id": "V09",
+      "stock_id": "S09",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 631500,
+      "kind": "berthed",
+      "visit_id": "V08",
+      "stock_id": "S08",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 648000,
+      "kind": "berthed",
+      "visit_id": "V09",
+      "stock_id": "S09",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 660000,
+      "kind": "entry",
+      "visit_id": "V10",
+      "stock_id": "S10",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 699000,
+      "kind": "departure",
+      "visit_id": "V05",
+      "stock_id": "S05",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 708000,
+      "kind": "berthed",
+      "visit_id": "V10",
+      "stock_id": "S10",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 747000,
+      "kind": "exit_clear",
+      "visit_id": "V05",
+      "stock_id": "S05",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 750000,
+      "kind": "entry",
+      "visit_id": "V11",
+      "stock_id": "S11",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 759000,
+      "kind": "departure",
+      "visit_id": "V06",
+      "stock_id": "S06",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 798000,
+      "kind": "berthed",
+      "visit_id": "V11",
+      "stock_id": "S11",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 807000,
+      "kind": "exit_clear",
+      "visit_id": "V06",
+      "stock_id": "S06",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 810000,
+      "kind": "entry",
+      "visit_id": "V12",
+      "stock_id": "S12",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 831500,
+      "kind": "departure",
+      "visit_id": "V07",
+      "stock_id": "S07",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 858000,
+      "kind": "berthed",
+      "visit_id": "V12",
+      "stock_id": "S12",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 891500,
+      "kind": "departure",
+      "visit_id": "V08",
+      "stock_id": "S08",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 897000,
+      "kind": "exit_clear",
+      "visit_id": "V07",
+      "stock_id": "S07",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 908000,
+      "kind": "departure",
+      "visit_id": "V09",
+      "stock_id": "S09",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 956000,
+      "kind": "exit_clear",
+      "visit_id": "V09",
+      "stock_id": "S09",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 956000,
+      "kind": "entry",
+      "visit_id": "V13",
+      "stock_id": "S13",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 957000,
+      "kind": "exit_clear",
+      "visit_id": "V08",
+      "stock_id": "S08",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 968000,
+      "kind": "departure",
+      "visit_id": "V10",
+      "stock_id": "S10",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 1016000,
+      "kind": "exit_clear",
+      "visit_id": "V10",
+      "stock_id": "S10",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 1016000,
+      "kind": "entry",
+      "visit_id": "V14",
+      "stock_id": "S14",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 1021500,
+      "kind": "berthed",
+      "visit_id": "V13",
+      "stock_id": "S13",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 1058000,
+      "kind": "departure",
+      "visit_id": "V11",
+      "stock_id": "S11",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 1081500,
+      "kind": "berthed",
+      "visit_id": "V14",
+      "stock_id": "S14",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 1106000,
+      "kind": "exit_clear",
+      "visit_id": "V11",
+      "stock_id": "S11",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 1106000,
+      "kind": "entry",
+      "visit_id": "V15",
+      "stock_id": "S15",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 1118000,
+      "kind": "departure",
+      "visit_id": "V12",
+      "stock_id": "S12",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 1154000,
+      "kind": "berthed",
+      "visit_id": "V15",
+      "stock_id": "S15",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 1166000,
+      "kind": "exit_clear",
+      "visit_id": "V12",
+      "stock_id": "S12",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 1166000,
+      "kind": "entry",
+      "visit_id": "V16",
+      "stock_id": "S16",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 1200000,
+      "kind": "entry",
+      "visit_id": "V17",
+      "stock_id": "S17",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 1214000,
+      "kind": "berthed",
+      "visit_id": "V16",
+      "stock_id": "S16",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 1248000,
+      "kind": "berthed",
+      "visit_id": "V17",
+      "stock_id": "S17",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 1260000,
+      "kind": "entry",
+      "visit_id": "V18",
+      "stock_id": "S18",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 1281500,
+      "kind": "departure",
+      "visit_id": "V13",
+      "stock_id": "S13",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 1308000,
+      "kind": "berthed",
+      "visit_id": "V18",
+      "stock_id": "S18",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 1341500,
+      "kind": "departure",
+      "visit_id": "V14",
+      "stock_id": "S14",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 1347000,
+      "kind": "exit_clear",
+      "visit_id": "V13",
+      "stock_id": "S13",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 1407000,
+      "kind": "exit_clear",
+      "visit_id": "V14",
+      "stock_id": "S14",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 1414000,
+      "kind": "departure",
+      "visit_id": "V15",
+      "stock_id": "S15",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 1462000,
+      "kind": "exit_clear",
+      "visit_id": "V15",
+      "stock_id": "S15",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 1474000,
+      "kind": "departure",
+      "visit_id": "V16",
+      "stock_id": "S16",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 1508000,
+      "kind": "departure",
+      "visit_id": "V17",
+      "stock_id": "S17",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 1522000,
+      "kind": "exit_clear",
+      "visit_id": "V16",
+      "stock_id": "S16",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 1556000,
+      "kind": "exit_clear",
+      "visit_id": "V17",
+      "stock_id": "S17",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 1556000,
+      "kind": "entry",
+      "visit_id": "V19",
+      "stock_id": "S19",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 1568000,
+      "kind": "departure",
+      "visit_id": "V18",
+      "stock_id": "S18",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 1616000,
+      "kind": "exit_clear",
+      "visit_id": "V18",
+      "stock_id": "S18",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 1616000,
+      "kind": "entry",
+      "visit_id": "V20",
+      "stock_id": "S20",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 1621500,
+      "kind": "berthed",
+      "visit_id": "V19",
+      "stock_id": "S19",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 1621500,
+      "kind": "entry",
+      "visit_id": "V21",
+      "stock_id": "S21",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 1669500,
+      "kind": "berthed",
+      "visit_id": "V21",
+      "stock_id": "S21",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 1669500,
+      "kind": "entry",
+      "visit_id": "V23",
+      "stock_id": "S23",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 1681500,
+      "kind": "berthed",
+      "visit_id": "V20",
+      "stock_id": "S20",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 1681500,
+      "kind": "entry",
+      "visit_id": "V22",
+      "stock_id": "S22",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 1717500,
+      "kind": "berthed",
+      "visit_id": "V23",
+      "stock_id": "S23",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 1729500,
+      "kind": "berthed",
+      "visit_id": "V22",
+      "stock_id": "S22",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 1729500,
+      "kind": "entry",
+      "visit_id": "V24",
+      "stock_id": "S24",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 1777500,
+      "kind": "berthed",
+      "visit_id": "V24",
+      "stock_id": "S24",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 1881500,
+      "kind": "departure",
+      "visit_id": "V19",
+      "stock_id": "S19",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 1941500,
+      "kind": "departure",
+      "visit_id": "V20",
+      "stock_id": "S20",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 1947000,
+      "kind": "exit_clear",
+      "visit_id": "V19",
+      "stock_id": "S19",
+      "platform_id": "P3"
+    },
+    {
+      "at_ms": 1947000,
+      "kind": "departure",
+      "visit_id": "V21",
+      "stock_id": "S21",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 1995000,
+      "kind": "exit_clear",
+      "visit_id": "V21",
+      "stock_id": "S21",
+      "platform_id": "P1"
+    },
+    {
+      "at_ms": 1995000,
+      "kind": "departure",
+      "visit_id": "V23",
+      "stock_id": "S23",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 2007000,
+      "kind": "exit_clear",
+      "visit_id": "V20",
+      "stock_id": "S20",
+      "platform_id": "P7"
+    },
+    {
+      "at_ms": 2007000,
+      "kind": "departure",
+      "visit_id": "V22",
+      "stock_id": "S22",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 2043000,
+      "kind": "exit_clear",
+      "visit_id": "V23",
+      "stock_id": "S23",
+      "platform_id": "P2"
+    },
+    {
+      "at_ms": 2055000,
+      "kind": "exit_clear",
+      "visit_id": "V22",
+      "stock_id": "S22",
+      "platform_id": "P5"
+    },
+    {
+      "at_ms": 2055000,
+      "kind": "departure",
+      "visit_id": "V24",
+      "stock_id": "S24",
+      "platform_id": "P6"
+    },
+    {
+      "at_ms": 2103000,
+      "kind": "exit_clear",
+      "visit_id": "V24",
+      "stock_id": "S24",
+      "platform_id": "P6"
+    }
+  ],
+  "assessments": {
+    "calendar_invariants": "pass",
+    "global_optimality": "not_proven",
+    "full_uk_engineering": "unassessed",
+    "throat_geometry": "unassessed",
+    "spatial_queue_spillback": "unassessed",
+    "passenger_circulation": "unassessed",
+    "game_construction": "not_tested",
+    "game_observation": "not_tested"
+  },
+  "scenario_id": "long_trains",
+  "input_sha256": "db54a74836d331fbaf05b619515ae23fa9c73c65136c33988bdb6617d71f6256"
+}

@@ -1,0 +1,1190 @@
+{
+  "compile_hash": "cd9af2d7222d97d1469a72b017fc03df57ee4fae0530aea371be55b9e7074c42",
+  "family": "scissors",
+  "full_UK_dynamic_gauging": "unassessed",
+  "pairs": [
+    {
+      "continuous_gap_lower_bound_m": 5.644584654397862,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A1:in",
+      "route_b": "B:B1:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.279557331978799,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A1:in",
+      "route_b": "B:B2:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.276783733026414,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A1:in",
+      "route_b": "B:B3:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.273892489533225,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A1:in",
+      "route_b": "B:B4:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.647061567209782,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A2:in",
+      "route_b": "B:B1:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.282034244790717,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A2:in",
+      "route_b": "B:B2:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.279260645838332,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A2:in",
+      "route_b": "B:B3:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.276369402345143,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A2:in",
+      "route_b": "B:B4:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.650552397540782,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A3:in",
+      "route_b": "B:B1:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.285525075121717,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A3:in",
+      "route_b": "B:B2:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.282751476169333,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A3:in",
+      "route_b": "B:B3:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.2798602326761435,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A3:in",
+      "route_b": "B:B4:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.993140126165903,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A4:in",
+      "route_b": "B:B1:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.628112803746838,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A4:in",
+      "route_b": "B:B2:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.625339204794454,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A4:in",
+      "route_b": "B:B3:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.622447961301265,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A4:in",
+      "route_b": "B:B4:in",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.992476560578002,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A4:out",
+      "route_b": "B:B1:out",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "continuous_gap_lower_bound_m": 5.7856167067439115,
+      "may_remove_existing_resource": false,
+      "method": "global_pose_box_bound_minus_pose_padding",
+      "route_a": "A:A4:in",
+      "route_b": "B:B1:out",
+      "status": "clear_within_polyline_static_model"
+    },
+    {
+      "a_sweep": {
+        "actual_maximum_step_m": 2.991187608733046,
+        "between_pose_padding_m": 1.659272407578545,
+        "body": {
+          "bogie_centres_m": 14.0,
+          "fidelity": "reference_informed_assumptions",
+          "lateral_allowance_m": 0.0,
+          "length_m": 20.0,
+          "profile_id": "desiro_city_thameslink_catalogue_2014",
+          "width_m": 2.8
+        },
+        "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+        "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+        "dynamic_3D_gauging": "unassessed",
+        "front_bogie_interval_m": [
+          35.0,
+          767.8409641395962
+        ],
+        "heading_span_rad": 0.07485984771076691,
+        "parent_curve_body_error_bound": "unassessed",
+        "parent_curve_hull_error_m": 0.0019984095032547565,
+        "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+        "path_hash": "913cce9eccdb230e9a2f4703cd1c9e7f0b12d2dfbcc871b5ad064abed846e9fa",
+        "path_length_m": 785.8409641395962,
+        "path_origin": "Bezier chord subdivision; not a certified body envelope",
+        "pose_count": 246,
+        "schema_version": "0.5.0",
+        "whole_formation": "not_modelled"
+      },
+      "b_sweep": {
+        "actual_maximum_step_m": 3.0,
+        "between_pose_padding_m": 1.5000000100000004,
+        "body": {
+          "bogie_centres_m": 14.0,
+          "fidelity": "reference_informed_assumptions",
+          "lateral_allowance_m": 0.0,
+          "length_m": 20.0,
+          "profile_id": "desiro_city_thameslink_catalogue_2014",
+          "width_m": 2.8
+        },
+        "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+        "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+        "dynamic_3D_gauging": "unassessed",
+        "front_bogie_interval_m": [
+          35.0,
+          767.0
+        ],
+        "heading_span_rad": 1.7763568394002506e-16,
+        "parent_curve_body_error_bound": "unassessed",
+        "parent_curve_hull_error_m": 1e-08,
+        "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+        "path_hash": "313cd5a1b20a54551ba8de1c98c98b82f9877fba7356dc654b3a3193f5dac217",
+        "path_length_m": 785.0,
+        "path_origin": "Bezier chord subdivision; not a certified body envelope",
+        "pose_count": 245,
+        "schema_version": "0.5.0",
+        "whole_formation": "not_modelled"
+      },
+      "contact_is_not_train_collision_prediction": true,
+      "continuous_gap_lower_bound_m": -3.1592724175785456,
+      "exact_polygon_checks": 982,
+      "full_UK_gauging": "unassessed",
+      "may_remove_existing_resource": false,
+      "minimum_sample_gap_m": 0.0,
+      "pairs_inspected": 46986,
+      "relative_phase": "all pose pairs, not only matching chainages",
+      "route_a": "A:B1:in",
+      "route_b": "B:B1:in",
+      "sample_witness": {
+        "a_front_s_m": 606.3168332680117,
+        "a_pose": 191,
+        "b_front_s_m": 605.0,
+        "b_pose": 190,
+        "sample_gap_m": 0.0
+      },
+      "status": "sampled_body_contact"
+    },
+    {
+      "a_sweep": {
+        "actual_maximum_step_m": 2.9894713553869305,
+        "between_pose_padding_m": 1.6583203670592055,
+        "body": {
+          "bogie_centres_m": 14.0,
+          "fidelity": "reference_informed_assumptions",
+          "lateral_allowance_m": 0.0,
+          "length_m": 20.0,
+          "profile_id": "desiro_city_thameslink_catalogue_2014",
+          "width_m": 2.8
+        },
+        "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+        "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+        "dynamic_3D_gauging": "unassessed",
+        "front_bogie_interval_m": [
+          35.0,
+          767.420482069798
+        ],
+        "heading_span_rad": 0.07485984771076704,
+        "parent_curve_body_error_bound": "unassessed",
+        "parent_curve_hull_error_m": 0.0019984095032547565,
+        "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+        "path_hash": "e14d659bf1ebfe01659a1622e89796b3af461fe59665a5b06ab3a5443a846480",
+        "path_length_m": 785.420482069798,
+        "path_origin": "Bezier chord subdivision; not a certified body envelope",
+        "pose_count": 246,
+        "schema_version": "0.5.0",
+        "whole_formation": "not_modelled"
+      },
+      "b_sweep": {
+        "actual_maximum_step_m": 3.0,
+        "between_pose_padding_m": 1.5000000100000004,
+        "body": {
+          "bogie_centres_m": 14.0,
+          "fidelity": "reference_informed_assumptions",
+          "lateral_allowance_m": 0.0,
+          "length_m": 20.0,
+          "profile_id": "desiro_city_thameslink_catalogue_2014",
+          "width_m": 2.8
+        },
+        "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+        "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+        "dynamic_3D_gauging": "unassessed",
+        "front_bogie_interval_m": [
+          35.0,
+          707.0
+        ],
+        "heading_span_rad": 1.7763568394002506e-16,
+        "parent_curve_body_error_bound": "unassessed",
+        "parent_curve_hull_error_m": 1e-08,
+        "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+        "path_hash": "d836a1657c8359620e3944dc7ea0f10d8f95071996bdb4a424ee4263ef473fa3",
+        "path_length_m": 725.0,
+        "path_origin": "Bezier chord subdivision; not a certified body envelope",
+        "pose_count": 225,
+        "schema_version": "0.5.0",
+        "whole_formation": "not_modelled"
+      },
+      "contact_is_not_train_collision_prediction": true,
+      "continuous_gap_lower_bound_m": -3.158320377059206,
+      "exact_polygon_checks": 522,
+      "full_UK_gauging": "unassessed",
+      "may_remove_existing_resource": false,
+      "minimum_sample_gap_m": 0.0,
+      "pairs_inspected": 17156,
+      "relative_phase": "all pose pairs, not only matching chainages",
+      "route_a": "A:B1:out",
+      "route_b": "A:A4:out",
+      "sample_witness": {
+        "a_front_s_m": 262.1998230094067,
+        "a_pose": 76,
+        "b_front_s_m": 200.0,
+        "b_pose": 55,
+        "sample_gap_m": 0.0
+      },
+      "status": "sampled_body_contact"
+    },
+    {
+      "a_sweep": {
+        "actual_maximum_step_m": 2.9885354758657696,
+        "between_pose_padding_m": 1.6578012157186515,
+        "body": {
+          "bogie_centres_m": 14.0,
+          "fidelity": "reference_informed_assumptions",
+          "lateral_allowance_m": 0.0,
+          "length_m": 20.0,
+          "profile_id": "desiro_city_thameslink_catalogue_2014",
+          "width_m": 2.8
+        },
+        "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+        "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+        "dynamic_3D_gauging": "unassessed",
+        "front_bogie_interval_m": [
+          35.0,
+          707.4204820697981
+        ],
+        "heading_span_rad": 0.07485984771076687,
+        "parent_curve_body_error_bound": "unassessed",
+        "parent_curve_hull_error_m": 0.0019984095032547565,
+        "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+        "path_hash": "9a243b1dec632752aad8094182563359735c67e469cbb3f3000bf15e11d2bf75",
+        "path_length_m": 725.4204820697981,
+        "path_origin": "Bezier chord subdivision; not a certified body envelope",
+        "pose_count": 226,
+        "schema_version": "0.5.0",
+        "whole_formation": "not_modelled"
+      },
+      "b_sweep": {
+        "actual_maximum_step_m": 2.988535475865769,
+        "between_pose_padding_m": 1.6578012157186517,
+        "body": {
+          "bogie_centres_m": 14.0,
+          "fidelity": "reference_informed_assumptions",
+          "lateral_allowance_m": 0.0,
+          "length_m": 20.0,
+          "profile_id": "desiro_city_thameslink_catalogue_2014",
+          "width_m": 2.8
+        },
+        "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+        "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+        "dynamic_3D_gauging": "unassessed",
+        "front_bogie_interval_m": [
+          35.0,
+          707.420482069798
+        ],
+        "heading_span_rad": 0.07485984771076704,
+        "parent_curve_body_error_bound": "unassessed",
+        "parent_curve_hull_error_m": 0.0019984095032526124,
+        "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+        "path_hash": "9b4ee38e5a0746b489a6d1408a75fb19ef9b5e54bb2019f67a0b3d87cf725340",
+        "path_length_m": 725.420482069798,
+        "path_origin": "Bezier chord subdivision; not a certified body envelope",
+        "pose_count": 226,
+        "schema_version": "0.5.0",
+        "whole_formation": "not_modelled"
+      },
+      "contact_is_not_train_collision_prediction": true,
+      "continuous_gap_lower_bound_m": -3.315602431437303,
+      "exact_polygon_checks": 1005,
+      "full_UK_gauging": "unassessed",
+      "may_remove_existing_resource": false,
+      "minimum_sample_gap_m": 0.0,
+      "pairs_inspected": 43358,
+      "relative_phase": "all pose pairs, not only matching chainages",
+      "route_a": "B:A4:in",
+      "route_b": "A:A4:in",
+      "sample_witness": {
+        "a_front_s_m": 605.8102758903619,
+        "a_pose": 191,
+        "b_front_s_m": 605.8102758903619,
+        "b_pose": 191,
+        "sample_gap_m": 0.0
+      },
+      "status": "sampled_body_contact"
+    },
+    {
+      "a_sweep": {
+        "actual_maximum_step_m": 2.990404285064872,
+        "between_pose_padding_m": 1.658837882061932,
+        "body": {
+          "bogie_centres_m": 14.0,
+          "fidelity": "reference_informed_assumptions",
+          "lateral_allowance_m": 0.0,
+          "length_m": 20.0,
+          "profile_id": "desiro_city_thameslink_catalogue_2014",
+          "width_m": 2.8
+        },
+        "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+        "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+        "dynamic_3D_gauging": "unassessed",
+        "front_bogie_interval_m": [
+          35.0,
+          707.8409641395962
+        ],
+        "heading_span_rad": 0.07485984771076683,
+        "parent_curve_body_error_bound": "unassessed",
+        "parent_curve_hull_error_m": 0.0019984095032547565,
+        "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+        "path_hash": "7071f14973d0540efa79736e9d35020ed11905b697693180b506da0da9e4d03a",
+        "path_length_m": 725.8409641395962,
+        "path_origin": "Bezier chord subdivision; not a certified body envelope",
+        "pose_count": 226,
+        "schema_version": "0.5.0",
+        "whole_formation": "not_modelled"
+      },
+      "b_sweep": {
+        "actual_maximum_step_m": 2.9894713553869314,
+        "between_pose_padding_m": 1.6583203670592057,
+        "body": {
+          "bogie_centres_m": 14.0,
+          "fidelity": "reference_informed_assumptions",
+          "lateral_allowance_m": 0.0,
+          "length_m": 20.0,
+          "profile_id": "desiro_city_thameslink_catalogue_2014",
+          "width_m": 2.8
+        },
+        "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+        "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+        "dynamic_3D_gauging": "unassessed",
+        "front_bogie_interval_m": [
+          35.0,
+          767.4204820697983
+        ],
+        "heading_span_rad": 0.07485984771076687,
+        "parent_curve_body_error_bound": "unassessed",
+        "parent_curve_hull_error_m": 0.0019984095032526124,
+        "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+        "path_hash": "3d7827af110ffaa92f55500735353f0f702ed625062131418ccc09336a19980d",
+        "path_length_m": 785.4204820697983,
+        "path_origin": "Bezier chord subdivision; not a certified body envelope",
+        "pose_count": 246,
+        "schema_version": "0.5.0",
+        "whole_formation": "not_modelled"
+      },
+      "contact_is_not_train_collision_prediction": true,
+      "continuous_gap_lower_bound_m": -3.317158249121138,
+      "exact_polygon_checks": 472,
+      "full_UK_gauging": "unassessed",
+      "may_remove_existing_resource": false,
+      "minimum_sample_gap_m": 0.0,
+      "pairs_inspected": 13853,
+      "relative_phase": "all pose pairs, not only matching chainages",
+      "route_a": "B:A4:out",
+      "route_b": "B:B1:out",
+      "sample_witness": {
+        "a_front_s_m": 202.46263996363282,
+        "a_pose": 56,
+        "b_front_s_m": 262.1998230094068,
+        "b_pose": 76,
+        "sample_gap_m": 0.0
+      },
+      "status": "sampled_body_contact"
+    },
+    {
+      "a_sweep": {
+        "actual_maximum_step_m": 2.991187608733046,
+        "between_pose_padding_m": 1.659272407578545,
+        "body": {
+          "bogie_centres_m": 14.0,
+          "fidelity": "reference_informed_assumptions",
+          "lateral_allowance_m": 0.0,
+          "length_m": 20.0,
+          "profile_id": "desiro_city_thameslink_catalogue_2014",
+          "width_m": 2.8
+        },
+        "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+        "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+        "dynamic_3D_gauging": "unassessed",
+        "front_bogie_interval_m": [
+          35.0,
+          767.8409641395962
+        ],
+        "heading_span_rad": 0.07485984771076691,
+        "parent_curve_body_error_bound": "unassessed",
+        "parent_curve_hull_error_m": 0.0019984095032547565,
+        "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+        "path_hash": "913cce9eccdb230e9a2f4703cd1c9e7f0b12d2dfbcc871b5ad064abed846e9fa",
+        "path_length_m": 785.8409641395962,
+        "path_origin": "Bezier chord subdivision; not a certified body envelope",
+        "pose_count": 246,
+        "schema_version": "0.5.0",
+        "whole_formation": "not_modelled"
+      },
+      "b_sweep": {
+        "actual_maximum_step_m": 2.9885354758657696,
+        "between_pose_padding_m": 1.6578012157186515,
+        "body": {
+          "bogie_centres_m": 14.0,
+          "fidelity": "reference_informed_assumptions",
+          "lateral_allowance_m": 0.0,
+          "length_m": 20.0,
+          "profile_id": "desiro_city_thameslink_catalogue_2014",
+          "width_m": 2.8
+        },
+        "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+        "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+        "dynamic_3D_gauging": "unassessed",
+        "front_bogie_interval_m": [
+          35.0,
+          707.4204820697981
+        ],
+        "heading_span_rad": 0.07485984771076687,
+        "parent_curve_body_error_bound": "unassessed",
+        "parent_curve_hull_error_m": 0.0019984095032547565,
+        "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+        "path_hash": "9a243b1dec632752aad8094182563359735c67e469cbb3f3000bf15e11d2bf75",
+        "path_length_m": 725.4204820697981,
+        "path_origin": "Bezier chord subdivision; not a certified body envelope",
+        "pose_count": 226,
+        "schema_version": "0.5.0",
+        "whole_formation": "not_modelled"
+      },
+      "contact_is_not_train_collision_prediction": true,
+      "continuous_gap_lower_bound_m": -3.3170736232971967,
+      "exact_polygon_checks": 807,
+      "full_UK_gauging": "unassessed",
+      "may_remove_existing_resource": false,
+      "minimum_sample_gap_m": 0.0,
+      "pairs_inspected": 38818,
+      "relative_phase": "all pose pairs, not only matching chainages",
+      "route_a": "A:B1:in",
+      "route_b": "B:A4:in",
+      "sample_witness": {
+        "a_front_s_m": 546.4930810933508,
+        "a_pose": 171,
+        "b_front_s_m": 546.0395663730466,
+        "b_pose": 171,
+        "sample_gap_m": 0.0
+      },
+      "status": "sampled_body_contact"
+    }
+  ],
+  "parent_curve_body_error": "unassessed",
+  "resource_mutations": [],
+  "route_pairs_evaluated": 23,
+  "routes": [
+    {
+      "actual_maximum_step_m": 2.9996119480873564,
+      "between_pose_padding_m": 2.0051616019411136,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        769.9049272814024
+      ],
+      "heading_span_rad": 0.22374979532026423,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "1f35c27ff08f1a91d520166c75f996c923e0e2dd827c949bb172fff544cc8c0f",
+      "path_length_m": 787.9049272814024,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 246,
+      "route_id": "A:A1:in",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.9978956947412425,
+      "between_pose_padding_m": 1.8298739958686532,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        769.4844452116045
+      ],
+      "heading_span_rad": 0.1488899476094973,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "8a8936e2f7e28636a4b3c96d2a2f5518c0f14a2c2b6b676dfe4d139a2f086a40",
+      "path_length_m": 787.4844452116045,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 246,
+      "route_id": "A:A1:out",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.995958912721533,
+      "between_pose_padding_m": 2.002719644002447,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        769.0099336167756
+      ],
+      "heading_span_rad": 0.22374979532026423,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "ea0f531bbd9413679cf934c72a38ee993098bf50fcab12d0e407e253368e85de",
+      "path_length_m": 787.0099336167756,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 246,
+      "route_id": "A:A2:in",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.9942426593754186,
+      "between_pose_padding_m": 1.8276442337067789,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        768.5894515469776
+      ],
+      "heading_span_rad": 0.1488899476094974,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "86768d30015958f19facb02b48ba668c2f3ec13d694ebb8495f47932d2e14f2d",
+      "path_length_m": 786.5894515469776,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 246,
+      "route_id": "A:A2:out",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.9916219553428838,
+      "between_pose_padding_m": 1.9998205022094249,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        708.1149399521488
+      ],
+      "heading_span_rad": 0.223749795320265,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "d2754284bbd2354d6449791975893289ca4cc6ea7fb04c06d8aa0682c3927755",
+      "path_length_m": 726.1149399521488,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 226,
+      "route_id": "A:A3:in",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.989753146143782,
+      "between_pose_padding_m": 1.824903897047905,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        707.6944578823509
+      ],
+      "heading_span_rad": 0.14888994760949814,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "fcc1dd4153ebf31ebc558d939971302282613bb88e8ccae4293da0b359c18252",
+      "path_length_m": 725.6944578823509,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 226,
+      "route_id": "A:A3:out",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.988535475865769,
+      "between_pose_padding_m": 1.6578012157186517,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        707.420482069798
+      ],
+      "heading_span_rad": 0.07485984771076704,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.0019984095032526124,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "9b4ee38e5a0746b489a6d1408a75fb19ef9b5e54bb2019f67a0b3d87cf725340",
+      "path_length_m": 725.420482069798,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 226,
+      "route_id": "A:A4:in",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 3.0,
+      "between_pose_padding_m": 1.5000000100000004,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        707.0
+      ],
+      "heading_span_rad": 1.7763568394002506e-16,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 1e-08,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "d836a1657c8359620e3944dc7ea0f10d8f95071996bdb4a424ee4263ef473fa3",
+      "path_length_m": 725.0,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 225,
+      "route_id": "A:A4:out",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.991187608733046,
+      "between_pose_padding_m": 1.659272407578545,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        767.8409641395962
+      ],
+      "heading_span_rad": 0.07485984771076691,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.0019984095032547565,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "913cce9eccdb230e9a2f4703cd1c9e7f0b12d2dfbcc871b5ad064abed846e9fa",
+      "path_length_m": 785.8409641395962,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 246,
+      "route_id": "A:B1:in",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.9894713553869305,
+      "between_pose_padding_m": 1.6583203670592055,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        767.420482069798
+      ],
+      "heading_span_rad": 0.07485984771076704,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.0019984095032547565,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "e14d659bf1ebfe01659a1622e89796b3af461fe59665a5b06ab3a5443a846480",
+      "path_length_m": 785.420482069798,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 246,
+      "route_id": "A:B1:out",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.9885354758657696,
+      "between_pose_padding_m": 1.6578012157186515,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        707.4204820697981
+      ],
+      "heading_span_rad": 0.07485984771076687,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.0019984095032547565,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "9a243b1dec632752aad8094182563359735c67e469cbb3f3000bf15e11d2bf75",
+      "path_length_m": 725.4204820697981,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 226,
+      "route_id": "B:A4:in",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.990404285064872,
+      "between_pose_padding_m": 1.658837882061932,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        707.8409641395962
+      ],
+      "heading_span_rad": 0.07485984771076683,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.0019984095032547565,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "7071f14973d0540efa79736e9d35020ed11905b697693180b506da0da9e4d03a",
+      "path_length_m": 725.8409641395962,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 226,
+      "route_id": "B:A4:out",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 3.0,
+      "between_pose_padding_m": 1.5000000100000004,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        767.0
+      ],
+      "heading_span_rad": 1.7763568394002506e-16,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 1e-08,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "313cd5a1b20a54551ba8de1c98c98b82f9877fba7356dc654b3a3193f5dac217",
+      "path_length_m": 785.0,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 245,
+      "route_id": "B:B1:in",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.9894713553869314,
+      "between_pose_padding_m": 1.6583203670592057,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        767.4204820697983
+      ],
+      "heading_span_rad": 0.07485984771076687,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.0019984095032526124,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "3d7827af110ffaa92f55500735353f0f702ed625062131418ccc09336a19980d",
+      "path_length_m": 785.4204820697983,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 246,
+      "route_id": "B:B1:out",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.990589624009595,
+      "between_pose_padding_m": 1.825414471544907,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        767.6944578823508
+      ],
+      "heading_span_rad": 0.14888994760949825,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "5c5169fd3292423884eb8edb838e960218bfd5ca58eca7675f475f9b75733d78",
+      "path_length_m": 785.6944578823508,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 246,
+      "route_id": "B:B2:in",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.9923058773557107,
+      "between_pose_padding_m": 2.0002776860637823,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        768.1149399521491
+      ],
+      "heading_span_rad": 0.22374979532026495,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "827c8512dde7f366c3af7affc5da06a9fe4e99a9d5ffc995294bbee4f4f4463d",
+      "path_length_m": 786.1149399521491,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 246,
+      "route_id": "B:B2:out",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.9937308957643447,
+      "between_pose_padding_m": 1.8273318602908326,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        708.5894515469776
+      ],
+      "heading_span_rad": 0.14888994760949747,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "6c1a7ac02c9b4efdbacdc9204db6fcdf2b3de78b5d25fc73c82b020d19547e1a",
+      "path_length_m": 726.5894515469776,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 226,
+      "route_id": "B:B3:in",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.9955997049634484,
+      "between_pose_padding_m": 2.0024795230759724,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        709.0099336167759
+      ],
+      "heading_span_rad": 0.22374979532026418,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "f7ed4b5232c1cdcd3b13a126e7d9a861aa1ce65429fbb94228c67e58b6d85788",
+      "path_length_m": 727.0099336167759,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 226,
+      "route_id": "B:B3:out",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.997708645384908,
+      "between_pose_padding_m": 1.8297598235337615,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        709.4844452116043
+      ],
+      "heading_span_rad": 0.14888994760949742,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "d698f16a0d983a1576a3415dafdd3b58089d0201467de95e098f66ef9ccf9b22",
+      "path_length_m": 727.4844452116043,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 226,
+      "route_id": "B:B4:in",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    },
+    {
+      "actual_maximum_step_m": 2.999577454584012,
+      "between_pose_padding_m": 2.005138543942521,
+      "body": {
+        "bogie_centres_m": 14.0,
+        "fidelity": "reference_informed_assumptions",
+        "lateral_allowance_m": 0.0,
+        "length_m": 20.0,
+        "profile_id": "desiro_city_thameslink_catalogue_2014",
+        "width_m": 2.8
+      },
+      "body_hash": "87c7b7b0e45a2f8b8342cf9bdf7923d1519d59b19196e94c374701d3b9c680da",
+      "bound_scope": "continuous rigid-body sweep of supplied polyline over reported interval",
+      "dynamic_3D_gauging": "unassessed",
+      "front_bogie_interval_m": [
+        35.0,
+        709.9049272814027
+      ],
+      "heading_span_rad": 0.22374979532026412,
+      "parent_curve_body_error_bound": "unassessed",
+      "parent_curve_hull_error_m": 0.001999539376949683,
+      "parent_geometry_hash": "489724da550ae371b6904b1c2abca8caa8c102190dd9999352cf6c8e0fc6e2b5",
+      "path_hash": "2819259be9458de97072d0273ac5ad539cb296287cd580004be03915c92ca487",
+      "path_length_m": 727.9049272814027,
+      "path_origin": "Bezier chord subdivision; not a certified body envelope",
+      "pose_count": 226,
+      "route_id": "B:B4:out",
+      "schema_version": "0.5.0",
+      "whole_formation": "not_modelled"
+    }
+  ],
+  "routes_evaluated": 20,
+  "schema_version": "0.7.0",
+  "scope": "one representative body on all selected routes; only listed route pairs, not full formations",
+  "support_assumption": {
+    "each_end_m": 35.0,
+    "kind": "authored_tangent_continuation_not_checked_external_railway"
+  },
+  "vehicle_resolution": {
+    "assumption_hash": "0acfe8feaf3aea9fa96e4696f2fb7d8af41958bd03dc8f6da721678f16323ebe",
+    "assumptions": {
+      "bogie_centres_m": 14.0,
+      "lateral_allowance_m": 0.0,
+      "use_nominal_length_as_rectangular_body": true,
+      "vertical_scope": "level_zero_cant_plan_only"
+    },
+    "body": {
+      "bogie_centres_m": 14.0,
+      "fidelity": "reference_informed_assumptions",
+      "lateral_allowance_m": 0.0,
+      "length_m": 20.0,
+      "profile_id": "desiro_city_thameslink_catalogue_2014",
+      "width_m": 2.8
+    },
+    "formation_layout": "unassessed",
+    "full_UK_gauging": "unassessed",
+    "profile_id": "desiro_city_thameslink_catalogue_2014",
+    "published": {
+      "nominal_vehicle_length_m": 20.0,
+      "unit_12car_length_m": 242.6,
+      "unit_8car_length_m": 162.0,
+      "width_m": 2.8
+    },
+    "record_hash": "40bdbe8de0c14359c11f282436b095d693d302a12ca54047133af4bda641e331",
+    "source_id": "S060",
+    "status": "resolved_for_declared_static_study",
+    "strict_profile_admitted": false,
+    "unresolved": [
+      "bogie_pivot_positions",
+      "coupler_geometry",
+      "cross_section",
+      "exact_body_outline",
+      "suspension_allowances"
+    ]
+  }
+}

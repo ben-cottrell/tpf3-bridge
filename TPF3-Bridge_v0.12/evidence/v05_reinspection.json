@@ -1,0 +1,44 @@
+{
+  "release": "0.5.0",
+  "review_date": "2026-09-20",
+  "source_additions": [
+    {
+      "source_id": "S060",
+      "publisher": "Siemens AG",
+      "issue": "2014 A19100-V800-B824-V1-7600",
+      "url": "https://assets.new.siemens.com/siemens/assets/api/uuid:18947a8881a7ddb5131bbb8540ef4ffabc954f20/desiro-city-thameslink-data-sheet-en.pdf",
+      "review": "Two-page text; technical table page 1 and publication/general product note page 2 visually inspected",
+      "bytes_archived": false,
+      "source_sha256": null,
+      "numeric_scope": "selected width, nominal vehicle length, unit lengths; no bogie dimension extracted"
+    },
+    {
+      "source_id": "S061",
+      "publisher": "RSSB",
+      "issue": "GMRT2173 issue 4.1, 7 June 2025",
+      "url": "https://www.rssb.co.uk/standards-catalogue/CatalogueItem/gmrt2173-iss-4-1",
+      "review": "Live catalogue synopsis/status and change note",
+      "full_standard": "registration/login reached; not read",
+      "executable_numerical_clauses_imported": false
+    },
+    {
+      "source_id": "S062",
+      "publisher": "RSSB",
+      "issue": "GERT8073 issue 5, 7 June 2025",
+      "url": "https://www.rssb.co.uk/standards-catalogue/CatalogueItem/gert8073-iss-5",
+      "review": "Live catalogue synopsis/status and source links",
+      "full_standard": "registration/login reached; not read",
+      "gauge_polygons_imported": false
+    },
+    {
+      "source_id": "S063",
+      "publisher": "voestalpine Railway Systems",
+      "issue": null,
+      "url": "https://www.voestalpine.com/railway-systems/en/products/turnout-systems/turnouts/",
+      "review": "Product-family scope, not a selected UK dimensional drawing",
+      "geometry_imported": false
+    }
+  ],
+  "old_sources": "retained with their existing reviewed scopes; not all rechecked for v0.5",
+  "source_bytes_in_package": false
+}

@@ -1,0 +1,41 @@
+{
+  "packet_kind": "executed_v04_proof",
+  "construction_authorised": false,
+  "summary": "Two directional approaches, stopping motion and sectional release executed against the same whole-route baseline.",
+  "nominal_rows": [
+    {
+      "scenario_id": "nominal",
+      "mode": "whole_route",
+      "scenario_sha256": "d0c5d17dbccd1664b61c2163cee1370c9961b45c56e4d490a027edc0612e37ab",
+      "required_visits": 12,
+      "scheduled_visits": 12,
+      "unscheduled_visits": 0,
+      "completed_within_horizon": 12,
+      "scheduled_residual_at_horizon": 0,
+      "total_departure_delay_ms": 16779354,
+      "candidate_evaluations": 343
+    },
+    {
+      "scenario_id": "nominal",
+      "mode": "sectional_release",
+      "scenario_sha256": "d0c5d17dbccd1664b61c2163cee1370c9961b45c56e4d490a027edc0612e37ab",
+      "required_visits": 12,
+      "scheduled_visits": 12,
+      "unscheduled_visits": 0,
+      "completed_within_horizon": 12,
+      "scheduled_residual_at_horizon": 0,
+      "total_departure_delay_ms": 10568224,
+      "candidate_evaluations": 307
+    }
+  ],
+  "UK_profile_status": "selected values now executable; authentic turnouts and vehicle gauging still unresolved",
+  "spacing_proxy_warning": "A sourced nominal track interval does not establish independent clearance under the current proxy.",
+  "evidence_refs": [
+    "summary.json",
+    "comparison.md",
+    "uk_numerical_checks.json",
+    "example_legs.json",
+    "gb_spacing_proxy_trial.json"
+  ],
+  "next_gate": "vehicle envelope and authentic component admission; then compose multiple banks with explicit recovery movements"
+}

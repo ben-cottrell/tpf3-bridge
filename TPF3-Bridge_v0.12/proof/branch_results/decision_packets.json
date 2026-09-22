@@ -1,0 +1,152 @@
+[
+  {
+    "all_results": [
+      {
+        "candidate_hash": "35b0bdb4d9729d9d72886a4fa3bdac8518bf94a54c11de698d188dc4d51c8c16",
+        "completed": 2,
+        "mode": "flat",
+        "qualifies": false,
+        "required": 2,
+        "residual": 0,
+        "total_delay_ms": 50940,
+        "unscheduled": 0
+      },
+      {
+        "candidate_hash": "3baef3e328280a596223dc8c489dce3d7f73084820641d15b0f032abec7de70a",
+        "completed": 2,
+        "mode": "flyover",
+        "qualifies": true,
+        "required": 2,
+        "residual": 0,
+        "total_delay_ms": 0,
+        "unscheduled": 0
+      },
+      {
+        "candidate_hash": "abf160e98e92cf9e03cb494fb9fef61312c6b729ea19a68a26bf862063da3aba",
+        "completed": 2,
+        "mode": "diveunder",
+        "qualifies": true,
+        "required": 2,
+        "residual": 0,
+        "total_delay_ms": 0,
+        "unscheduled": 0
+      }
+    ],
+    "alternatives": [
+      {
+        "candidate_hash": "3baef3e328280a596223dc8c489dce3d7f73084820641d15b0f032abec7de70a",
+        "completed": 2,
+        "mode": "flyover",
+        "qualifies": true,
+        "required": 2,
+        "residual": 0,
+        "total_delay_ms": 0,
+        "unscheduled": 0
+      },
+      {
+        "candidate_hash": "abf160e98e92cf9e03cb494fb9fef61312c6b729ea19a68a26bf862063da3aba",
+        "completed": 2,
+        "mode": "diveunder",
+        "qualifies": true,
+        "required": 2,
+        "residual": 0,
+        "total_delay_ms": 0,
+        "unscheduled": 0
+      }
+    ],
+    "construction_authorised": false,
+    "delay_budget_ms": 0,
+    "game_constructed": false,
+    "no_automatic_choice_between_flyover_and_diveunder": true,
+    "remaining_decision": "shared merge/downstream constraint remains; choose civil form only after terrain and asset checks",
+    "scenario_hash": "07bb69c199fb65a28083c2ed14f1d7e73b6e9ce42a4b4ad4fca20c45c84cc7ec",
+    "scenario_id": "crossing_pulse",
+    "status": "operating_alternatives"
+  },
+  {
+    "all_results": [
+      {
+        "candidate_hash": "35b0bdb4d9729d9d72886a4fa3bdac8518bf94a54c11de698d188dc4d51c8c16",
+        "completed": 2,
+        "mode": "flat",
+        "qualifies": false,
+        "required": 2,
+        "residual": 0,
+        "total_delay_ms": 262403,
+        "unscheduled": 0
+      },
+      {
+        "candidate_hash": "3baef3e328280a596223dc8c489dce3d7f73084820641d15b0f032abec7de70a",
+        "completed": 2,
+        "mode": "flyover",
+        "qualifies": false,
+        "required": 2,
+        "residual": 0,
+        "total_delay_ms": 262419,
+        "unscheduled": 0
+      },
+      {
+        "candidate_hash": "abf160e98e92cf9e03cb494fb9fef61312c6b729ea19a68a26bf862063da3aba",
+        "completed": 2,
+        "mode": "diveunder",
+        "qualifies": false,
+        "required": 2,
+        "residual": 0,
+        "total_delay_ms": 262419,
+        "unscheduled": 0
+      }
+    ],
+    "alternatives": [],
+    "construction_authorised": false,
+    "delay_budget_ms": 0,
+    "game_constructed": false,
+    "no_automatic_choice_between_flyover_and_diveunder": true,
+    "remaining_decision": "shared merge/downstream constraint remains; choose civil form only after terrain and asset checks",
+    "scenario_hash": "59f89ae78defcd80547cf1b9ce3033db51c92405d5f06f1877a9b3b864e18fea",
+    "scenario_id": "merge_pulse",
+    "status": "no_tested_candidate_meets_requested_outcome"
+  },
+  {
+    "all_results": [
+      {
+        "candidate_hash": "35b0bdb4d9729d9d72886a4fa3bdac8518bf94a54c11de698d188dc4d51c8c16",
+        "completed": 2,
+        "mode": "flat",
+        "qualifies": false,
+        "required": 2,
+        "residual": 0,
+        "total_delay_ms": 2660461,
+        "unscheduled": 0
+      },
+      {
+        "candidate_hash": "3baef3e328280a596223dc8c489dce3d7f73084820641d15b0f032abec7de70a",
+        "completed": 2,
+        "mode": "flyover",
+        "qualifies": false,
+        "required": 2,
+        "residual": 0,
+        "total_delay_ms": 2660445,
+        "unscheduled": 0
+      },
+      {
+        "candidate_hash": "abf160e98e92cf9e03cb494fb9fef61312c6b729ea19a68a26bf862063da3aba",
+        "completed": 2,
+        "mode": "diveunder",
+        "qualifies": false,
+        "required": 2,
+        "residual": 0,
+        "total_delay_ms": 2660445,
+        "unscheduled": 0
+      }
+    ],
+    "alternatives": [],
+    "construction_authorised": false,
+    "delay_budget_ms": 0,
+    "game_constructed": false,
+    "no_automatic_choice_between_flyover_and_diveunder": true,
+    "remaining_decision": "shared merge/downstream constraint remains; choose civil form only after terrain and asset checks",
+    "scenario_hash": "7077ce7bd6298dbcb170f0e32af665026d72fb0fadbaad7542fc932b052ad3c1",
+    "scenario_id": "downstream_blocked",
+    "status": "no_tested_candidate_meets_requested_outcome"
+  }
+]
