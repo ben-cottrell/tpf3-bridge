@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "tasks": [
+    {
+      "id": "L03",
+      "card": "Add `python bridge_cli.py verify --run <directory>` for read-only saved-run integrity verification. L02 already writes artifact_sha256 in run.json and verifies hashes in inspect_run: reuse that functionality, adding precise changed_files and missing_files diagnostics. Return status integrity_verified (exit 0), integrity_failed (nonzero), or verification_unavailable (nonzero). Old/malformed/unfinished manifests without usable verification data are unavailable; never rewrite them or call design/search/mock. Keep game_constructed false and compact JSON. Add focused tests; preserve existing assertions. Update STATE.md with changes, limits and evidence. No new feature beyond integrity verification.",
+      "pointers": ["bridge_cli.py: inspect_run, file_hash, main", "tests/test_cli.py", "STATE.md"],
+      "write_files": ["bridge_cli.py", "tests/test_cli.py", "STATE.md"],
+      "acceptance": [
+        ["python", "tools/quiet_checks.py", "--suite", "application", "--label", "batch_l03"],
+        ["python", "tools/task_runner.py", "--acceptance", "L03"]
+      ]
+    },
+    {
+      "id": "L04",
+      "card": "Extract a small callable application interface into bridge_app.py: design(fixture, output, mock_execute=False), status(run), verify(run), accepting pathlib-compatible paths and returning summary dictionaries without printing. Use existing implementation and metadata. Make bridge_cli.py a thin argument/JSON/exit-code wrapper. Preserve all CLI outcomes, compact output, atomic records, output protection and read-only status/verification. Preserve historical proof modules. Update tests for direct API calls and CLI compatibility without dropping existing assertions; update STATE.md. No packaging migration or general refactor.",
+      "pointers": ["bridge_cli.py", "tests/test_cli.py", "STATE.md"],
+      "write_files": ["bridge_cli.py", "bridge_app.py", "tests/test_cli.py", "STATE.md"],
+      "acceptance": [
+        ["python", "tools/quiet_checks.py", "--suite", "application", "--label", "batch_l04"],
+        ["python", "tools/task_runner.py", "--acceptance", "L04"]
+      ]
+    },
+    {
+      "id": "L05",
+      "card": "Run the approved combined acceptance commands and write short USAGE.md covering design-only, explicit mock, status, verify and callable API; explain exit statuses, old/corrupt/unfinished records, local evidence, restricted geometry, mock-only game status and lack of mock-world persistence. Add missing acceptance cases only if needed in tests/test_cli.py, preserving existing assertions. Update STATE.md with actual results and blockers. Do not add or change application features; if a code defect needs files outside this task's write scope, report the blocker and stop.",
+      "pointers": ["bridge_cli.py", "bridge_app.py", "tests/test_cli.py", "STATE.md"],
+      "write_files": ["USAGE.md", "tests/test_cli.py", "STATE.md"],
+      "acceptance": [
+        ["python", "tools/quiet_checks.py", "--suite", "application", "--label", "batch_l05"],
+        ["python", "tools/quiet_checks.py", "--suite", "corridor", "--label", "batch_l05_corridor"],
+        ["python", "tools/task_runner.py", "--acceptance", "L05"]
+      ]
+    }
+  ]
+}
