@@ -1,0 +1,967 @@
+{
+  "release": "0.12.0",
+  "method": "Python AST inspection; symbol presence is not production support",
+  "modules": [
+    {
+      "path": "proof/railbranch/__init__.py",
+      "sha256": "dc4788b6a1ab53ec1fc9fb83814cd641ef1a0d5b9043d79deb72fd9d2c34a55a",
+      "public_top_level_symbols": [],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railbranch/adapter.py",
+      "sha256": "d3f0c09bde1ccc3f5ed7e62893258fd256f5dc1c2381ba9df4f6228d9a9d5aa9",
+      "public_top_level_symbols": [
+        "manifest",
+        "operation",
+        "compile_plan",
+        "LostAcknowledgement",
+        "MockJunctionAdapter",
+        "current_payload",
+        "payload_equal",
+        "verify_topology",
+        "execute"
+      ],
+      "absolute_proof_imports": [
+        "railcorridor.geometry"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railbranch/demo.py",
+      "sha256": "fd7c8b183984f9c6bcc0ca11bfad2aaebb09949833857804fc09d5af619a7600",
+      "public_top_level_symbols": [
+        "validate_fixture",
+        "search_geometry",
+        "scenarios",
+        "decide",
+        "write",
+        "run",
+        "main"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railcorridor.geometry",
+        "railops.uk_profiles"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railbranch/geometry.py",
+      "sha256": "3090067696a5e5b06a4ad07604f03d3051031d3fb29ec9d88328ed8c993c9d56",
+      "public_top_level_symbols": [
+        "JunctionSpec",
+        "hermite",
+        "state",
+        "y_root",
+        "restrict",
+        "ordered_curves_lower_gap",
+        "Junction",
+        "build",
+        "holding_assessment"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railcorridor.geometry",
+        "railcorridor.junction",
+        "railgeom.curves",
+        "railgeom.network"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railbranch/operations.py",
+      "sha256": "ec9e42b5495552f9995278cfc2c1d7dd030cd6691833fe9c22b671367354bd9e",
+      "public_top_level_symbols": [
+        "verify_candidate",
+        "compile_resources",
+        "default_performance",
+        "validate_performance",
+        "leg",
+        "make_claims",
+        "validate_scenario",
+        "schedule",
+        "check_result"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railcorridor.geometry",
+        "railops.motion",
+        "railproof.engine",
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railclear/__init__.py",
+      "sha256": "a7f08ea074a729848ab72991c156670523ded330c356bcd4e5cc6cc62d282a73",
+      "public_top_level_symbols": [],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railclear/catalogue.py",
+      "sha256": "31ad7e654fb3aca00d2a6fc582808bf39a381896a89a97230e0e7950db75dd73",
+      "public_top_level_symbols": [
+        "identifier",
+        "exact",
+        "text",
+        "reject_constant",
+        "unique_object",
+        "read_json",
+        "Imported",
+        "normalize_geometry",
+        "import_component",
+        "place_synthetic"
+      ],
+      "absolute_proof_imports": [
+        "railgeom.curves",
+        "railgeom.network"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railclear/demo.py",
+      "sha256": "d787c7067dda1733dd06329efc9f2e5257239dbfe587b9f710bbb9de58b86ad5",
+      "public_top_level_symbols": [
+        "read_fixture",
+        "extended_route",
+        "run"
+      ],
+      "absolute_proof_imports": [
+        "railgeom.compiler",
+        "railgeom.curves",
+        "railgeom.patterns",
+        "railops.access",
+        "railops.sectional"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railclear/model.py",
+      "sha256": "dcc33a37cc732a777172c6792e4292e8e5f207396281f9744cac9ac94106210f",
+      "public_top_level_symbols": [
+        "finite",
+        "positive",
+        "count",
+        "digest",
+        "Body",
+        "Pose",
+        "pose_from_pivots",
+        "Polyline",
+        "from_curves",
+        "circular_pose",
+        "circular_band",
+        "parallel_gap",
+        "concentric_gap",
+        "bounds",
+        "bounds_gap",
+        "polygon_gap",
+        "validate_polygon"
+      ],
+      "absolute_proof_imports": [
+        "railgeom.curves"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railclear/profiles.py",
+      "sha256": "858ce9c2ada541f684e9502ec3ff4577790c02b57037ec871b438dac7415a3a3",
+      "public_top_level_symbols": [
+        "resolve_vehicle"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railclear/sweep.py",
+      "sha256": "b9f4de9258f17c6323a2553b94756acf29ec6117c7bc594ae40f44954dc3f714",
+      "public_top_level_symbols": [
+        "Sweep",
+        "sweep",
+        "pair_screen",
+        "obstacle_screen",
+        "audit_pair_requests"
+      ],
+      "absolute_proof_imports": [
+        "railgeom.curves"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcompact/__init__.py",
+      "sha256": "f7a3641d5c5f90a35634568b01e2c93469422caabcc095867b5288eaededa4a4",
+      "public_top_level_symbols": [],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcompact/assessment.py",
+      "sha256": "2d3a98076e156d552dddd5068cc0b17dde95167545a741745800c6d0b3b96ad0",
+      "public_top_level_symbols": [
+        "audit_vehicle",
+        "assess",
+        "decisions"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railclear.demo",
+        "railclear.model",
+        "railclear.profiles",
+        "railclear.sweep",
+        "railops.uk_profiles",
+        "railproof.rules",
+        "railstation.checks"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcompact/compiler.py",
+      "sha256": "4aa18a30be47cda1ce219f0d057ce419bf6bc8dfd2953323a8ee273f8535deec",
+      "public_top_level_symbols": [
+        "evaluate_curve",
+        "compile_assembly"
+      ],
+      "absolute_proof_imports": [
+        "railgeom.compiler",
+        "railgeom.curves",
+        "railgeom.network",
+        "railgeom.patterns"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcompact/composition.py",
+      "sha256": "e6d9352cd951947847b9ab5eee3d1006852d9d693146e18c04ea18934b416277",
+      "public_top_level_symbols": [
+        "CompactSpec",
+        "build_compact"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railgeom.curves",
+        "railgeom.network",
+        "railgeom.patterns",
+        "railstation.composition"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcompact/crossings.py",
+      "sha256": "b437f2e5ee59a38b608a9be1907b87731005e74aef3ea6dfebcc7cbd7fd7683a",
+      "public_top_level_symbols": [
+        "validate_crossings"
+      ],
+      "absolute_proof_imports": [
+        "railgeom.curves"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcompact/demo.py",
+      "sha256": "fb2132a6951333f203831ef2d6966ae434a55380e77d145c030f0e5b78c0a2d5",
+      "public_top_level_symbols": [
+        "read_fixture",
+        "scenario",
+        "run"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railclear.model",
+        "railclear.profiles",
+        "railops.motion",
+        "railproof.model",
+        "railstation.checks",
+        "railstation.demo",
+        "railstation.operations"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcompact/search.py",
+      "sha256": "1cdcac6449f3c9c32e0b2f54b7cfb8f163110325e1336d084fa2a448353ffccb",
+      "public_top_level_symbols": [
+        "fit_grid"
+      ],
+      "absolute_proof_imports": [
+        "railclear.model",
+        "railgeom.patterns",
+        "railstation.checks"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcorridor/__init__.py",
+      "sha256": "cd34e624654569ce92d43f662bb6eb5316dff92b2c892c23951f4d6e6d5c744a",
+      "public_top_level_symbols": [],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcorridor/adapter.py",
+      "sha256": "b564142b551abd63c3dafc4ec861216ffed21f34950a97a8ee6c8a90607bd57a",
+      "public_top_level_symbols": [
+        "manifest",
+        "operation",
+        "verify_operation",
+        "compile_plan",
+        "LostAcknowledgement",
+        "MockAdapter",
+        "preflight",
+        "execute"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcorridor/demo.py",
+      "sha256": "53edbefba9e6ba52902f9575a23028ae2bc6d036b05acbc0ef46ce54984dfecd",
+      "public_top_level_symbols": [
+        "write",
+        "run",
+        "main"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcorridor/geometry.py",
+      "sha256": "1007cf468c1f6c63778874628c9979f0b99ac17cffa0ffe6b976ceda5d234d7d",
+      "public_top_level_symbols": [
+        "number",
+        "integer",
+        "digest",
+        "smooth",
+        "derivatives",
+        "Knot",
+        "Alignment",
+        "limits_check"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcorridor/junction.py",
+      "sha256": "59a91839df18a3cec1119ff6e42353bd27b84e9ff1331a384239c399deff5da5",
+      "public_top_level_symbols": [
+        "crossing_cell",
+        "holding_check",
+        "braking_screen"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railcorridor/planning.py",
+      "sha256": "3a6ba44b87f1e91614aa9ddc90d8b692d556fc3c78b9a3e27e8e45601bda7858",
+      "public_top_level_symbols": [
+        "closed",
+        "parse_json",
+        "validate_fixture",
+        "make_alignment",
+        "bell",
+        "ground",
+        "site_check",
+        "terrain_assessment",
+        "candidate",
+        "objective",
+        "search"
+      ],
+      "absolute_proof_imports": [
+        "railops.uk_profiles"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railgeom/__init__.py",
+      "sha256": "f1ba4542a12c8698049f16b373e3cad5d2d0afdde6ae613d2ff9103a1d5af0fc",
+      "public_top_level_symbols": [],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railgeom/compiler.py",
+      "sha256": "96798bb51279eb6d5d9443cf5e3a36011c0677aed641c4b23b9c942268143670",
+      "public_top_level_symbols": [
+        "Requirement",
+        "CompiledRoute",
+        "CompiledAssembly",
+        "evaluate_curve",
+        "compile_assembly"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railgeom/curves.py",
+      "sha256": "6c8a56d3fa6c3e7a520cb504ebd068bb1849937d64cc7b4e086892f73344c6c2",
+      "public_top_level_symbols": [
+        "finite",
+        "add",
+        "sub",
+        "mul",
+        "dot",
+        "cross",
+        "norm",
+        "distance",
+        "point_segment",
+        "segment_distance",
+        "evaluate",
+        "Bezier",
+        "Leaf",
+        "flatten",
+        "continuous_proximity",
+        "line",
+        "eased_branch",
+        "join_check"
+      ],
+      "absolute_proof_imports": [
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railgeom/demo.py",
+      "sha256": "148a607e4ca8cac78cb2b0b29334f548ac5532d2119ddbe8047965139f97603e",
+      "public_top_level_symbols": [
+        "read_fixture",
+        "write",
+        "run",
+        "main"
+      ],
+      "absolute_proof_imports": [
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railgeom/network.py",
+      "sha256": "ddf4a63a74455bcac2ff857867fc6540d5a2be1a65257001940fd4111d874caa",
+      "public_top_level_symbols": [
+        "Port",
+        "TrackEdge",
+        "Turnout",
+        "Step",
+        "RailPath",
+        "Network"
+      ],
+      "absolute_proof_imports": [
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railgeom/operations.py",
+      "sha256": "2321886f6145c210cae7a9516b0adf58ca69608946656a78779a051cbeb26bda",
+      "public_top_level_symbols": [
+        "TimingProfile",
+        "duration",
+        "make_claims",
+        "coalesce",
+        "earliest",
+        "schedule_routes",
+        "fit",
+        "schedule_bank"
+      ],
+      "absolute_proof_imports": [
+        "railproof.engine",
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railgeom/patterns.py",
+      "sha256": "0654897984bd2336280dcf31087380d8cd3927fe9852cfd6271f95dbc710740c",
+      "public_top_level_symbols": [
+        "GeometryProfile",
+        "CrossoverSpec",
+        "FanSpec",
+        "Assembly",
+        "add_turnout",
+        "connector_dimensions",
+        "build_crossover",
+        "build_fan"
+      ],
+      "absolute_proof_imports": [
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railgeom/search.py",
+      "sha256": "393cb2429ddb5298c4eaa5da53ecaf57f26a5686fb76bdddf2790f5554ed8f2e",
+      "public_top_level_symbols": [
+        "fit_crossover"
+      ],
+      "absolute_proof_imports": [
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railinterface/__init__.py",
+      "sha256": "c2057bb0e151d7e46e2a4cfb770888371e01775300d014d0fcc2faf5833a95eb",
+      "public_top_level_symbols": [],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railinterface/components.py",
+      "sha256": "26051a719e6d7586c7a13cef4bf698193a7da946159792d53b64972da1becb00",
+      "public_top_level_symbols": [
+        "resolve_component_reference",
+        "load_component_references",
+        "compare_like_quantity"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railclear.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railinterface/datums.py",
+      "sha256": "351dafff9043c8e582f421c7944e2eb3fbe88d3d61436811bbb7547c2b6f9da1",
+      "public_top_level_symbols": [
+        "RailSection"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railinterface/demo.py",
+      "sha256": "d084b742a39f165b8202594c3f3ecc0f52c34c81500b78a736541b34d6c8d58b",
+      "public_top_level_symbols": [
+        "read_fixture",
+        "gate_platforms",
+        "run"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railclear.model",
+        "railcompact.compiler",
+        "railcompact.composition",
+        "railcompact.demo",
+        "railstation.checks",
+        "railstation.operations"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railinterface/platforms.py",
+      "sha256": "60ca5d964e6c9226bb67e35b856ca600fe68640d052dc21ad4dd3c51f2bd61b1",
+      "public_top_level_symbols": [
+        "PlatformProfile",
+        "rectangles_overlap",
+        "make_platforms",
+        "verify_assessment",
+        "Facility",
+        "facility_check",
+        "fit_facility"
+      ],
+      "absolute_proof_imports": [
+        "railclear.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railinterface/reference.py",
+      "sha256": "88b178df7dbde20603bdc6e4a3dfa0d28288c13bad2270e3ccb13f1c0cce0c12",
+      "public_top_level_symbols": [
+        "number",
+        "tri",
+        "reference",
+        "result",
+        "height_check",
+        "offset_check",
+        "draft_curve_offset",
+        "width_requirement",
+        "taper_length"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railclear.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railops/__init__.py",
+      "sha256": "4753ed293c818dba15a204846200b2030072affd9701935e0acf9dd7d27bd5d8",
+      "public_top_level_symbols": [],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railops/access.py",
+      "sha256": "d19a981dd4545ab1d4507f851f3a915162397ef606bf07092f60be628ff5f3eb",
+      "public_top_level_symbols": [
+        "AccessSpec",
+        "build_dual_access"
+      ],
+      "absolute_proof_imports": [
+        "railgeom.curves",
+        "railgeom.patterns",
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railops/demo.py",
+      "sha256": "e34b645bb50b7e7bf7a21eb4e70cf8c03d409a25a344ad1c4903bf316c1f2d5b",
+      "public_top_level_symbols": [
+        "read_fixture",
+        "write",
+        "numerical_examples",
+        "generated_bank_rule_checks",
+        "export_geometry_for_operations",
+        "spacing_proxy_trial",
+        "run",
+        "main"
+      ],
+      "absolute_proof_imports": [
+        "railgeom.compiler",
+        "railgeom.curves",
+        "railgeom.network",
+        "railgeom.patterns",
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railops/motion.py",
+      "sha256": "9a65d1bcd21b87820a2e3834f46d231b3afa64c038c0ffeaecc8554ee09733b7",
+      "public_top_level_symbols": [
+        "MotionProfile",
+        "Phase",
+        "Motion",
+        "make_motion"
+      ],
+      "absolute_proof_imports": [
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railops/operations.py",
+      "sha256": "57508c5f0a867072711249b90007a41d1fb5d731fa564614ff3f08075b5abf11",
+      "public_top_level_symbols": [
+        "schedule"
+      ],
+      "absolute_proof_imports": [
+        "railgeom.compiler",
+        "railgeom.operations",
+        "railproof.engine",
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railops/sectional.py",
+      "sha256": "9e169aebbc1037c685c0cddcc0cfe1e2a5cee63150177596a20154f360050cc9",
+      "public_top_level_symbols": [
+        "Footprint",
+        "Leg",
+        "footprints",
+        "compile_leg",
+        "earliest_leg"
+      ],
+      "absolute_proof_imports": [
+        "railgeom.compiler",
+        "railproof.engine",
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railops/uk_profiles.py",
+      "sha256": "6ca81bfc1a0f69589ffcd096024fe248f7d16031b966fabafc20e9c473f8af41",
+      "public_top_level_symbols": [
+        "register",
+        "parameter",
+        "flag",
+        "scope",
+        "nominal_gauge",
+        "gb_track_centres",
+        "new_line_radius",
+        "coupling_platform_gradient",
+        "vertical_radius",
+        "platform_zone_widths",
+        "admission"
+      ],
+      "absolute_proof_imports": [
+        "railproof.model",
+        "railproof.rules"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railproof/__init__.py",
+      "sha256": "ae81178ef3fa0ba967843f32edc5de700d6c6d5c7c806c7cf205d7fbe8ffc528",
+      "public_top_level_symbols": [],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railproof/demo.py",
+      "sha256": "214cf5a5b551247d642a91d46a2e0219d11368bf072d6a9ffba75235cfe9e166",
+      "public_top_level_symbols": [
+        "read_fixture",
+        "run",
+        "main"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railproof/engine.py",
+      "sha256": "977cf7752705f5fb84e2b48dc97fd98d350b42bd5a02a24b60fffd8cc6a9d8c9",
+      "public_top_level_symbols": [
+        "BudgetExhausted",
+        "Budget",
+        "Calendar",
+        "clearance_ms",
+        "route_resources",
+        "route_duration",
+        "Assignment",
+        "fit_visit",
+        "schedule"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railproof/geometry.py",
+      "sha256": "d840e639d187dad92c3ca669663cdd1b5dc82330f70674b6f8616dd5c8e02b85",
+      "public_top_level_symbols": [
+        "signed_finite",
+        "PlainLineShift",
+        "sufficient_length"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railproof/model.py",
+      "sha256": "fa079a4a8ecbb13b33715977171bb8788eb6ffa832535ea8dc2fe8bd54df7f46",
+      "public_top_level_symbols": [
+        "positive",
+        "time_value",
+        "identity",
+        "strict_record",
+        "Platform",
+        "Visit",
+        "Claim",
+        "conflict",
+        "legal_traversal",
+        "validate_stock"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railproof/rules.py",
+      "sha256": "124f4a8696e0f3bfb3a625aab759d64b5a16bbff4ebedffb2d8fecca93462d19",
+      "public_top_level_symbols": [
+        "platform_cant",
+        "platform_radius",
+        "gb_platform_interface"
+      ],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railstation/__init__.py",
+      "sha256": "e77183beec8a0251531d22bc2c2ee1c1478249b98e1beb71498de4316773bad8",
+      "public_top_level_symbols": [],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railstation/assessment.py",
+      "sha256": "06053aa97b26207abcda4dfd1b1c4c159e4f6a924fd2e1f3d30b19047c713fbc",
+      "public_top_level_symbols": [
+        "vehicle_audit",
+        "assess_candidate",
+        "decision_packet"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railclear.demo",
+        "railclear.model",
+        "railclear.profiles",
+        "railclear.sweep",
+        "railops.uk_profiles",
+        "railproof.rules"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railstation/checks.py",
+      "sha256": "abd948e54d516638ebedaa183f0875042b4a1032fc2a30aa0a3b47b0d5a4a6a0",
+      "public_top_level_symbols": [
+        "check_result",
+        "independence",
+        "site_check"
+      ],
+      "absolute_proof_imports": [
+        "railclear.model",
+        "railgeom.compiler",
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railstation/composition.py",
+      "sha256": "69bc0a817431fd9aea441437ad7e0567d722e4b9bdba4aaf83b17f6e1bafd982",
+      "public_top_level_symbols": [
+        "StationSpec",
+        "Station",
+        "merge_network",
+        "build_station",
+        "compile_station"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railgeom.compiler",
+        "railgeom.curves",
+        "railgeom.network",
+        "railgeom.patterns",
+        "railops.access",
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railstation/demo.py",
+      "sha256": "ef2077ae72e4ea0ef1faf0815c6a027d11c19225d8047a4a65f72e493c1883ca",
+      "public_top_level_symbols": [
+        "read_fixture",
+        "scenario",
+        "run"
+      ],
+      "absolute_proof_imports": [
+        "railclear.catalogue",
+        "railclear.model",
+        "railclear.profiles",
+        "railops.motion",
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railstation/operations.py",
+      "sha256": "15a0e0e028f7de3ff826d124bd6d1418d6fd610a69597c772be3720068f4a4a1",
+      "public_top_level_symbols": [
+        "schedule_station"
+      ],
+      "absolute_proof_imports": [
+        "railclear.model",
+        "railgeom.compiler",
+        "railgeom.operations",
+        "railops.motion",
+        "railops.sectional",
+        "railproof.engine",
+        "railproof.model"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railterrain/__init__.py",
+      "sha256": "e1fc6825e5a2c440a5a65596fa6cd93aa86727c0e8fefa740d43774a55080c43",
+      "public_top_level_symbols": [],
+      "absolute_proof_imports": [],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railterrain/adapter.py",
+      "sha256": "952e1b25be8915725ee683a569cfbf3f58122f949b4ee98a6c7217a7b77e50a0",
+      "public_top_level_symbols": [
+        "manifest",
+        "compile_plan",
+        "MockTerrainAdapter",
+        "current_payload",
+        "snapshot_errors",
+        "execute"
+      ],
+      "absolute_proof_imports": [
+        "railbranch",
+        "railcorridor.geometry"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railterrain/demo.py",
+      "sha256": "e97b7df5055128577434ee648f8d575a6e5577e3b500dcb5bcff162181b358a2",
+      "public_top_level_symbols": [
+        "write",
+        "decisions",
+        "run"
+      ],
+      "absolute_proof_imports": [
+        "railbranch.demo",
+        "railbranch.operations",
+        "railclear.catalogue",
+        "railcorridor.geometry",
+        "railcorridor.planning"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railterrain/geometry.py",
+      "sha256": "77c1e0afd9691583e3aeb03ae8556ad06284259ed6176234f874a2375e45d113",
+      "public_top_level_symbols": [
+        "route_records",
+        "build_placed",
+        "mainline_profile_check"
+      ],
+      "absolute_proof_imports": [
+        "railbranch.geometry",
+        "railcorridor.geometry",
+        "railgeom.curves",
+        "railgeom.network"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railterrain/planning.py",
+      "sha256": "9cab0d3947c5a5c52e8e79505a31a8e03b52221588f8102b3dffad902b2042a3",
+      "public_top_level_symbols": [
+        "validate_fixture",
+        "load_inputs",
+        "boundary_check",
+        "bind",
+        "verify_binding",
+        "spec_for",
+        "search"
+      ],
+      "absolute_proof_imports": [
+        "railbranch.demo",
+        "railbranch.geometry",
+        "railbranch.operations",
+        "railclear.catalogue",
+        "railcorridor.geometry",
+        "railcorridor.planning"
+      ],
+      "classification": "offline_proof_not_production_service"
+    },
+    {
+      "path": "proof/railterrain/terrain.py",
+      "sha256": "a6ccebdd36cc14c84a0d156337b1ec7d0409c8e075b5bb55fe27e197b633ceb5",
+      "public_top_level_symbols": [
+        "bell_range",
+        "ground_range",
+        "overlaps",
+        "within",
+        "rectangle_union_area",
+        "assess"
+      ],
+      "absolute_proof_imports": [
+        "railbranch.geometry",
+        "railcorridor.geometry",
+        "railcorridor.planning"
+      ],
+      "classification": "offline_proof_not_production_service"
+    }
+  ]
+}

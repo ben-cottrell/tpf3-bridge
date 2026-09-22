@@ -1,0 +1,39 @@
+test_all_examples_validate (test_contracts.Contracts.test_all_examples_validate) ... ok
+test_byte_and_depth_budgets (test_contracts.Contracts.test_byte_and_depth_budgets) ... ok
+test_caller_cannot_embed_authority_in_commit (test_contracts.Contracts.test_caller_cannot_embed_authority_in_commit) ... ok
+test_dependency_cannot_reference_future_operation (test_contracts.Contracts.test_dependency_cannot_reference_future_operation) ... ok
+test_derived_capabilities_cannot_be_removed (test_contracts.Contracts.test_derived_capabilities_cannot_be_removed) ... ok
+test_direction_and_grade_must_agree (test_contracts.Contracts.test_direction_and_grade_must_agree) ... ok
+test_direction_is_unit_vector (test_contracts.Contracts.test_direction_is_unit_vector) ... ok
+test_duplicate_json_keys_rejected (test_contracts.Contracts.test_duplicate_json_keys_rejected) ... ok
+test_expired_approval_blocked (test_contracts.Contracts.test_expired_approval_blocked) ... ok
+test_failed_check_not_ready (test_contracts.Contracts.test_failed_check_not_ready) ... ok
+test_live_execution_requires_game_binding (test_contracts.Contracts.test_live_execution_requires_game_binding) ... ok
+test_mock_cannot_be_promoted_to_game_by_label (test_contracts.Contracts.test_mock_cannot_be_promoted_to_game_by_label) ... ok
+test_mock_cannot_claim_observed_game_passage (test_contracts.Contracts.test_mock_cannot_claim_observed_game_passage) ... ok
+test_no_hidden_physics_dependency (test_contracts.Contracts.test_no_hidden_physics_dependency) ... ok
+test_nonfinite_and_overflow_numbers_rejected (test_contracts.Contracts.test_nonfinite_and_overflow_numbers_rejected) ... ok
+test_operation_payload_hash_detects_change (test_contracts.Contracts.test_operation_payload_hash_detects_change) ... ok
+test_passing_preflight_still_performs_no_write (test_contracts.Contracts.test_passing_preflight_still_performs_no_write) ... ok
+test_plan_approval_hash_binding (test_contracts.Contracts.test_plan_approval_hash_binding) ... ok
+test_protected_delete_conflict (test_contracts.Contracts.test_protected_delete_conflict) ... ok
+test_requirement_dispositions_cover_original_ids (test_contracts.Contracts.test_requirement_dispositions_cover_original_ids) ... ok
+test_reversed_bounds_rejected (test_contracts.Contracts.test_reversed_bounds_rejected) ... ok
+test_scope_cannot_be_enlarged (test_contracts.Contracts.test_scope_cannot_be_enlarged) ... ok
+test_shared_nodes_are_consistent (test_contracts.Contracts.test_shared_nodes_are_consistent) ... ok
+test_snapshot_cannot_claim_missing_data_complete (test_contracts.Contracts.test_snapshot_cannot_claim_missing_data_complete) ... ok
+test_source_inventory_is_actual_bytes (test_contracts.Contracts.test_source_inventory_is_actual_bytes) ... ok
+test_stale_snapshot_blocked (test_contracts.Contracts.test_stale_snapshot_blocked) ... ok
+test_tool_descriptors_have_resolvable_valid_schemas (test_contracts.Contracts.test_tool_descriptors_have_resolvable_valid_schemas) ... ok
+test_typed_units_not_interchangeable (test_contracts.Contracts.test_typed_units_not_interchangeable) ... ok
+test_unknown_capabilities_blocked (test_contracts.Contracts.test_unknown_capabilities_blocked) ... ok
+test_unknown_client_approval_field_rejected (test_contracts.Contracts.test_unknown_client_approval_field_rejected) ... ok
+test_unknown_definition_rejected (test_contracts.Contracts.test_unknown_definition_rejected) ... ok
+test_unresolved_approval_blocked (test_contracts.Contracts.test_unresolved_approval_blocked) ... ok
+test_work_package_dependencies_exist_and_acyclic (test_contracts.Contracts.test_work_package_dependencies_exist_and_acyclic) ... ok
+test_wrong_principal_and_epoch_blocked (test_contracts.Contracts.test_wrong_principal_and_epoch_blocked) ... ok
+
+----------------------------------------------------------------------
+Ran 34 tests in 4.634s
+
+OK

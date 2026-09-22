@@ -1,0 +1,86 @@
+{
+  "model_version": "0.3.0",
+  "fidelity": "synthetic_geometry_derived_whole_leg_resources",
+  "compile_hash": "d26c139b485a068855d537736eb71ca7c3feaae7d265086fb90858941ced929e",
+  "source_hash": "7bec1c0c58eef5b86557c2cdae76f7283b59901426ea34ecd43400f6dfca1566",
+  "time_profile": {
+    "speed_mps": 8.0,
+    "setup_ms": 5000,
+    "release_ms": 3000
+  },
+  "required_visits": 12,
+  "scheduled_visits": 0,
+  "unscheduled_visits": 12,
+  "completed_within_horizon": 0,
+  "scheduled_residual_at_horizon": 0,
+  "horizon_ms": 7200000,
+  "total_departure_delay_ms": 0,
+  "all_required_scheduled": false,
+  "candidate_evaluations": 0,
+  "assignments": [],
+  "rejected": [
+    {
+      "visit_id": "G01",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "G02",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "G03",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "G04",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "G05",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "G06",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "G07",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "G08",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "G09",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "G10",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "G11",
+      "reason": "no_legal_complete_opportunity"
+    },
+    {
+      "visit_id": "G12",
+      "reason": "no_legal_complete_opportunity"
+    }
+  ],
+  "trace": [],
+  "assessments": {
+    "calendar_invariants": "pass",
+    "pattern_geometry": "synthetic_planar_compiled",
+    "four_approach_eight_platform_station": "not_implemented",
+    "microscopic_train_motion": "unassessed",
+    "UK_turnout_and_clearance_compliance": "unassessed",
+    "real_interlocking": "unassessed",
+    "sectional_resource_release": "not_implemented",
+    "passenger_circulation": "unassessed",
+    "spatial_queue_spillback": "unassessed",
+    "game_construction": "not_tested",
+    "game_observation": "not_tested"
+  },
+  "scenario_id": "all_platforms_closed"
+}

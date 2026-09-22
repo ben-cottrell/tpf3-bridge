@@ -1,0 +1,343 @@
+{
+  "candidate_hash": "abf160e98e92cf9e03cb494fb9fef61312c6b729ea19a68a26bf862063da3aba",
+  "resource_hash": "10025a261b311d09f20aa59720eec0c32f2019aa7aa9305dcb3ca86d1a2459c7",
+  "resources": {
+    "body:D:SYNTH_IMPORT_T40": {
+      "kind": "exclusive",
+      "origin": "complete_component"
+    },
+    "body:M:SYNTH_IMPORT_T40": {
+      "kind": "exclusive",
+      "origin": "complete_component"
+    },
+    "state:D:T40_CTRL": {
+      "kind": "state",
+      "origin": "component_control"
+    },
+    "state:M:T40_CTRL": {
+      "kind": "state",
+      "origin": "component_control"
+    },
+    "track:D:normal": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:D:reverse": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:M:normal": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:M:reverse": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:east_approach": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:east_continuation": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:out_boundary": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:out_connector": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:return_boundary": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:return_connector": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:west_approach": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:west_exit": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:west_merge_exit": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    },
+    "track:west_restore": {
+      "kind": "exclusive",
+      "origin": "physical_edge"
+    }
+  },
+  "route_pairs": [
+    {
+      "a": "main_east",
+      "b": "main_west",
+      "incompatible_shared_resources": []
+    },
+    {
+      "a": "main_east",
+      "b": "branch_out",
+      "incompatible_shared_resources": [
+        "body:D:SYNTH_IMPORT_T40",
+        "state:D:T40_CTRL",
+        "track:east_approach"
+      ]
+    },
+    {
+      "a": "main_east",
+      "b": "branch_in",
+      "incompatible_shared_resources": []
+    },
+    {
+      "a": "main_west",
+      "b": "branch_out",
+      "incompatible_shared_resources": []
+    },
+    {
+      "a": "main_west",
+      "b": "branch_in",
+      "incompatible_shared_resources": [
+        "body:M:SYNTH_IMPORT_T40",
+        "state:M:T40_CTRL",
+        "track:west_exit",
+        "track:west_merge_exit"
+      ]
+    },
+    {
+      "a": "branch_out",
+      "b": "branch_in",
+      "incompatible_shared_resources": []
+    }
+  ],
+  "routes": {
+    "branch_in": {
+      "footprints": [
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:return_boundary",
+          "s0_m": 0.0,
+          "s1_m": 1500.0,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:return_connector",
+          "s0_m": 1500.0,
+          "s1_m": 4486.810524330036,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:M:reverse",
+          "s0_m": 4486.810524330036,
+          "s1_m": 4526.852267879078,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "complete_component",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "s0_m": 4486.810524330036,
+          "s1_m": 4526.852267879078,
+          "state": null
+        },
+        {
+          "kind": "state",
+          "origin": "component_control",
+          "resource": "state:M:T40_CTRL",
+          "s0_m": 4486.810524330036,
+          "s1_m": 4526.852267879078,
+          "state": "R"
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:west_merge_exit",
+          "s0_m": 4526.852267879078,
+          "s1_m": 4826.852267879078,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:west_exit",
+          "s0_m": 4826.852267879078,
+          "s1_m": 6035.130836264858,
+          "state": null
+        }
+      ],
+      "length_m": 6035.130836264858
+    },
+    "branch_out": {
+      "footprints": [
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:east_approach",
+          "s0_m": 0.0,
+          "s1_m": 1800.0,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:D:reverse",
+          "s0_m": 1800.0,
+          "s1_m": 1840.0417435490422,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "complete_component",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "s0_m": 1800.0,
+          "s1_m": 1840.0417435490422,
+          "state": null
+        },
+        {
+          "kind": "state",
+          "origin": "component_control",
+          "resource": "state:D:T40_CTRL",
+          "s0_m": 1800.0,
+          "s1_m": 1840.0417435490422,
+          "state": "R"
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:out_connector",
+          "s0_m": 1840.0417435490422,
+          "s1_m": 4513.146476393749,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:out_boundary",
+          "s0_m": 4513.146476393749,
+          "s1_m": 6013.146476393749,
+          "state": null
+        }
+      ],
+      "length_m": 6013.146476393749
+    },
+    "main_east": {
+      "footprints": [
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:east_approach",
+          "s0_m": 0.0,
+          "s1_m": 1800.0,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:D:normal",
+          "s0_m": 1800.0,
+          "s1_m": 1840.0,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "complete_component",
+          "resource": "body:D:SYNTH_IMPORT_T40",
+          "s0_m": 1800.0,
+          "s1_m": 1840.0,
+          "state": null
+        },
+        {
+          "kind": "state",
+          "origin": "component_control",
+          "resource": "state:D:T40_CTRL",
+          "s0_m": 1800.0,
+          "s1_m": 1840.0,
+          "state": "N"
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:east_continuation",
+          "s0_m": 1840.0,
+          "s1_m": 6000.0,
+          "state": null
+        }
+      ],
+      "length_m": 6000.0
+    },
+    "main_west": {
+      "footprints": [
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:west_restore",
+          "s0_m": 0.0,
+          "s1_m": 1506.637618232261,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:west_approach",
+          "s0_m": 1506.637618232261,
+          "s1_m": 4466.637618232261,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:M:normal",
+          "s0_m": 4466.637618232261,
+          "s1_m": 4506.637618232261,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "complete_component",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "s0_m": 4466.637618232261,
+          "s1_m": 4506.637618232261,
+          "state": null
+        },
+        {
+          "kind": "state",
+          "origin": "component_control",
+          "resource": "state:M:T40_CTRL",
+          "s0_m": 4466.637618232261,
+          "s1_m": 4506.637618232261,
+          "state": "N"
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:west_merge_exit",
+          "s0_m": 4506.637618232261,
+          "s1_m": 4806.637618232261,
+          "state": null
+        },
+        {
+          "kind": "exclusive",
+          "origin": "physical_edge",
+          "resource": "track:west_exit",
+          "s0_m": 4806.637618232261,
+          "s1_m": 6014.916186618041,
+          "state": null
+        }
+      ],
+      "length_m": 6014.916186618041
+    }
+  },
+  "scope": "physical edge/component and declared crossing model; not full dynamic gauging or actual signalling",
+  "version": "0.10.0"
+}

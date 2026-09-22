@@ -1,0 +1,188 @@
+{
+  "full_UK_gauging": "unassessed",
+  "long_body_counterexample": {
+    "body": {
+      "bogie_centres_m": 19.0,
+      "fidelity": "synthetic",
+      "lateral_allowance_m": 0.1,
+      "length_m": 26.0,
+      "profile_id": "synthetic_body",
+      "width_m": 2.8
+    },
+    "origin": "wholly synthetic 26 m body, 19 m pivots, 0.1 m allowance each",
+    "result": {
+      "full_UK_gauging": "unassessed",
+      "gap_m": -0.1511501450098649,
+      "inner": {
+        "bogie_arc_separation_m": 19.01272483358367,
+        "centre_inthrow_m": 0.30113560884972435,
+        "full_UK_gauging": "unassessed",
+        "inner_radius_m": 148.19886439115027,
+        "origin": "analytic rigid rectangular body; fixed bogie chord; zero roll",
+        "outer_excursion_m": 1.7567019711928538,
+        "outer_radius_m": 151.75670197119285,
+        "profile_hash": "7cfd31414a12201bf0a5e12f344528ee1578a32e55badd01d85efdf150ddce55",
+        "radius_m": 150.0
+      },
+      "may_remove_existing_resource": false,
+      "outer": {
+        "bogie_arc_separation_m": 19.012166045767813,
+        "centre_inthrow_m": 0.2944481738170279,
+        "full_UK_gauging": "unassessed",
+        "inner_radius_m": 151.605551826183,
+        "origin": "analytic rigid rectangular body; fixed bogie chord; zero roll",
+        "outer_excursion_m": 1.7511413283142758,
+        "outer_radius_m": 155.15114132831428,
+        "profile_hash": "7cfd31414a12201bf0a5e12f344528ee1578a32e55badd01d85efdf150ddce55",
+        "radius_m": 153.4
+      },
+      "scope": "full concentric circular sweeps; arbitrary relative phase",
+      "status": "geometric_contact_or_overlap"
+    }
+  },
+  "nominal_spacing_applicability": "3.4 m source reference only for straight/R>=400m; smaller radii are deliberate stress cases, not authorised GB defaults",
+  "origin": "20 m and 2.8 m catalogue-informed body; bogie spacing assumed",
+  "rows": [
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 12.0,
+      "gap_m": 0.6000000000000001,
+      "radius_m": null,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 12.0,
+      "centre_inthrow_m": 0.12004803843844306,
+      "gap_m": 0.272510039735522,
+      "radius_m": 150.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 12.0,
+      "centre_inthrow_m": 0.0720103709870594,
+      "gap_m": 0.402101927953197,
+      "radius_m": 250.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 12.0,
+      "centre_inthrow_m": 0.04500253153480568,
+      "gap_m": 0.4758206748941234,
+      "radius_m": 400.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 12.0,
+      "centre_inthrow_m": 0.022500316415149237,
+      "gap_m": 0.5377050851411695,
+      "radius_m": 800.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 12.0,
+      "centre_inthrow_m": 0.012000048000384003,
+      "gap_m": 0.5667249907419318,
+      "radius_m": 1500.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 14.0,
+      "gap_m": 0.6000000000000001,
+      "radius_m": null,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 14.0,
+      "centre_inthrow_m": 0.16342235622171017,
+      "gap_m": 0.27337867851883857,
+      "radius_m": 150.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 14.0,
+      "centre_inthrow_m": 0.0980192155332275,
+      "gap_m": 0.4024305694092334,
+      "radius_m": 250.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 14.0,
+      "centre_inthrow_m": 0.06125469017133499,
+      "gap_m": 0.4759526474352356,
+      "radius_m": 400.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 14.0,
+      "centre_inthrow_m": 0.030625586204081467,
+      "gap_m": 0.5377388411264974,
+      "radius_m": 800.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 14.0,
+      "centre_inthrow_m": 0.016333422260227576,
+      "gap_m": 0.5667346949114744,
+      "radius_m": 1500.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 16.0,
+      "gap_m": 0.6000000000000001,
+      "radius_m": null,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 16.0,
+      "centre_inthrow_m": 0.21348525317774789,
+      "gap_m": 0.27438186992418423,
+      "radius_m": 150.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 16.0,
+      "centre_inthrow_m": 0.12803278478796112,
+      "gap_m": 0.40280989684836754,
+      "radius_m": 250.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 16.0,
+      "centre_inthrow_m": 0.08000800160040011,
+      "gap_m": 0.47610494326551134,
+      "radius_m": 400.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 16.0,
+      "centre_inthrow_m": 0.04000100005000312,
+      "gap_m": 0.5377777916129389,
+      "radius_m": 800.0,
+      "status": "geometric_gap"
+    },
+    {
+      "allowance_each_m": 0.0,
+      "bogie_centres_m": 16.0,
+      "centre_inthrow_m": 0.02133348503919464,
+      "gap_m": 0.5667458921345769,
+      "radius_m": 1500.0,
+      "status": "geometric_gap"
+    }
+  ]
+}

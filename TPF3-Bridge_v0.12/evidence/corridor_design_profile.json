@@ -1,0 +1,59 @@
+{
+  "schema_version": "0.9.0",
+  "mode": "gb_reference_inspired",
+  "complete_uk_profile": false,
+  "reference_parameters": [
+    {
+      "quantity": "track_centres",
+      "value": 3.4,
+      "units": "m",
+      "source_id": "S058",
+      "source_issue": "2",
+      "clause": "7.7.17.3(1)",
+      "review_date": "2026-09-21",
+      "kind": "nominal_reference",
+      "applicability": "GB case; straight or curve radius at least 400 m; no reduced-spacing branch enabled",
+      "not_implied": "dynamic gauge or structure compatibility"
+    }
+  ],
+  "project_targets": {
+    "speed_mph": 60,
+    "min_radius_m": 1500,
+    "max_grade": 0.01,
+    "min_vertical_radius_m": 5000,
+    "max_lateral_accel_mps2": 0.65,
+    "max_lateral_jerk_mps3": 0.15,
+    "cant_mm": 0
+  },
+  "civil_estimate_assumptions": {
+    "formation_width_m": 8,
+    "rail_to_formation_m": 0.8,
+    "side_slope_hv": 1.5,
+    "max_open_cut_m": 8,
+    "max_embankment_m": 6,
+    "deck_depth_m": 1.2,
+    "water_freeboard_m": 2,
+    "grid_step_m": 20
+  },
+  "crossing_envelope_assumptions": {
+    "crossing_x_m": 5400,
+    "height_m": 7.5,
+    "ramp_lengths_m": [
+      600,
+      750,
+      900
+    ],
+    "plateau_m": 100,
+    "max_grade": 0.02,
+    "min_vertical_radius_m": 5000,
+    "lower_envelope_m": 4.5,
+    "electrification_m": 0.8,
+    "deck_depth_m": 1.2,
+    "allowance_m": 0.3,
+    "track_half_width_m": 2,
+    "train_length_m": 242.6
+  },
+  "interpretation": "60 mph, 1 in 100 main grade, 1 in 50 branch ramp grade, 1500 m main radius and all civil budgets are declared game-design targets, not purported Network Rail standards.",
+  "freeze_station_internals_at": "0.8.0",
+  "runtime_values_from": "proof/corridor_fixtures/release.json"
+}

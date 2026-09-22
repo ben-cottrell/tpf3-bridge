@@ -1,0 +1,180 @@
+{
+  "all_required_completed_within_horizon": false,
+  "all_required_scheduled": false,
+  "allow_recovery": true,
+  "assessments": {
+    "UK_component_and_vehicle_gauging": "unassessed",
+    "braking_curve_validation": "uncalibrated",
+    "eight_platform_station": "composed_synthetic; original_site_conformance_checked_separately",
+    "explicit_four_approach_geometry": "compiled_synthetic",
+    "full_UK_engineering_profile": "incomplete; selected rule checks do not promote this assembly",
+    "game_construction": "not_tested",
+    "kinematics": "analytic_constant_acceleration_level_track_only",
+    "passenger_circulation": "unassessed",
+    "real_interlocking": "unassessed",
+    "reservation_invariants": "pass",
+    "sectional_release": "synthetic_edge_sections",
+    "shared_throat": "per-bank fan plus any used recovery-link resources; combined compiler",
+    "spatial_queues": "unassessed; waiting_outside_model is a temporal count"
+  },
+  "assignments": [],
+  "candidate_assessment_hash": "dcba98d0cd08e6f467ebc648e057c2b4defb98e960a889f85559448adb41c09c",
+  "candidate_evaluations": 0,
+  "closed_edges": [],
+  "closed_platforms": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+  ],
+  "compile_hash": "044f107b18d571d026ee3a000369396609021ad6a46070d726132b0392a56c3c",
+  "completed_within_horizon": 0,
+  "construction_authorised": false,
+  "family": "b_to_a",
+  "fidelity": "synthetic_geometry_and_release; selected_UK_values_separate",
+  "formation_origin": "retained_S060_published_unit_length",
+  "horizon_ms": 14400000,
+  "independent_check": {
+    "checker": "independent_interval_sweep_and_complete_visit_invariants_v06",
+    "compile_hash": "044f107b18d571d026ee3a000369396609021ad6a46070d726132b0392a56c3c",
+    "conflict_witnesses": [],
+    "errors": [],
+    "required_visits": 24,
+    "scope": "reservation verification; not real-world or game validation",
+    "status": "pass"
+  },
+  "mode": "sectional_release",
+  "model_version": "0.6.0",
+  "plan_contract_passed": true,
+  "profile": {
+    "acceleration_mps2": 0.6,
+    "braking_mps2": 0.7,
+    "provenance": "project_selected_uncalibrated_level_track_profile",
+    "release_ms": 3000,
+    "setup_ms": 5000,
+    "speed_mps": 6.7056
+  },
+  "rejected": [
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A01"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B01"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A02"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B02"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A03"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B03"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A04"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B04"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A05"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B05"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A06"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B06"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A07"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B07"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A08"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B08"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A09"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B09"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A10"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B10"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A11"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B11"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "A12"
+    },
+    {
+      "reason": "no_legal_complete_opportunity",
+      "visit_id": "B12"
+    }
+  ],
+  "release_version": "0.7.0",
+  "required_visits": 24,
+  "scenario_hash": "c52042561b99a729d7036a047d222a50eb99e75fbfe1196e2ca9f46f5b045224",
+  "scenario_id": "all_platforms_closed",
+  "scheduled_residual_at_horizon": 0,
+  "scheduled_states_at_horizon": {
+    "arrival_setup": 0,
+    "arriving": 0,
+    "berthed": 0,
+    "completed": 0,
+    "departing": 0,
+    "departure_setup": 0,
+    "not_yet_due": 0,
+    "release_hold": 0,
+    "waiting_outside_model": 0
+  },
+  "scheduled_visits": 0,
+  "total_departure_delay_ms": 0,
+  "total_recovery_legs": 0,
+  "unscheduled_visits": 24,
+  "vehicle_record_hash": "40bdbe8de0c14359c11f282436b095d693d302a12ca54047133af4bda641e331"
+}

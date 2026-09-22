@@ -1,0 +1,477 @@
+{
+  "clean": {
+    "actual_bridge_or_tunnel_asset_built": false,
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "recovered_acknowledgements": 0,
+    "rollback_attempted": false,
+    "status": "mock_terrain_junction_verified",
+    "terrain_snapshot_rechecked": true,
+    "topology_check": {
+      "errors": [],
+      "passed": true,
+      "scope": "mock shared-edge topology, legal traversal, and declared crossing geometry; no actual train has run"
+    },
+    "trace": [
+      {
+        "operation_id": "058fdbbb5a3a9acd2bb80192fad0225f09f966b7d8e96d9fed5b2358c4a1f621",
+        "verified": true
+      },
+      {
+        "operation_id": "5d68be2aba1786cc3e906055074da7684d9e8af905c7a9e5183ca486f4fa9e19",
+        "verified": true
+      },
+      {
+        "operation_id": "87b2b9a84b9e971c43f1bf750c7d355de9a37a6593e94b30ad664cce9c9bd9e9",
+        "verified": true
+      },
+      {
+        "operation_id": "45dd602f87bf6eb6ce2031ef862cc6121cc9371575d0322972a74ee6d886d2e4",
+        "verified": true
+      },
+      {
+        "operation_id": "fd4aab824c8de516302822ee9d0ff95a312c41c9977ce1591a3cfc4e54a68c26",
+        "verified": true
+      },
+      {
+        "operation_id": "79af0dc55782de5783bff39772dea04640353ee719e8cc8d7765dd0ee2be04a3",
+        "verified": true
+      },
+      {
+        "operation_id": "c41b0c6be883eed0cae4539dbbad0b44c9cfd9991a041128ea89dec1f65b11df",
+        "verified": true
+      },
+      {
+        "operation_id": "9b63b837dc29f0f10c73fc13fd3cf4a6e0194b0c04dcc33985d5913912278985",
+        "verified": true
+      },
+      {
+        "operation_id": "cdb84e82879253bb415fd52414ba3759270a0c27fd002be07dc9136a21eb4b95",
+        "verified": true
+      },
+      {
+        "operation_id": "70f625ad0bf616f0c85ce4565006aaf18b90efe67db1046815b4395df2d65d4b",
+        "verified": true
+      },
+      {
+        "operation_id": "ccd6079c5f2822eeacad68daab637421b1006be96174215933dc73305bbbbcb7",
+        "verified": true
+      },
+      {
+        "operation_id": "f1bb687b458a2b40e70b94246f934dea3900f6ed19584e361793f7bfe773cf0a",
+        "verified": true
+      },
+      {
+        "operation_id": "dac9f420c796c4cf03147c0c27a07b9bad25cdac15b8f09ef697b9ebe75dba0d",
+        "verified": true
+      },
+      {
+        "operation_id": "aef2b51a9914d25a7563358c22dfd66bb8b85ac1d3499278898c41cea7fc0b83",
+        "verified": true
+      },
+      {
+        "operation_id": "bc2cf61818dc4f56c843096c332262babf3e8de762e1c45f3c7ee412554675ee",
+        "verified": true
+      },
+      {
+        "operation_id": "860cb28af0546c98d49a0911f2f3f98bcc7c087b131ff8931fd2ca97a3c48059",
+        "verified": true
+      },
+      {
+        "operation_id": "076871d3fae0b5fad9fb745331f32eaa130c6703fce74ca5d361effe39ad0fc3",
+        "verified": true
+      }
+    ],
+    "writes": 17
+  },
+  "lost_land_ack": {
+    "actual_bridge_or_tunnel_asset_built": false,
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "recovered_acknowledgements": 1,
+    "rollback_attempted": false,
+    "status": "mock_terrain_junction_verified",
+    "terrain_snapshot_rechecked": true,
+    "topology_check": {
+      "errors": [],
+      "passed": true,
+      "scope": "mock shared-edge topology, legal traversal, and declared crossing geometry; no actual train has run"
+    },
+    "trace": [
+      {
+        "operation_id": "058fdbbb5a3a9acd2bb80192fad0225f09f966b7d8e96d9fed5b2358c4a1f621",
+        "verified": true
+      },
+      {
+        "operation_id": "5d68be2aba1786cc3e906055074da7684d9e8af905c7a9e5183ca486f4fa9e19",
+        "verified": true
+      },
+      {
+        "operation_id": "87b2b9a84b9e971c43f1bf750c7d355de9a37a6593e94b30ad664cce9c9bd9e9",
+        "verified": true
+      },
+      {
+        "operation_id": "45dd602f87bf6eb6ce2031ef862cc6121cc9371575d0322972a74ee6d886d2e4",
+        "verified": true
+      },
+      {
+        "operation_id": "fd4aab824c8de516302822ee9d0ff95a312c41c9977ce1591a3cfc4e54a68c26",
+        "verified": true
+      },
+      {
+        "operation_id": "79af0dc55782de5783bff39772dea04640353ee719e8cc8d7765dd0ee2be04a3",
+        "verified": true
+      },
+      {
+        "operation_id": "c41b0c6be883eed0cae4539dbbad0b44c9cfd9991a041128ea89dec1f65b11df",
+        "verified": true
+      },
+      {
+        "operation_id": "9b63b837dc29f0f10c73fc13fd3cf4a6e0194b0c04dcc33985d5913912278985",
+        "verified": true
+      },
+      {
+        "operation_id": "cdb84e82879253bb415fd52414ba3759270a0c27fd002be07dc9136a21eb4b95",
+        "verified": true
+      },
+      {
+        "operation_id": "70f625ad0bf616f0c85ce4565006aaf18b90efe67db1046815b4395df2d65d4b",
+        "verified": true
+      },
+      {
+        "operation_id": "ccd6079c5f2822eeacad68daab637421b1006be96174215933dc73305bbbbcb7",
+        "verified": true
+      },
+      {
+        "operation_id": "f1bb687b458a2b40e70b94246f934dea3900f6ed19584e361793f7bfe773cf0a",
+        "verified": true
+      },
+      {
+        "operation_id": "dac9f420c796c4cf03147c0c27a07b9bad25cdac15b8f09ef697b9ebe75dba0d",
+        "verified": true
+      },
+      {
+        "operation_id": "aef2b51a9914d25a7563358c22dfd66bb8b85ac1d3499278898c41cea7fc0b83",
+        "verified": true
+      },
+      {
+        "operation_id": "bc2cf61818dc4f56c843096c332262babf3e8de762e1c45f3c7ee412554675ee",
+        "verified": true
+      },
+      {
+        "operation_id": "860cb28af0546c98d49a0911f2f3f98bcc7c087b131ff8931fd2ca97a3c48059",
+        "verified": true
+      },
+      {
+        "operation_id": "076871d3fae0b5fad9fb745331f32eaa130c6703fce74ca5d361effe39ad0fc3",
+        "verified": true
+      }
+    ],
+    "writes": 17
+  },
+  "lost_track_ack": {
+    "actual_bridge_or_tunnel_asset_built": false,
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "recovered_acknowledgements": 1,
+    "rollback_attempted": false,
+    "status": "mock_terrain_junction_verified",
+    "terrain_snapshot_rechecked": true,
+    "topology_check": {
+      "errors": [],
+      "passed": true,
+      "scope": "mock shared-edge topology, legal traversal, and declared crossing geometry; no actual train has run"
+    },
+    "trace": [
+      {
+        "operation_id": "058fdbbb5a3a9acd2bb80192fad0225f09f966b7d8e96d9fed5b2358c4a1f621",
+        "verified": true
+      },
+      {
+        "operation_id": "5d68be2aba1786cc3e906055074da7684d9e8af905c7a9e5183ca486f4fa9e19",
+        "verified": true
+      },
+      {
+        "operation_id": "87b2b9a84b9e971c43f1bf750c7d355de9a37a6593e94b30ad664cce9c9bd9e9",
+        "verified": true
+      },
+      {
+        "operation_id": "45dd602f87bf6eb6ce2031ef862cc6121cc9371575d0322972a74ee6d886d2e4",
+        "verified": true
+      },
+      {
+        "operation_id": "fd4aab824c8de516302822ee9d0ff95a312c41c9977ce1591a3cfc4e54a68c26",
+        "verified": true
+      },
+      {
+        "operation_id": "79af0dc55782de5783bff39772dea04640353ee719e8cc8d7765dd0ee2be04a3",
+        "verified": true
+      },
+      {
+        "operation_id": "c41b0c6be883eed0cae4539dbbad0b44c9cfd9991a041128ea89dec1f65b11df",
+        "verified": true
+      },
+      {
+        "operation_id": "9b63b837dc29f0f10c73fc13fd3cf4a6e0194b0c04dcc33985d5913912278985",
+        "verified": true
+      },
+      {
+        "operation_id": "cdb84e82879253bb415fd52414ba3759270a0c27fd002be07dc9136a21eb4b95",
+        "verified": true
+      },
+      {
+        "operation_id": "70f625ad0bf616f0c85ce4565006aaf18b90efe67db1046815b4395df2d65d4b",
+        "verified": true
+      },
+      {
+        "operation_id": "ccd6079c5f2822eeacad68daab637421b1006be96174215933dc73305bbbbcb7",
+        "verified": true
+      },
+      {
+        "operation_id": "f1bb687b458a2b40e70b94246f934dea3900f6ed19584e361793f7bfe773cf0a",
+        "verified": true
+      },
+      {
+        "operation_id": "dac9f420c796c4cf03147c0c27a07b9bad25cdac15b8f09ef697b9ebe75dba0d",
+        "verified": true
+      },
+      {
+        "operation_id": "aef2b51a9914d25a7563358c22dfd66bb8b85ac1d3499278898c41cea7fc0b83",
+        "verified": true
+      },
+      {
+        "operation_id": "bc2cf61818dc4f56c843096c332262babf3e8de762e1c45f3c7ee412554675ee",
+        "verified": true
+      },
+      {
+        "operation_id": "860cb28af0546c98d49a0911f2f3f98bcc7c087b131ff8931fd2ca97a3c48059",
+        "verified": true
+      },
+      {
+        "operation_id": "076871d3fae0b5fad9fb745331f32eaa130c6703fce74ca5d361effe39ad0fc3",
+        "verified": true
+      }
+    ],
+    "writes": 17
+  },
+  "partial_failure": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "reason": "injected failure",
+    "rollback_attempted": false,
+    "status": "partial_failure",
+    "trace": [
+      {
+        "operation_id": "058fdbbb5a3a9acd2bb80192fad0225f09f966b7d8e96d9fed5b2358c4a1f621",
+        "verified": true
+      },
+      {
+        "operation_id": "5d68be2aba1786cc3e906055074da7684d9e8af905c7a9e5183ca486f4fa9e19",
+        "verified": true
+      },
+      {
+        "operation_id": "87b2b9a84b9e971c43f1bf750c7d355de9a37a6593e94b30ad664cce9c9bd9e9",
+        "verified": true
+      }
+    ],
+    "writes": 3
+  },
+  "protected_land_changed": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "reasons": [
+      "site_constraints_changed",
+      "snapshot_content_changed"
+    ],
+    "rollback_attempted": false,
+    "status": "preflight_blocked",
+    "trace": [],
+    "writes": 0
+  },
+  "repeat": {
+    "actual_bridge_or_tunnel_asset_built": false,
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "recovered_acknowledgements": 0,
+    "rollback_attempted": false,
+    "status": "mock_terrain_junction_verified",
+    "terrain_snapshot_rechecked": true,
+    "topology_check": {
+      "errors": [],
+      "passed": true,
+      "scope": "mock shared-edge topology, legal traversal, and declared crossing geometry; no actual train has run"
+    },
+    "trace": [
+      {
+        "operation_id": "058fdbbb5a3a9acd2bb80192fad0225f09f966b7d8e96d9fed5b2358c4a1f621",
+        "verified": true
+      },
+      {
+        "operation_id": "5d68be2aba1786cc3e906055074da7684d9e8af905c7a9e5183ca486f4fa9e19",
+        "verified": true
+      },
+      {
+        "operation_id": "87b2b9a84b9e971c43f1bf750c7d355de9a37a6593e94b30ad664cce9c9bd9e9",
+        "verified": true
+      },
+      {
+        "operation_id": "45dd602f87bf6eb6ce2031ef862cc6121cc9371575d0322972a74ee6d886d2e4",
+        "verified": true
+      },
+      {
+        "operation_id": "fd4aab824c8de516302822ee9d0ff95a312c41c9977ce1591a3cfc4e54a68c26",
+        "verified": true
+      },
+      {
+        "operation_id": "79af0dc55782de5783bff39772dea04640353ee719e8cc8d7765dd0ee2be04a3",
+        "verified": true
+      },
+      {
+        "operation_id": "c41b0c6be883eed0cae4539dbbad0b44c9cfd9991a041128ea89dec1f65b11df",
+        "verified": true
+      },
+      {
+        "operation_id": "9b63b837dc29f0f10c73fc13fd3cf4a6e0194b0c04dcc33985d5913912278985",
+        "verified": true
+      },
+      {
+        "operation_id": "cdb84e82879253bb415fd52414ba3759270a0c27fd002be07dc9136a21eb4b95",
+        "verified": true
+      },
+      {
+        "operation_id": "70f625ad0bf616f0c85ce4565006aaf18b90efe67db1046815b4395df2d65d4b",
+        "verified": true
+      },
+      {
+        "operation_id": "ccd6079c5f2822eeacad68daab637421b1006be96174215933dc73305bbbbcb7",
+        "verified": true
+      },
+      {
+        "operation_id": "f1bb687b458a2b40e70b94246f934dea3900f6ed19584e361793f7bfe773cf0a",
+        "verified": true
+      },
+      {
+        "operation_id": "dac9f420c796c4cf03147c0c27a07b9bad25cdac15b8f09ef697b9ebe75dba0d",
+        "verified": true
+      },
+      {
+        "operation_id": "aef2b51a9914d25a7563358c22dfd66bb8b85ac1d3499278898c41cea7fc0b83",
+        "verified": true
+      },
+      {
+        "operation_id": "bc2cf61818dc4f56c843096c332262babf3e8de762e1c45f3c7ee412554675ee",
+        "verified": true
+      },
+      {
+        "operation_id": "860cb28af0546c98d49a0911f2f3f98bcc7c087b131ff8931fd2ca97a3c48059",
+        "verified": true
+      },
+      {
+        "operation_id": "076871d3fae0b5fad9fb745331f32eaa130c6703fce74ca5d361effe39ad0fc3",
+        "verified": true
+      }
+    ],
+    "writes": 17
+  },
+  "stale_world": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "reasons": [
+      "stale_world"
+    ],
+    "rollback_attempted": false,
+    "status": "preflight_blocked",
+    "trace": [],
+    "writes": 0
+  },
+  "terrain_changed_same_revision": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "reasons": [
+      "snapshot_content_changed",
+      "terrain_content_changed"
+    ],
+    "rollback_attempted": false,
+    "status": "preflight_blocked",
+    "trace": [],
+    "writes": 0
+  },
+  "terrain_changes_after_first_write": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "reasons": [
+      "snapshot_content_changed",
+      "terrain_content_changed"
+    ],
+    "rollback_attempted": false,
+    "status": "environment_changed",
+    "trace": [],
+    "writes": 1
+  },
+  "unprobed_game": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "reasons": [
+      "capability_unknown:construct.junction_track3",
+      "capability_unknown:construct.junction_turnout3",
+      "capability_unknown:declare.junction_crossing",
+      "capability_unknown:query.junction_geometry_topology",
+      "capability_unknown:query.operation_receipt",
+      "capability_unknown:reserve.junction_crossing_envelope",
+      "capability_unknown:reserve.terrain_junction_land",
+      "real_game_not_connected"
+    ],
+    "rollback_attempted": false,
+    "status": "preflight_blocked",
+    "trace": [],
+    "writes": 0
+  },
+  "wrong_coordinate": {
+    "environment": "mock",
+    "game_constructed": false,
+    "operation_id": "87b2b9a84b9e971c43f1bf750c7d355de9a37a6593e94b30ad664cce9c9bd9e9",
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "rollback_attempted": false,
+    "status": "realised_geometry_or_semantics_mismatch",
+    "trace": [
+      {
+        "operation_id": "058fdbbb5a3a9acd2bb80192fad0225f09f966b7d8e96d9fed5b2358c4a1f621",
+        "verified": true
+      },
+      {
+        "operation_id": "5d68be2aba1786cc3e906055074da7684d9e8af905c7a9e5183ca486f4fa9e19",
+        "verified": true
+      }
+    ],
+    "writes": 3
+  },
+  "wrong_turnout_state": {
+    "environment": "mock",
+    "game_constructed": false,
+    "operation_id": "87b2b9a84b9e971c43f1bf750c7d355de9a37a6593e94b30ad664cce9c9bd9e9",
+    "plan_hash": "c3bc365322ae1f438c510f312d16fa0dbd4718e57976727698fe529a6b255554",
+    "rollback_attempted": false,
+    "status": "realised_geometry_or_semantics_mismatch",
+    "trace": [
+      {
+        "operation_id": "058fdbbb5a3a9acd2bb80192fad0225f09f966b7d8e96d9fed5b2358c4a1f621",
+        "verified": true
+      },
+      {
+        "operation_id": "5d68be2aba1786cc3e906055074da7684d9e8af905c7a9e5183ca486f4fa9e19",
+        "verified": true
+      }
+    ],
+    "writes": 3
+  }
+}

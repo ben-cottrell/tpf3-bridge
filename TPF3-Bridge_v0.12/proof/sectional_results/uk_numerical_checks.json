@@ -1,0 +1,162 @@
+{
+  "gauge": {
+    "status": "reference_value",
+    "parameter_id": "GB_NOMINAL_GAUGE",
+    "value": 1435,
+    "units": "mm",
+    "source_id": "S058",
+    "clause": "4.2.4.1(1)",
+    "not_assessed": [
+      "gauge tolerances",
+      "gauge widening",
+      "track condition"
+    ]
+  },
+  "centres_straight": {
+    "status": "reference_value",
+    "parameter_id": "GB_NOMINAL_TRACK_CENTRES",
+    "value": 3.4,
+    "units": "m",
+    "source_id": "S058",
+    "clause": "7.7.17.3(1)",
+    "not_assessed": [
+      "swept vehicle clearance",
+      "aerodynamic or route-specific constraints",
+      "platform island space",
+      "exceptions and national technical rules"
+    ]
+  },
+  "centres_radius_below_scope": {
+    "status": "unassessed",
+    "reason": "radius outside imported GB nominal-centres scope"
+  },
+  "new_line_radius_at_floor": {
+    "status": "pass",
+    "parameter_id": "NEW_LINE_HORIZONTAL_RADIUS_FLOOR",
+    "value_m": 150,
+    "limit_m": 150,
+    "source_id": "S058",
+    "clause": "4.2.3.4(1)",
+    "scope": "base floor only; speed, reverse curves and platform criteria remain separate"
+  },
+  "same_radius_at_platform": {
+    "status": "fail",
+    "rule_id": "NTSN2_PLATFORM_RADIUS",
+    "source_id": "S058",
+    "clause": "4.2.9.4(1)",
+    "value_m": 150,
+    "limit_m": 300
+  },
+  "platform_radius_at_floor": {
+    "status": "pass",
+    "rule_id": "NTSN2_PLATFORM_RADIUS",
+    "source_id": "S058",
+    "clause": "4.2.9.4(1)",
+    "value_m": 300,
+    "limit_m": 300
+  },
+  "platform_cant_boundary": {
+    "status": "pass",
+    "rule_id": "NTSN2_PLATFORM_CANT",
+    "source_id": "S058",
+    "clause": "4.2.4.2(2)",
+    "value_mm": 110,
+    "limit_mm": 110
+  },
+  "crest_boundary": {
+    "status": "pass",
+    "parameter_id": "VERTICAL_CREST_FLOOR",
+    "value_m": 500,
+    "limit_m": 500,
+    "source_id": "S058",
+    "clause": "4.2.3.5(1)",
+    "scope": "base floor only, not a speed-dependent vertical design"
+  },
+  "sag_same_radius": {
+    "status": "fail",
+    "parameter_id": "VERTICAL_SAG_FLOOR",
+    "value_m": 500,
+    "limit_m": 900,
+    "source_id": "S058",
+    "clause": "4.2.3.5(1)",
+    "scope": "base floor only, not a speed-dependent vertical design"
+  },
+  "sag_boundary": {
+    "status": "pass",
+    "parameter_id": "VERTICAL_SAG_FLOOR",
+    "value_m": 900,
+    "limit_m": 900,
+    "source_id": "S058",
+    "clause": "4.2.3.5(1)",
+    "scope": "base floor only, not a speed-dependent vertical design"
+  },
+  "coupling_gradient_boundary": {
+    "status": "pass",
+    "parameter_id": "NEW_COUPLING_PLATFORM_GRADIENT",
+    "value_fraction": 0.0025,
+    "limit_fraction": 0.0025,
+    "source_id": "S058",
+    "clause": "4.2.3.3(1)",
+    "scope": "not a universal station-gradient rule"
+  },
+  "ordinary_platform_gradient_not_this_clause": {
+    "status": "not_applicable",
+    "reason": "not the new-line regular attachment/detachment case"
+  },
+  "platform_interface": {
+    "status": "unassessed",
+    "source_id": "S058",
+    "clauses": [
+      "7.7.17.6",
+      "7.7.17.7"
+    ],
+    "reason": "selected national-rule platform height/offset route not numerically imported"
+  },
+  "passenger_width_partial": {
+    "status": "guidance_calculation",
+    "zone_B_m": 3.72,
+    "zone_C_m": 1.0,
+    "source_id": "S040",
+    "printed_pages": [
+      42,
+      43
+    ],
+    "full_platform_width_status": "unassessed",
+    "not_included": [
+      "Zone A edge treatment",
+      "Zone D and obstacles",
+      "island opposite face",
+      "accessibility and minimum widths",
+      "demand validation"
+    ],
+    "demand_condition": "B and C populations must not be double-counted"
+  },
+  "strict_admission": {
+    "mode": "gb_rules_strict",
+    "offline_analysis_allowed": false,
+    "UK_profile_gate": "not_passed",
+    "construction_authorised": false,
+    "game_status": "not_tested",
+    "unresolved": [
+      "vehicle_gauging",
+      "real_release_rules",
+      "authentic_component_catalogue"
+    ],
+    "synthetic_components": true,
+    "scope": "input admission only; no legal, safety or whole-network certification"
+  },
+  "reference_inspired_admission": {
+    "mode": "gb_reference_inspired",
+    "offline_analysis_allowed": true,
+    "UK_profile_gate": "not_passed",
+    "construction_authorised": false,
+    "game_status": "not_tested",
+    "unresolved": [
+      "vehicle_gauging",
+      "real_release_rules",
+      "authentic_component_catalogue"
+    ],
+    "synthetic_components": true,
+    "scope": "input admission only; no legal, safety or whole-network certification"
+  }
+}

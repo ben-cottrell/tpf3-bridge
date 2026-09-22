@@ -1,0 +1,449 @@
+{
+  "clean": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "0ee0f3962f87976372f2d6d2737676a108e4dfb703591074b6efe82d08ce5bf3",
+    "recovered_acknowledgements": 0,
+    "rollback_attempted": false,
+    "status": "mock_junction_verified",
+    "topology_check": {
+      "errors": [],
+      "passed": true,
+      "scope": "mock shared-edge topology, legal traversal, and declared crossing geometry; no actual train has run"
+    },
+    "trace": [
+      {
+        "operation_id": "72c3c753ec8de1fea3c0cc195b685b35abf3bc702a5eadf0641b5db1ecbe5432",
+        "verified": true
+      },
+      {
+        "operation_id": "524802959dfd81ef47b537bd0d36b448a4dd2c24d6387ef1228bd32a4a9026ad",
+        "verified": true
+      },
+      {
+        "operation_id": "590901d51d157e7db36bf2ab591d3a7b7c736afffd96a9231f01c30e35a4fb82",
+        "verified": true
+      },
+      {
+        "operation_id": "a90ee6aac43161c54cf2295ac460c9b36eb118413cf3eb8d947d89c443889f98",
+        "verified": true
+      },
+      {
+        "operation_id": "6f09f07ae37a55c4aa60ebc425cf6ed374d1455e1541e1a3f3b7a70ad418a31b",
+        "verified": true
+      },
+      {
+        "operation_id": "77dcbc66ce0acadd17b9bfc6288bb7cedd157d29b70734810cd56a39c66586ad",
+        "verified": true
+      },
+      {
+        "operation_id": "9eb342adcca935c60c5f09d80b476b9220c979f213e92eb21c3241ffd92822a2",
+        "verified": true
+      },
+      {
+        "operation_id": "6f6532eecd3700127fad62392e302a0d7f8eda537e9c19295de477507920ec76",
+        "verified": true
+      },
+      {
+        "operation_id": "8ecce423c75b9332f926536904ccc0867932593a5be2140bb08423ee3f7743fe",
+        "verified": true
+      },
+      {
+        "operation_id": "b47f26da75b559ce04ebf7561b940a4984d0941b9b6e34c0ab136afc515fa1b6",
+        "verified": true
+      },
+      {
+        "operation_id": "38c3ad4721541cfa6b64dbfc669689ff54db6435ee977fdc9873d0a2e1995d8b",
+        "verified": true
+      },
+      {
+        "operation_id": "13115bd3a648dca0db2a34d59404377f7aed06defa405cba65aded0a48d1350b",
+        "verified": true
+      },
+      {
+        "operation_id": "8e3edb312b3ab0f6ca5caada83ec673aa31fc43e59c0231e5d8aa5ba3a3570f6",
+        "verified": true
+      },
+      {
+        "operation_id": "6e9a6e7024118aa1c6351b53681d57ce16acab7ced893ec5e831e765dd715c3f",
+        "verified": true
+      }
+    ],
+    "writes": 14
+  },
+  "diveunder": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "b41ff49e79e3d6a3b3080653581a6174806682557db621d7c0d96d3b53d9e2e4",
+    "recovered_acknowledgements": 0,
+    "rollback_attempted": false,
+    "status": "mock_junction_verified",
+    "topology_check": {
+      "errors": [],
+      "passed": true,
+      "scope": "mock shared-edge topology, legal traversal, and declared crossing geometry; no actual train has run"
+    },
+    "trace": [
+      {
+        "operation_id": "2961f1b45a6885e1c4c621f384a51787b6970c348b2eddb337fe066de7b0a366",
+        "verified": true
+      },
+      {
+        "operation_id": "36f83d66e60f87852bf09a7519fe8afeeac34c0b6ac90c14b760c3cc78ffe097",
+        "verified": true
+      },
+      {
+        "operation_id": "abc70f4e5d6d4b05c3d8afc87d0a465ec29c9e693a19d6862507f6d8310ba61a",
+        "verified": true
+      },
+      {
+        "operation_id": "fb498a0f159f1bef4d7140706cfd56e3710aa112f7f6f88b374c721c16a77072",
+        "verified": true
+      },
+      {
+        "operation_id": "52528318d465398fdf84bd55d32c0eb48a9adde379cef284ef919eb79b930adb",
+        "verified": true
+      },
+      {
+        "operation_id": "27f907a68ca33f070e8317e9452df7b0f5ce79576319aadc423e348437b313c2",
+        "verified": true
+      },
+      {
+        "operation_id": "c009a2c863985c2c82c59d64676d589eb2b43e60e0314a9cb7d056dc6f853cc9",
+        "verified": true
+      },
+      {
+        "operation_id": "fe6824b969631648122d30ac3d3aa4256f5900a5836136f846959b3a29cfaf92",
+        "verified": true
+      },
+      {
+        "operation_id": "5d3a78a1290292bafe296820fa9e38d989a3d8e15f0c5c7d080cf6d36513aa6d",
+        "verified": true
+      },
+      {
+        "operation_id": "a9665d2813c9101eb7c5b738e30493d6a32aee263bf26cf83e7fd633d95fe64c",
+        "verified": true
+      },
+      {
+        "operation_id": "c005d83aac9b21bb4f9bdc91256c1d65f8df45b985a29c3e3f65c5b6360fbd36",
+        "verified": true
+      },
+      {
+        "operation_id": "e29d099cf8550c1d9f0e4749849615ebee225db6ec971675062e13090ec4943a",
+        "verified": true
+      },
+      {
+        "operation_id": "5290b6304dae5c944679c9949fa328f380a5f0275af6f8aac068c1b919bb2163",
+        "verified": true
+      },
+      {
+        "operation_id": "e1af73b051a2a16ce46b505a169f0ac34660846fb3f0856350189fa2979fe8be",
+        "verified": true
+      }
+    ],
+    "writes": 14
+  },
+  "flat": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "72db161666508a086e1b17f1dac8f8f596a16d59bc984e555132f287be1de9a5",
+    "recovered_acknowledgements": 0,
+    "rollback_attempted": false,
+    "status": "mock_junction_verified",
+    "topology_check": {
+      "errors": [],
+      "passed": true,
+      "scope": "mock shared-edge topology, legal traversal, and declared crossing geometry; no actual train has run"
+    },
+    "trace": [
+      {
+        "operation_id": "9690e6e814ce2b99dbb6e3ede2289ace387a41a3c487a15cc509061f2c2c4e8c",
+        "verified": true
+      },
+      {
+        "operation_id": "8484835227e12f3160eb48f9b438f9a78d4519a6e4fa64730ae285a30ef3601c",
+        "verified": true
+      },
+      {
+        "operation_id": "86d421b8214f41d811ce5d4d19f6fff8a35ffb2b54659275ed52c764e9b2093e",
+        "verified": true
+      },
+      {
+        "operation_id": "ee9bd2e665d9d41c19365475c5995a83525e5d91f285998321f7e4296343af23",
+        "verified": true
+      },
+      {
+        "operation_id": "7241aab8c4f987a9889835ab0ef0b94e8e6788a7b291cf9cb3c448fa6d68d41d",
+        "verified": true
+      },
+      {
+        "operation_id": "c73b009f588a1fa724afa9a5da7a46b8103142ecf4fa1fb9fdd48ca1896f65fa",
+        "verified": true
+      },
+      {
+        "operation_id": "e18e86dbce61157677ae899eeb34ec58d18ad598338ec4c5a7824342b89ad9de",
+        "verified": true
+      },
+      {
+        "operation_id": "c62a500b01413e0f8caa17c5a4eacfc9f907891d6fb6090ce4a52822c2903e1b",
+        "verified": true
+      },
+      {
+        "operation_id": "0ef481490ff24f1307cd39c35a0597849120ad6b4bc7e921db836eff4713eec6",
+        "verified": true
+      },
+      {
+        "operation_id": "90b74323eb77be6fc56b8325997da590cb70d00403c111dd5902bf5222ff6d01",
+        "verified": true
+      },
+      {
+        "operation_id": "ac0a9cca5f3eae6ac8cd55a4b2a203401ed733b1a78d44029b043d8bcb2dd179",
+        "verified": true
+      },
+      {
+        "operation_id": "8c8419ade3ed95440af62f4934c0a092182f441d9a01bfdfc2f293e889d907d1",
+        "verified": true
+      },
+      {
+        "operation_id": "84365992dbb73c118b08aacaf4c354a0ce37b9dd4717e6e69fbe00766d877c0b",
+        "verified": true
+      }
+    ],
+    "writes": 13
+  },
+  "lost_acknowledgement": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "0ee0f3962f87976372f2d6d2737676a108e4dfb703591074b6efe82d08ce5bf3",
+    "recovered_acknowledgements": 1,
+    "rollback_attempted": false,
+    "status": "mock_junction_verified",
+    "topology_check": {
+      "errors": [],
+      "passed": true,
+      "scope": "mock shared-edge topology, legal traversal, and declared crossing geometry; no actual train has run"
+    },
+    "trace": [
+      {
+        "operation_id": "72c3c753ec8de1fea3c0cc195b685b35abf3bc702a5eadf0641b5db1ecbe5432",
+        "verified": true
+      },
+      {
+        "operation_id": "524802959dfd81ef47b537bd0d36b448a4dd2c24d6387ef1228bd32a4a9026ad",
+        "verified": true
+      },
+      {
+        "operation_id": "590901d51d157e7db36bf2ab591d3a7b7c736afffd96a9231f01c30e35a4fb82",
+        "verified": true
+      },
+      {
+        "operation_id": "a90ee6aac43161c54cf2295ac460c9b36eb118413cf3eb8d947d89c443889f98",
+        "verified": true
+      },
+      {
+        "operation_id": "6f09f07ae37a55c4aa60ebc425cf6ed374d1455e1541e1a3f3b7a70ad418a31b",
+        "verified": true
+      },
+      {
+        "operation_id": "77dcbc66ce0acadd17b9bfc6288bb7cedd157d29b70734810cd56a39c66586ad",
+        "verified": true
+      },
+      {
+        "operation_id": "9eb342adcca935c60c5f09d80b476b9220c979f213e92eb21c3241ffd92822a2",
+        "verified": true
+      },
+      {
+        "operation_id": "6f6532eecd3700127fad62392e302a0d7f8eda537e9c19295de477507920ec76",
+        "verified": true
+      },
+      {
+        "operation_id": "8ecce423c75b9332f926536904ccc0867932593a5be2140bb08423ee3f7743fe",
+        "verified": true
+      },
+      {
+        "operation_id": "b47f26da75b559ce04ebf7561b940a4984d0941b9b6e34c0ab136afc515fa1b6",
+        "verified": true
+      },
+      {
+        "operation_id": "38c3ad4721541cfa6b64dbfc669689ff54db6435ee977fdc9873d0a2e1995d8b",
+        "verified": true
+      },
+      {
+        "operation_id": "13115bd3a648dca0db2a34d59404377f7aed06defa405cba65aded0a48d1350b",
+        "verified": true
+      },
+      {
+        "operation_id": "8e3edb312b3ab0f6ca5caada83ec673aa31fc43e59c0231e5d8aa5ba3a3570f6",
+        "verified": true
+      },
+      {
+        "operation_id": "6e9a6e7024118aa1c6351b53681d57ce16acab7ced893ec5e831e765dd715c3f",
+        "verified": true
+      }
+    ],
+    "writes": 14
+  },
+  "partial_failure": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "0ee0f3962f87976372f2d6d2737676a108e4dfb703591074b6efe82d08ce5bf3",
+    "reason": "injected failure",
+    "rollback_attempted": false,
+    "status": "partial_failure",
+    "trace": [
+      {
+        "operation_id": "72c3c753ec8de1fea3c0cc195b685b35abf3bc702a5eadf0641b5db1ecbe5432",
+        "verified": true
+      },
+      {
+        "operation_id": "524802959dfd81ef47b537bd0d36b448a4dd2c24d6387ef1228bd32a4a9026ad",
+        "verified": true
+      }
+    ],
+    "writes": 2
+  },
+  "repeat": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "0ee0f3962f87976372f2d6d2737676a108e4dfb703591074b6efe82d08ce5bf3",
+    "recovered_acknowledgements": 0,
+    "rollback_attempted": false,
+    "status": "mock_junction_verified",
+    "topology_check": {
+      "errors": [],
+      "passed": true,
+      "scope": "mock shared-edge topology, legal traversal, and declared crossing geometry; no actual train has run"
+    },
+    "trace": [
+      {
+        "operation_id": "72c3c753ec8de1fea3c0cc195b685b35abf3bc702a5eadf0641b5db1ecbe5432",
+        "verified": true
+      },
+      {
+        "operation_id": "524802959dfd81ef47b537bd0d36b448a4dd2c24d6387ef1228bd32a4a9026ad",
+        "verified": true
+      },
+      {
+        "operation_id": "590901d51d157e7db36bf2ab591d3a7b7c736afffd96a9231f01c30e35a4fb82",
+        "verified": true
+      },
+      {
+        "operation_id": "a90ee6aac43161c54cf2295ac460c9b36eb118413cf3eb8d947d89c443889f98",
+        "verified": true
+      },
+      {
+        "operation_id": "6f09f07ae37a55c4aa60ebc425cf6ed374d1455e1541e1a3f3b7a70ad418a31b",
+        "verified": true
+      },
+      {
+        "operation_id": "77dcbc66ce0acadd17b9bfc6288bb7cedd157d29b70734810cd56a39c66586ad",
+        "verified": true
+      },
+      {
+        "operation_id": "9eb342adcca935c60c5f09d80b476b9220c979f213e92eb21c3241ffd92822a2",
+        "verified": true
+      },
+      {
+        "operation_id": "6f6532eecd3700127fad62392e302a0d7f8eda537e9c19295de477507920ec76",
+        "verified": true
+      },
+      {
+        "operation_id": "8ecce423c75b9332f926536904ccc0867932593a5be2140bb08423ee3f7743fe",
+        "verified": true
+      },
+      {
+        "operation_id": "b47f26da75b559ce04ebf7561b940a4984d0941b9b6e34c0ab136afc515fa1b6",
+        "verified": true
+      },
+      {
+        "operation_id": "38c3ad4721541cfa6b64dbfc669689ff54db6435ee977fdc9873d0a2e1995d8b",
+        "verified": true
+      },
+      {
+        "operation_id": "13115bd3a648dca0db2a34d59404377f7aed06defa405cba65aded0a48d1350b",
+        "verified": true
+      },
+      {
+        "operation_id": "8e3edb312b3ab0f6ca5caada83ec673aa31fc43e59c0231e5d8aa5ba3a3570f6",
+        "verified": true
+      },
+      {
+        "operation_id": "6e9a6e7024118aa1c6351b53681d57ce16acab7ced893ec5e831e765dd715c3f",
+        "verified": true
+      }
+    ],
+    "writes": 14
+  },
+  "stale_terrain": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "0ee0f3962f87976372f2d6d2737676a108e4dfb703591074b6efe82d08ce5bf3",
+    "reasons": [
+      "stale_terrain"
+    ],
+    "rollback_attempted": false,
+    "status": "preflight_blocked",
+    "trace": [],
+    "writes": 0
+  },
+  "stale_world": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "0ee0f3962f87976372f2d6d2737676a108e4dfb703591074b6efe82d08ce5bf3",
+    "reasons": [
+      "stale_world"
+    ],
+    "rollback_attempted": false,
+    "status": "preflight_blocked",
+    "trace": [],
+    "writes": 0
+  },
+  "unprobed_game": {
+    "environment": "mock",
+    "game_constructed": false,
+    "plan_hash": "0ee0f3962f87976372f2d6d2737676a108e4dfb703591074b6efe82d08ce5bf3",
+    "reasons": [
+      "capability_unknown:construct.junction_track3",
+      "capability_unknown:construct.junction_turnout3",
+      "capability_unknown:declare.junction_crossing",
+      "capability_unknown:query.junction_geometry_topology",
+      "capability_unknown:query.operation_receipt",
+      "capability_unknown:reserve.junction_crossing_envelope",
+      "real_game_not_connected"
+    ],
+    "rollback_attempted": false,
+    "status": "preflight_blocked",
+    "trace": [],
+    "writes": 0
+  },
+  "wrong_geometry": {
+    "environment": "mock",
+    "game_constructed": false,
+    "operation_id": "524802959dfd81ef47b537bd0d36b448a4dd2c24d6387ef1228bd32a4a9026ad",
+    "plan_hash": "0ee0f3962f87976372f2d6d2737676a108e4dfb703591074b6efe82d08ce5bf3",
+    "rollback_attempted": false,
+    "status": "realised_geometry_or_semantics_mismatch",
+    "trace": [
+      {
+        "operation_id": "72c3c753ec8de1fea3c0cc195b685b35abf3bc702a5eadf0641b5db1ecbe5432",
+        "verified": true
+      }
+    ],
+    "writes": 2
+  },
+  "wrong_turnout_state": {
+    "environment": "mock",
+    "game_constructed": false,
+    "operation_id": "524802959dfd81ef47b537bd0d36b448a4dd2c24d6387ef1228bd32a4a9026ad",
+    "plan_hash": "0ee0f3962f87976372f2d6d2737676a108e4dfb703591074b6efe82d08ce5bf3",
+    "rollback_attempted": false,
+    "status": "realised_geometry_or_semantics_mismatch",
+    "trace": [
+      {
+        "operation_id": "72c3c753ec8de1fea3c0cc195b685b35abf3bc702a5eadf0641b5db1ecbe5432",
+        "verified": true
+      }
+    ],
+    "writes": 2
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "accepted": 6,
+  "actual_structures_built": false,
+  "construction_authorised": false,
+  "evaluated": 24,
+  "game_calls": 0,
+  "grade_sensitive_performance": false,
+  "mock_case_statuses": {
+    "clean": "mock_terrain_junction_verified",
+    "lost_land_ack": "mock_terrain_junction_verified",
+    "lost_track_ack": "mock_terrain_junction_verified",
+    "partial_failure": "partial_failure",
+    "protected_land_changed": "preflight_blocked",
+    "repeat": "mock_terrain_junction_verified",
+    "stale_world": "preflight_blocked",
+    "terrain_changed_same_revision": "preflight_blocked",
+    "terrain_changes_after_first_write": "environment_changed",
+    "unprobed_game": "preflight_blocked",
+    "wrong_coordinate": "realised_geometry_or_semantics_mismatch",
+    "wrong_turnout_state": "realised_geometry_or_semantics_mismatch"
+  },
+  "model_calls_inside_runner": 0,
+  "new_external_research": false,
+  "operating_comparisons": 12,
+  "physical_edges": 16,
+  "preserved_external_interfaces": 6,
+  "rows": [
+    {
+      "completed": 24,
+      "delay_s": 9826.094,
+      "design_hash": "fa59f662c33014f967c11d498d23d5f5f133a13b35c7fef3770b47b1d52dc709",
+      "mode": "flat",
+      "required": 24,
+      "residual": 0,
+      "scenario": "nominal",
+      "scenario_hash": "38b22c1dc9b54b48bb5a5ba1897645e8f06fb49e164d1e9e82bf939bdddc72fe",
+      "unscheduled": 0
+    },
+    {
+      "completed": 2,
+      "delay_s": 49.714,
+      "design_hash": "fa59f662c33014f967c11d498d23d5f5f133a13b35c7fef3770b47b1d52dc709",
+      "mode": "flat",
+      "required": 2,
+      "residual": 0,
+      "scenario": "crossing_pulse",
+      "scenario_hash": "9d5174bd01c10f464f6c9b68d405eb74c8dda67561edd83a241a569070097c0a",
+      "unscheduled": 0
+    },
+    {
+      "completed": 2,
+      "delay_s": 337.362,
+      "design_hash": "fa59f662c33014f967c11d498d23d5f5f133a13b35c7fef3770b47b1d52dc709",
+      "mode": "flat",
+      "required": 2,
+      "residual": 0,
+      "scenario": "merge_pulse",
+      "scenario_hash": "c583a6e16efd95261329516c412b622cdd48b6f501359dd06e493dd6320fffb9",
+      "unscheduled": 0
+    },
+    {
+      "completed": 2,
+      "delay_s": 2735.418,
+      "design_hash": "fa59f662c33014f967c11d498d23d5f5f133a13b35c7fef3770b47b1d52dc709",
+      "mode": "flat",
+      "required": 2,
+      "residual": 0,
+      "scenario": "downstream_blocked",
+      "scenario_hash": "8047a65ce0b3d4c338e9c88e080f01354039717cb15e11ae2c4916240bc188c0",
+      "unscheduled": 0
+    },
+    {
+      "completed": 24,
+      "delay_s": 9826.494,
+      "design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+      "mode": "flyover",
+      "required": 24,
+      "residual": 0,
+      "scenario": "nominal",
+      "scenario_hash": "38b22c1dc9b54b48bb5a5ba1897645e8f06fb49e164d1e9e82bf939bdddc72fe",
+      "unscheduled": 0
+    },
+    {
+      "completed": 2,
+      "delay_s": 0.0,
+      "design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+      "mode": "flyover",
+      "required": 2,
+      "residual": 0,
+      "scenario": "crossing_pulse",
+      "scenario_hash": "9d5174bd01c10f464f6c9b68d405eb74c8dda67561edd83a241a569070097c0a",
+      "unscheduled": 0
+    },
+    {
+      "completed": 2,
+      "delay_s": 337.378,
+      "design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+      "mode": "flyover",
+      "required": 2,
+      "residual": 0,
+      "scenario": "merge_pulse",
+      "scenario_hash": "c583a6e16efd95261329516c412b622cdd48b6f501359dd06e493dd6320fffb9",
+      "unscheduled": 0
+    },
+    {
+      "completed": 2,
+      "delay_s": 2735.404,
+      "design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+      "mode": "flyover",
+      "required": 2,
+      "residual": 0,
+      "scenario": "downstream_blocked",
+      "scenario_hash": "8047a65ce0b3d4c338e9c88e080f01354039717cb15e11ae2c4916240bc188c0",
+      "unscheduled": 0
+    },
+    {
+      "completed": 24,
+      "delay_s": 9826.494,
+      "design_hash": "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824",
+      "mode": "diveunder",
+      "required": 24,
+      "residual": 0,
+      "scenario": "nominal",
+      "scenario_hash": "38b22c1dc9b54b48bb5a5ba1897645e8f06fb49e164d1e9e82bf939bdddc72fe",
+      "unscheduled": 0
+    },
+    {
+      "completed": 2,
+      "delay_s": 0.0,
+      "design_hash": "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824",
+      "mode": "diveunder",
+      "required": 2,
+      "residual": 0,
+      "scenario": "crossing_pulse",
+      "scenario_hash": "9d5174bd01c10f464f6c9b68d405eb74c8dda67561edd83a241a569070097c0a",
+      "unscheduled": 0
+    },
+    {
+      "completed": 2,
+      "delay_s": 337.378,
+      "design_hash": "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824",
+      "mode": "diveunder",
+      "required": 2,
+      "residual": 0,
+      "scenario": "merge_pulse",
+      "scenario_hash": "c583a6e16efd95261329516c412b622cdd48b6f501359dd06e493dd6320fffb9",
+      "unscheduled": 0
+    },
+    {
+      "completed": 2,
+      "delay_s": 2735.404,
+      "design_hash": "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824",
+      "mode": "diveunder",
+      "required": 2,
+      "residual": 0,
+      "scenario": "downstream_blocked",
+      "scenario_hash": "8047a65ce0b3d4c338e9c88e080f01354039717cb15e11ae2c4916240bc188c0",
+      "unscheduled": 0
+    }
+  ],
+  "selected_mock_operations": 17,
+  "selected_placements": [
+    {
+      "design_hash": "fa59f662c33014f967c11d498d23d5f5f133a13b35c7fef3770b47b1d52dc709",
+      "elevated_track_m": 500.49883393318976,
+      "land_reservation_union_m2": 265131.8321478899,
+      "lateral_m": 280,
+      "layout": "east_shifted_toes",
+      "mode": "flat",
+      "tunnel_track_m": 436.45161290322585
+    },
+    {
+      "design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+      "elevated_track_m": 704.1884837827166,
+      "land_reservation_union_m2": 268249.90594577143,
+      "lateral_m": 280,
+      "layout": "east_shifted_toes",
+      "mode": "flyover",
+      "tunnel_track_m": 436.45161290322585
+    },
+    {
+      "design_hash": "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824",
+      "elevated_track_m": 500.49883393318976,
+      "land_reservation_union_m2": 281684.87535987154,
+      "lateral_m": 280,
+      "layout": "east_shifted_toes",
+      "mode": "diveunder",
+      "tunnel_track_m": 1083.25796707852
+    }
+  ],
+  "source_corridor_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+  "spatial_queues_simulated": false,
+  "station_internal_edits": false,
+  "unchanged_mainline_targets": true,
+  "version": "0.11.0"
+}

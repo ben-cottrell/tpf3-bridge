@@ -1,0 +1,209 @@
+{
+  "assessment_scope": "whole-pass time-space reservation proof; waits occur outside model; not microscopic queues or live signalling",
+  "assignments": [
+    {
+      "claims": [
+        {
+          "end_ms": 2066493,
+          "owner": "P1",
+          "resource": "track:return_boundary",
+          "start_ms": 1787584,
+          "state": null
+        },
+        {
+          "end_ms": 2438209,
+          "owner": "P1",
+          "resource": "track:return_connector",
+          "start_ms": 2022313,
+          "state": null
+        },
+        {
+          "end_ms": 2444180,
+          "owner": "P1",
+          "resource": "track:M:reverse",
+          "start_ms": 2394029,
+          "state": null
+        },
+        {
+          "end_ms": 2444180,
+          "owner": "P1",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 2394029,
+          "state": null
+        },
+        {
+          "end_ms": 2444180,
+          "owner": "P1",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 2394029,
+          "state": "R"
+        },
+        {
+          "end_ms": 2488919,
+          "owner": "P1",
+          "resource": "track:west_merge_exit",
+          "start_ms": 2400000,
+          "state": null
+        },
+        {
+          "end_ms": 2744067,
+          "owner": "P1",
+          "resource": "track:west_exit",
+          "start_ms": 2444739,
+          "state": null
+        }
+      ],
+      "clear_ms": 2744067,
+      "entry_delay_ms": 1199013,
+      "entry_ms": 1787584,
+      "formation_length_m": 242.6,
+      "request_id": "P1",
+      "requested_ms": 588571,
+      "route": "branch_in",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 2400000,
+          "blocking_owner": "BLOCK_0",
+          "requested_entry_ms": 588571,
+          "resource": "track:west_merge_exit"
+        }
+      ]
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 2656722,
+          "owner": "P0",
+          "resource": "track:west_restore",
+          "start_ms": 2560941,
+          "state": null
+        },
+        {
+          "end_ms": 2748437,
+          "owner": "P0",
+          "resource": "track:west_approach",
+          "start_ms": 2639677,
+          "state": null
+        },
+        {
+          "end_ms": 2749928,
+          "owner": "P0",
+          "resource": "track:M:normal",
+          "start_ms": 2731391,
+          "state": null
+        },
+        {
+          "end_ms": 2749928,
+          "owner": "P0",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 2731391,
+          "state": null
+        },
+        {
+          "end_ms": 2749928,
+          "owner": "P0",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 2731391,
+          "state": "N"
+        },
+        {
+          "end_ms": 2761113,
+          "owner": "P0",
+          "resource": "track:west_merge_exit",
+          "start_ms": 2732882,
+          "state": null
+        },
+        {
+          "end_ms": 2824900,
+          "owner": "P0",
+          "resource": "track:west_exit",
+          "start_ms": 2744067,
+          "state": null
+        }
+      ],
+      "clear_ms": 2824900,
+      "entry_delay_ms": 1536391,
+      "entry_ms": 2560941,
+      "formation_length_m": 242.6,
+      "request_id": "P0",
+      "requested_ms": 1024550,
+      "route": "main_west",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 2400000,
+          "blocking_owner": "BLOCK_0",
+          "requested_entry_ms": 1024550,
+          "resource": "track:west_merge_exit"
+        },
+        {
+          "blocked_until_ms": 2444180,
+          "blocking_owner": "P1",
+          "requested_entry_ms": 2228059,
+          "resource": "body:M:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 2444180,
+          "blocking_owner": "P1",
+          "requested_entry_ms": 2228059,
+          "resource": "state:M:T40_CTRL"
+        },
+        {
+          "blocked_until_ms": 2488919,
+          "blocking_owner": "P1",
+          "requested_entry_ms": 2228059,
+          "resource": "track:west_merge_exit"
+        },
+        {
+          "blocked_until_ms": 2744067,
+          "blocking_owner": "P1",
+          "requested_entry_ms": 2228059,
+          "resource": "track:west_exit"
+        }
+      ]
+    }
+  ],
+  "calendar_evaluations": 5,
+  "candidate_hash": "3190f8d9d05542bd44e34d6044cae0e1d222e30f983b11b5a6febb7ba27624f0",
+  "completed": 2,
+  "conflict_witness_counts": {
+    "body:M:SYNTH_IMPORT_T40": 1,
+    "state:M:T40_CTRL": 1,
+    "track:west_exit": 1,
+    "track:west_merge_exit": 3
+  },
+  "construction_authorised": false,
+  "fixed_block_claims": [
+    {
+      "end_ms": 2400000,
+      "owner": "BLOCK_0",
+      "resource": "track:west_merge_exit",
+      "start_ms": 1000000,
+      "state": null
+    }
+  ],
+  "grade_sensitive_performance": false,
+  "independent_check": {
+    "errors": [],
+    "passed": true,
+    "scope": "independent output/resource checks; timing template reused, physical model not independently validated"
+  },
+  "joined_result_hash": "c00a7090a781a1152076824682a3a55a2b54a5309418f558784d749ce07c26e9",
+  "mode": "flyover",
+  "performance_hash": "542e15e9f6d802cf5eb2588a36fd15d09b4ff273d405fd54b15e06947fa832a8",
+  "required": 2,
+  "residual": 0,
+  "resource_hash": "14a052ef7f0b1b6afa898d4bd3f7b7b2f6e8d92a7044f7021fb5c883066c3839",
+  "result_hash": "855aa5336bbc484e7d579baa878d6488f408a0c449fb56f7a85802c816a74b03",
+  "scenario_hash": "8047a65ce0b3d4c338e9c88e080f01354039717cb15e11ae2c4916240bc188c0",
+  "scenario_id": "downstream_blocked",
+  "scheduled": 2,
+  "terrain_assessment_hash": "7998176e21bfe1ddfa6846b7535cfd10f260b47ca7cf7ec999ef90cc89b7e725",
+  "terrain_design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+  "terrain_or_game_validated": false,
+  "total_entry_delay_ms_scheduled_only": 2735404,
+  "unscheduled": 0,
+  "unserved": [],
+  "version": "0.10.0"
+}

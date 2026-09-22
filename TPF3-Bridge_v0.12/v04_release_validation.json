@@ -1,0 +1,32 @@
+{
+  "release": "0.4.0",
+  "validation_date": "2026-09-20",
+  "successful": true,
+  "main_markdown_files": 21,
+  "markdown_files_including_results": 26,
+  "local_links_checked": 400,
+  "json_files_parsed": 86,
+  "legacy_source_and_test_files_compared": 20,
+  "legacy_sources_identical": true,
+  "legacy_deterministic_output_files_compared": 41,
+  "legacy_outputs_identical": true,
+  "legacy_output_exclusions": [
+    "test_log.txt",
+    "test_report.json",
+    "v02_test_report.json",
+    "v03_test_log.txt",
+    "v03_test_report.json"
+  ],
+  "tested_byte_hashes_match": true,
+  "test_methods_run": 284,
+  "test_successful": true,
+  "new_policy_comparisons": 18,
+  "errors": [],
+  "not_established": [
+    "real-world engineering certification",
+    "all production requirements complete",
+    "game integration",
+    "Windows compatibility",
+    "plan-credit savings"
+  ]
+}

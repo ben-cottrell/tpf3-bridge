@@ -1,0 +1,93 @@
+{
+  "kind": "offline_contract_example_validation",
+  "successful": true,
+  "records": [
+    {
+      "path": "examples/design_brief.json",
+      "definition": "DesignBrief",
+      "errors": []
+    },
+    {
+      "path": "examples/construction_plan.json",
+      "definition": "ConstructionPlan",
+      "errors": []
+    },
+    {
+      "path": "examples/authority_example.json",
+      "definition": "Authority",
+      "errors": []
+    },
+    {
+      "path": "examples/decision_packet.json",
+      "definition": "DecisionPacket",
+      "errors": []
+    },
+    {
+      "path": "examples/realisation_report.json",
+      "definition": "RealisationReport",
+      "errors": []
+    },
+    {
+      "path": "examples/snapshot.json",
+      "definition": "Snapshot",
+      "errors": []
+    },
+    {
+      "path": "examples/receipt.json",
+      "definition": "Receipt",
+      "errors": []
+    },
+    {
+      "path": "examples/inspectinput.json",
+      "definition": "InspectInput",
+      "errors": []
+    },
+    {
+      "path": "examples/designinput.json",
+      "definition": "DesignInput",
+      "errors": []
+    },
+    {
+      "path": "examples/reviseinput.json",
+      "definition": "ReviseInput",
+      "errors": []
+    },
+    {
+      "path": "examples/commitinput.json",
+      "definition": "CommitInput",
+      "errors": []
+    },
+    {
+      "path": "examples/statusinput.json",
+      "definition": "StatusInput",
+      "errors": []
+    },
+    {
+      "path": "examples/explaininput.json",
+      "definition": "ExplainInput",
+      "errors": []
+    },
+    {
+      "path": "examples/observeinput.json",
+      "definition": "ObserveInput",
+      "errors": []
+    },
+    {
+      "path": "examples/cancelinput.json",
+      "definition": "CancelInput",
+      "errors": []
+    },
+    {
+      "path": "examples/tool_response.json",
+      "definition": "ToolResponse",
+      "errors": []
+    },
+    {
+      "path": "tpf3_unprobed_capabilities.json",
+      "definition": "CapabilityManifest",
+      "errors": []
+    }
+  ],
+  "game_calls": 0,
+  "writes_performed": 0
+}

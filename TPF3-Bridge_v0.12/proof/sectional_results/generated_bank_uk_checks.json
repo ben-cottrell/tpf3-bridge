@@ -1,0 +1,94 @@
+{
+  "scope": "explicit new-line scalar checks on synthetic generated geometry, not engineering approval",
+  "compile_hash": "6ccfcfacc283c67c42a99f4759807208bf6b61086fc6abee7725843dc14d63d2",
+  "global_radius_lower_bound_m": 334.0515839251409,
+  "horizontal_floor_check": {
+    "status": "pass",
+    "parameter_id": "NEW_LINE_HORIZONTAL_RADIUS_FLOOR",
+    "value_m": 334.0515839251409,
+    "limit_m": 150,
+    "source_id": "S058",
+    "clause": "4.2.3.4(1)",
+    "scope": "base floor only; speed, reverse curves and platform criteria remain separate"
+  },
+  "platform_checks": {
+    "P1": {
+      "new_line_radius": {
+        "status": "pass",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight"
+      },
+      "stopping_cant": {
+        "status": "pass",
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "clause": "4.2.4.2(2)",
+        "value_mm": 0,
+        "limit_mm": 110
+      }
+    },
+    "P2": {
+      "new_line_radius": {
+        "status": "pass",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight"
+      },
+      "stopping_cant": {
+        "status": "pass",
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "clause": "4.2.4.2(2)",
+        "value_mm": 0,
+        "limit_mm": 110
+      }
+    },
+    "P3": {
+      "new_line_radius": {
+        "status": "pass",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight"
+      },
+      "stopping_cant": {
+        "status": "pass",
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "clause": "4.2.4.2(2)",
+        "value_mm": 0,
+        "limit_mm": 110
+      }
+    },
+    "P4": {
+      "new_line_radius": {
+        "status": "pass",
+        "rule_id": "NTSN2_PLATFORM_RADIUS",
+        "source_id": "S058",
+        "clause": "4.2.9.4(1)",
+        "geometry": "straight"
+      },
+      "stopping_cant": {
+        "status": "pass",
+        "rule_id": "NTSN2_PLATFORM_CANT",
+        "source_id": "S058",
+        "clause": "4.2.4.2(2)",
+        "value_mm": 0,
+        "limit_mm": 110
+      }
+    }
+  },
+  "platform_height_offset": {
+    "status": "unassessed",
+    "source_id": "S058",
+    "clauses": [
+      "7.7.17.6",
+      "7.7.17.7"
+    ],
+    "reason": "selected national-rule platform height/offset route not numerically imported"
+  },
+  "whole_UK_geometry_status": "unassessed; components, dynamics and national interfaces incomplete"
+}

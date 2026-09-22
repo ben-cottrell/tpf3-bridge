@@ -1,0 +1,41 @@
+{
+  "braking": [
+    {
+      "available_m": 300,
+      "required_m": 567.5313298285714,
+      "scope": "level-track constant-deceleration project screen; not a UK braking/signalling standard",
+      "sufficient_within_model": false
+    },
+    {
+      "available_m": 600,
+      "required_m": 567.5313298285714,
+      "scope": "level-track constant-deceleration project screen; not a UK braking/signalling standard",
+      "sufficient_within_model": true
+    }
+  ],
+  "holding": [
+    {
+      "available_m": 250,
+      "fits_clear": false,
+      "required_m": 262.6,
+      "scope": "static train length plus declared margins; not a signal-spacing approval",
+      "shortfall_m": 12.600000000000023
+    },
+    {
+      "available_m": 275,
+      "fits_clear": true,
+      "required_m": 262.6,
+      "scope": "static train length plus declared margins; not a signal-spacing approval",
+      "shortfall_m": 0
+    },
+    {
+      "available_m": 300,
+      "fits_clear": true,
+      "required_m": 262.6,
+      "scope": "static train length plus declared margins; not a signal-spacing approval",
+      "shortfall_m": 0
+    }
+  ],
+  "signal_positions_generated": false,
+  "world_speed_calibrated": false
+}

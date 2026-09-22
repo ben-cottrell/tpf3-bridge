@@ -1,0 +1,26 @@
+{
+  "component_authenticity": "authored_synthetic",
+  "fixture_hash": "b3c822871f9763b8bc5ac25ee4375af373543594fc3cb7ed0654344190460973",
+  "formation_field": "unit_12car_length_m",
+  "formation_length_m": 242.6,
+  "gb_nominal_centres_reference": {
+    "clause": "7.7.17.3(1)",
+    "not_assessed": [
+      "swept vehicle clearance",
+      "aerodynamic or route-specific constraints",
+      "platform island space",
+      "exceptions and national technical rules"
+    ],
+    "parameter_id": "GB_NOMINAL_TRACK_CENTRES",
+    "source_id": "S058",
+    "status": "reference_value",
+    "units": "m",
+    "value": 3.4
+  },
+  "junction_boundary_centres_m": 3.4,
+  "new_site_not_old_corridor": true,
+  "new_terrain_assessed": false,
+  "new_uk_numerical_rules_imported": false,
+  "vehicle_reference_hash": "40bdbe8de0c14359c11f282436b095d693d302a12ca54047133af4bda641e331",
+  "vehicle_source": "S060"
+}

@@ -1,0 +1,122 @@
+{
+  "schema_version": "0.2.0",
+  "description": "Original authored extraction records, not surveyed or complete station models.",
+  "fragments": [
+    {
+      "id": "waterloo_2017_approach_names",
+      "source_id": "S055",
+      "locator": "PDF p.11, figure 4 and paragraph 7",
+      "evidence_origin": "historical_technical_fragment",
+      "epoch": "2017-08-15 incident/construction context",
+      "order": "east_to_west",
+      "ports": [
+        {
+          "id": "W17_PORT_1",
+          "name": "Down main slow",
+          "order_index": 0,
+          "position_m": null,
+          "heading_rad": null
+        },
+        {
+          "id": "W17_PORT_2",
+          "name": "Up main slow",
+          "order_index": 1,
+          "position_m": null,
+          "heading_rad": null
+        },
+        {
+          "id": "W17_PORT_3",
+          "name": "Down main fast",
+          "order_index": 2,
+          "position_m": null,
+          "heading_rad": null
+        },
+        {
+          "id": "W17_PORT_4",
+          "name": "Up main fast",
+          "order_index": 3,
+          "position_m": null,
+          "heading_rad": null
+        },
+        {
+          "id": "W17_PORT_5",
+          "name": "Up main relief",
+          "order_index": 4,
+          "position_m": null,
+          "heading_rad": null
+        },
+        {
+          "id": "W17_PORT_6",
+          "name": "Down Windsor",
+          "order_index": 5,
+          "position_m": null,
+          "heading_rad": null
+        },
+        {
+          "id": "W17_PORT_7",
+          "name": "Up Windsor",
+          "order_index": 6,
+          "position_m": null,
+          "heading_rad": null
+        },
+        {
+          "id": "W17_PORT_8",
+          "name": "Windsor reversible",
+          "order_index": 7,
+          "position_m": null,
+          "heading_rad": null
+        }
+      ],
+      "geometry_status": "unmeasured_schematic",
+      "complete_route_permissions": null,
+      "scope_exclusions": [
+        "sidings",
+        "platforms 20-24",
+        "completed later platform 1-4 modifications"
+      ],
+      "permitted_use": "named ordered interface fragment only; not an exact present-day route graph"
+    },
+    {
+      "id": "waterloo_2017_point_group_1524",
+      "source_id": "S055",
+      "locator": "PDF p.13, figure 5 and paragraphs 21-22",
+      "evidence_origin": "historical_technical_fragment",
+      "point_group_id": "W17_1524",
+      "point_end_ids": [
+        "W17_1524A",
+        "W17_1524B",
+        "W17_1524C"
+      ],
+      "relationship": "intended_linked_operation",
+      "independent_end_control_proven": false,
+      "complete_state_route_table": null,
+      "commanded_state": null,
+      "detected_state": null,
+      "physical_state": null,
+      "geometry_m": null,
+      "current_game_equivalent": null
+    },
+    {
+      "id": "birmingham_2025_assessment",
+      "source_id": "S002",
+      "locator": "PDF pp.6-9",
+      "evidence_origin": "dated_operational_assessment",
+      "observed_current_performance": false,
+      "scope": "developing December 2025 timetable plus requested services; selected weekday assessment",
+      "occupation_metric_is_route_permission": false,
+      "coarse_proximity_metric_is_interlocking_model": false,
+      "exact_route_graph": null,
+      "measured_geometry": null
+    },
+    {
+      "id": "willesden_access_link_domain",
+      "source_id": "S057",
+      "locator": "paragraphs 1.5-1.8",
+      "evidence_origin": "historical_study_context",
+      "domain": "passenger_and_cycle_access",
+      "rail_gradient_rule": null,
+      "as_built_alignment": null,
+      "complete_2018_study_reviewed": false
+    }
+  ]
+}

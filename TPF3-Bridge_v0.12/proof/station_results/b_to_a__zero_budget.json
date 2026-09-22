@@ -1,0 +1,170 @@
+{
+  "all_required_completed_within_horizon": false,
+  "all_required_scheduled": false,
+  "allow_recovery": true,
+  "assessments": {
+    "UK_component_and_vehicle_gauging": "unassessed",
+    "braking_curve_validation": "uncalibrated",
+    "eight_platform_station": "composed_synthetic; original_site_conformance_checked_separately",
+    "explicit_four_approach_geometry": "compiled_synthetic",
+    "full_UK_engineering_profile": "incomplete; selected rule checks do not promote this assembly",
+    "game_construction": "not_tested",
+    "kinematics": "analytic_constant_acceleration_level_track_only",
+    "passenger_circulation": "unassessed",
+    "real_interlocking": "unassessed",
+    "reservation_invariants": "pass",
+    "sectional_release": "synthetic_edge_sections",
+    "shared_throat": "per-bank fan plus any used recovery-link resources; combined compiler",
+    "spatial_queues": "unassessed; waiting_outside_model is a temporal count"
+  },
+  "assignments": [],
+  "candidate_assessment_hash": "d03b0f47b9cfcbca92202882051299abef90665e7c72bf478feb4f8a4a75a541",
+  "candidate_evaluations": 0,
+  "closed_edges": [],
+  "closed_platforms": [],
+  "compile_hash": "3f50d269852a54146c632491eeb5512fc9d89ea635b656259b0f00af928f45b1",
+  "completed_within_horizon": 0,
+  "construction_authorised": false,
+  "family": "b_to_a",
+  "fidelity": "synthetic_geometry_and_release; selected_UK_values_separate",
+  "formation_length_origin": "S060 manufacturer unit length",
+  "horizon_ms": 14400000,
+  "independent_check": {
+    "checker": "independent_interval_sweep_and_complete_visit_invariants_v06",
+    "compile_hash": "3f50d269852a54146c632491eeb5512fc9d89ea635b656259b0f00af928f45b1",
+    "conflict_witnesses": [],
+    "errors": [],
+    "required_visits": 24,
+    "scope": "reservation verification; not real-world or game validation",
+    "status": "pass"
+  },
+  "mode": "sectional_release",
+  "model_version": "0.6.0",
+  "profile": {
+    "acceleration_mps2": 0.6,
+    "braking_mps2": 0.7,
+    "provenance": "project_selected_uncalibrated_level_track_profile",
+    "release_ms": 3000,
+    "setup_ms": 5000,
+    "speed_mps": 6.7056
+  },
+  "rejected": [
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A01"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B01"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A02"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B02"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A03"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B03"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A04"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B04"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A05"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B05"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A06"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B06"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A07"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B07"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A08"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B08"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A09"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B09"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A10"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B10"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A11"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B11"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "A12"
+    },
+    {
+      "reason": "search_exhausted",
+      "visit_id": "B12"
+    }
+  ],
+  "required_visits": 24,
+  "scenario_hash": "d2fa104e72d21aab1d07cd917b644baeb2513758b501c8c5ffcdf927e7015502",
+  "scenario_id": "zero_budget",
+  "scheduled_residual_at_horizon": 0,
+  "scheduled_states_at_horizon": {
+    "arrival_setup": 0,
+    "arriving": 0,
+    "berthed": 0,
+    "completed": 0,
+    "departing": 0,
+    "departure_setup": 0,
+    "not_yet_due": 0,
+    "release_hold": 0,
+    "waiting_outside_model": 0
+  },
+  "scheduled_visits": 0,
+  "site_status_original_brief": "fail",
+  "total_departure_delay_ms": 0,
+  "total_recovery_legs": 0,
+  "unscheduled_visits": 24,
+  "vehicle_record_hash": "40bdbe8de0c14359c11f282436b095d693d302a12ca54047133af4bda641e331"
+}

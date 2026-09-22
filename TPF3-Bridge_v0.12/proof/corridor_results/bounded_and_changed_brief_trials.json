@@ -1,0 +1,307 @@
+{
+  "higher_speed": {
+    "accepted": 3,
+    "candidates": [
+      {
+        "accepted": true,
+        "failures": [],
+        "height_m": 20,
+        "offset_m": 0
+      },
+      {
+        "accepted": true,
+        "failures": [],
+        "height_m": 24,
+        "offset_m": 0
+      },
+      {
+        "accepted": true,
+        "failures": [],
+        "height_m": 28,
+        "offset_m": 0
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 20,
+        "offset_m": 180
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 24,
+        "offset_m": 180
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 28,
+        "offset_m": 180
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 20,
+        "offset_m": 280
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 24,
+        "offset_m": 280
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 28,
+        "offset_m": 280
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 20,
+        "offset_m": -280
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 24,
+        "offset_m": -280
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 28,
+        "offset_m": -280
+      }
+    ],
+    "speed_mph": 100
+  },
+  "limited_budget": {
+    "accepted": 2,
+    "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+    "evaluated": 2,
+    "global_optimum_claim": false,
+    "grid_size": 12,
+    "model_calls_inside_search": 0,
+    "objective_names": [
+      "tunnel_length_m",
+      "elevated_length_m",
+      "earthwork_estimate_m3",
+      "two_track_total_length_m"
+    ],
+    "pareto_candidate_hashes": [
+      "c39371daddd8cbe2ee845292dab4972f0da2c4c9b21b22301424a2263664c5bf",
+      "fb4bb750d8cddc1b6d0a287cc0f632db1a515930f1df542da3bdcf72e06f67a6"
+    ],
+    "station_internal_edits": false,
+    "status": "search_exhausted"
+  },
+  "shorter_corridor": {
+    "accepted": 2,
+    "candidates": [
+      {
+        "accepted": true,
+        "failures": [],
+        "height_m": 20,
+        "offset_m": 0
+      },
+      {
+        "accepted": true,
+        "failures": [],
+        "height_m": 24,
+        "offset_m": 0
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:gradient_bound:not_certified_by_bound",
+          "1.7:gradient_bound:not_certified_by_bound"
+        ],
+        "height_m": 28,
+        "offset_m": 0
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:radius_bound:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:radius_bound:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 20,
+        "offset_m": 180
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:radius_bound:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:radius_bound:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 24,
+        "offset_m": 180
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:radius_bound:not_certified_by_bound",
+          "-1.7:gradient_bound:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:radius_bound:not_certified_by_bound",
+          "1.7:gradient_bound:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 28,
+        "offset_m": 180
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:radius_bound:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:radius_bound:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 20,
+        "offset_m": 280
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:radius_bound:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:radius_bound:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 24,
+        "offset_m": 280
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:radius_bound:not_certified_by_bound",
+          "-1.7:gradient_bound:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:radius_bound:not_certified_by_bound",
+          "1.7:gradient_bound:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 28,
+        "offset_m": 280
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:radius_bound:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:radius_bound:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 20,
+        "offset_m": -280
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:radius_bound:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:radius_bound:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 24,
+        "offset_m": -280
+      },
+      {
+        "accepted": false,
+        "failures": [
+          "-1.7:radius_bound:not_certified_by_bound",
+          "-1.7:gradient_bound:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "-1.7:zero_cant_lateral_jerk:not_certified_by_bound",
+          "1.7:radius_bound:not_certified_by_bound",
+          "1.7:gradient_bound:not_certified_by_bound",
+          "1.7:zero_cant_lateral_accel:not_certified_by_bound",
+          "1.7:zero_cant_lateral_jerk:not_certified_by_bound"
+        ],
+        "height_m": 28,
+        "offset_m": -280
+      }
+    ],
+    "length_m": 3600,
+    "train_lengths_rescaled": false
+  },
+  "zero_budget": {
+    "accepted": 0,
+    "brief_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+    "evaluated": 0,
+    "global_optimum_claim": false,
+    "grid_size": 12,
+    "model_calls_inside_search": 0,
+    "objective_names": [
+      "tunnel_length_m",
+      "elevated_length_m",
+      "earthwork_estimate_m3",
+      "two_track_total_length_m"
+    ],
+    "pareto_candidate_hashes": [],
+    "station_internal_edits": false,
+    "status": "search_exhausted"
+  }
+}

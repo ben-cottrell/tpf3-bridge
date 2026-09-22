@@ -1,0 +1,50 @@
+{
+  "UK_platform_interface": "unassessed",
+  "rows": [
+    {
+      "arrival_stop_ms": 197127,
+      "boarding_length_m": 260.0,
+      "end_margin_each_m": 5.0,
+      "formation": "8-car",
+      "full_formation_sweep": "unassessed",
+      "last_release_ms": 200127,
+      "motion_origin": "unchanged v0.4 project profile, not a calibrated Desiro performance curve",
+      "motion_profile": {
+        "acceleration_mps2": 0.6,
+        "braking_mps2": 0.7,
+        "provenance": "project_selected_uncalibrated_level_track_profile",
+        "release_ms": 3000,
+        "setup_ms": 5000,
+        "speed_mps": 6.7056
+      },
+      "published_unit_length_m": 162.0,
+      "scalar_fit": true,
+      "source_geometry_compile_hash": "6ccfcfacc283c67c42a99f4759807208bf6b61086fc6abee7725843dc14d63d2",
+      "source_id": "S060",
+      "spare_after_margins_m": 88.0
+    },
+    {
+      "arrival_stop_ms": 209146,
+      "boarding_length_m": 260.0,
+      "end_margin_each_m": 5.0,
+      "formation": "12-car",
+      "full_formation_sweep": "unassessed",
+      "last_release_ms": 212146,
+      "motion_origin": "unchanged v0.4 project profile, not a calibrated Desiro performance curve",
+      "motion_profile": {
+        "acceleration_mps2": 0.6,
+        "braking_mps2": 0.7,
+        "provenance": "project_selected_uncalibrated_level_track_profile",
+        "release_ms": 3000,
+        "setup_ms": 5000,
+        "speed_mps": 6.7056
+      },
+      "published_unit_length_m": 242.6,
+      "scalar_fit": true,
+      "source_geometry_compile_hash": "6ccfcfacc283c67c42a99f4759807208bf6b61086fc6abee7725843dc14d63d2",
+      "source_id": "S060",
+      "spare_after_margins_m": 7.400000000000006
+    }
+  ],
+  "status": "scoped_scalar_and_motion_experiment"
+}

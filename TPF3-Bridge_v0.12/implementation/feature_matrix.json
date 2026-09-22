@@ -1,0 +1,133 @@
+{
+  "version": "0.12.0",
+  "features": [
+    {
+      "feature_id": "FEAT-01",
+      "name": "Brief, identity and authority",
+      "scope": "core",
+      "current_status": "partial_offline",
+      "existing_reference": "contracts/bridge.schema.json",
+      "next_action": "Create trusted stores and resolved typed brief service."
+    },
+    {
+      "feature_id": "FEAT-02",
+      "name": "Canonical geometry and component graph",
+      "scope": "core",
+      "current_status": "partial_offline",
+      "existing_reference": "proof/railgeom/network.py",
+      "next_action": "Extract one core and versioned component extensions."
+    },
+    {
+      "feature_id": "FEAT-03",
+      "name": "Bounded arbitrary port connection",
+      "scope": "core",
+      "current_status": "partial_offline",
+      "existing_reference": "proof/railbranch/geometry.py",
+      "next_action": "Remove fixed x-monotone/fixed-site assumptions under a supported domain."
+    },
+    {
+      "feature_id": "FEAT-04",
+      "name": "Terrain-aware corridor/junction fitting",
+      "scope": "core",
+      "current_status": "partial_offline",
+      "existing_reference": "proof/railterrain/planning.py",
+      "next_action": "Import actual bounded native terrain and asset constraints."
+    },
+    {
+      "feature_id": "FEAT-05",
+      "name": "Native track and asset construction",
+      "scope": "core",
+      "current_status": "mock_only",
+      "existing_reference": "proof/railterrain/adapter.py",
+      "next_action": "Demonstrate real create/read-back on named game/mod build."
+    },
+    {
+      "feature_id": "FEAT-06",
+      "name": "Practical junction routing/holding",
+      "scope": "core",
+      "current_status": "partial_offline",
+      "existing_reference": "proof/railbranch/operations.py",
+      "next_action": "Use geometric holding checks and observe actual native reservations."
+    },
+    {
+      "feature_id": "FEAT-07",
+      "name": "UK numerical/profile resolver",
+      "scope": "core",
+      "current_status": "partial_offline",
+      "existing_reference": "proof/railops/uk_profiles.py",
+      "next_action": "Typed reference/project/game origins with selected-task admission."
+    },
+    {
+      "feature_id": "FEAT-08",
+      "name": "Bridge/tunnel asset matching",
+      "scope": "conditional",
+      "current_status": "specified_only",
+      "existing_reference": "proof/railterrain/terrain.py",
+      "next_action": "Resolve real native assets; civil reservations are not structures."
+    },
+    {
+      "feature_id": "FEAT-09",
+      "name": "Existing station interfaces",
+      "scope": "conditional",
+      "current_status": "partial_offline",
+      "existing_reference": "proof/railinterface/platforms.py",
+      "next_action": "Map game terminals/access; do not expand furniture modelling."
+    },
+    {
+      "feature_id": "FEAT-10",
+      "name": "Realised verification and recovery",
+      "scope": "core",
+      "current_status": "mock_only",
+      "existing_reference": "proof/railterrain/adapter.py",
+      "next_action": "Persistent native-effect identity, changed segmentation and save reload."
+    },
+    {
+      "feature_id": "FEAT-11",
+      "name": "MCP host-facing service",
+      "scope": "core",
+      "current_status": "specified_only",
+      "existing_reference": "contracts/agent_tools.json",
+      "next_action": "Implement tested host transport; no server currently runs."
+    },
+    {
+      "feature_id": "FEAT-12",
+      "name": "World replacement",
+      "scope": "conditional",
+      "current_status": "specified_only",
+      "existing_reference": "GAME_ADAPTER_CONTRACT.md",
+      "next_action": "Delay removals until create-only and reload/reconciliation gates pass."
+    },
+    {
+      "feature_id": "FEAT-13",
+      "name": "Detailed grade-sensitive traction/restart",
+      "scope": "optional_deferred",
+      "current_status": "not_implemented",
+      "existing_reference": "17_uk_numerical_profiles.md",
+      "next_action": "Only add if measured game failures justify the complexity."
+    },
+    {
+      "feature_id": "FEAT-14",
+      "name": "Crowds, lift queues and evacuation",
+      "scope": "optional_deferred",
+      "current_status": "not_implemented",
+      "existing_reference": "06_passenger_engine_specification.md",
+      "next_action": "Not a ordinary railway-construction dependency."
+    },
+    {
+      "feature_id": "FEAT-15",
+      "name": "Full certified UK/dynamic gauging",
+      "scope": "optional_deferred",
+      "current_status": "partial_research",
+      "existing_reference": "20_vehicle_envelopes_and_clearance.md",
+      "next_action": "Strict research profile only unless an explicit task demands it."
+    },
+    {
+      "feature_id": "FEAT-16",
+      "name": "Production usage benchmark",
+      "scope": "core",
+      "current_status": "specified_only",
+      "existing_reference": "08_data_contracts_and_orchestration.md",
+      "next_action": "Measure comparable accepted live tasks; no credit-saving claim yet."
+    }
+  ]
+}

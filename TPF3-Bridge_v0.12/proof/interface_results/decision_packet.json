@@ -1,0 +1,132 @@
+{
+  "comparison_rows": [
+    {
+      "case": "initial",
+      "completed": 24,
+      "delay_s_scheduled_only": 0.0,
+      "excluded_faces": [
+        "B1"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "nominal",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "initial",
+      "completed": 12,
+      "delay_s_scheduled_only": 0.0,
+      "excluded_faces": [
+        "B1"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_a_platforms_closed",
+      "scheduled": 12,
+      "unscheduled": 12
+    },
+    {
+      "case": "initial",
+      "completed": 24,
+      "delay_s_scheduled_only": 15366.846,
+      "excluded_faces": [
+        "B1"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_b_platforms_closed",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "oversize",
+      "completed": 24,
+      "delay_s_scheduled_only": 0.0,
+      "excluded_faces": [
+        "B1",
+        "B2"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "nominal",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "oversize",
+      "completed": 12,
+      "delay_s_scheduled_only": 0.0,
+      "excluded_faces": [
+        "B1",
+        "B2"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_a_platforms_closed",
+      "scheduled": 12,
+      "unscheduled": 12
+    },
+    {
+      "case": "oversize",
+      "completed": 24,
+      "delay_s_scheduled_only": 15366.846,
+      "excluded_faces": [
+        "B1",
+        "B2"
+      ],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_b_platforms_closed",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "locally_refitted",
+      "completed": 24,
+      "delay_s_scheduled_only": 0.0,
+      "excluded_faces": [],
+      "required": 24,
+      "residual": 0,
+      "scenario": "nominal",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "locally_refitted",
+      "completed": 24,
+      "delay_s_scheduled_only": 16547.982,
+      "excluded_faces": [],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_a_platforms_closed",
+      "scheduled": 24,
+      "unscheduled": 0
+    },
+    {
+      "case": "locally_refitted",
+      "completed": 24,
+      "delay_s_scheduled_only": 15366.846,
+      "excluded_faces": [],
+      "required": 24,
+      "residual": 0,
+      "scenario": "bank_b_platforms_closed",
+      "scheduled": 24,
+      "unscheduled": 0
+    }
+  ],
+  "construction_authorised": false,
+  "fit_status": "fitted_within_reference_model",
+  "material_result": "Fixed-size facility fitted within the authorised platform slab; wider facility requires changed design authority.",
+  "oversize_status": "infeasible_fixed_section",
+  "platform_assessment_hash": "d016acc40952f751d16b4221d23f879028eeec6a7633925c9fe8e2802ccb6b0e",
+  "rail_rebuild_required_for_accepted_local_fit": false,
+  "remaining_decision": "Retain supported footprint or authorise a different facility/access arrangement; current UK source and component gates remain open.",
+  "schema_version": "0.8.0",
+  "status": "offline_reference_profile_design_screen",
+  "trace_files": [
+    "facility_search.json",
+    "platform_geometry.json",
+    "component_evidence_audit.json"
+  ]
+}

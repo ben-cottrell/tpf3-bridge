@@ -1,0 +1,512 @@
+{
+  "release": "0.3.0",
+  "date": "2026-09-20",
+  "scope": "Authored specification, original proof code, declared synthetic fixtures and executed outputs",
+  "root_markdown_documents": 18,
+  "total_markdown_documents": 22,
+  "source_register_records": 59,
+  "production_requirement_ids": 75,
+  "pattern_family_ids": 32,
+  "broad_project_benchmark_ids": 41,
+  "executed_test_methods": 176,
+  "legacy_test_methods": 83,
+  "new_test_methods": 93,
+  "hash_algorithm": "SHA-256",
+  "exclusions": [
+    "manifest.json",
+    "release_validation.json"
+  ],
+  "reason_for_exclusions": "No self-referential hashes; validation record describes the checks on this release.",
+  "files": [
+    {
+      "path": "01_scope_and_evidence.md",
+      "size_bytes": 13022,
+      "sha256": "e6896525fc4a579f801680fc6b1d583c7228b89ea9e0964a93601d551ae6f09f"
+    },
+    {
+      "path": "02_reference_atlas.md",
+      "size_bytes": 12036,
+      "sha256": "343076c6696f4040088288cd8d0d470a38115c2c07553286dbec186cf4dc99da"
+    },
+    {
+      "path": "03_birmingham_new_street.md",
+      "size_bytes": 17232,
+      "sha256": "95d2d6a2ef0814890e83d9c9f1130c89facd0a63d3ae2372aa7b3d13ea839d8b"
+    },
+    {
+      "path": "04_london_termini_and_junctions.md",
+      "size_bytes": 24055,
+      "sha256": "23732608a368b951fe8634dd7ef1a39fa7afa73454720f0ecd0ee995fc8b12a6"
+    },
+    {
+      "path": "05_regional_passenger_hubs.md",
+      "size_bytes": 12538,
+      "sha256": "7d256cdc105bdb627f7477d33f8e6d2128e2d684b9f0a0ce94b62fee050a0995"
+    },
+    {
+      "path": "06_passenger_engine_specification.md",
+      "size_bytes": 42605,
+      "sha256": "faac21729ebc98f1f9bbf3cf87fa1f4c97293a82091387d624d96e5c6b0c3fc0"
+    },
+    {
+      "path": "07_pattern_catalogue.md",
+      "size_bytes": 38233,
+      "sha256": "4198bad7d9a773686d023066a21e0794246a0b82b84c9a44e49a98a56428fd9b"
+    },
+    {
+      "path": "08_data_contracts_and_orchestration.md",
+      "size_bytes": 22638,
+      "sha256": "b1caa0d08028e63f65d3debd8b815ef38502cc021556bcc0e869f3b22e78823d"
+    },
+    {
+      "path": "09_validation_benchmarks_and_roadmap.md",
+      "size_bytes": 35342,
+      "sha256": "2004b869e58062c6ffa39077e00c4efe178ffba089df9038f081d37c0db4a59f"
+    },
+    {
+      "path": "10_source_register.md",
+      "size_bytes": 37391,
+      "sha256": "dce0f076ede1da8f14014fa9fb7f26136001bf77dece2eb327e918509b6a2707"
+    },
+    {
+      "path": "11_research_backlog.md",
+      "size_bytes": 15897,
+      "sha256": "04cb7cf07d2ae5993c06f20ea8715ec494568c713fc82927ba6cd40c33ff78aa"
+    },
+    {
+      "path": "12_worked_station_design.md",
+      "size_bytes": 15135,
+      "sha256": "bd032971804f5cf9e59735a080068bc15e6855910ae620580210f4dce3060f92"
+    },
+    {
+      "path": "13_offline_proof_and_results.md",
+      "size_bytes": 6494,
+      "sha256": "85ee6db4e464a927fbd7ce3bd8e18c60300108e10d3321ceafd7588a5f7cf9a1"
+    },
+    {
+      "path": "14_geometry_components_and_resource_compiler.md",
+      "size_bytes": 16763,
+      "sha256": "94806b6eae5945c099ef0eab011c1ce89f452d21f592b423206f91be188106fd"
+    },
+    {
+      "path": "15_worked_geometry_examples.md",
+      "size_bytes": 11618,
+      "sha256": "788cfaf7e92945ebabec522a397b6d8536be7faea5b8760f00d9c93b22694a9b"
+    },
+    {
+      "path": "16_v03_execution_report.md",
+      "size_bytes": 9951,
+      "sha256": "fee35b36c3e0d69548baa1bc7423f1c5818cf3c0a5fc8fe1120ef89205932349"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "size_bytes": 3796,
+      "sha256": "8064000ee91b42687219cbd9207ccf2a608f57ca9c2929208ef12f294c390d0a"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 6919,
+      "sha256": "76889060b7dfab2bc012291c4d10b675e1510598c98b27120f13cc2f4e4a369c"
+    },
+    {
+      "path": "evidence/README.md",
+      "size_bytes": 1648,
+      "sha256": "db4ce7088282528bbceedb7bfb3329765b5a76604fabb2d3a19c87118e23c652"
+    },
+    {
+      "path": "evidence/claims.json",
+      "size_bytes": 1900,
+      "sha256": "e1be2622bc7c578bee9f3901560855db06adf535c3c9c59af79062b9f11a2285"
+    },
+    {
+      "path": "evidence/component_catalogue.json",
+      "size_bytes": 1665,
+      "sha256": "012c997600bb64208be1ae9356d0ac8294621d2acd0299aa02ca337f3bfcdb5d"
+    },
+    {
+      "path": "evidence/reference_fragments.json",
+      "size_bytes": 3653,
+      "sha256": "c533c331a2304cebb33ccc9daae243cc23557b31ecee422c27d2b42618fe918d"
+    },
+    {
+      "path": "evidence/rules.json",
+      "size_bytes": 2431,
+      "sha256": "76ca126214cf82bb325f4cbe4ea6c17931110bc3eda8c84f28da894860454383"
+    },
+    {
+      "path": "evidence/v03_reinspection.json",
+      "size_bytes": 1199,
+      "sha256": "4914bde86be899eb880967a6c40b5a3bb2fcf0ff814e19c3f2dccef191902862"
+    },
+    {
+      "path": "proof/README.md",
+      "size_bytes": 3856,
+      "sha256": "d33640a13135075250c3776d57c67e1370c393e0883639db7ef494f87cf0beee"
+    },
+    {
+      "path": "proof/fixtures/bank_a_platforms_closed.json",
+      "size_bytes": 10740,
+      "sha256": "bd6167b25fe9fc1bb6b5a07573d82f2c69bcd74954040cef560fd50d38c4f4fe"
+    },
+    {
+      "path": "proof/fixtures/bunched.json",
+      "size_bytes": 10695,
+      "sha256": "59b068d4cf0a0ac101d13fc5ad2934495bda4b39edd1791b8ca04178b57681e5"
+    },
+    {
+      "path": "proof/fixtures/late_stock_cycle.json",
+      "size_bytes": 10727,
+      "sha256": "ade2d2a0a7365d0e71365837df4e88e77fdc2e669c3ee2b7325dae25938b26f1"
+    },
+    {
+      "path": "proof/fixtures/long_trains.json",
+      "size_bytes": 10666,
+      "sha256": "db54a74836d331fbaf05b619515ae23fa9c73c65136c33988bdb6617d71f6256"
+    },
+    {
+      "path": "proof/fixtures/nominal.json",
+      "size_bytes": 10671,
+      "sha256": "69d4c46a0d7ab607d9a6804c9ed2661c55423852be478455f27034a14bce1324"
+    },
+    {
+      "path": "proof/fixtures/platform_p1_closed.json",
+      "size_bytes": 10649,
+      "sha256": "b2d88228ff0f5992230a13e9b678cf1470af9b144dea08836787e7cf31c53456"
+    },
+    {
+      "path": "proof/fixtures/short_horizon.json",
+      "size_bytes": 10664,
+      "sha256": "13e6e7b803b98f6739c62e50b3d3cbeddf548830cd8eddabfa7bab851091555a"
+    },
+    {
+      "path": "proof/geometry_fixtures/release.json",
+      "size_bytes": 7207,
+      "sha256": "6ecffc67168fd5375ec75bfe3db5dcc86cd5914386f0c437dcb56407439cef34"
+    },
+    {
+      "path": "proof/geometry_results/bank__all_platforms_closed.json",
+      "size_bytes": 2293,
+      "sha256": "8ac4d640d1b3eff879b07fa8dad6c9b0e9e769ba8faa6a6825af1aa106e01aa1"
+    },
+    {
+      "path": "proof/geometry_results/bank__long_trains.json",
+      "size_bytes": 237240,
+      "sha256": "b35099ce9e565bcb69b3323c0b1aae9d758faec0f2b78a99aa5c599aec157a81"
+    },
+    {
+      "path": "proof/geometry_results/bank__nominal.json",
+      "size_bytes": 213794,
+      "sha256": "776f7ba2a0bd777315fe39f4e0f6285c738c99933852e8586124eb7cb4fa3626"
+    },
+    {
+      "path": "proof/geometry_results/bank__overlength.json",
+      "size_bytes": 2283,
+      "sha256": "91f89dbe158be2b9c74ad31612ce51b2abcbfc41999f78c6bdf85e28edffe583"
+    },
+    {
+      "path": "proof/geometry_results/bank__p1_closed.json",
+      "size_bytes": 202107,
+      "sha256": "4d6104bd9dec06bfb107d171e79e513cd5149d2ff926c969bac747b034fdb4dd"
+    },
+    {
+      "path": "proof/geometry_results/bank__short_horizon.json",
+      "size_bytes": 213799,
+      "sha256": "249adc7dfed52684ad2e24c703b580da45585952e93bb8f140e0c6f16e8ba826"
+    },
+    {
+      "path": "proof/geometry_results/bank__three_platforms_closed.json",
+      "size_bytes": 157083,
+      "sha256": "ae1eb2ec5a084e2b4562ea36b22b284b8392df617eeb0b7f9eda97405a405a1f"
+    },
+    {
+      "path": "proof/geometry_results/bank__zero_search_budget.json",
+      "size_bytes": 2135,
+      "sha256": "cf70f0abca63691f521a5c9b2227c648ea28ca40cfae2d2837fa4c811c8bc516"
+    },
+    {
+      "path": "proof/geometry_results/comparison.md",
+      "size_bytes": 1488,
+      "sha256": "7bd9d0e070b41905894978524aa566ad0747c3cae9b0464eaf24114ade7783ef"
+    },
+    {
+      "path": "proof/geometry_results/crossover_compiled.json",
+      "size_bytes": 40789,
+      "sha256": "a97f6f73aaa4826b4a77b1fa3d742c6f9f3ab0b5817fe858fbb84dddf8c24395"
+    },
+    {
+      "path": "proof/geometry_results/crossover_route_test.json",
+      "size_bytes": 9366,
+      "sha256": "ba0dcad908049ba0c02343b191d67cb0122a6e2858462a490593ffe7caf75e72"
+    },
+    {
+      "path": "proof/geometry_results/crossover_search.json",
+      "size_bytes": 19558,
+      "sha256": "ced0528ee49f3b537fa1d97436011511ab28b39bf375071309126169dac87aa2"
+    },
+    {
+      "path": "proof/geometry_results/decision_packet.json",
+      "size_bytes": 1072,
+      "sha256": "4c9b99fbe0bfbeacf50e9ab7f2699d7c89b76005d0e0a0da0eba688df7881fb2"
+    },
+    {
+      "path": "proof/geometry_results/fan_compiled.json",
+      "size_bytes": 121361,
+      "sha256": "9b393ca01e5cfd95d97f6f13f11c953b41a09b53a7c4b0e3bd4b93bbcbe3adc8"
+    },
+    {
+      "path": "proof/geometry_results/fan_geometry_sensitivity.json",
+      "size_bytes": 2268,
+      "sha256": "a307616235aba80a71e6aa2309dfca7a935d231b8036546177beb41a50123052"
+    },
+    {
+      "path": "proof/geometry_results/summary.json",
+      "size_bytes": 3766,
+      "sha256": "680a3d6f0157cf79d53b6e473b42d08d7211dd78d1ef275706dfe9e7e6365101"
+    },
+    {
+      "path": "proof/railgeom/__init__.py",
+      "size_bytes": 101,
+      "sha256": "f1ba4542a12c8698049f16b373e3cad5d2d0afdde6ae613d2ff9103a1d5af0fc"
+    },
+    {
+      "path": "proof/railgeom/compiler.py",
+      "size_bytes": 8163,
+      "sha256": "96798bb51279eb6d5d9443cf5e3a36011c0677aed641c4b23b9c942268143670"
+    },
+    {
+      "path": "proof/railgeom/curves.py",
+      "size_bytes": 9353,
+      "sha256": "6c8a56d3fa6c3e7a520cb504ebd068bb1849937d64cc7b4e086892f73344c6c2"
+    },
+    {
+      "path": "proof/railgeom/demo.py",
+      "size_bytes": 9303,
+      "sha256": "148a607e4ca8cac78cb2b0b29334f548ac5532d2119ddbe8047965139f97603e"
+    },
+    {
+      "path": "proof/railgeom/network.py",
+      "size_bytes": 7015,
+      "sha256": "ddf4a63a74455bcac2ff857867fc6540d5a2be1a65257001940fd4111d874caa"
+    },
+    {
+      "path": "proof/railgeom/operations.py",
+      "size_bytes": 9645,
+      "sha256": "2321886f6145c210cae7a9516b0adf58ca69608946656a78779a051cbeb26bda"
+    },
+    {
+      "path": "proof/railgeom/patterns.py",
+      "size_bytes": 8825,
+      "sha256": "0654897984bd2336280dcf31087380d8cd3927fe9852cfd6271f95dbc710740c"
+    },
+    {
+      "path": "proof/railgeom/search.py",
+      "size_bytes": 2272,
+      "sha256": "393cb2429ddb5298c4eaa5da53ecaf57f26a5686fb76bdddf2790f5554ed8f2e"
+    },
+    {
+      "path": "proof/railproof/__init__.py",
+      "size_bytes": 93,
+      "sha256": "ae81178ef3fa0ba967843f32edc5de700d6c6d5c7c806c7cf205d7fbe8ffc528"
+    },
+    {
+      "path": "proof/railproof/demo.py",
+      "size_bytes": 6944,
+      "sha256": "214cf5a5b551247d642a91d46a2e0219d11368bf072d6a9ffba75235cfe9e166"
+    },
+    {
+      "path": "proof/railproof/engine.py",
+      "size_bytes": 10890,
+      "sha256": "977cf7752705f5fb84e2b48dc97fd98d350b42bd5a02a24b60fffd8cc6a9d8c9"
+    },
+    {
+      "path": "proof/railproof/geometry.py",
+      "size_bytes": 1892,
+      "sha256": "d840e639d187dad92c3ca669663cdd1b5dc82330f70674b6f8616dd5c8e02b85"
+    },
+    {
+      "path": "proof/railproof/model.py",
+      "size_bytes": 6187,
+      "sha256": "fa079a4a8ecbb13b33715977171bb8788eb6ffa832535ea8dc2fe8bd54df7f46"
+    },
+    {
+      "path": "proof/railproof/rules.py",
+      "size_bytes": 3571,
+      "sha256": "124f4a8696e0f3bfb3a625aab759d64b5a16bbff4ebedffb2d8fecca93462d19"
+    },
+    {
+      "path": "proof/results/bank_a_platforms_closed__banked.json",
+      "size_bytes": 24851,
+      "sha256": "0c2f2db12c9de6e7a804acec0731a56bc9b7684e6a5b1084a49d008d2d35a3ad"
+    },
+    {
+      "path": "proof/results/bank_a_platforms_closed__common.json",
+      "size_bytes": 88932,
+      "sha256": "830ba85d47beb73b58b29ba8f4d6b216415c0223c630367c5934be645169e2f1"
+    },
+    {
+      "path": "proof/results/bank_a_platforms_closed__linked.json",
+      "size_bytes": 108637,
+      "sha256": "57b56348eb42ec65c0ff1ed7739b5b500455dbc1097dfb7789f40b6f6e5803ea"
+    },
+    {
+      "path": "proof/results/bunched__banked.json",
+      "size_bytes": 44610,
+      "sha256": "564d637209ff3ea83f6d10b43e69e1d1717fd6e0401863c5efa06948158cb6f7"
+    },
+    {
+      "path": "proof/results/bunched__common.json",
+      "size_bytes": 75887,
+      "sha256": "5de142cb2e0d8ff34cf745d7bfafe6a105323fafa8b1977e54f319543f286e70"
+    },
+    {
+      "path": "proof/results/bunched__linked.json",
+      "size_bytes": 44610,
+      "sha256": "d6c24424818f34c4e99394ba346214bf2c308324346937c754ae5d9dce04c8b9"
+    },
+    {
+      "path": "proof/results/comparison.md",
+      "size_bytes": 2197,
+      "sha256": "4e2adc7b052229c3f7b47ea8518bad87bb83bbc722516797bde69f89e2b8508d"
+    },
+    {
+      "path": "proof/results/decision_packet.json",
+      "size_bytes": 618,
+      "sha256": "f4fb44a2756eeb83c6c4bc7992e6de255671152f2fb0b370f92ab1e908c34f2a"
+    },
+    {
+      "path": "proof/results/late_stock_cycle__banked.json",
+      "size_bytes": 45867,
+      "sha256": "79adf88194998afb85e210b58de6f75f8080bf3340066bda9778b5ea20c816b8"
+    },
+    {
+      "path": "proof/results/late_stock_cycle__common.json",
+      "size_bytes": 73914,
+      "sha256": "6d852f33bf0245cb5137f9ff76be71a4daa4abf651a763ded89efa64dabfe569"
+    },
+    {
+      "path": "proof/results/late_stock_cycle__linked.json",
+      "size_bytes": 45867,
+      "sha256": "d6c85405e3175779fc5cc134ea0222fe8528558670bda9c5bd38e07eafe878ee"
+    },
+    {
+      "path": "proof/results/long_trains__banked.json",
+      "size_bytes": 47682,
+      "sha256": "7ec1d62f8600f00c1f51541944f051f422b4c3681c0489a69f67521d105c57c9"
+    },
+    {
+      "path": "proof/results/long_trains__common.json",
+      "size_bytes": 84730,
+      "sha256": "fab8d74ad9f8c0221f919a4f16bad2d0f66d4cb1a0ad723afaacecaae9a43d52"
+    },
+    {
+      "path": "proof/results/long_trains__linked.json",
+      "size_bytes": 47682,
+      "sha256": "8611b1b6080ad315e1e7c0977f6dc9dd1bcd798247eb4aef3e6210067683a2b1"
+    },
+    {
+      "path": "proof/results/nominal__banked.json",
+      "size_bytes": 44645,
+      "sha256": "cfe34ee545574ba8cab84cc0d94142bec9a7133c94d2b262104e05850c3b7104"
+    },
+    {
+      "path": "proof/results/nominal__common.json",
+      "size_bytes": 76404,
+      "sha256": "d1b443adb99c4a26e8a1183f470735e8cbc27780534c96d61427149de380f6d2"
+    },
+    {
+      "path": "proof/results/nominal__linked.json",
+      "size_bytes": 44646,
+      "sha256": "c06112c963a4b8421f012d3f64cecb459ed1734757baa22e41fd2922e010d671"
+    },
+    {
+      "path": "proof/results/platform_p1_closed__banked.json",
+      "size_bytes": 44656,
+      "sha256": "25cdc234fc6ddd9faa9f3e854fc9ce97c35b4fe8766e3c5ec4e24d6cbd8e59f6"
+    },
+    {
+      "path": "proof/results/platform_p1_closed__common.json",
+      "size_bytes": 76415,
+      "sha256": "723979176c1f178a4d2836cf515c8ebba54577b3447bf7ba1b515057cc957d81"
+    },
+    {
+      "path": "proof/results/platform_p1_closed__linked.json",
+      "size_bytes": 44656,
+      "sha256": "2e6e507107461d199e7d1ee6380b77715069ee495c335ced07a43cf5c42bc820"
+    },
+    {
+      "path": "proof/results/short_horizon__banked.json",
+      "size_bytes": 44653,
+      "sha256": "ceea861c782201402db3036a61565040fd72ce4e7bae3d29f2036687e5d23012"
+    },
+    {
+      "path": "proof/results/short_horizon__common.json",
+      "size_bytes": 76412,
+      "sha256": "d4dd9d56d0c1434705a233afaadcee723d6873e2030047cb95f296390530a024"
+    },
+    {
+      "path": "proof/results/short_horizon__linked.json",
+      "size_bytes": 44654,
+      "sha256": "20818e43e4ccc8c95a3843e15f4366480f8f0f8c252071357da2f9a0c751c199"
+    },
+    {
+      "path": "proof/results/summary.json",
+      "size_bytes": 11884,
+      "sha256": "65e24de1ea253715916b4196574c193fefd76536267bc8d78d48b38c41891b88"
+    },
+    {
+      "path": "proof/results/test_log.txt",
+      "size_bytes": 20623,
+      "sha256": "d9d4dd7aa1d2a5009eb9d98e2f0d87a24c89d4f3a9fea4e54f4429a33c47e61b"
+    },
+    {
+      "path": "proof/results/test_report.json",
+      "size_bytes": 30902,
+      "sha256": "9039d6385f506b2530037e10bfef24e77777ce5156ca3ac800c1a3a27ffa47e5"
+    },
+    {
+      "path": "proof/results/v02_test_log.txt",
+      "size_bytes": 8470,
+      "sha256": "db7d1c108d64830f97f68a3fcfa59f36e014f6aec8e2c019def4998a41b03d0c"
+    },
+    {
+      "path": "proof/results/v02_test_report.json",
+      "size_bytes": 1204,
+      "sha256": "be5fcb3cb0726e1fc0494e3eb187bbdff429c6c052fdf69a3ad07af4b1bb24cd"
+    },
+    {
+      "path": "proof/run_tests.py",
+      "size_bytes": 2541,
+      "sha256": "90dcf039496e4558fb5cead06593a75bde2c5f97adf70f35f71af463b5cb80f5"
+    },
+    {
+      "path": "proof/tests/test_core.py",
+      "size_bytes": 11288,
+      "sha256": "157a29f8535e60ad7352e573a54c3ec544f9216a79eb89df370c8503b2f1fbe5"
+    },
+    {
+      "path": "proof/tests/test_geom_compiler.py",
+      "size_bytes": 9106,
+      "sha256": "2a22f65f036d5928f0bc52dae3e9fc9d34810c2ddb96ebb4778cef9dccd0b592"
+    },
+    {
+      "path": "proof/tests/test_geom_kernel.py",
+      "size_bytes": 6660,
+      "sha256": "4ee5f6b68332e94e6532687ba013fbf06c4ff0c03578268b3660f502086517bf"
+    },
+    {
+      "path": "proof/tests/test_geom_operations.py",
+      "size_bytes": 9749,
+      "sha256": "1ca92eda31af32625a2f1e5adadfb4fd92267c6643d52d41a1e710f012175f56"
+    },
+    {
+      "path": "proof/tests/test_geometry_rules.py",
+      "size_bytes": 4470,
+      "sha256": "67c25a9ac094000c80d25ef86fcd1dd1be43971013fa891cde7557ee62bcbead"
+    },
+    {
+      "path": "proof/tests/test_scenarios.py",
+      "size_bytes": 3799,
+      "sha256": "51cd8fdad407cf8a7b13d9e5a2bf262565fe22798db0bdc12f9aeaba838d331d"
+    }
+  ]
+}

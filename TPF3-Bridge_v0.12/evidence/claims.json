@@ -1,0 +1,72 @@
+{
+  "schema_version": "0.2.0",
+  "claims": [
+    {
+      "id": "C0201",
+      "source_id": "S002",
+      "locator": "PDF pp.6-9",
+      "kind": "method_scope",
+      "record": "reference_fragments.json#birmingham_2025_assessment",
+      "unknowns": [
+        "full route permissions",
+        "current measured operation"
+      ]
+    },
+    {
+      "id": "C0202",
+      "source_id": "S055",
+      "locator": "PDF p.11",
+      "kind": "historical_topology_fragment",
+      "record": "reference_fragments.json#waterloo_2017_approach_names",
+      "unknowns": [
+        "metric geometry",
+        "complete present-day routes"
+      ]
+    },
+    {
+      "id": "C0203",
+      "source_id": "S055",
+      "locator": "PDF p.13",
+      "kind": "historical_component_relationship",
+      "record": "reference_fragments.json#waterloo_2017_point_group_1524",
+      "unknowns": [
+        "complete control table",
+        "current component state"
+      ]
+    },
+    {
+      "id": "C0204",
+      "source_id": "S056",
+      "locator": "SRS C.01, PDF p.3",
+      "kind": "historical_planning_context",
+      "derived_requirement_ids": [
+        "TOP-005",
+        "TOP-007"
+      ],
+      "delivered_outcome_claimed": false
+    },
+    {
+      "id": "C0205",
+      "source_id": "S057",
+      "locator": "paragraphs 1.5-1.8",
+      "kind": "domain_disambiguation",
+      "record": "reference_fragments.json#willesden_access_link_domain",
+      "whole_report_S023_reviewed": false
+    },
+    {
+      "id": "C0206",
+      "source_id": "S058",
+      "locator": "4.2.4.2(2); 4.2.9.4; 7.7.17.6-7",
+      "kind": "scoped_rule_extraction",
+      "record": "rules.json",
+      "whole_uk_profile_validated": false
+    },
+    {
+      "id": "C0207",
+      "source_id": "S059",
+      "locator": "official response text",
+      "kind": "acquisition_pointer",
+      "underlying_disclosure_attachments_reviewed": false
+    }
+  ]
+}

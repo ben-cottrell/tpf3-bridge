@@ -1,0 +1,123 @@
+{
+  "release_version": "0.3.0",
+  "python": "3.13.5",
+  "input_sha256": "6ecffc67168fd5375ec75bfe3db5dcc86cd5914386f0c437dcb56407439cef34",
+  "fixture": "geometry_fixtures/release.json",
+  "crossover": {
+    "span_m": 100.0,
+    "routes": 4,
+    "track_edges": 7,
+    "resources": 22,
+    "compile_hash": "8957ebbf1a9e24307ff3d2de66e18a03b58baaa9ce38ed656b6ac38a6699a0db",
+    "cross_route_length_interval_m": [
+      100.13960578855395,
+      100.13969513753341
+    ]
+  },
+  "fan": {
+    "physical_platform_roads": 4,
+    "approach_tracks": 1,
+    "routes": 8,
+    "track_edges": 23,
+    "resources": 60,
+    "compile_hash": "d26c139b485a068855d537736eb71ca7c3feaae7d265086fb90858941ced929e",
+    "last_fan_curve_end_x_m": 520.0
+  },
+  "bank_scenarios": [
+    {
+      "scenario_id": "nominal",
+      "required_visits": 12,
+      "scheduled_visits": 12,
+      "unscheduled_visits": 0,
+      "completed_within_horizon": 12,
+      "scheduled_residual_at_horizon": 0,
+      "total_departure_delay_ms": 1078842,
+      "candidate_evaluations": 173
+    },
+    {
+      "scenario_id": "p1_closed",
+      "required_visits": 12,
+      "scheduled_visits": 12,
+      "unscheduled_visits": 0,
+      "completed_within_horizon": 12,
+      "scheduled_residual_at_horizon": 0,
+      "total_departure_delay_ms": 1079849,
+      "candidate_evaluations": 131
+    },
+    {
+      "scenario_id": "three_platforms_closed",
+      "required_visits": 12,
+      "scheduled_visits": 12,
+      "unscheduled_visits": 0,
+      "completed_within_horizon": 12,
+      "scheduled_residual_at_horizon": 0,
+      "total_departure_delay_ms": 11893248,
+      "candidate_evaluations": 64
+    },
+    {
+      "scenario_id": "all_platforms_closed",
+      "required_visits": 12,
+      "scheduled_visits": 0,
+      "unscheduled_visits": 12,
+      "completed_within_horizon": 0,
+      "scheduled_residual_at_horizon": 0,
+      "total_departure_delay_ms": 0,
+      "candidate_evaluations": 0
+    },
+    {
+      "scenario_id": "long_trains",
+      "required_visits": 12,
+      "scheduled_visits": 12,
+      "unscheduled_visits": 0,
+      "completed_within_horizon": 12,
+      "scheduled_residual_at_horizon": 0,
+      "total_departure_delay_ms": 1909494,
+      "candidate_evaluations": 197
+    },
+    {
+      "scenario_id": "overlength",
+      "required_visits": 12,
+      "scheduled_visits": 0,
+      "unscheduled_visits": 12,
+      "completed_within_horizon": 0,
+      "scheduled_residual_at_horizon": 0,
+      "total_departure_delay_ms": 0,
+      "candidate_evaluations": 0
+    },
+    {
+      "scenario_id": "short_horizon",
+      "required_visits": 12,
+      "scheduled_visits": 12,
+      "unscheduled_visits": 0,
+      "completed_within_horizon": 3,
+      "scheduled_residual_at_horizon": 9,
+      "total_departure_delay_ms": 1078842,
+      "candidate_evaluations": 173
+    },
+    {
+      "scenario_id": "zero_search_budget",
+      "required_visits": 12,
+      "scheduled_visits": 0,
+      "unscheduled_visits": 12,
+      "completed_within_horizon": 0,
+      "scheduled_residual_at_horizon": 0,
+      "total_departure_delay_ms": 0,
+      "candidate_evaluations": 0
+    }
+  ],
+  "search_statuses": {
+    "within_100m": "candidate_found_in_enumerated_set",
+    "within_70m": "no_candidate_in_enumerated_set",
+    "one_evaluation": "search_exhausted"
+  },
+  "external_model_or_game_calls_in_runner": 0,
+  "measured_plan_credit_savings": null,
+  "limitations": [
+    "synthetic catalogue, not UK-approved specialwork",
+    "one-approach bank, not complete four-approach station",
+    "whole-leg lock/release surrogate, not sectional interlocking",
+    "proxy corridor width, not kinematic vehicle gauging",
+    "no game construction or observation",
+    "no global optimiser or passenger/spatial queue model"
+  ]
+}

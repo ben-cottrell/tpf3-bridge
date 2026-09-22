@@ -1,0 +1,207 @@
+{
+  "correct_centreline_offset_m": 1.455,
+  "correct_edge_yz_m": [
+    1.455,
+    0.915
+  ],
+  "current_uk_compliance": "unassessed",
+  "draft_curve_cases": [
+    {
+      "clause": "C.1.1 Table 10",
+      "construction_authorised": false,
+      "current_uk_compliance": "unassessed",
+      "minimum_offset_mm": 730.0,
+      "radius_m": 400.0,
+      "source_id": "S066",
+      "source_issue": "GIRT7073 Three Draft 1l March 2023",
+      "special_cases_implemented": false,
+      "status": "draft_reference_value"
+    },
+    {
+      "clause": "C.1.1 Table 10",
+      "construction_authorised": false,
+      "current_uk_compliance": "unassessed",
+      "minimum_offset_mm": 730.0,
+      "radius_m": 360.0,
+      "source_id": "S066",
+      "source_issue": "GIRT7073 Three Draft 1l March 2023",
+      "special_cases_implemented": false,
+      "status": "draft_reference_value"
+    },
+    {
+      "clause": "C.1.1 Table 10",
+      "construction_authorised": false,
+      "current_uk_compliance": "unassessed",
+      "minimum_offset_mm": 730.4233983286908,
+      "radius_m": 359.0,
+      "source_id": "S066",
+      "source_issue": "GIRT7073 Three Draft 1l March 2023",
+      "special_cases_implemented": false,
+      "status": "draft_reference_value"
+    },
+    {
+      "clause": "C.1.1 Table 10",
+      "construction_authorised": false,
+      "current_uk_compliance": "unassessed",
+      "minimum_offset_mm": 744.6666666666666,
+      "radius_m": 300.0,
+      "source_id": "S066",
+      "source_issue": "GIRT7073 Three Draft 1l March 2023",
+      "special_cases_implemented": false,
+      "status": "draft_reference_value"
+    },
+    {
+      "clause": "C.1.1 Table 10",
+      "construction_authorised": false,
+      "current_uk_compliance": "unassessed",
+      "minimum_offset_mm": 762.0,
+      "radius_m": 250.0,
+      "source_id": "S066",
+      "source_issue": "GIRT7073 Three Draft 1l March 2023",
+      "special_cases_implemented": false,
+      "status": "draft_reference_value"
+    },
+    {
+      "clause": "C.1.1 Table 10",
+      "construction_authorised": false,
+      "current_uk_compliance": "unassessed",
+      "minimum_offset_mm": 820.5,
+      "radius_m": 160.0,
+      "source_id": "S066",
+      "source_issue": "GIRT7073 Three Draft 1l March 2023",
+      "special_cases_implemented": false,
+      "status": "draft_reference_value"
+    },
+    {
+      "clause": "C.1.1 Table 10",
+      "construction_authorised": false,
+      "current_uk_compliance": "unassessed",
+      "minimum_offset_mm": null,
+      "radius_m": 159.0,
+      "source_id": "S066",
+      "source_issue": "GIRT7073 Three Draft 1l March 2023",
+      "special_cases_implemented": false,
+      "status": "outside_reviewed_draft_domain"
+    }
+  ],
+  "gauge_source_id": "S058",
+  "height_build_925_confirmed": {
+    "check": "platform_height",
+    "clause": "2.1.1-2.1.3; G2.1.13 excludes extra build/maintenance allowance from design",
+    "construction_authorised": false,
+    "current_uk_compliance": "unassessed",
+    "datum": "perpendicular_to_rail_plane",
+    "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+    "measured_mm": 925.0,
+    "permitted_interval_mm": [
+      900.0,
+      925.0
+    ],
+    "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+    "source_id": "S064",
+    "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+    "stage": "build_maintenance",
+    "status": "reference_clause_pass"
+  },
+  "height_build_925_unconfirmed": {
+    "check": "platform_height",
+    "construction_authorised": false,
+    "current_uk_compliance": "unassessed",
+    "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+    "reason": "linked_lower_sector_adjustment_not_confirmed",
+    "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+    "source_id": "S064",
+    "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+    "status": "unassessed"
+  },
+  "height_design_915": {
+    "check": "platform_height",
+    "clause": "2.1.1-2.1.3; G2.1.13 excludes extra build/maintenance allowance from design",
+    "construction_authorised": false,
+    "current_uk_compliance": "unassessed",
+    "datum": "perpendicular_to_rail_plane",
+    "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+    "measured_mm": 915.0,
+    "permitted_interval_mm": [
+      900.0,
+      915.0
+    ],
+    "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+    "source_id": "S064",
+    "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+    "stage": "design",
+    "status": "reference_clause_pass"
+  },
+  "height_design_925": {
+    "check": "platform_height",
+    "clause": "2.1.1-2.1.3; G2.1.13 excludes extra build/maintenance allowance from design",
+    "construction_authorised": false,
+    "current_uk_compliance": "unassessed",
+    "datum": "perpendicular_to_rail_plane",
+    "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+    "measured_mm": 925.0,
+    "permitted_interval_mm": [
+      900.0,
+      915.0
+    ],
+    "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+    "source_id": "S064",
+    "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+    "stage": "design",
+    "status": "reference_clause_fail"
+  },
+  "height_taper_15mm": {
+    "check": "taper",
+    "clause": "2.1.4; 2.2.2; offset coping-unit constraint still separate",
+    "construction_authorised": false,
+    "coping_unit_compatibility": "not_evaluated",
+    "current_uk_compliance": "unassessed",
+    "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+    "kind": "height",
+    "minimum_longitudinal_length_m": 0.6,
+    "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+    "source_id": "S064",
+    "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+    "status": "reference_lower_bound"
+  },
+  "incorrectly_using_737_5mm_from_centreline": {
+    "height_mm_perpendicular_to_rail_plane": 915.0,
+    "nearest_rail_offset_mm": 20.0
+  },
+  "offset_taper_15mm": {
+    "check": "taper",
+    "clause": "2.1.4; 2.2.2; offset coping-unit constraint still separate",
+    "construction_authorised": false,
+    "coping_unit_compatibility": "unassessed",
+    "current_uk_compliance": "unassessed",
+    "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+    "kind": "offset",
+    "minimum_longitudinal_length_m": 1.2,
+    "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+    "source_id": "S064",
+    "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+    "status": "reference_lower_bound"
+  },
+  "roundtrip": {
+    "height_mm_perpendicular_to_rail_plane": 915.0,
+    "nearest_rail_offset_mm": 737.5
+  },
+  "wrong_datum_check": {
+    "check": "platform_offset",
+    "clause": "2.2.1 and G2.2.8; not a universal curved-platform minimum",
+    "construction_authorised": false,
+    "current_uk_compliance": "unassessed",
+    "datum": "nearest_rail_running_edge_14mm_below_rail_head_projected_parallel_to_rail_plane",
+    "evidence_scope": "publisher_hosted_issue_two_reference_copy_in_consultation_repository",
+    "measured_mm": 20.0,
+    "minimum_origin": "explicit_standard_case_reference",
+    "permitted_interval_mm": [
+      730.0,
+      745.0
+    ],
+    "reference_record_hash": "2b5f34ce9da87f20f510b4e9752334f73b2d4b9fbc037eb40b07370932b47e98",
+    "source_id": "S064",
+    "source_issue": "GIRT7020 Issue Two, June 2022, displayed on reviewed copy",
+    "status": "reference_clause_fail"
+  }
+}

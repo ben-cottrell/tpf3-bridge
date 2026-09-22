@@ -1,0 +1,1072 @@
+{
+  "clean": {
+    "acknowledgements_reconciled": 0,
+    "effect_count": 52,
+    "environment": "mock",
+    "node_count": 52,
+    "plan_hash": "e451228dff1fcc95e9d2f5570a122fcc2f861493355558a33d5b79cca4b771ca",
+    "real_game_constructed": false,
+    "rollback_attempted": false,
+    "status": "mock_verified",
+    "trace": [
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "145214be5b08ee8cc11cfd971c5a1c6a110047ccbefa0bbfc2f327933d84f144",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "dc5b55885da7f148d02dbe24f617a7d4d66335f1de7db4d8f090066723f5fe1d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "864b4a9aa1623fe2bc5f15e9e56a56bffbd403268155c33302eac3abaf0c97e8",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "53fa6dfbf4ea94542fc36b395169bfade49478073f93d583e7cced44bf94f337",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "495a116674386e4da128a993fab08abfb9c316feced01c270b59b86933ccb78d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7aca4fbb153a1e2ae914a6017ac806cb8bbe86c9cd6f97c3c7004cabe406e42d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.bridge_reservation",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "cea81120da76e9b23ec802359a4c5b6d62308a0ac4f773786515a7c63d703474",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "0433157841e3ea19912f9eae4485dfc189e153c9e7b97f3ed8c86345bf366973",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7676b8fae78a380f2f298571ae6794dd202c0d8d57b154f91aead1327feae698",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "c9dbb751c2f28a6f5cf18b97e9f4f8718851f1664570d54e59032a319103dd5d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "1f65cbfdd1c4871a1549195c233c1cea00efb59cc4c95c03431a46a20913938b",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b7afec1bd30600571932f8bf94b88c9ba9f6e97b297c0077d3b6931ccf4acf8a",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "4dde94c9b3bcd3af3889834e503727cbf855009583f5f52a23adf5fb3ceaf946",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "39f795b05581b2c7fdd7b56fca4db90c4fcea493182b47f58753169046b7ee10",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "d697aba33ac9d70a3bfee187694cff950a09a5957539d46fb2ae485cc7af45f1",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "4aee6ce91df08cc1b5389b9ed7ca12087e81a265934ba43cfdec5eb308833605",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "c9c70931bcb8f28f544c0604077297453971fab4189401aa0ea148ca1718b514",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "86d1baa2ed18881a88ad1ddc79cf7cb9371b4849edd45a80a47c13c71ce3a202",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "39e01238ada9dc77bb2e09632bcba7c6d58c7acc85f70e9cc6de6c7c312a79d6",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "baffb478dbb15ebbc5403720470fca7efe7d40d197ab8009deaf39bbe15505fc",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "5a8f84d5e1c8482a4d7b48ae21f210ee1602748f619932eacc917ddbf6b04109",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "d30eec30d7777b3f511b078b974d88b105d518ae8066b865bf1360fbbd85d4a6",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "f345b56f477f32c3095e67cc13f22bed9f8b1272ab16121c42fd32be89096730",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "2e8d9fb1e3bb0b50a0cb523a1251bdc13af148b0f7c6808ef30cfe6fa8a3c145",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "90b41b41a4e71309716c9eb27f820b943cf5853b0aac8101784954a73251954a",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "f1c89f45076d90ca661b0761d6f5baf098a53657ad8c1fe02a5f4d7da6db9927",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "df84d4702f1322fe81f71eed930f744186dc5811770addd236fb0d2516089718",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "ab7dd8906e749fc020148739626956b9b8c54f0cfc587fd81320becdaf7c0747",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b85ac8899d7bd1df57eeebe332c67a339da761696dc8026b1a676386102be630",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b5169c0df7abe0be84aab8bf52af6252f4fdedc6b09962267fd461813e1d50ea",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "16df5287f30d19da9c302e158d0334b8aa11e8e99d536fc8cddf02c1d73479ad",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "e8d8e62795ea74cc8a593df3568b1a571b7e773c8b535d7f7be7b1a20fbe7e42",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.bridge_reservation",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "01e6a0ded42cba7b97a5df3693bd180b122d85fda5d52b93a03117763f7dc6e3",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "9a5d5dcba4fc1aaccf77054934258e0194a9866caefeb682a5158dd83366e616",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7844304c32219647e2b6f614e6cf24168b5c98fd454eb985d7c72dbe1d565d9e",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "15c9dab38e1a39f3e2fdadb9a76be1e87517f3af0aeb2b3abe2f9fd61b4f39dc",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "722af3b4d2cc0bcdbd2d51782c488b5bb5288bcdb8a18729c1ed566405c7882f",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "1213068157882a93487aa06bd2c4198adcfe05a3855c9044d7b422cbcf91f636",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "9afa61221693742a4accc836a67482a43406fd66b49d698fd63eab7af87631a2",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "dfbca63c648619d0b7dff690b61f61b35c1b71fd331a33b81339a129530774c3",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7f7f96eac837df1e9455703ac1ef8c98b5c8ac221153cff78a8629f6ec374b48",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b4c542d2eb084a0c4fd28c17ddfd63ef3b3aa985607fbcb5d161d7e4ed1e503d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "73e1b18a6c60b0ddb6bf68e65792a28293f74d0f81a5b72519127de4972dc8d4",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "0d7fd816ba2f683a8530f0ec31aa91999465652a7485be674cb5aef934177c00",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "ba5af547344ad81d715cf8b96fdf8df94733758eee6c92110ad64bd783b8bd2b",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "bfbde230fb152d2eaeac914936d4e5917b187d05ac9240a7e11b08bdb9ff99ae",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "3c995c27ecd32d1b4516639d8fc6ae45ff886719eac0f5e825a3d1484fb80908",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "0741f2c9e471ed0fd6e9f15b7383e107231537e5989d46b5e18a3ba9f3626966",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "6be022db7e49bd66f7e758aecb69a41fecd742d2fccb3767f116b99a202d942c",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "441549aff3798574bc58d9100fb6359296b7695018d5713cf67810439bb0b2f8",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "d12b29652d732fdafbebcd8d8d6f7eb0a48d95c5fddd8d4775991be64d48205c",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "4cea7acd9ee31e5721b62f59f6afdb4f36c74889ad978b777adab1375f086586",
+        "readback_matches": true
+      }
+    ],
+    "verification_scope": "ordered mock vertices, payload and explicit node identities; not real game topology",
+    "writes": 52
+  },
+  "idempotent_repeat": {
+    "acknowledgements_reconciled": 0,
+    "effect_count": 52,
+    "environment": "mock",
+    "node_count": 52,
+    "plan_hash": "e451228dff1fcc95e9d2f5570a122fcc2f861493355558a33d5b79cca4b771ca",
+    "real_game_constructed": false,
+    "rollback_attempted": false,
+    "status": "mock_verified",
+    "trace": [
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "145214be5b08ee8cc11cfd971c5a1c6a110047ccbefa0bbfc2f327933d84f144",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "dc5b55885da7f148d02dbe24f617a7d4d66335f1de7db4d8f090066723f5fe1d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "864b4a9aa1623fe2bc5f15e9e56a56bffbd403268155c33302eac3abaf0c97e8",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "53fa6dfbf4ea94542fc36b395169bfade49478073f93d583e7cced44bf94f337",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "495a116674386e4da128a993fab08abfb9c316feced01c270b59b86933ccb78d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7aca4fbb153a1e2ae914a6017ac806cb8bbe86c9cd6f97c3c7004cabe406e42d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.bridge_reservation",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "cea81120da76e9b23ec802359a4c5b6d62308a0ac4f773786515a7c63d703474",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "0433157841e3ea19912f9eae4485dfc189e153c9e7b97f3ed8c86345bf366973",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7676b8fae78a380f2f298571ae6794dd202c0d8d57b154f91aead1327feae698",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "c9dbb751c2f28a6f5cf18b97e9f4f8718851f1664570d54e59032a319103dd5d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "1f65cbfdd1c4871a1549195c233c1cea00efb59cc4c95c03431a46a20913938b",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b7afec1bd30600571932f8bf94b88c9ba9f6e97b297c0077d3b6931ccf4acf8a",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "4dde94c9b3bcd3af3889834e503727cbf855009583f5f52a23adf5fb3ceaf946",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "39f795b05581b2c7fdd7b56fca4db90c4fcea493182b47f58753169046b7ee10",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "d697aba33ac9d70a3bfee187694cff950a09a5957539d46fb2ae485cc7af45f1",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "4aee6ce91df08cc1b5389b9ed7ca12087e81a265934ba43cfdec5eb308833605",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "c9c70931bcb8f28f544c0604077297453971fab4189401aa0ea148ca1718b514",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "86d1baa2ed18881a88ad1ddc79cf7cb9371b4849edd45a80a47c13c71ce3a202",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "39e01238ada9dc77bb2e09632bcba7c6d58c7acc85f70e9cc6de6c7c312a79d6",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "baffb478dbb15ebbc5403720470fca7efe7d40d197ab8009deaf39bbe15505fc",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "5a8f84d5e1c8482a4d7b48ae21f210ee1602748f619932eacc917ddbf6b04109",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "d30eec30d7777b3f511b078b974d88b105d518ae8066b865bf1360fbbd85d4a6",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "f345b56f477f32c3095e67cc13f22bed9f8b1272ab16121c42fd32be89096730",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "2e8d9fb1e3bb0b50a0cb523a1251bdc13af148b0f7c6808ef30cfe6fa8a3c145",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "90b41b41a4e71309716c9eb27f820b943cf5853b0aac8101784954a73251954a",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "f1c89f45076d90ca661b0761d6f5baf098a53657ad8c1fe02a5f4d7da6db9927",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "df84d4702f1322fe81f71eed930f744186dc5811770addd236fb0d2516089718",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "ab7dd8906e749fc020148739626956b9b8c54f0cfc587fd81320becdaf7c0747",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b85ac8899d7bd1df57eeebe332c67a339da761696dc8026b1a676386102be630",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b5169c0df7abe0be84aab8bf52af6252f4fdedc6b09962267fd461813e1d50ea",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "16df5287f30d19da9c302e158d0334b8aa11e8e99d536fc8cddf02c1d73479ad",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "e8d8e62795ea74cc8a593df3568b1a571b7e773c8b535d7f7be7b1a20fbe7e42",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.bridge_reservation",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "01e6a0ded42cba7b97a5df3693bd180b122d85fda5d52b93a03117763f7dc6e3",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "9a5d5dcba4fc1aaccf77054934258e0194a9866caefeb682a5158dd83366e616",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7844304c32219647e2b6f614e6cf24168b5c98fd454eb985d7c72dbe1d565d9e",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "15c9dab38e1a39f3e2fdadb9a76be1e87517f3af0aeb2b3abe2f9fd61b4f39dc",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "722af3b4d2cc0bcdbd2d51782c488b5bb5288bcdb8a18729c1ed566405c7882f",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "1213068157882a93487aa06bd2c4198adcfe05a3855c9044d7b422cbcf91f636",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "9afa61221693742a4accc836a67482a43406fd66b49d698fd63eab7af87631a2",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "dfbca63c648619d0b7dff690b61f61b35c1b71fd331a33b81339a129530774c3",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7f7f96eac837df1e9455703ac1ef8c98b5c8ac221153cff78a8629f6ec374b48",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b4c542d2eb084a0c4fd28c17ddfd63ef3b3aa985607fbcb5d161d7e4ed1e503d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "73e1b18a6c60b0ddb6bf68e65792a28293f74d0f81a5b72519127de4972dc8d4",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "0d7fd816ba2f683a8530f0ec31aa91999465652a7485be674cb5aef934177c00",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "ba5af547344ad81d715cf8b96fdf8df94733758eee6c92110ad64bd783b8bd2b",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "bfbde230fb152d2eaeac914936d4e5917b187d05ac9240a7e11b08bdb9ff99ae",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "3c995c27ecd32d1b4516639d8fc6ae45ff886719eac0f5e825a3d1484fb80908",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "0741f2c9e471ed0fd6e9f15b7383e107231537e5989d46b5e18a3ba9f3626966",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "6be022db7e49bd66f7e758aecb69a41fecd742d2fccb3767f116b99a202d942c",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "441549aff3798574bc58d9100fb6359296b7695018d5713cf67810439bb0b2f8",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "d12b29652d732fdafbebcd8d8d6f7eb0a48d95c5fddd8d4775991be64d48205c",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "4cea7acd9ee31e5721b62f59f6afdb4f36c74889ad978b777adab1375f086586",
+        "readback_matches": true
+      }
+    ],
+    "verification_scope": "ordered mock vertices, payload and explicit node identities; not real game topology",
+    "writes": 52
+  },
+  "lost_acknowledgement": {
+    "acknowledgements_reconciled": 1,
+    "effect_count": 52,
+    "environment": "mock",
+    "node_count": 52,
+    "plan_hash": "e451228dff1fcc95e9d2f5570a122fcc2f861493355558a33d5b79cca4b771ca",
+    "real_game_constructed": false,
+    "rollback_attempted": false,
+    "status": "mock_verified",
+    "trace": [
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "145214be5b08ee8cc11cfd971c5a1c6a110047ccbefa0bbfc2f327933d84f144",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "dc5b55885da7f148d02dbe24f617a7d4d66335f1de7db4d8f090066723f5fe1d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "864b4a9aa1623fe2bc5f15e9e56a56bffbd403268155c33302eac3abaf0c97e8",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "53fa6dfbf4ea94542fc36b395169bfade49478073f93d583e7cced44bf94f337",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "495a116674386e4da128a993fab08abfb9c316feced01c270b59b86933ccb78d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7aca4fbb153a1e2ae914a6017ac806cb8bbe86c9cd6f97c3c7004cabe406e42d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.bridge_reservation",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "cea81120da76e9b23ec802359a4c5b6d62308a0ac4f773786515a7c63d703474",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "0433157841e3ea19912f9eae4485dfc189e153c9e7b97f3ed8c86345bf366973",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7676b8fae78a380f2f298571ae6794dd202c0d8d57b154f91aead1327feae698",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "c9dbb751c2f28a6f5cf18b97e9f4f8718851f1664570d54e59032a319103dd5d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "1f65cbfdd1c4871a1549195c233c1cea00efb59cc4c95c03431a46a20913938b",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b7afec1bd30600571932f8bf94b88c9ba9f6e97b297c0077d3b6931ccf4acf8a",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "4dde94c9b3bcd3af3889834e503727cbf855009583f5f52a23adf5fb3ceaf946",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "39f795b05581b2c7fdd7b56fca4db90c4fcea493182b47f58753169046b7ee10",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "d697aba33ac9d70a3bfee187694cff950a09a5957539d46fb2ae485cc7af45f1",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "4aee6ce91df08cc1b5389b9ed7ca12087e81a265934ba43cfdec5eb308833605",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "c9c70931bcb8f28f544c0604077297453971fab4189401aa0ea148ca1718b514",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "86d1baa2ed18881a88ad1ddc79cf7cb9371b4849edd45a80a47c13c71ce3a202",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "39e01238ada9dc77bb2e09632bcba7c6d58c7acc85f70e9cc6de6c7c312a79d6",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "baffb478dbb15ebbc5403720470fca7efe7d40d197ab8009deaf39bbe15505fc",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "5a8f84d5e1c8482a4d7b48ae21f210ee1602748f619932eacc917ddbf6b04109",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "d30eec30d7777b3f511b078b974d88b105d518ae8066b865bf1360fbbd85d4a6",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "f345b56f477f32c3095e67cc13f22bed9f8b1272ab16121c42fd32be89096730",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "2e8d9fb1e3bb0b50a0cb523a1251bdc13af148b0f7c6808ef30cfe6fa8a3c145",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "90b41b41a4e71309716c9eb27f820b943cf5853b0aac8101784954a73251954a",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "f1c89f45076d90ca661b0761d6f5baf098a53657ad8c1fe02a5f4d7da6db9927",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "df84d4702f1322fe81f71eed930f744186dc5811770addd236fb0d2516089718",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "ab7dd8906e749fc020148739626956b9b8c54f0cfc587fd81320becdaf7c0747",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b85ac8899d7bd1df57eeebe332c67a339da761696dc8026b1a676386102be630",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b5169c0df7abe0be84aab8bf52af6252f4fdedc6b09962267fd461813e1d50ea",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "16df5287f30d19da9c302e158d0334b8aa11e8e99d536fc8cddf02c1d73479ad",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "e8d8e62795ea74cc8a593df3568b1a571b7e773c8b535d7f7be7b1a20fbe7e42",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.bridge_reservation",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "01e6a0ded42cba7b97a5df3693bd180b122d85fda5d52b93a03117763f7dc6e3",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "9a5d5dcba4fc1aaccf77054934258e0194a9866caefeb682a5158dd83366e616",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7844304c32219647e2b6f614e6cf24168b5c98fd454eb985d7c72dbe1d565d9e",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "15c9dab38e1a39f3e2fdadb9a76be1e87517f3af0aeb2b3abe2f9fd61b4f39dc",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "722af3b4d2cc0bcdbd2d51782c488b5bb5288bcdb8a18729c1ed566405c7882f",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "1213068157882a93487aa06bd2c4198adcfe05a3855c9044d7b422cbcf91f636",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "9afa61221693742a4accc836a67482a43406fd66b49d698fd63eab7af87631a2",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "dfbca63c648619d0b7dff690b61f61b35c1b71fd331a33b81339a129530774c3",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "7f7f96eac837df1e9455703ac1ef8c98b5c8ac221153cff78a8629f6ec374b48",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "b4c542d2eb084a0c4fd28c17ddfd63ef3b3aa985607fbcb5d161d7e4ed1e503d",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "73e1b18a6c60b0ddb6bf68e65792a28293f74d0f81a5b72519127de4972dc8d4",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "0d7fd816ba2f683a8530f0ec31aa91999465652a7485be674cb5aef934177c00",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "ba5af547344ad81d715cf8b96fdf8df94733758eee6c92110ad64bd783b8bd2b",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "bfbde230fb152d2eaeac914936d4e5917b187d05ac9240a7e11b08bdb9ff99ae",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "3c995c27ecd32d1b4516639d8fc6ae45ff886719eac0f5e825a3d1484fb80908",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "0741f2c9e471ed0fd6e9f15b7383e107231537e5989d46b5e18a3ba9f3626966",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "6be022db7e49bd66f7e758aecb69a41fecd742d2fccb3767f116b99a202d942c",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "441549aff3798574bc58d9100fb6359296b7695018d5713cf67810439bb0b2f8",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "d12b29652d732fdafbebcd8d8d6f7eb0a48d95c5fddd8d4775991be64d48205c",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "4cea7acd9ee31e5721b62f59f6afdb4f36c74889ad978b777adab1375f086586",
+        "readback_matches": true
+      }
+    ],
+    "verification_scope": "ordered mock vertices, payload and explicit node identities; not real game topology",
+    "writes": 52
+  },
+  "rejected_construction": {
+    "environment": "mock",
+    "plan_hash": "e451228dff1fcc95e9d2f5570a122fcc2f861493355558a33d5b79cca4b771ca",
+    "real_game_constructed": false,
+    "reason": "injected construction rejection",
+    "recovery": "retain ledger; no automatic compensation",
+    "rollback_attempted": false,
+    "status": "partial_failure",
+    "trace": [
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "145214be5b08ee8cc11cfd971c5a1c6a110047ccbefa0bbfc2f327933d84f144",
+        "readback_matches": true
+      }
+    ],
+    "writes": 1
+  },
+  "snapped_geometry": {
+    "environment": "mock",
+    "plan_hash": "e451228dff1fcc95e9d2f5570a122fcc2f861493355558a33d5b79cca4b771ca",
+    "real_game_constructed": false,
+    "recovery": "halt and retain effect; no implicit rollback",
+    "rollback_attempted": false,
+    "status": "realised_geometry_mismatch",
+    "trace": [
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.0,
+        "operation_id": "145214be5b08ee8cc11cfd971c5a1c6a110047ccbefa0bbfc2f327933d84f144",
+        "readback_matches": true
+      },
+      {
+        "kind": "construct.track_polyline3",
+        "maximum_vertex_deviation_m": 0.1999999999999993,
+        "operation_id": "dc5b55885da7f148d02dbe24f617a7d4d66335f1de7db4d8f090066723f5fe1d",
+        "readback_matches": false
+      }
+    ],
+    "writes": 2
+  },
+  "stale_terrain": {
+    "environment": "mock",
+    "plan_hash": "e451228dff1fcc95e9d2f5570a122fcc2f861493355558a33d5b79cca4b771ca",
+    "real_game_constructed": false,
+    "reasons": [
+      "stale_terrain_revision"
+    ],
+    "rollback_attempted": false,
+    "status": "preflight_blocked",
+    "trace": [],
+    "writes": 0
+  },
+  "stale_world": {
+    "environment": "mock",
+    "plan_hash": "e451228dff1fcc95e9d2f5570a122fcc2f861493355558a33d5b79cca4b771ca",
+    "real_game_constructed": false,
+    "reasons": [
+      "stale_world_revision"
+    ],
+    "rollback_attempted": false,
+    "status": "preflight_blocked",
+    "trace": [],
+    "writes": 0
+  },
+  "unconnected_game": {
+    "environment": "mock",
+    "plan_hash": "e451228dff1fcc95e9d2f5570a122fcc2f861493355558a33d5b79cca4b771ca",
+    "real_game_constructed": false,
+    "reasons": [
+      "real_game_adapter_not_connected"
+    ],
+    "rollback_attempted": false,
+    "status": "preflight_blocked",
+    "trace": [],
+    "writes": 0
+  },
+  "unknown_capability": {
+    "environment": "mock",
+    "plan_hash": "e451228dff1fcc95e9d2f5570a122fcc2f861493355558a33d5b79cca4b771ca",
+    "real_game_constructed": false,
+    "reasons": [
+      "capability_not_demonstrated:construct.bridge_reservation",
+      "capability_not_demonstrated:construct.track_polyline3",
+      "capability_not_demonstrated:query.operation_receipt",
+      "capability_not_demonstrated:query.realised_geometry"
+    ],
+    "rollback_attempted": false,
+    "status": "preflight_blocked",
+    "trace": [],
+    "writes": 0
+  }
+}

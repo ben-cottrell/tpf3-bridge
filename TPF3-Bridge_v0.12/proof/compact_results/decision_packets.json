@@ -1,0 +1,333 @@
+{
+  "a_bank_recovery": {
+    "candidates": [
+      {
+        "candidate": "a_to_b",
+        "compile_hash": "fa97d0d7fc7025f412e147d9e920941cff52ad67dc0ce43dadf86571b62f9569",
+        "completed": 48,
+        "delay_ms_scheduled_only": 16547982,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": true,
+        "operating_scenarios_passed": true,
+        "plan_contract_passed": true,
+        "required": 48,
+        "specialwork_count": 10,
+        "unscheduled": 0
+      },
+      {
+        "candidate": "b_to_a",
+        "compile_hash": "044f107b18d571d026ee3a000369396609021ad6a46070d726132b0392a56c3c",
+        "completed": 36,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": false,
+        "operating_scenarios_passed": false,
+        "plan_contract_passed": true,
+        "required": 48,
+        "specialwork_count": 10,
+        "unscheduled": 12
+      },
+      {
+        "candidate": "isolated",
+        "compile_hash": "3e0c911176d09aec72d207be9c531d757d86952fc68d11ab343d618e85f1a92e",
+        "completed": 36,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": false,
+        "operating_scenarios_passed": false,
+        "plan_contract_passed": true,
+        "required": 48,
+        "specialwork_count": 8,
+        "unscheduled": 12
+      },
+      {
+        "candidate": "scissors",
+        "compile_hash": "cd9af2d7222d97d1469a72b017fc03df57ee4fae0530aea371be55b9e7074c42",
+        "completed": 48,
+        "delay_ms_scheduled_only": 16547982,
+        "diamond_count": 1,
+        "eligible_for_offline_comparison": true,
+        "operating_scenarios_passed": true,
+        "plan_contract_passed": true,
+        "required": 48,
+        "specialwork_count": 12,
+        "unscheduled": 0
+      }
+    ],
+    "construction_authorised": false,
+    "offline_candidate": "a_to_b",
+    "ranking_policy": "plan and completion first; then fewer switches, fewer diamonds, delay; a project preference, not a universal railway verdict",
+    "required_scenarios": [
+      "nominal",
+      "bank_a_platforms_closed"
+    ],
+    "schema_version": "0.7.0",
+    "scope": "fixed candidates, greedy scheduling, explicit unresolved engineering/game gates",
+    "status": "offline_option_identified"
+  },
+  "b_bank_recovery": {
+    "candidates": [
+      {
+        "candidate": "a_to_b",
+        "compile_hash": "fa97d0d7fc7025f412e147d9e920941cff52ad67dc0ce43dadf86571b62f9569",
+        "completed": 36,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": false,
+        "operating_scenarios_passed": false,
+        "plan_contract_passed": true,
+        "required": 48,
+        "specialwork_count": 10,
+        "unscheduled": 12
+      },
+      {
+        "candidate": "b_to_a",
+        "compile_hash": "044f107b18d571d026ee3a000369396609021ad6a46070d726132b0392a56c3c",
+        "completed": 48,
+        "delay_ms_scheduled_only": 15366846,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": true,
+        "operating_scenarios_passed": true,
+        "plan_contract_passed": true,
+        "required": 48,
+        "specialwork_count": 10,
+        "unscheduled": 0
+      },
+      {
+        "candidate": "isolated",
+        "compile_hash": "3e0c911176d09aec72d207be9c531d757d86952fc68d11ab343d618e85f1a92e",
+        "completed": 36,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": false,
+        "operating_scenarios_passed": false,
+        "plan_contract_passed": true,
+        "required": 48,
+        "specialwork_count": 8,
+        "unscheduled": 12
+      },
+      {
+        "candidate": "scissors",
+        "compile_hash": "cd9af2d7222d97d1469a72b017fc03df57ee4fae0530aea371be55b9e7074c42",
+        "completed": 48,
+        "delay_ms_scheduled_only": 15366846,
+        "diamond_count": 1,
+        "eligible_for_offline_comparison": true,
+        "operating_scenarios_passed": true,
+        "plan_contract_passed": true,
+        "required": 48,
+        "specialwork_count": 12,
+        "unscheduled": 0
+      }
+    ],
+    "construction_authorised": false,
+    "offline_candidate": "b_to_a",
+    "ranking_policy": "plan and completion first; then fewer switches, fewer diamonds, delay; a project preference, not a universal railway verdict",
+    "required_scenarios": [
+      "nominal",
+      "bank_b_platforms_closed"
+    ],
+    "schema_version": "0.7.0",
+    "scope": "fixed candidates, greedy scheduling, explicit unresolved engineering/game gates",
+    "status": "offline_option_identified"
+  },
+  "either_bank_recovery": {
+    "candidates": [
+      {
+        "candidate": "a_to_b",
+        "compile_hash": "fa97d0d7fc7025f412e147d9e920941cff52ad67dc0ce43dadf86571b62f9569",
+        "completed": 60,
+        "delay_ms_scheduled_only": 16547982,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": false,
+        "operating_scenarios_passed": false,
+        "plan_contract_passed": true,
+        "required": 72,
+        "specialwork_count": 10,
+        "unscheduled": 12
+      },
+      {
+        "candidate": "b_to_a",
+        "compile_hash": "044f107b18d571d026ee3a000369396609021ad6a46070d726132b0392a56c3c",
+        "completed": 60,
+        "delay_ms_scheduled_only": 15366846,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": false,
+        "operating_scenarios_passed": false,
+        "plan_contract_passed": true,
+        "required": 72,
+        "specialwork_count": 10,
+        "unscheduled": 12
+      },
+      {
+        "candidate": "isolated",
+        "compile_hash": "3e0c911176d09aec72d207be9c531d757d86952fc68d11ab343d618e85f1a92e",
+        "completed": 48,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": false,
+        "operating_scenarios_passed": false,
+        "plan_contract_passed": true,
+        "required": 72,
+        "specialwork_count": 8,
+        "unscheduled": 24
+      },
+      {
+        "candidate": "scissors",
+        "compile_hash": "cd9af2d7222d97d1469a72b017fc03df57ee4fae0530aea371be55b9e7074c42",
+        "completed": 72,
+        "delay_ms_scheduled_only": 31914828,
+        "diamond_count": 1,
+        "eligible_for_offline_comparison": true,
+        "operating_scenarios_passed": true,
+        "plan_contract_passed": true,
+        "required": 72,
+        "specialwork_count": 12,
+        "unscheduled": 0
+      }
+    ],
+    "construction_authorised": false,
+    "offline_candidate": "scissors",
+    "ranking_policy": "plan and completion first; then fewer switches, fewer diamonds, delay; a project preference, not a universal railway verdict",
+    "required_scenarios": [
+      "nominal",
+      "bank_a_platforms_closed",
+      "bank_b_platforms_closed"
+    ],
+    "schema_version": "0.7.0",
+    "scope": "fixed candidates, greedy scheduling, explicit unresolved engineering/game gates",
+    "status": "offline_option_identified"
+  },
+  "either_fan_recovery": {
+    "candidates": [
+      {
+        "candidate": "a_to_b",
+        "compile_hash": "fa97d0d7fc7025f412e147d9e920941cff52ad67dc0ce43dadf86571b62f9569",
+        "completed": 48,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": false,
+        "operating_scenarios_passed": false,
+        "plan_contract_passed": true,
+        "required": 72,
+        "specialwork_count": 10,
+        "unscheduled": 24
+      },
+      {
+        "candidate": "b_to_a",
+        "compile_hash": "044f107b18d571d026ee3a000369396609021ad6a46070d726132b0392a56c3c",
+        "completed": 48,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": false,
+        "operating_scenarios_passed": false,
+        "plan_contract_passed": true,
+        "required": 72,
+        "specialwork_count": 10,
+        "unscheduled": 24
+      },
+      {
+        "candidate": "isolated",
+        "compile_hash": "3e0c911176d09aec72d207be9c531d757d86952fc68d11ab343d618e85f1a92e",
+        "completed": 48,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": false,
+        "operating_scenarios_passed": false,
+        "plan_contract_passed": true,
+        "required": 72,
+        "specialwork_count": 8,
+        "unscheduled": 24
+      },
+      {
+        "candidate": "scissors",
+        "compile_hash": "cd9af2d7222d97d1469a72b017fc03df57ee4fae0530aea371be55b9e7074c42",
+        "completed": 48,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 1,
+        "eligible_for_offline_comparison": false,
+        "operating_scenarios_passed": false,
+        "plan_contract_passed": true,
+        "required": 72,
+        "specialwork_count": 12,
+        "unscheduled": 24
+      }
+    ],
+    "construction_authorised": false,
+    "offline_candidate": null,
+    "ranking_policy": "plan and completion first; then fewer switches, fewer diamonds, delay; a project preference, not a universal railway verdict",
+    "required_scenarios": [
+      "nominal",
+      "a_fan_closed",
+      "b_fan_closed"
+    ],
+    "schema_version": "0.7.0",
+    "scope": "fixed candidates, greedy scheduling, explicit unresolved engineering/game gates",
+    "status": "no_tested_candidate_meets_requested_set"
+  },
+  "normal_only": {
+    "candidates": [
+      {
+        "candidate": "a_to_b",
+        "compile_hash": "fa97d0d7fc7025f412e147d9e920941cff52ad67dc0ce43dadf86571b62f9569",
+        "completed": 24,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": true,
+        "operating_scenarios_passed": true,
+        "plan_contract_passed": true,
+        "required": 24,
+        "specialwork_count": 10,
+        "unscheduled": 0
+      },
+      {
+        "candidate": "b_to_a",
+        "compile_hash": "044f107b18d571d026ee3a000369396609021ad6a46070d726132b0392a56c3c",
+        "completed": 24,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": true,
+        "operating_scenarios_passed": true,
+        "plan_contract_passed": true,
+        "required": 24,
+        "specialwork_count": 10,
+        "unscheduled": 0
+      },
+      {
+        "candidate": "isolated",
+        "compile_hash": "3e0c911176d09aec72d207be9c531d757d86952fc68d11ab343d618e85f1a92e",
+        "completed": 24,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 0,
+        "eligible_for_offline_comparison": true,
+        "operating_scenarios_passed": true,
+        "plan_contract_passed": true,
+        "required": 24,
+        "specialwork_count": 8,
+        "unscheduled": 0
+      },
+      {
+        "candidate": "scissors",
+        "compile_hash": "cd9af2d7222d97d1469a72b017fc03df57ee4fae0530aea371be55b9e7074c42",
+        "completed": 24,
+        "delay_ms_scheduled_only": 0,
+        "diamond_count": 1,
+        "eligible_for_offline_comparison": true,
+        "operating_scenarios_passed": true,
+        "plan_contract_passed": true,
+        "required": 24,
+        "specialwork_count": 12,
+        "unscheduled": 0
+      }
+    ],
+    "construction_authorised": false,
+    "offline_candidate": "isolated",
+    "ranking_policy": "plan and completion first; then fewer switches, fewer diamonds, delay; a project preference, not a universal railway verdict",
+    "required_scenarios": [
+      "nominal"
+    ],
+    "schema_version": "0.7.0",
+    "scope": "fixed candidates, greedy scheduling, explicit unresolved engineering/game gates",
+    "status": "offline_option_identified"
+  }
+}

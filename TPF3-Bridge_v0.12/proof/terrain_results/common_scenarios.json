@@ -1,0 +1,232 @@
+[
+  {
+    "blocked_intervals": [],
+    "closures": [],
+    "description": "Four required movement families; authored demand, no real timetable claim",
+    "evaluation_budget": 100000,
+    "horizon_ms": 14400000,
+    "id": "nominal",
+    "max_wait_ms": 14400000,
+    "requests": [
+      {
+        "id": "T00_main_east",
+        "requested_ms": 0,
+        "route": "main_east",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T00_main_west",
+        "requested_ms": 90000,
+        "route": "main_west",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T00_branch_out",
+        "requested_ms": 120000,
+        "route": "branch_out",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T00_branch_in",
+        "requested_ms": 0,
+        "route": "branch_in",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T01_main_east",
+        "requested_ms": 240000,
+        "route": "main_east",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T01_main_west",
+        "requested_ms": 330000,
+        "route": "main_west",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T01_branch_out",
+        "requested_ms": 360000,
+        "route": "branch_out",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T01_branch_in",
+        "requested_ms": 240000,
+        "route": "branch_in",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T02_main_east",
+        "requested_ms": 480000,
+        "route": "main_east",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T02_main_west",
+        "requested_ms": 570000,
+        "route": "main_west",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T02_branch_out",
+        "requested_ms": 600000,
+        "route": "branch_out",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T02_branch_in",
+        "requested_ms": 480000,
+        "route": "branch_in",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T03_main_east",
+        "requested_ms": 720000,
+        "route": "main_east",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T03_main_west",
+        "requested_ms": 810000,
+        "route": "main_west",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T03_branch_out",
+        "requested_ms": 840000,
+        "route": "branch_out",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T03_branch_in",
+        "requested_ms": 720000,
+        "route": "branch_in",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T04_main_east",
+        "requested_ms": 960000,
+        "route": "main_east",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T04_main_west",
+        "requested_ms": 1050000,
+        "route": "main_west",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T04_branch_out",
+        "requested_ms": 1080000,
+        "route": "branch_out",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T04_branch_in",
+        "requested_ms": 960000,
+        "route": "branch_in",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T05_main_east",
+        "requested_ms": 1200000,
+        "route": "main_east",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T05_main_west",
+        "requested_ms": 1290000,
+        "route": "main_west",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T05_branch_out",
+        "requested_ms": 1320000,
+        "route": "branch_out",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "T05_branch_in",
+        "requested_ms": 1200000,
+        "route": "branch_in",
+        "train_length_m": 242.6
+      }
+    ]
+  },
+  {
+    "blocked_intervals": [],
+    "closures": [],
+    "description": "Common fixed requests aligned using flat reference front-entry times; identical request bytes in every mode",
+    "evaluation_budget": 100000,
+    "horizon_ms": 14400000,
+    "id": "crossing_pulse",
+    "max_wait_ms": 14400000,
+    "requests": [
+      {
+        "id": "P0",
+        "requested_ms": 1063975,
+        "route": "main_east",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "P1",
+        "requested_ms": 721066,
+        "route": "branch_in",
+        "train_length_m": 242.6
+      }
+    ]
+  },
+  {
+    "blocked_intervals": [],
+    "closures": [],
+    "description": "Common fixed requests aligned using flat reference front-entry times; identical request bytes in every mode",
+    "evaluation_budget": 100000,
+    "horizon_ms": 14400000,
+    "id": "merge_pulse",
+    "max_wait_ms": 14400000,
+    "requests": [
+      {
+        "id": "P0",
+        "requested_ms": 1024550,
+        "route": "main_west",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "P1",
+        "requested_ms": 588571,
+        "route": "branch_in",
+        "train_length_m": 242.6
+      }
+    ]
+  },
+  {
+    "blocked_intervals": [
+      {
+        "end_ms": 2400000,
+        "resource": "track:west_merge_exit",
+        "start_ms": 1000000
+      }
+    ],
+    "closures": [],
+    "description": "Common fixed requests aligned using flat reference front-entry times; identical request bytes in every mode",
+    "evaluation_budget": 100000,
+    "horizon_ms": 14400000,
+    "id": "downstream_blocked",
+    "max_wait_ms": 14400000,
+    "requests": [
+      {
+        "id": "P0",
+        "requested_ms": 1024550,
+        "route": "main_west",
+        "train_length_m": 242.6
+      },
+      {
+        "id": "P1",
+        "requested_ms": 588571,
+        "route": "branch_in",
+        "train_length_m": 242.6
+      }
+    ]
+  }
+]

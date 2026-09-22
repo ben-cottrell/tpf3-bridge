@@ -1,0 +1,1095 @@
+{
+  "accepted_count": 6,
+  "candidates": [
+    {
+      "accepted": false,
+      "design_hash": "adeb982532680f8bd4c457c803694d55c7cc9781c6dd48fdcee424f4f70136a6",
+      "estimated_elevated_track_m": 650.3449993434922,
+      "estimated_tunnel_track_m": 2330.721936939339,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            -119.71875,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "west_approach",
+          "midpoint_xyz_m": [
+            2190.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2180.0,
+            2200
+          ]
+        },
+        {
+          "edge_id": "west_approach",
+          "midpoint_xyz_m": [
+            2210.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2200,
+            2220.0
+          ]
+        },
+        {
+          "edge_id": "west_approach",
+          "midpoint_xyz_m": [
+            2240.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2220.0,
+            2260.0
+          ]
+        }
+      ],
+      "geometry_hash": "84ec2fc99e53d4f7874535cb9dd6e25644f1cdda0e4f96d19013e19ca85bf5b0",
+      "lateral_m": 0,
+      "layout": "original_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "flat",
+      "reasons": [
+        "reservation_intersects_protected_land:0",
+        "specialwork_structure_interface_unsupported",
+        "track_enters_protected_land:0"
+      ],
+      "reservation_union_area_m2": 273454.9650900087,
+      "total_physical_track_length_m": 20754.80920639926
+    },
+    {
+      "accepted": false,
+      "design_hash": "8ccf16181174437d7ee22c1db712f2f1113ba3ac176bbcb9c324e28c55fc8e74",
+      "estimated_elevated_track_m": 650.3449993434922,
+      "estimated_tunnel_track_m": 2208.8736728235654,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            -119.71875,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "west_approach",
+          "midpoint_xyz_m": [
+            2190.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2180.0,
+            2200
+          ]
+        },
+        {
+          "edge_id": "west_approach",
+          "midpoint_xyz_m": [
+            2210.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2200,
+            2220.0
+          ]
+        },
+        {
+          "edge_id": "west_approach",
+          "midpoint_xyz_m": [
+            2240.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2220.0,
+            2260.0
+          ]
+        }
+      ],
+      "geometry_hash": "e3366e36bb139a74e3eaae6c59c31eb9096e8bb4b29ba9fe950419a702a1eeec",
+      "lateral_m": 0,
+      "layout": "original_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "flyover",
+      "reasons": [
+        "reservation_intersects_protected_land:0",
+        "specialwork_structure_interface_unsupported",
+        "track_enters_protected_land:0"
+      ],
+      "reservation_union_area_m2": 274600.1563272469,
+      "total_physical_track_length_m": 20754.914930890867
+    },
+    {
+      "accepted": false,
+      "design_hash": "036d487b185233ec3fd13dceea219c6810a1250c1d373bf0986144c53b0945d9",
+      "estimated_elevated_track_m": 650.3449993434922,
+      "estimated_tunnel_track_m": 2492.9587876575797,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            -119.71875,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "west_approach",
+          "midpoint_xyz_m": [
+            2190.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2180.0,
+            2200
+          ]
+        },
+        {
+          "edge_id": "west_approach",
+          "midpoint_xyz_m": [
+            2210.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2200,
+            2220.0
+          ]
+        },
+        {
+          "edge_id": "west_approach",
+          "midpoint_xyz_m": [
+            2240.0,
+            -120.0,
+            20.0
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2220.0,
+            2260.0
+          ]
+        }
+      ],
+      "geometry_hash": "94ca81267a915093598241326c9dafef827153911fb638b1b734c14734dd7ba6",
+      "lateral_m": 0,
+      "layout": "original_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "diveunder",
+      "reasons": [
+        "reservation_intersects_protected_land:0",
+        "specialwork_structure_interface_unsupported",
+        "track_enters_protected_land:0"
+      ],
+      "reservation_union_area_m2": 280371.08752701734,
+      "total_physical_track_length_m": 20754.914930890867
+    },
+    {
+      "accepted": false,
+      "design_hash": "07c8f7c3e4368c610d45033e1ed6f4cc79c8d40dcfb6ee8d91b48eecad60c0e0",
+      "estimated_elevated_track_m": 650.3449993434922,
+      "estimated_tunnel_track_m": 1138.7521752167588,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            60.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            60.28125,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        }
+      ],
+      "geometry_hash": "838c03cbfae048bd4a023c32c04104651089c6c737306e561a66b8eaeddad9c7",
+      "lateral_m": 180,
+      "layout": "original_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "flat",
+      "reasons": [
+        "main_radius_bound",
+        "specialwork_structure_interface_unsupported"
+      ],
+      "reservation_union_area_m2": 271339.60351553716,
+      "total_physical_track_length_m": 20806.329566381442
+    },
+    {
+      "accepted": false,
+      "design_hash": "537d5a3cf5f93407ec0982e651e22387406e12f56c89e26e208edbf471690f08",
+      "estimated_elevated_track_m": 650.3449993434922,
+      "estimated_tunnel_track_m": 920.0,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            60.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            60.28125,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        }
+      ],
+      "geometry_hash": "1699e326a076bafd94fba80d95ba047ee1b5c4cffb32371fce561b01a39f5c1b",
+      "lateral_m": 180,
+      "layout": "original_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "flyover",
+      "reasons": [
+        "main_radius_bound",
+        "specialwork_structure_interface_unsupported"
+      ],
+      "reservation_union_area_m2": 268837.40208324493,
+      "total_physical_track_length_m": 20806.43529087305
+    },
+    {
+      "accepted": false,
+      "design_hash": "b566aa9109cca78a84c83ac539da35cc973a6a93f45de93add11f849d8be982c",
+      "estimated_elevated_track_m": 650.3449993434922,
+      "estimated_tunnel_track_m": 1529.844907593053,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            60.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            60.28125,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        }
+      ],
+      "geometry_hash": "48d25bc9c039867805769667758f044ff8d151738cfb8e5468482c27bbd4c167",
+      "lateral_m": 180,
+      "layout": "original_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "diveunder",
+      "reasons": [
+        "main_radius_bound",
+        "specialwork_structure_interface_unsupported"
+      ],
+      "reservation_union_area_m2": 282415.2640433869,
+      "total_physical_track_length_m": 20806.43529087305
+    },
+    {
+      "accepted": false,
+      "design_hash": "c14513140e1881cd4860c2f61acc0afeca9ae0fbf36eb9f48a38adab8cbe22c6",
+      "estimated_elevated_track_m": 650.3449993434922,
+      "estimated_tunnel_track_m": 480.0,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            160.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            160.28125,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        }
+      ],
+      "geometry_hash": "954e2cdfdb2a621b97c31a236d605306155745c64d6db901a62f001844cfba4b",
+      "lateral_m": 280,
+      "layout": "original_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "flat",
+      "reasons": [
+        "main_jerk_bound",
+        "main_lateral_accel_bound",
+        "main_radius_bound",
+        "specialwork_structure_interface_unsupported"
+      ],
+      "reservation_union_area_m2": 266754.3874626183,
+      "total_physical_track_length_m": 20916.47695921612
+    },
+    {
+      "accepted": false,
+      "design_hash": "96d80ece207f756af00dea1dfdb0998e718c369c9158f0059bb999ba18e18d61",
+      "estimated_elevated_track_m": 808.2343654505601,
+      "estimated_tunnel_track_m": 480.0,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            160.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            160.28125,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        }
+      ],
+      "geometry_hash": "1f40d4efa99d059d3050cd7a2eca0e2f098cf44f0bc01621376e79c2ef20ac57",
+      "lateral_m": 280,
+      "layout": "original_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "flyover",
+      "reasons": [
+        "main_jerk_bound",
+        "main_lateral_accel_bound",
+        "main_radius_bound",
+        "specialwork_structure_interface_unsupported"
+      ],
+      "reservation_union_area_m2": 279702.4472453554,
+      "total_physical_track_length_m": 20916.582683707733
+    },
+    {
+      "accepted": false,
+      "design_hash": "815bc62f465df5be9d38e01284bec6f981ab3c5c0edacb52ca00fa58698e4697",
+      "estimated_elevated_track_m": 650.3449993434922,
+      "estimated_tunnel_track_m": 926.820827755128,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            160.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            160.28125,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        }
+      ],
+      "geometry_hash": "3343feed385ed282f904dd436273d6e9c7be93e8d68b0f89ffb49e3b6136aeee",
+      "lateral_m": 280,
+      "layout": "original_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "diveunder",
+      "reasons": [
+        "main_jerk_bound",
+        "main_lateral_accel_bound",
+        "main_radius_bound",
+        "specialwork_structure_interface_unsupported"
+      ],
+      "reservation_union_area_m2": 287171.8742894159,
+      "total_physical_track_length_m": 20916.582683707733
+    },
+    {
+      "accepted": false,
+      "design_hash": "ccb6d150eb2d6f52d747a0390b6e7fe20ce18cf3390957c9028b27a586027b9d",
+      "estimated_elevated_track_m": 650.3449993434922,
+      "estimated_tunnel_track_m": 0.0,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            240.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            240.28125,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        }
+      ],
+      "geometry_hash": "d6c8b3d9ef4402efd5b00f96703de370844c9bb57d012fc7f2057648d3a15e6b",
+      "lateral_m": 360,
+      "layout": "original_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "flat",
+      "reasons": [
+        "main_jerk_bound",
+        "main_lateral_accel_bound",
+        "main_radius_bound",
+        "specialwork_structure_interface_unsupported"
+      ],
+      "reservation_union_area_m2": 268580.87717461726,
+      "total_physical_track_length_m": 21043.657917135188
+    },
+    {
+      "accepted": false,
+      "design_hash": "31ecd8f299129936f9138e9de60b5bbee9df01ec1d43bfd27ecf6dd6bb4edec9",
+      "estimated_elevated_track_m": 1137.9097487382487,
+      "estimated_tunnel_track_m": 0.0,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            240.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            240.28125,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        }
+      ],
+      "geometry_hash": "bfb4f7e5805fc7b5d262e8e2598a32bb666361dd4cfc91e0a1738acbec439f46",
+      "lateral_m": 360,
+      "layout": "original_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "flyover",
+      "reasons": [
+        "main_jerk_bound",
+        "main_lateral_accel_bound",
+        "main_radius_bound",
+        "specialwork_structure_interface_unsupported"
+      ],
+      "reservation_union_area_m2": 283536.50984998274,
+      "total_physical_track_length_m": 21043.763641626796
+    },
+    {
+      "accepted": false,
+      "design_hash": "c525d4dffa7a38d11610da8e10109816451449d52398fa338501fcd7cfbb95a8",
+      "estimated_elevated_track_m": 650.3449993434922,
+      "estimated_tunnel_track_m": 365.60498489787494,
+      "first_land_witnesses": [
+        {
+          "edge_id": "M:normal",
+          "midpoint_xyz_m": [
+            1520.0,
+            240.0,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        },
+        {
+          "edge_id": "M:reverse",
+          "midpoint_xyz_m": [
+            1520.0,
+            240.28125,
+            20.0
+          ],
+          "reason": "specialwork_structure_interface_unsupported",
+          "x_interval_m": [
+            1500.0,
+            1540.0
+          ]
+        }
+      ],
+      "geometry_hash": "d12baaef1438552ab40b15227232fee1f233f3fb676388cdf8a7660e84534904",
+      "lateral_m": 360,
+      "layout": "original_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "diveunder",
+      "reasons": [
+        "main_jerk_bound",
+        "main_lateral_accel_bound",
+        "main_radius_bound",
+        "specialwork_structure_interface_unsupported"
+      ],
+      "reservation_union_area_m2": 290412.9789277008,
+      "total_physical_track_length_m": 21043.763641626796
+    },
+    {
+      "accepted": false,
+      "design_hash": "78250bf1eb1e201806a804ce1de278b26db20e0dfa670fde6f78647e8b044c59",
+      "estimated_elevated_track_m": 500.066842136168,
+      "estimated_tunnel_track_m": 2358.0692091802744,
+      "first_land_witnesses": [
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2178.8709677419356,
+            -107.68039875060181,
+            20.0
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2159.032258064516,
+            2198.7096774193546
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2199.354838709677,
+            -105.94586387972268,
+            20.0
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2198.7096774193546,
+            2200
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2219.1935483870966,
+            -104.21515227501112,
+            20.0
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2200,
+            2238.3870967741937
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2258.2258064516127,
+            -100.64637005293534,
+            20.0
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2238.3870967741937,
+            2278.064516129032
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2297.9032258064517,
+            -96.76959020055007,
+            20.0
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2278.064516129032,
+            2317.741935483871
+          ]
+        }
+      ],
+      "geometry_hash": "fb10773708d219be0f33bafa397b774c0e2de068d3504d237608ab4e626d7581",
+      "lateral_m": 0,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "flat",
+      "reasons": [
+        "reservation_intersects_protected_land:0",
+        "track_enters_protected_land:0"
+      ],
+      "reservation_union_area_m2": 259009.9894111846,
+      "total_physical_track_length_m": 19761.32982410467
+    },
+    {
+      "accepted": false,
+      "design_hash": "af42fbb564b8061434ecb853a8c9dc3d0311ca08a7523b2740c661f940124480",
+      "estimated_elevated_track_m": 500.066842136168,
+      "estimated_tunnel_track_m": 2236.7394927805844,
+      "first_land_witnesses": [
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2178.8709677419356,
+            -107.68039875060181,
+            20.072158535028862
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2159.032258064516,
+            2198.7096774193546
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2199.354838709677,
+            -105.94586387972268,
+            20.13873259289193
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2198.7096774193546,
+            2200
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2219.1935483870966,
+            -104.21515227501112,
+            20.23003061583613
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2200,
+            2238.3870967741937
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2258.2258064516127,
+            -100.64637005293534,
+            20.494252000780364
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2238.3870967741937,
+            2278.064516129032
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2297.9032258064517,
+            -96.76959020055007,
+            20.882046350424705
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2278.064516129032,
+            2317.741935483871
+          ]
+        }
+      ],
+      "geometry_hash": "a33e149085c5fc48881ca47be95c10e87d210d61d13e2df2855828be888fcb14",
+      "lateral_m": 0,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "flyover",
+      "reasons": [
+        "reservation_intersects_protected_land:0",
+        "track_enters_protected_land:0"
+      ],
+      "reservation_union_area_m2": 261537.09421134484,
+      "total_physical_track_length_m": 19761.435051285294
+    },
+    {
+      "accepted": false,
+      "design_hash": "96478b60c3ff499ffd29830867afca834101287bd69b503353cfbd29bbbd4823",
+      "estimated_elevated_track_m": 500.066842136168,
+      "estimated_tunnel_track_m": 2521.22883790715,
+      "first_land_witnesses": [
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2178.8709677419356,
+            -107.68039875060181,
+            19.927841464971138
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2159.032258064516,
+            2198.7096774193546
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2199.354838709677,
+            -105.94586387972268,
+            19.86126740710807
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2198.7096774193546,
+            2200
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2219.1935483870966,
+            -104.21515227501112,
+            19.76996938416387
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2200,
+            2238.3870967741937
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2258.2258064516127,
+            -100.64637005293534,
+            19.505747999219636
+          ],
+          "reason": "track_enters_protected_land:0",
+          "x_interval_m": [
+            2238.3870967741937,
+            2278.064516129032
+          ]
+        },
+        {
+          "edge_id": "return_connector",
+          "midpoint_xyz_m": [
+            2297.9032258064517,
+            -96.76959020055007,
+            19.117953649575295
+          ],
+          "reason": "reservation_intersects_protected_land:0",
+          "x_interval_m": [
+            2278.064516129032,
+            2317.741935483871
+          ]
+        }
+      ],
+      "geometry_hash": "2255b5568bb30997cadc0bc2fb894701627b819e80e7ceedf33d2e5b54e8373c",
+      "lateral_m": 0,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "diveunder",
+      "reasons": [
+        "reservation_intersects_protected_land:0",
+        "track_enters_protected_land:0"
+      ],
+      "reservation_union_area_m2": 266914.2663572663,
+      "total_physical_track_length_m": 19761.435051285294
+    },
+    {
+      "accepted": true,
+      "design_hash": "7b5336e4c755241be216edb97d65a7dfe1d95f562a6f0f5c17f6523904a057d0",
+      "estimated_elevated_track_m": 500.17287853618706,
+      "estimated_tunnel_track_m": 1635.397507973238,
+      "first_land_witnesses": [],
+      "geometry_hash": "9cbe69eda17862a9fa5ff42271861a255ad1da8998ed3f1fef940d467264e769",
+      "lateral_m": 180,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "flat",
+      "reasons": [],
+      "reservation_union_area_m2": 270236.4181661561,
+      "total_physical_track_length_m": 19809.105629542137
+    },
+    {
+      "accepted": true,
+      "design_hash": "4fe485e337b8e41a32836b5bcb70efb0404d5086dbb14b798dcbd4d391310804",
+      "estimated_elevated_track_m": 500.17287853618706,
+      "estimated_tunnel_track_m": 1393.226214810577,
+      "first_land_witnesses": [],
+      "geometry_hash": "c220661d72bae900fafcdd5030a1261d208d5be201ec2919c9aab7eea56a4aa1",
+      "lateral_m": 180,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "flyover",
+      "reasons": [],
+      "reservation_union_area_m2": 273938.7762668712,
+      "total_physical_track_length_m": 19809.210856722762
+    },
+    {
+      "accepted": true,
+      "design_hash": "e5ffb8e79976642ce08dd4fbbb2ead5f488a48c418d308ea3e91ad663d4ddd28",
+      "estimated_elevated_track_m": 500.17287853618706,
+      "estimated_tunnel_track_m": 1839.126601090749,
+      "first_land_witnesses": [],
+      "geometry_hash": "dc7f202e5efafaf64a3a7ca30905103bbfa99f2b6ccbae84afce0c36e55f75a1",
+      "lateral_m": 180,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "diveunder",
+      "reasons": [],
+      "reservation_union_area_m2": 279928.7978992637,
+      "total_physical_track_length_m": 19809.210856722762
+    },
+    {
+      "accepted": true,
+      "design_hash": "fa59f662c33014f967c11d498d23d5f5f133a13b35c7fef3770b47b1d52dc709",
+      "estimated_elevated_track_m": 500.49883393318976,
+      "estimated_tunnel_track_m": 436.45161290322585,
+      "first_land_witnesses": [],
+      "geometry_hash": "1f9a742f8b8df4fef499e9ee0755373d113d6c9201a8419f679c5e9a57229735",
+      "lateral_m": 280,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "flat",
+      "reasons": [],
+      "reservation_union_area_m2": 265131.8321478899,
+      "total_physical_track_length_m": 19908.19661677041
+    },
+    {
+      "accepted": true,
+      "design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+      "estimated_elevated_track_m": 704.1884837827166,
+      "estimated_tunnel_track_m": 436.45161290322585,
+      "first_land_witnesses": [],
+      "geometry_hash": "3190f8d9d05542bd44e34d6044cae0e1d222e30f983b11b5a6febb7ba27624f0",
+      "lateral_m": 280,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "flyover",
+      "reasons": [],
+      "reservation_union_area_m2": 268249.90594577143,
+      "total_physical_track_length_m": 19908.301843951034
+    },
+    {
+      "accepted": true,
+      "design_hash": "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824",
+      "estimated_elevated_track_m": 500.49883393318976,
+      "estimated_tunnel_track_m": 1083.25796707852,
+      "first_land_witnesses": [],
+      "geometry_hash": "8b9fde660a0c1cc704149717c28097d4762368cbed9f34782af173ab78ce7b75",
+      "lateral_m": 280,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "project_mainline_bounds_pass",
+      "mode": "diveunder",
+      "reasons": [],
+      "reservation_union_area_m2": 281684.87535987154,
+      "total_physical_track_length_m": 19908.301843951034
+    },
+    {
+      "accepted": false,
+      "design_hash": "2398eaeb4ba7ff96168271b310b097c71a87ee0fd793e288cb7e8a7175713558",
+      "estimated_elevated_track_m": 500.8963749518292,
+      "estimated_tunnel_track_m": 0.0,
+      "first_land_witnesses": [],
+      "geometry_hash": "cd93263ecd8176fe01cecbb31a3048dc97047bbc6fba06575a9e7c15e765946e",
+      "lateral_m": 360,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "flat",
+      "reasons": [
+        "main_radius_bound"
+      ],
+      "reservation_union_area_m2": 260162.4314973841,
+      "total_physical_track_length_m": 20022.736998987966
+    },
+    {
+      "accepted": false,
+      "design_hash": "1e5dc3e8de9cc82203a68cc32926693d70d77bd2059ec13c983b1f5f3cfc40cf",
+      "estimated_elevated_track_m": 947.5328743245445,
+      "estimated_tunnel_track_m": 0.0,
+      "first_land_witnesses": [],
+      "geometry_hash": "40537bc2f4c5861a4dfacc870e84cdc5f70c1d34b6c9b7b41d068997ebcb566b",
+      "lateral_m": 360,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "flyover",
+      "reasons": [
+        "main_radius_bound"
+      ],
+      "reservation_union_area_m2": 274631.5258690027,
+      "total_physical_track_length_m": 20022.842226168592
+    },
+    {
+      "accepted": false,
+      "design_hash": "9cd480e64608ad73ab5c31b736bc37b327deccef972e6a2c6ead448bb6c79c2f",
+      "estimated_elevated_track_m": 500.8963749518292,
+      "estimated_tunnel_track_m": 380.2599743230199,
+      "first_land_witnesses": [],
+      "geometry_hash": "deb9759c22512c4322d77295c5b08dbbc2f22426964fb51f4ac0799d9ae57673",
+      "lateral_m": 360,
+      "layout": "east_shifted_toes",
+      "mainline_bound_status": "not_certified_by_mainline_bounds",
+      "mode": "diveunder",
+      "reasons": [
+        "main_radius_bound"
+      ],
+      "reservation_union_area_m2": 282687.86121337605,
+      "total_physical_track_length_m": 20022.842226168592
+    }
+  ],
+  "construction_authorised": false,
+  "evaluated": 24,
+  "fixture_hash": "3e5f40c4b9377f27febccbc5b35a8fe47e723b1d30f489f8c43f76accd83cb46",
+  "game_constructed": false,
+  "global_optimum_claim": false,
+  "grid_size": 24,
+  "model_calls_inside_search": 0,
+  "pareto_by_crossing_function": [
+    "7b5336e4c755241be216edb97d65a7dfe1d95f562a6f0f5c17f6523904a057d0",
+    "4fe485e337b8e41a32836b5bcb70efb0404d5086dbb14b798dcbd4d391310804",
+    "e5ffb8e79976642ce08dd4fbbb2ead5f488a48c418d308ea3e91ad663d4ddd28",
+    "fa59f662c33014f967c11d498d23d5f5f133a13b35c7fef3770b47b1d52dc709",
+    "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+    "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824"
+  ],
+  "selected_by_mode": {
+    "diveunder": "a37e54214737790c02804954a68ecbb2cc003857d6b2335bd2a96b4fba4e5824",
+    "flat": "fa59f662c33014f967c11d498d23d5f5f133a13b35c7fef3770b47b1d52dc709",
+    "flyover": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e"
+  },
+  "selection_policy": "within each mode: least tunnel track metres, then reservation union area, then physical track length",
+  "source_branch_hash": "b3c822871f9763b8bc5ac25ee4375af373543594fc3cb7ed0654344190460973",
+  "source_corridor_hash": "0c1c26b6f531400cf50c9ab94e592995577314fe33f77061625eea0ee89b9b13",
+  "status": "grid_complete_candidates_found",
+  "version": "0.11.0"
+}

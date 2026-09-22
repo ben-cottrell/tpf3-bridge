@@ -1,0 +1,190 @@
+{
+  "centred_same_size": {
+    "construction_authorised": false,
+    "contained_on_boarding_slab": true,
+    "current_uk_compliance": "unassessed",
+    "edge_gaps_m": [
+      2.545,
+      2.5450000000000017
+    ],
+    "facility": {
+      "centre_x_m": 810.0,
+      "centre_y_m": 12.0,
+      "length_m": 20.0,
+      "width_m": 4.0
+    },
+    "failed_platform_faces": [],
+    "floating_comparison_guard_m": 1e-12,
+    "island_geometry_hash": "f73daf294b733baac9e98c0bfdc0bdc4e7282b50822cf71a8e4145404e1699d4",
+    "island_id": "IB12",
+    "minimum_demand_width": "unassessed",
+    "required_edge_gaps_m": [
+      2.5,
+      2.5
+    ],
+    "scope": "general_obstacle_distance_only",
+    "status": "reference_clause_pass"
+  },
+  "initial": {
+    "construction_authorised": false,
+    "contained_on_boarding_slab": true,
+    "current_uk_compliance": "unassessed",
+    "edge_gaps_m": [
+      1.545,
+      3.5450000000000017
+    ],
+    "facility": {
+      "centre_x_m": 810.0,
+      "centre_y_m": 11.0,
+      "length_m": 20.0,
+      "width_m": 4.0
+    },
+    "failed_platform_faces": [
+      "B1"
+    ],
+    "floating_comparison_guard_m": 1e-12,
+    "island_geometry_hash": "f73daf294b733baac9e98c0bfdc0bdc4e7282b50822cf71a8e4145404e1699d4",
+    "island_id": "IB12",
+    "minimum_demand_width": "unassessed",
+    "required_edge_gaps_m": [
+      2.5,
+      2.5
+    ],
+    "scope": "general_obstacle_distance_only",
+    "status": "reference_clause_fail"
+  },
+  "nearest_authorised_fit": {
+    "actual_island_width_m": 9.090000000000002,
+    "authorised_centre_y_m": [
+      10.0,
+      14.0
+    ],
+    "check": {
+      "construction_authorised": false,
+      "contained_on_boarding_slab": true,
+      "current_uk_compliance": "unassessed",
+      "edge_gaps_m": [
+        2.5,
+        2.5900000000000016
+      ],
+      "facility": {
+        "centre_x_m": 810.0,
+        "centre_y_m": 11.955,
+        "length_m": 20.0,
+        "width_m": 4.0
+      },
+      "failed_platform_faces": [],
+      "floating_comparison_guard_m": 1e-12,
+      "island_geometry_hash": "f73daf294b733baac9e98c0bfdc0bdc4e7282b50822cf71a8e4145404e1699d4",
+      "island_id": "IB12",
+      "minimum_demand_width": "unassessed",
+      "required_edge_gaps_m": [
+        2.5,
+        2.5
+      ],
+      "scope": "general_obstacle_distance_only",
+      "status": "reference_clause_pass"
+    },
+    "construction_authorised": false,
+    "evaluations": 1,
+    "extra_width_needed_m": 0,
+    "facility_resized": false,
+    "island_geometry_hash": "f73daf294b733baac9e98c0bfdc0bdc4e7282b50822cf71a8e4145404e1699d4",
+    "island_id": "IB12",
+    "lateral_move_m": 0.9550000000000001,
+    "original_facility": {
+      "centre_x_m": 810.0,
+      "centre_y_m": 11.0,
+      "length_m": 20.0,
+      "width_m": 4.0
+    },
+    "physical_centre_interval_m": [
+      11.955,
+      12.045000000000002
+    ],
+    "required_island_width_m": 9.0,
+    "selected": {
+      "centre_x_m": 810.0,
+      "centre_y_m": 11.955,
+      "length_m": 20.0,
+      "width_m": 4.0
+    },
+    "status": "fitted_within_reference_model",
+    "track_moved": false
+  },
+  "no_lateral_authority": {
+    "actual_island_width_m": 9.090000000000002,
+    "authorised_centre_y_m": [
+      11.0,
+      11.0
+    ],
+    "construction_authorised": false,
+    "evaluations": 1,
+    "extra_width_needed_m": 0,
+    "facility_resized": false,
+    "island_geometry_hash": "f73daf294b733baac9e98c0bfdc0bdc4e7282b50822cf71a8e4145404e1699d4",
+    "island_id": "IB12",
+    "original_facility": {
+      "centre_x_m": 810.0,
+      "centre_y_m": 11.0,
+      "length_m": 20.0,
+      "width_m": 4.0
+    },
+    "physical_centre_interval_m": [
+      11.955,
+      12.045000000000002
+    ],
+    "required_island_width_m": 9.0,
+    "selected": null,
+    "status": "outside_authorised_moves",
+    "track_moved": false
+  },
+  "oversize": {
+    "actual_island_width_m": 9.090000000000002,
+    "authorised_centre_y_m": [
+      10.0,
+      14.0
+    ],
+    "certificate_scope": "fixed_facing_edges_fixed_facility_size_and_x",
+    "construction_authorised": false,
+    "evaluations": 1,
+    "extra_width_needed_m": 0.10999999999999766,
+    "facility_resized": false,
+    "island_geometry_hash": "f73daf294b733baac9e98c0bfdc0bdc4e7282b50822cf71a8e4145404e1699d4",
+    "island_id": "IB12",
+    "original_facility": {
+      "centre_x_m": 810.0,
+      "centre_y_m": 12.0,
+      "length_m": 20.0,
+      "width_m": 4.2
+    },
+    "physical_centre_interval_m": [
+      12.055,
+      11.945000000000002
+    ],
+    "required_island_width_m": 9.2,
+    "selected": null,
+    "status": "infeasible_fixed_section",
+    "track_moved": false
+  },
+  "zero_budget": {
+    "authorised_centre_y_m": [
+      10.0,
+      14.0
+    ],
+    "construction_authorised": false,
+    "evaluations": 0,
+    "facility_resized": false,
+    "island_geometry_hash": "f73daf294b733baac9e98c0bfdc0bdc4e7282b50822cf71a8e4145404e1699d4",
+    "island_id": "IB12",
+    "original_facility": {
+      "centre_x_m": 810.0,
+      "centre_y_m": 11.0,
+      "length_m": 20.0,
+      "width_m": 4.0
+    },
+    "selected": null,
+    "status": "search_exhausted",
+    "track_moved": false
+  }
+}

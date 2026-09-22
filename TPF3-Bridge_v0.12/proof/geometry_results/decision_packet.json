@@ -1,0 +1,34 @@
+{
+  "packet_kind": "executed_geometry_proof",
+  "status": "synthetic_components_ready_for_next_stage",
+  "crossover_parallel_through_starts_ms": [
+    0,
+    0
+  ],
+  "crossover_conflicting_move_start_ms": 40501,
+  "best_100m_grid_candidate": {
+    "spec": {
+      "spacing_m": 4.5,
+      "turnout_span_m": 45.0,
+      "branch_slope": 0.09,
+      "maximum_span_m": 100,
+      "linked_controller": true
+    },
+    "status": "synthetic_candidate_fitted",
+    "span_m": 95.0,
+    "compile_hash": "6d916d4c74072376667c772adfc5080f57da5ae6f7f4eac183c43421524e04c0",
+    "curvature_upper_per_m": 0.0029947730881103966
+  },
+  "fan_required_movements_compiled": 8,
+  "geometry_source": "authored_synthetic_components",
+  "engineering_status": "scoped_proxy_checks_only",
+  "game_status": "not_tested",
+  "construction_approval": false,
+  "detailed_refs": [
+    "summary.json",
+    "crossover_compiled.json",
+    "fan_compiled.json",
+    "crossover_search.json"
+  ],
+  "next_gate": "platform-aware sectional resource occupation and train-motion model; retain whole-leg baseline"
+}

@@ -1,0 +1,177 @@
+{
+  "a_bank_recovery": {
+    "candidates": [
+      {
+        "candidate": "a_to_b",
+        "compile_hash": "6fe14c59c7df09266e07ce0524f598d2e25f67167ff0df805fd1b1e2997ec6e8",
+        "completed": 48,
+        "delay_ms_scheduled_only": 127650963,
+        "operating_scenarios_satisfied": true,
+        "original_site_status": "fail",
+        "required": 48,
+        "residual": 0,
+        "strict_UK_status": "not_passed",
+        "unscheduled": 0
+      },
+      {
+        "candidate": "b_to_a",
+        "compile_hash": "3f50d269852a54146c632491eeb5512fc9d89ea635b656259b0f00af928f45b1",
+        "completed": 36,
+        "delay_ms_scheduled_only": 45738735,
+        "operating_scenarios_satisfied": false,
+        "original_site_status": "fail",
+        "required": 48,
+        "residual": 0,
+        "strict_UK_status": "not_passed",
+        "unscheduled": 12
+      },
+      {
+        "candidate": "isolated",
+        "compile_hash": "cc3deb51d6548833fb8d4832fac4fd540f3ddf03052fd2d33f036baadcbdac41",
+        "completed": 36,
+        "delay_ms_scheduled_only": 45738735,
+        "operating_scenarios_satisfied": false,
+        "original_site_status": "fail",
+        "required": 48,
+        "residual": 0,
+        "strict_UK_status": "not_passed",
+        "unscheduled": 12
+      }
+    ],
+    "construction_authorised": false,
+    "mandatory_unknowns": [
+      "authentic UK pointwork",
+      "full vehicle gauging",
+      "platform interfaces",
+      "game capability"
+    ],
+    "open_decisions": [
+      "retain original footprint and search a different geometry/topology, or explicitly adopt a larger study boundary"
+    ],
+    "operating_only_candidate": "a_to_b",
+    "required_scenarios": [
+      "nominal",
+      "bank_a_platforms_closed"
+    ],
+    "schema_version": "0.6.0",
+    "scope": "three tested family instances under a greedy scheduler; not exhaustive feasibility or an optimum proof",
+    "status": "operating_option_identified_site_and_engineering_gates_open"
+  },
+  "b_bank_recovery": {
+    "candidates": [
+      {
+        "candidate": "a_to_b",
+        "compile_hash": "6fe14c59c7df09266e07ce0524f598d2e25f67167ff0df805fd1b1e2997ec6e8",
+        "completed": 36,
+        "delay_ms_scheduled_only": 45738735,
+        "operating_scenarios_satisfied": false,
+        "original_site_status": "fail",
+        "required": 48,
+        "residual": 0,
+        "strict_UK_status": "not_passed",
+        "unscheduled": 12
+      },
+      {
+        "candidate": "b_to_a",
+        "compile_hash": "3f50d269852a54146c632491eeb5512fc9d89ea635b656259b0f00af928f45b1",
+        "completed": 48,
+        "delay_ms_scheduled_only": 127613272,
+        "operating_scenarios_satisfied": true,
+        "original_site_status": "fail",
+        "required": 48,
+        "residual": 0,
+        "strict_UK_status": "not_passed",
+        "unscheduled": 0
+      },
+      {
+        "candidate": "isolated",
+        "compile_hash": "cc3deb51d6548833fb8d4832fac4fd540f3ddf03052fd2d33f036baadcbdac41",
+        "completed": 36,
+        "delay_ms_scheduled_only": 45738735,
+        "operating_scenarios_satisfied": false,
+        "original_site_status": "fail",
+        "required": 48,
+        "residual": 0,
+        "strict_UK_status": "not_passed",
+        "unscheduled": 12
+      }
+    ],
+    "construction_authorised": false,
+    "mandatory_unknowns": [
+      "authentic UK pointwork",
+      "full vehicle gauging",
+      "platform interfaces",
+      "game capability"
+    ],
+    "open_decisions": [
+      "retain original footprint and search a different geometry/topology, or explicitly adopt a larger study boundary"
+    ],
+    "operating_only_candidate": "b_to_a",
+    "required_scenarios": [
+      "nominal",
+      "bank_b_platforms_closed"
+    ],
+    "schema_version": "0.6.0",
+    "scope": "three tested family instances under a greedy scheduler; not exhaustive feasibility or an optimum proof",
+    "status": "operating_option_identified_site_and_engineering_gates_open"
+  },
+  "both_bank_recoveries": {
+    "candidates": [
+      {
+        "candidate": "a_to_b",
+        "compile_hash": "6fe14c59c7df09266e07ce0524f598d2e25f67167ff0df805fd1b1e2997ec6e8",
+        "completed": 60,
+        "delay_ms_scheduled_only": 142897208,
+        "operating_scenarios_satisfied": false,
+        "original_site_status": "fail",
+        "required": 72,
+        "residual": 0,
+        "strict_UK_status": "not_passed",
+        "unscheduled": 12
+      },
+      {
+        "candidate": "b_to_a",
+        "compile_hash": "3f50d269852a54146c632491eeb5512fc9d89ea635b656259b0f00af928f45b1",
+        "completed": 60,
+        "delay_ms_scheduled_only": 142859517,
+        "operating_scenarios_satisfied": false,
+        "original_site_status": "fail",
+        "required": 72,
+        "residual": 0,
+        "strict_UK_status": "not_passed",
+        "unscheduled": 12
+      },
+      {
+        "candidate": "isolated",
+        "compile_hash": "cc3deb51d6548833fb8d4832fac4fd540f3ddf03052fd2d33f036baadcbdac41",
+        "completed": 48,
+        "delay_ms_scheduled_only": 60984980,
+        "operating_scenarios_satisfied": false,
+        "original_site_status": "fail",
+        "required": 72,
+        "residual": 0,
+        "strict_UK_status": "not_passed",
+        "unscheduled": 24
+      }
+    ],
+    "construction_authorised": false,
+    "mandatory_unknowns": [
+      "authentic UK pointwork",
+      "full vehicle gauging",
+      "platform interfaces",
+      "game capability"
+    ],
+    "open_decisions": [
+      "retain original footprint and search a different geometry/topology, or explicitly adopt a larger study boundary"
+    ],
+    "operating_only_candidate": null,
+    "required_scenarios": [
+      "nominal",
+      "bank_a_platforms_closed",
+      "bank_b_platforms_closed"
+    ],
+    "schema_version": "0.6.0",
+    "scope": "three tested family instances under a greedy scheduler; not exhaustive feasibility or an optimum proof",
+    "status": "no_tested_candidate_meets_required_recovery_set"
+  }
+}

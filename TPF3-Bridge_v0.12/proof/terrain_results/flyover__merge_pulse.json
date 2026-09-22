@@ -1,0 +1,188 @@
+{
+  "assessment_scope": "whole-pass time-space reservation proof; waits occur outside model; not microscopic queues or live signalling",
+  "assignments": [
+    {
+      "claims": [
+        {
+          "end_ms": 867480,
+          "owner": "P1",
+          "resource": "track:return_boundary",
+          "start_ms": 588571,
+          "state": null
+        },
+        {
+          "end_ms": 1239196,
+          "owner": "P1",
+          "resource": "track:return_connector",
+          "start_ms": 823300,
+          "state": null
+        },
+        {
+          "end_ms": 1245167,
+          "owner": "P1",
+          "resource": "track:M:reverse",
+          "start_ms": 1195016,
+          "state": null
+        },
+        {
+          "end_ms": 1245167,
+          "owner": "P1",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 1195016,
+          "state": null
+        },
+        {
+          "end_ms": 1245167,
+          "owner": "P1",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 1195016,
+          "state": "R"
+        },
+        {
+          "end_ms": 1289906,
+          "owner": "P1",
+          "resource": "track:west_merge_exit",
+          "start_ms": 1200987,
+          "state": null
+        },
+        {
+          "end_ms": 1545054,
+          "owner": "P1",
+          "resource": "track:west_exit",
+          "start_ms": 1245726,
+          "state": null
+        }
+      ],
+      "clear_ms": 1545054,
+      "entry_delay_ms": 0,
+      "entry_ms": 588571,
+      "formation_length_m": 242.6,
+      "request_id": "P1",
+      "requested_ms": 588571,
+      "route": "branch_in",
+      "state_at_horizon": "completed",
+      "witnesses": []
+    },
+    {
+      "claims": [
+        {
+          "end_ms": 1457709,
+          "owner": "P0",
+          "resource": "track:west_restore",
+          "start_ms": 1361928,
+          "state": null
+        },
+        {
+          "end_ms": 1549424,
+          "owner": "P0",
+          "resource": "track:west_approach",
+          "start_ms": 1440664,
+          "state": null
+        },
+        {
+          "end_ms": 1550915,
+          "owner": "P0",
+          "resource": "track:M:normal",
+          "start_ms": 1532378,
+          "state": null
+        },
+        {
+          "end_ms": 1550915,
+          "owner": "P0",
+          "resource": "body:M:SYNTH_IMPORT_T40",
+          "start_ms": 1532378,
+          "state": null
+        },
+        {
+          "end_ms": 1550915,
+          "owner": "P0",
+          "resource": "state:M:T40_CTRL",
+          "start_ms": 1532378,
+          "state": "N"
+        },
+        {
+          "end_ms": 1562100,
+          "owner": "P0",
+          "resource": "track:west_merge_exit",
+          "start_ms": 1533869,
+          "state": null
+        },
+        {
+          "end_ms": 1625887,
+          "owner": "P0",
+          "resource": "track:west_exit",
+          "start_ms": 1545054,
+          "state": null
+        }
+      ],
+      "clear_ms": 1625887,
+      "entry_delay_ms": 337378,
+      "entry_ms": 1361928,
+      "formation_length_m": 242.6,
+      "request_id": "P0",
+      "requested_ms": 1024550,
+      "route": "main_west",
+      "state_at_horizon": "completed",
+      "witnesses": [
+        {
+          "blocked_until_ms": 1245167,
+          "blocking_owner": "P1",
+          "requested_entry_ms": 1024550,
+          "resource": "body:M:SYNTH_IMPORT_T40"
+        },
+        {
+          "blocked_until_ms": 1245167,
+          "blocking_owner": "P1",
+          "requested_entry_ms": 1024550,
+          "resource": "state:M:T40_CTRL"
+        },
+        {
+          "blocked_until_ms": 1289906,
+          "blocking_owner": "P1",
+          "requested_entry_ms": 1024550,
+          "resource": "track:west_merge_exit"
+        },
+        {
+          "blocked_until_ms": 1545054,
+          "blocking_owner": "P1",
+          "requested_entry_ms": 1024550,
+          "resource": "track:west_exit"
+        }
+      ]
+    }
+  ],
+  "calendar_evaluations": 3,
+  "candidate_hash": "3190f8d9d05542bd44e34d6044cae0e1d222e30f983b11b5a6febb7ba27624f0",
+  "completed": 2,
+  "conflict_witness_counts": {
+    "body:M:SYNTH_IMPORT_T40": 1,
+    "state:M:T40_CTRL": 1,
+    "track:west_exit": 1,
+    "track:west_merge_exit": 1
+  },
+  "construction_authorised": false,
+  "fixed_block_claims": [],
+  "grade_sensitive_performance": false,
+  "independent_check": {
+    "errors": [],
+    "passed": true,
+    "scope": "independent output/resource checks; timing template reused, physical model not independently validated"
+  },
+  "joined_result_hash": "9ee6b9aa8240049b9117bb433323ac6f74ac3f120d7997b9c9d83c1b7edaf170",
+  "mode": "flyover",
+  "performance_hash": "542e15e9f6d802cf5eb2588a36fd15d09b4ff273d405fd54b15e06947fa832a8",
+  "required": 2,
+  "residual": 0,
+  "resource_hash": "14a052ef7f0b1b6afa898d4bd3f7b7b2f6e8d92a7044f7021fb5c883066c3839",
+  "result_hash": "a070a1f0d0051e4a230a944a74162a708a5c7e6b5744143196fe388378131729",
+  "scenario_hash": "c583a6e16efd95261329516c412b622cdd48b6f501359dd06e493dd6320fffb9",
+  "scenario_id": "merge_pulse",
+  "scheduled": 2,
+  "terrain_assessment_hash": "7998176e21bfe1ddfa6846b7535cfd10f260b47ca7cf7ec999ef90cc89b7e725",
+  "terrain_design_hash": "e56d395595632f913339864e21fa71abbd2fe2348c342754594aa15c7aa67e3e",
+  "terrain_or_game_validated": false,
+  "total_entry_delay_ms_scheduled_only": 337378,
+  "unscheduled": 0,
+  "unserved": [],
+  "version": "0.10.0"
+}

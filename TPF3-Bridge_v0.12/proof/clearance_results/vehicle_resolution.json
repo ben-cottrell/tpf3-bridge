@@ -1,0 +1,37 @@
+{
+  "assumption_hash": "0acfe8feaf3aea9fa96e4696f2fb7d8af41958bd03dc8f6da721678f16323ebe",
+  "assumptions": {
+    "bogie_centres_m": 14.0,
+    "lateral_allowance_m": 0.0,
+    "use_nominal_length_as_rectangular_body": true,
+    "vertical_scope": "level_zero_cant_plan_only"
+  },
+  "body": {
+    "bogie_centres_m": 14.0,
+    "fidelity": "reference_informed_assumptions",
+    "lateral_allowance_m": 0.0,
+    "length_m": 20.0,
+    "profile_id": "desiro_city_thameslink_catalogue_2014",
+    "width_m": 2.8
+  },
+  "formation_layout": "unassessed",
+  "full_UK_gauging": "unassessed",
+  "profile_id": "desiro_city_thameslink_catalogue_2014",
+  "published": {
+    "nominal_vehicle_length_m": 20.0,
+    "unit_12car_length_m": 242.6,
+    "unit_8car_length_m": 162.0,
+    "width_m": 2.8
+  },
+  "record_hash": "40bdbe8de0c14359c11f282436b095d693d302a12ca54047133af4bda641e331",
+  "source_id": "S060",
+  "status": "resolved_for_declared_static_study",
+  "strict_profile_admitted": false,
+  "unresolved": [
+    "bogie_pivot_positions",
+    "coupler_geometry",
+    "cross_section",
+    "exact_body_outline",
+    "suspension_allowances"
+  ]
+}
