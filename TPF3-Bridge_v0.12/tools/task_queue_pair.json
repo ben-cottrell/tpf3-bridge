@@ -1,0 +1,346 @@
+{
+  "version": 1,
+  "batch_id": "pair-l09-l14",
+  "tasks": [
+    {
+      "id": "L09",
+      "depends_on": [],
+      "card": "Add bridge_pair.validate_pair(record) and load_pair(path), reusing bridge_connection validation helpers and v0.12 local Port/frame/region/provenance conventions. Exact narrow input example is tools/pair_acceptance.py:fixture: four stable ports, two connections with explicit track_id/start_port/end_port; no nearest-coordinate pairing. Return equal validated data without mutation, reject malformed/unknown fields and duplicate JSON/IDs/reused ports with ValueError. Preserve supplied unit travel tangents, including explicitly opposing B travel; do not reverse input silently. Retain min radius, spacing, min separation, maximum length/candidates, curvature depth, lowering/read-back tolerances and source_refs/project_choices/assumptions. Only level equal elevation, zero grade/cant; unsupported arrangements must be distinguishable. Geometric compatibility (parallel endpoint pairs, equal normal spacing at both ends, +/-45 degree heading) is classified by L10; do not move endpoints. Author pair_example.json and minimal pair_snapshot_example.json in the exact authored mock form tools/pair_acceptance.py:snapshot. No new general schema, fitting, plan or execution yet. Add focused tests/test_pair_input.py; keep STATE.md short with actual checks and pending host acceptance.",
+      "pointers": [
+        "bridge_connection.py:validate_connection,load_connection,_fields,_number,_vec3",
+        "connection_example.json",
+        "tools/pair_acceptance.py:fixture,snapshot,input_checks",
+        "tests/test_connection_input.py",
+        "contracts/bridge.schema.json:$defs.Port,$defs.Snapshot coordinate_frame/region only"
+      ],
+      "write_files": [
+        "bridge_pair.py",
+        "pair_example.json",
+        "pair_snapshot_example.json",
+        "tests/test_pair_input.py",
+        "STATE.md"
+      ],
+      "acceptance": [
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "pair_input",
+          "--label",
+          "batch_l09_input"
+        ],
+        [
+          "python",
+          "tools/pair_acceptance.py",
+          "--task",
+          "L09"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_input",
+          "--label",
+          "batch_l09_single"
+        ]
+      ]
+    },
+    {
+      "id": "L10",
+      "depends_on": [
+        "L09"
+      ],
+      "card": "Add bridge_pair.fit_pair(record) returning pair_ready/candidate or invalid_input, unsupported_input, failed_checks, no_accepted_candidate, incomplete_search with candidate=null for failure. Reuse L07 fitting on the pair centreline and Bezier derivative/curvature/subdivision primitives. Support compatible normal-spaced parallel port pairs, equal spacing at both ends, arbitrary map translation/rotation and existing +/-45-degree relative headings. Explicitly account for opposing direction through connection references; preserve each supplied travel tangent. Smallest family: genuine +/-spacing/2 normal offsets of the checked centreline, with direction-aware evaluation point_at(candidate,track_id,t) and tangent_at returning 3D position/unit travel tangent for t in [0,1]. No map-axis-shift substitution. Require zero endpoint curvature compatibility; return unsupported for incompatible pairs. Certify both offset regularity (1-offset*curvature>0), radius, ordering, continuous separation/region and length with conservative derivative/hull/subdivision bounds; retain numerical allowances and finite budgets, not sample-only proof. Existing Alignment formulas are reference only: its fixed knot slopes cannot replace nonparallel endpoint constraints. Record analytic geometry, finite-search exhaustion, pair certificates, provenance and content candidate_hash. No selected partial-search winner or lowered hard constraint. Add independent tests/test_pair_geometry.py for straight, rotated, 30-degree curves, opposing/swapped directions, tight spacing/radius, crossed pairing, region and budgets. No lowering or adapters. Update short state.",
+      "pointers": [
+        "bridge_pair.py:validate_pair",
+        "bridge_connection.py:fit_connection,_connection_region_bound",
+        "proof/railgeom/curves.py:Bezier,flatten,continuous_proximity",
+        "proof/railcorridor/geometry.py:Alignment.quantities,bounds,polyline (normal-offset bounds only)",
+        "tools/pair_acceptance.py:geometry_checks",
+        "tests/test_connection_geometry.py"
+      ],
+      "write_files": [
+        "bridge_pair.py",
+        "tests/test_pair_geometry.py",
+        "STATE.md"
+      ],
+      "acceptance": [
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "pair_input",
+          "--label",
+          "batch_l10_input"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "pair_geometry",
+          "--label",
+          "batch_l10_geometry"
+        ],
+        [
+          "python",
+          "tools/pair_acceptance.py",
+          "--task",
+          "L10"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_geometry",
+          "--label",
+          "batch_l10_single"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "geometry",
+          "--label",
+          "batch_l10_kernel"
+        ]
+      ]
+    },
+    {
+      "id": "L11",
+      "depends_on": [
+        "L10"
+      ],
+      "card": "Add bridge_pair_mock.compile_pair_plan(candidate,record,snapshot) for an accepted pair. Reuse railcorridor.adapter operation hashing/payload conventions and applicable railbranch current-payload/topology conventions; preserve historical adapters. New module is a narrow offline adaptation, not general architecture. Authored snapshot follows tools/pair_acceptance.py:snapshot: mock environment, identity/revision, four ports and protected neighbours. Reject forged/mismatched candidate/input/hash, port positions/tangents/IDs and unsupported snapshot before any effects. Bind snapshot content hash/revision, candidate hash and input hash. Emit exactly two physical track operations (one per track, never both directions duplicated), explicit stable attachment node IDs, deterministic asset/operation IDs, dependencies, capabilities, direction metadata and plan_hash; real_game_execution_authorised:false. Lower analytic offsets to 3D polylines only with a recorded conservative approximation error bound and finite point budget; retain endpoint directions and avoid claiming polygonal geometry is exact smooth curvature. Check lowered error against spacing/region allowances and read-back tolerance; unsupported lowering must fail. Neighbours remain outside the edit set. Add tests/test_pair_plan.py for determinism, explicit pairing, forgery/staleness, duplicate physical edges, capability/dependency and bound failures. No execution yet. Update short state.",
+      "pointers": [
+        "bridge_pair.py:fit_pair,point_at,tangent_at",
+        "proof/railcorridor/adapter.py:operation,verify_operation,compile_plan,preflight",
+        "proof/railcorridor/geometry.py:Alignment.polyline",
+        "proof/railbranch/adapter.py:current_payload,payload_equal,verify_topology",
+        "tools/pair_acceptance.py:plan_checks,snapshot",
+        "pair_snapshot_example.json"
+      ],
+      "write_files": [
+        "bridge_pair_mock.py",
+        "tests/test_pair_plan.py",
+        "STATE.md"
+      ],
+      "acceptance": [
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "pair_plan",
+          "--label",
+          "batch_l11_plan"
+        ],
+        [
+          "python",
+          "tools/pair_acceptance.py",
+          "--task",
+          "L11"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "pair_geometry",
+          "--label",
+          "batch_l11_geometry"
+        ]
+      ]
+    },
+    {
+      "id": "L12",
+      "depends_on": [
+        "L11"
+      ],
+      "card": "Add bridge_pair_mock.PairMock(snapshot) and execute_pair(plan,adapter), reusing existing reconciliation/lost-acknowledgement approach with narrow adaptation. PairMock exposes current tracks (asset-key -> physical payload including points/start_node/end_node and direction metadata), nodes, revision, writes and fault controls drop_ack_at/fail_at/snap_at. Keep receipts separate from mutable current realised state: verify both actual tracks, four stable attachments, direction metadata and all protected neighbours on every successful response including repeated calls. Compile/execute reject stale snapshot or capabilities before writes; account only for this plans own known partial effects on retries. Clean outcome mock_verified; partial/lost-ack/mismatch outcomes retain visible effects and no rollback claim. Same-instance repeats must not duplicate writes, but stale receipts never hide displaced geometry/wrong connection or changed neighbours. Add tests/test_pair_mock.py: clean, same-instance repeat, ack lost after effect, partial failure, displaced geometry, bad connection/direction, changed neighbour, stale snapshot/revision and capability denial. No database, persistence, automatic resume or game actions. State explicitly that new process means new mock world. Update short state.",
+      "pointers": [
+        "bridge_pair_mock.py:compile_pair_plan",
+        "proof/railcorridor/adapter.py:MockAdapter,preflight,execute,LostAcknowledgement",
+        "proof/railbranch/adapter.py:MockJunctionAdapter,current_payload,payload_equal,execute",
+        "tools/pair_acceptance.py:mock_checks",
+        "tests/test_pair_plan.py"
+      ],
+      "write_files": [
+        "bridge_pair_mock.py",
+        "tests/test_pair_mock.py",
+        "STATE.md"
+      ],
+      "acceptance": [
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "pair_mock",
+          "--label",
+          "batch_l12_mock"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "pair_plan",
+          "--label",
+          "batch_l12_plan"
+        ],
+        [
+          "python",
+          "tools/pair_acceptance.py",
+          "--task",
+          "L12"
+        ]
+      ]
+    },
+    {
+      "id": "L13",
+      "depends_on": [
+        "L12"
+      ],
+      "card": "Add bridge_app.connect_pair(input_path,output,mock_execute=False,snapshot_path=None) and CLI connect-pair --input FILE --output DIRECTORY [--mock-execute --snapshot FILE]. Default design-only: do not load or execute adapter/plan automatically. Explicit mock needs the authored snapshot and one fresh in-memory instance. Reuse existing atomic run.json, artifact paths/hashes, status, verify and output protection; extend supported mode/outcome validation narrowly and preserve corridor/single-track old records. Save complete pair geometry/checks/provenance; mock mode additionally saves bound plan, snapshot and current read-back/partial effects using existing artifacts where appropriate. Distinguish pair_ready design checks, mock_verified realised current-state checks, file integrity and unprobed real game; always game_constructed:false and <=4096-byte stdout. Fresh status/verify must not import/call fitting/construction. Preserve failure and unfinished records honestly. Add tests/test_pair_app.py for callable/CLI parity, explicit mock requirement, fresh inspection, invalid/stale/missing/corrupt records, output refusal, compact output and forbidden design/execution calls during inspection. Update USAGE.md briefly and short state. No new persistence system or other feature.",
+      "pointers": [
+        "bridge_app.py:connect,design,inspect_run,atomic_json",
+        "bridge_cli.py:main,emit",
+        "bridge_pair.py:load_pair,fit_pair",
+        "bridge_pair_mock.py:compile_pair_plan,PairMock,execute_pair",
+        "tests/test_connection_app.py",
+        "tools/pair_acceptance.py:app_checks"
+      ],
+      "write_files": [
+        "bridge_app.py",
+        "bridge_cli.py",
+        "tests/test_pair_app.py",
+        "USAGE.md",
+        "STATE.md"
+      ],
+      "acceptance": [
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "pair_application",
+          "--label",
+          "batch_l13_app"
+        ],
+        [
+          "python",
+          "tools/pair_acceptance.py",
+          "--task",
+          "L13"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "application",
+          "--label",
+          "batch_l13_cli"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_application",
+          "--label",
+          "batch_l13_single"
+        ]
+      ]
+    },
+    {
+      "id": "L14",
+      "depends_on": [
+        "L13"
+      ],
+      "card": "Combined acceptance and short usage/implementation-to-test record only. Demonstrate pair_example.json -> checked design -> explicit bound mock plan -> current read-back for both connections and preserved neighbours; include representative invalid/stale/corrupted-result scenarios and fresh-process status/verify without construction. Reuse implemented functionality and existing tests. Document runnable API/CLI commands, finite geometry family, normal-offset/approximation certificates and limits, same-instance idempotency versus fresh-process mock, explicit game_constructed:false, preserved legacy commands and no live game capability claim. Write a compact mapping of L09-L13 requirements to test file/cases in USAGE.md; detailed results remain local. Add missing acceptance cases only in tests/test_pair_acceptance.py, no application feature/code changes; report any out-of-scope defect and stop. Host executes all queued combined checks; do not duplicate passing test runs in worker. Update STATE.md concisely with actual evidence/pending host checks and stop at L14.",
+      "pointers": [
+        "USAGE.md",
+        "pair_example.json",
+        "pair_snapshot_example.json",
+        "tests/test_pair_input.py",
+        "tests/test_pair_geometry.py",
+        "tests/test_pair_plan.py",
+        "tests/test_pair_mock.py",
+        "tests/test_pair_app.py",
+        "tools/pair_acceptance.py",
+        "STATE.md"
+      ],
+      "write_files": [
+        "USAGE.md",
+        "tests/test_pair_acceptance.py",
+        "STATE.md"
+      ],
+      "acceptance": [
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "pair_combined",
+          "--label",
+          "batch_l14_pair"
+        ],
+        [
+          "python",
+          "tools/pair_acceptance.py",
+          "--task",
+          "L14"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "application",
+          "--label",
+          "batch_l14_cli"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_input",
+          "--label",
+          "batch_l14_single_input"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_geometry",
+          "--label",
+          "batch_l14_single_geom"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "connection_application",
+          "--label",
+          "batch_l14_single_app"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "geometry",
+          "--label",
+          "batch_l14_kernel"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "corridor",
+          "--label",
+          "batch_l14_corridor"
+        ],
+        [
+          "python",
+          "tools/quiet_checks.py",
+          "--suite",
+          "branch",
+          "--label",
+          "batch_l14_branch"
+        ]
+      ]
+    }
+  ]
+}

@@ -20,7 +20,9 @@ ROOT = Path(__file__).resolve().parents[1]
 QUEUE = 'tools/task_queue.json'
 APPROVED_QUEUE_SHA256 = 'af747ce78b765ae31a78ffc79c5dd759e95ee4217843e9fe14b89bceae1d769e'
 CONTROL = '.task_batch'
-BATCHES = {'connection-l06-l08': ('tools/task_queue_connection.json', 'd26ea35fed5a4cf77dfc4b82978cc9acf6da0fbe5863849f7e60a6c44d70db3e')}
+BATCHES = {'connection-l06-l08': ('tools/task_queue_connection.json', 'd26ea35fed5a4cf77dfc4b82978cc9acf6da0fbe5863849f7e60a6c44d70db3e'),
+           'pair-l09-l14': ('tools/task_queue_pair.json', '0c82f75a5292acf1ae2b41482ff5db21380b1f46e7a61a503a3a217c5da124b7')}
+BATCH_POLICIES = {'pair-l09-l14': {'tasks': 6, 'invocations': 8, 'repairs': 2}}
 LIMITS = {'tasks': 3, 'invocations': 6, 'timeout': 900, 'check_timeout': 240}
 FATAL = re.compile(r'usage.limit|rate.limit|quota|insufficient.credit|authentication|unauthorized|'
                    r'not.logged.in|permission.denied|access.is.denied|approval.required|sandbox.denied|'
@@ -209,6 +211,7 @@ def prompt_for(task, state, repair=None, sources=None):
               'acceptance after you exit; do not duplicate the queued acceptance commands in the worker. '
               'Update the short STATE.md, recording actual checks only and marking runner checks pending. Stop '
               'after this task; no next-task work.\n')
+    header += 'Read only this task card, not the full batch queue or prior worker transcripts.\n'
     if repair:
         header += 'One authorized recovery invocation, same session. Failure summary: ' + repair[:1500] + '\n'
     if sources:
@@ -221,6 +224,13 @@ def run_batch(root, queue, limits, executable, *, launch=process, authenticate=T
     root = root.resolve()
     if batch_id is not None and batch_id not in BATCHES:
         raise Stop('unknown approved batch identity')
+    ceiling = {**LIMITS, **BATCH_POLICIES.get(batch_id, {})}
+    if (not 1 <= limits['tasks'] <= ceiling['tasks']
+            or not 1 <= limits['invocations'] <= ceiling['invocations']
+            or limits.get('repairs') != ceiling.get('repairs')
+            or not 1 <= limits['timeout'] <= 3600
+            or limits['check_timeout'] != LIMITS['check_timeout']):
+        raise Stop('limits exceed approved batch policy')
     base = root / CONTROL
     base.mkdir(exist_ok=True)
     control = base / batch_id if batch_id else base
@@ -236,9 +246,11 @@ def run_batch(root, queue, limits, executable, *, launch=process, authenticate=T
     owned = False
     try:
         if batch_id:
-            previous = json.loads((base / 'state.json').read_text(encoding='utf-8'))
+            predecessor = base / 'connection-l06-l08' if batch_id == 'pair-l09-l14' else base
+            required = ['L06', 'L07', 'L08'] if batch_id == 'pair-l09-l14' else ['L03', 'L04', 'L05']
+            previous = json.loads((predecessor / 'state.json').read_text(encoding='utf-8'))
             if (previous.get('phase') != 'idle'
-                    or previous.get('completed') != ['L03', 'L04', 'L05']
+                    or previous.get('completed') != required
                     or [t['id'] for t in previous['seal']['queue']['tasks']] != previous['completed']
                     or not 3 <= previous.get('invocations', -1) <= 6):
                 raise Stop('previous batch is not completed; manual reconciliation required')
@@ -260,14 +272,21 @@ def run_batch(root, queue, limits, executable, *, launch=process, authenticate=T
                     or len(journal['completed']) > len(queue['tasks'])
                     or not 0 <= journal['invocations'] <= limits['invocations']):
                 raise Stop('invalid durable task record; manual reconciliation required')
+            if 'repairs' in limits and (type(journal.get('repairs_used')) is not int
+                    or not sum(a['attempt'] > 0 for a in journal['attempts']) <= journal['repairs_used'] <= limits['repairs']):
+                raise Stop('invalid durable repair record; manual reconciliation required')
             if checkpoint() != journal['checkpoint']:
                 raise Stop('workspace changed since checkpoint; manual reconciliation required')
         else:
             journal = dict(version=1, seal=seal, phase='idle', completed=[], invocations=0,
                            attempts=[], checkpoint=checkpoint(), baseline_tests=test_names(root))
+            if 'repairs' in limits:
+                journal['repairs_used'] = 0
             write_json(journal_path, journal)
         owned = True
         for task in queue['tasks'][len(journal['completed']):limits['tasks']]:
+            if not set(task.get('depends_on', [])) <= set(journal['completed']):
+                raise Stop('task dependencies are not completed')
             if journal['invocations'] >= limits['invocations']:
                 raise Stop('agent invocation limit reached')
             if checkpoint() != journal['checkpoint']:
@@ -294,6 +313,8 @@ def run_batch(root, queue, limits, executable, *, launch=process, authenticate=T
             for attempt in range(first_attempt, max(2, first_attempt + 1)):
                 if journal['invocations'] >= limits['invocations']:
                     raise Stop('agent invocation limit reached')
+                if attempt and 'repairs' in limits and journal['repairs_used'] >= limits['repairs']:
+                    raise Stop('batch repair allowance exhausted; no further invocations')
                 run = control / f"{task['id']}_{attempt}_{journal['invocations'] + 1}"
                 run.mkdir()
                 if authenticate:
@@ -312,6 +333,8 @@ def run_batch(root, queue, limits, executable, *, launch=process, authenticate=T
                 journal.update(phase='invoking', task=task['id'])
                 journal.pop('reconciled_repair', None)
                 journal['invocations'] += 1
+                if attempt and 'repairs' in limits:
+                    journal['repairs_used'] += 1
                 write_json(journal_path, journal)  # Claim BEFORE launch; never repeat an uncertain attempt.
                 journal_hash = digest(journal_path)
                 code = launch(command, root, run, limits['timeout'], prompt)
@@ -456,8 +479,8 @@ def main(argv=None):
     parser.add_argument('--dry-run', action='store_true')
     parser.add_argument('--batch', choices=sorted(BATCHES), help='Approved batch with a separate durable ledger')
     parser.add_argument('--acceptance', choices=['L03', 'L04', 'L05'])
-    parser.add_argument('--max-tasks', type=int, default=3, choices=range(1, 4))
-    parser.add_argument('--max-invocations', type=int, default=6, choices=range(1, 7))
+    parser.add_argument('--max-tasks', type=int, help='Reduce the selected batch task limit')
+    parser.add_argument('--max-invocations', type=int, help='Reduce the selected batch invocation limit')
     parser.add_argument('--timeout', type=int, default=900, metavar='SECONDS')
     args = parser.parse_args(argv)
     try:
@@ -470,7 +493,12 @@ def main(argv=None):
             if digest(ROOT / queue_path) != approved_hash:
                 raise Stop('approved queue changed; review and approval required')
             queue = json.loads((ROOT / queue_path).read_text(encoding='utf-8'))
-            limits = {**LIMITS, 'tasks': args.max_tasks, 'invocations': args.max_invocations, 'timeout': args.timeout}
+            limits = {**LIMITS, **BATCH_POLICIES.get(args.batch, {}), 'timeout': args.timeout}
+            for key, value in [('tasks', args.max_tasks), ('invocations', args.max_invocations)]:
+                if value is not None:
+                    if not 1 <= value <= limits[key]:
+                        raise Stop('limits exceed approved batch policy')
+                    limits[key] = value
             executable = shutil.which('codex')
             if not executable:
                 raise Stop('Codex CLI not installed/on PATH; no installation attempted')

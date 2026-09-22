@@ -1,23 +1,26 @@
 # Approved batch task
 
 {
-  "id": "L08",
-  "card": "Expose bridge_app.connect(input_path, output) and python bridge_cli.py connect --input <record.json> --output <new-directory>, reusing L06/L07. Return compact <=4096-byte JSON, status connection_ready for fully checked complete fits; explicit offline scope and game_constructed:false. Reuse run.json atomic publication, output protection, saved artifact hashes, status and verify. Extend the existing versioned record validation for connection mode/outcomes without breaking old design/mock records; reuse fixture.json,context.json,search.json,candidate.json,summary.json filenames. Save full geometry, checks, input identity, implementation hashes (including loaded geometry helpers), source/project/assumption distinctions and supported domain. Preserve honest unsupported, invalid, failed-check, complete-no-candidate, budget-exhausted and interrupted outcomes; missing/corrupt records unavailable. No calls to corridor design/search, adapters or mock execution for connect; fresh status/verify never import geometry/search. Add tests/test_connection_app.py including new CLI/API, fresh-process status/verify, failed/incomplete runs, tamper/missing artifacts, output refusal, compact output and forbidden engine/adapter calls. Preserve all existing corridor commands/tests. Document commands, domain, independent-check scope, limitations and usage in USAGE.md. No new feature beyond integration. Update short STATE.md and stop after host acceptance.",
+  "id": "L14",
+  "depends_on": [
+    "L13"
+  ],
+  "card": "Combined acceptance and short usage/implementation-to-test record only. Demonstrate pair_example.json -> checked design -> explicit bound mock plan -> current read-back for both connections and preserved neighbours; include representative invalid/stale/corrupted-result scenarios and fresh-process status/verify without construction. Reuse implemented functionality and existing tests. Document runnable API/CLI commands, finite geometry family, normal-offset/approximation certificates and limits, same-instance idempotency versus fresh-process mock, explicit game_constructed:false, preserved legacy commands and no live game capability claim. Write a compact mapping of L09-L13 requirements to test file/cases in USAGE.md; detailed results remain local. Add missing acceptance cases only in tests/test_pair_acceptance.py, no application feature/code changes; report any out-of-scope defect and stop. Host executes all queued combined checks; do not duplicate passing test runs in worker. Update STATE.md concisely with actual evidence/pending host checks and stop at L14.",
   "pointers": [
-    "bridge_app.py:design,inspect_run,atomic_json,initial_summary",
-    "bridge_cli.py:main,emit",
-    "bridge_connection.py:validate_connection,fit_connection",
-    "tools/connection_acceptance.py:application_checks",
-    "tests/test_cli.py:CliTests,WrapperTests",
-    "connection_example.json",
     "USAGE.md",
+    "pair_example.json",
+    "pair_snapshot_example.json",
+    "tests/test_pair_input.py",
+    "tests/test_pair_geometry.py",
+    "tests/test_pair_plan.py",
+    "tests/test_pair_mock.py",
+    "tests/test_pair_app.py",
+    "tools/pair_acceptance.py",
     "STATE.md"
   ],
   "write_files": [
-    "bridge_app.py",
-    "bridge_cli.py",
-    "tests/test_connection_app.py",
     "USAGE.md",
+    "tests/test_pair_acceptance.py",
     "STATE.md"
   ],
   "acceptance": [
@@ -25,31 +28,15 @@
       "python",
       "tools/quiet_checks.py",
       "--suite",
-      "connection_input",
+      "pair_combined",
       "--label",
-      "batch_l08_input"
+      "batch_l14_pair"
     ],
     [
       "python",
-      "tools/quiet_checks.py",
-      "--suite",
-      "connection_geometry",
-      "--label",
-      "batch_l08_geometry"
-    ],
-    [
-      "python",
-      "tools/quiet_checks.py",
-      "--suite",
-      "connection_application",
-      "--label",
-      "batch_l08_app"
-    ],
-    [
-      "python",
-      "tools/connection_acceptance.py",
+      "tools/pair_acceptance.py",
       "--task",
-      "L08"
+      "L14"
     ],
     [
       "python",
@@ -57,7 +44,31 @@
       "--suite",
       "application",
       "--label",
-      "batch_l08_regression"
+      "batch_l14_cli"
+    ],
+    [
+      "python",
+      "tools/quiet_checks.py",
+      "--suite",
+      "connection_input",
+      "--label",
+      "batch_l14_single_input"
+    ],
+    [
+      "python",
+      "tools/quiet_checks.py",
+      "--suite",
+      "connection_geometry",
+      "--label",
+      "batch_l14_single_geom"
+    ],
+    [
+      "python",
+      "tools/quiet_checks.py",
+      "--suite",
+      "connection_application",
+      "--label",
+      "batch_l14_single_app"
     ],
     [
       "python",
@@ -65,15 +76,7 @@
       "--suite",
       "geometry",
       "--label",
-      "batch_l08_kernel"
-    ],
-    [
-      "python",
-      "tools/quiet_checks.py",
-      "--suite",
-      "branch",
-      "--label",
-      "batch_l08_branch"
+      "batch_l14_kernel"
     ],
     [
       "python",
@@ -81,7 +84,15 @@
       "--suite",
       "corridor",
       "--label",
-      "batch_l08_corridor"
+      "batch_l14_corridor"
+    ],
+    [
+      "python",
+      "tools/quiet_checks.py",
+      "--suite",
+      "branch",
+      "--label",
+      "batch_l14_branch"
     ]
   ]
 }

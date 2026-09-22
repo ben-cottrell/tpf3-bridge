@@ -29,7 +29,7 @@ Long paths may be abbreviated to filenames with a `paths_relative_to` explanatio
 
 | Exit | JSON status | Meaning |
 | --- | --- | --- |
-| 0 | `design_ready`, `mock_verified`, `connection_ready` | Design, explicit mock or complete checked connection fit succeeded; also returned by `status` for an intact successful record. |
+| 0 | `design_ready`, `mock_verified`, `connection_ready`, `pair_ready` | Design, explicit mock or complete checked connection fit succeeded; also returned by `status` for an intact successful record. |
 | 0 | `integrity_verified` | All recorded artifact hashes match, including when the recorded design failed. |
 | 1 | `invalid_input`, `output_refused` | Invalid arguments/fixture or protected output destination. |
 | 1 | `unsupported_input`, `failed_checks` | Connection outside the supported domain, or failed geometric checks; inspect saved evidence. |
@@ -142,3 +142,138 @@ unfinished record, reported as `run_incomplete` with process state unknown.
 The same atomic publication, output protection and saved-artifact integrity rules
 apply as for corridor records. Fresh-process `status` and `verify` load no geometry
 or search modules, and never refit, execute or repair a connection.
+
+
+## Pair connections
+
+`bridge_app.connect_pair(input_path, output, mock_execute=False, snapshot_path=None)`
+and `connect-pair` use the strict `0.12.0` double-track input with four ports and
+explicit pairing. Default execution only fits the pair; it loads no mock adapter
+or plan. Use a new or empty output directory:
+
+```powershell
+python bridge_cli.py connect-pair --input pair_example.json --output .local_runs/my_pair
+python bridge_cli.py connect-pair --input pair_example.json --output .local_runs/my_pair_mock --mock-execute --snapshot pair_snapshot_example.json
+python bridge_cli.py status --run .local_runs/my_pair_mock
+python bridge_cli.py verify --run .local_runs/my_pair_mock
+```
+
+`--mock-execute` requires the authored mock snapshot; `--snapshot` requires that
+explicit execution flag. Each invocation creates one fresh in-memory mock world.
+`pair_ready` means the complete finite design search passed both tracks' geometry
+checks. `mock_verified` additionally means execution checked current realised
+geometry, four attachments, directions and protected neighbours in that mock.
+Native game behaviour remains unprobed and `game_constructed` is always false.
+
+Pair records reuse the existing artifacts: `search.json` keeps complete checks,
+`candidate.json` keeps analytic geometry, input and provenance, and `context.json`
+records source hashes and limitations. Mock runs also retain exact `snapshot.json`
+bytes, the bound `plan.json`, and `execution.json` with current tracks, nodes,
+revision, receipts and effects, including partial failures. No automatic resume or
+rollback is claimed. Interruptions leave an unfinished run with process state
+unknown. `status` and `verify` only inspect saved files; `integrity_verified`
+means their hashes match, even for a failed run. It does not refit the pair,
+recreate a mock world or certify current game state.
+
+The equivalent callable workflow, from the project root, is:
+
+```python
+import bridge_app
+
+design = bridge_app.connect_pair("pair_example.json", ".local_runs/my_api_pair")
+assert design["status"] == "pair_ready"
+mock = bridge_app.connect_pair(
+    "pair_example.json", ".local_runs/my_api_pair_mock",
+    mock_execute=True, snapshot_path="pair_snapshot_example.json",
+)
+assert mock["status"] == "mock_verified" and mock["game_constructed"] is False
+saved = bridge_app.status(".local_runs/my_api_pair_mock")
+integrity = bridge_app.verify(".local_runs/my_api_pair_mock")
+```
+
+The mock call fits and revalidates the input itself; it does not consume the
+previous run directory. For the same input its candidate identity matches the
+design-only run. The plan binds input, candidate, authored snapshot content and
+revision, two distinct physical edges, four explicit attachments, directions and
+protected neighbours. Compilation checks capabilities/freshness when supplied a
+mock adapter; execution always checks them. Receipts alone cannot establish
+success: current geometry, attachment nodes, directions and neighbours must agree.
+
+For explicit same-instance retry through the lower-level API:
+
+```python
+import json
+from pathlib import Path
+from bridge_pair import load_pair, fit_pair
+from bridge_pair_mock import PairMock, compile_pair_plan, execute_pair
+
+record = load_pair("pair_example.json")
+candidate = fit_pair(record)["candidate"]
+snapshot = json.loads(Path("pair_snapshot_example.json").read_text(encoding="utf-8"))
+world = PairMock(snapshot)
+plan = compile_pair_plan(candidate, record, snapshot, adapter=world)
+assert execute_pair(plan, world)["status"] == "mock_verified"
+writes = world.writes
+assert execute_pair(plan, world)["status"] == "mock_verified"
+assert world.writes == writes == 2
+```
+
+Idempotency applies to this instance and its effect ledger, with current state
+rechecked on retry. A new instance or process starts a fresh mock; saved receipts
+provide no cross-process replay protection. Partial effects are retained without
+automatic rollback. Stale state, changed neighbours or corrupted realised results
+block verification, including when a historical receipt still reports success.
+
+### Pair geometry and approximation limits
+
+The finite family uses the connection fitter's 29 deterministic line, quintic and
+joined-quintic centreline candidates. Both tracks are analytic normal offsets at
+half the requested spacing, with explicit same-direction or opposing travel.
+Endpoints must have compatible normal spacing, parallel tangents after accounting
+for travel direction, and uncrossed pairing. The level, zero-grade, zero-cant and
+local forward-span/heading limits of connection fitting still apply. Selection
+minimizes the larger track's conservative upper length, then grid index. No global
+optimum or impossibility claim follows from this family.
+
+Continuous certificates cover offset regularity, ordering, radius, length,
+separation, region containment and endpoint agreement, together with the underlying
+centreline checks. Normal spacing at matching parameters alone does not establish
+minimum separation: curved pairs also use all chord-capsule pairs. Bounds use
+floating arithmetic and allowances, not formal interval arithmetic or specialist
+certification. The saved numerical limits include 1e-6 m endpoint position,
+1e-7 tangent and endpoint curvature allowances, 1e-8 m enclosure allowance,
+2,048 offset leaves and depth 20. Unresolved subdivision or search budgets give
+`incomplete_search` without a selected candidate; constraints are never relaxed.
+
+Mock lowering approximates each analytic offset with a polyline, capped at 10,000
+points per track. Saved `lowering_certificates` record chord-capsule error bounds,
+parameters, point budgets and parent identity. The chosen tolerance is bounded by
+the requested lowering tolerance, read-back tolerance and available separation
+margin; region and separation checks reserve approximation plus read-back error.
+Insufficient allowances or budgets reject compilation. Polyline certificates state
+`exact_smooth_curvature: false`; endpoint tangents are semantic metadata and do not
+certify smooth curvature at polyline vertices. Mock capability names describe the
+offline adapter only and make no native TPF3 API or live game capability claim.
+Every application/execution result retains `game_constructed: false`.
+
+### Implementation-to-test record (L09–L14)
+
+Case names below are unittest methods; detailed results remain in local evidence.
+The host runs combined acceptance; this mapping is not a claim that pending host
+checks have passed. Existing `design`, `connect`, `status` and `verify` commands
+remain available with their preceding behaviour and scope.
+
+| Task / requirement | Test file and representative cases |
+| --- | --- |
+| L09 strict input, explicit pairing, provenance and nonmutation | `tests/test_pair_input.py`: `test_examples_and_nonmutation`, `test_cardinality_and_explicit_unique_pairing`, `test_geometry_is_deferred_and_metadata_preserved`, `test_strict_json`, `test_unsupported_level_frame_and_cant` |
+| L10 both analytic offsets, finite checks and independent witnesses | `tests/test_pair_geometry.py`: `test_curved_rotated_opposing_and_swapped`, `test_heading_boundaries`, `test_offset_capsules_enclose_independent_polynomial`, `test_radius_spacing_and_length`, `test_budgets_and_invalid_evaluation` |
+| L11 bound plan, topology, capabilities and conservative approximation | `tests/test_pair_plan.py`: `test_determinism_binding_and_no_effects`, `test_explicit_pairing_capabilities_and_dependencies`, `test_forgery_and_input_mismatch`, `test_revision_and_content_staleness_binding`, `test_lowering_bound_independent_witnesses`, `test_finite_budget_and_allowance_failures` |
+| L12 current read-back, same-instance retry, neighbours and stale/corrupt state | `tests/test_pair_mock.py`: `test_clean_and_same_instance_repeat`, `test_ack_lost_after_effect`, `test_partial_failure_and_explicit_retry`, `test_displaced_missing_and_malformed_geometry`, `test_bad_connection_direction_and_stable_nodes`, `test_changed_neighbour_before_and_after_execution`, `test_stale_snapshot_revision_and_unrelated_effects` |
+| L13 API/CLI, explicit mock, bounded output, saved integrity and fresh inspection without construction | `tests/test_pair_app.py`: `test_design_evidence_and_cli_parity`, `test_explicit_mock_one_instance_and_readback`, `test_explicit_snapshot_requirement`, `test_fresh_design_forbids_adapter_imports`, `test_fresh_inspection_no_imports_calls_or_writes`, `test_invalid_and_failed_designs`, `test_bad_missing_and_stale_snapshot`, `test_corrupt_missing_and_wrong_mode_records`, `test_compact_dispatch` |
+| L14 shipped example through checked design, bound mock plan, both connections and preserved neighbours; corrupted read-back artifact | `tests/test_pair_acceptance.py`: `test_shipped_examples_design_bound_plan_and_current_readback`; existing negative/fresh-process cases above are reused |
+
+Focused runnable test command: `python -B -m unittest discover -s tests -p test_pair_acceptance.py -q`.
+The host's combined entry points are `python tools/quiet_checks.py --suite pair_combined --label batch_l14_pair`
+and `python tools/pair_acceptance.py --task L14`, followed by the queued legacy
+regression suites. Saved-file integrity is distinct from geometry acceptance,
+current in-memory mock verification and unprobed game state.

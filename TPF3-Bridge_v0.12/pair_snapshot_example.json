@@ -1,0 +1,97 @@
+{
+  "schema_version": "0.12.0",
+  "environment": "mock",
+  "snapshot_id": "authored-pair-example",
+  "revision": 0,
+  "ports": [
+    {
+      "port_id": "a0",
+      "position_m": [
+        0.0,
+        -2.0,
+        0
+      ],
+      "forward_unit": [
+        1.0,
+        0.0,
+        0
+      ],
+      "grade": 0,
+      "role": "entry",
+      "native_entity_ref": null,
+      "native_port_ref": null
+    },
+    {
+      "port_id": "a1",
+      "position_m": [
+        500.0,
+        -2.0,
+        0
+      ],
+      "forward_unit": [
+        1.0,
+        0.0,
+        0
+      ],
+      "grade": 0,
+      "role": "exit",
+      "native_entity_ref": null,
+      "native_port_ref": null
+    },
+    {
+      "port_id": "b0",
+      "position_m": [
+        0.0,
+        2.0,
+        0
+      ],
+      "forward_unit": [
+        1.0,
+        0.0,
+        0
+      ],
+      "grade": 0,
+      "role": "entry",
+      "native_entity_ref": null,
+      "native_port_ref": null
+    },
+    {
+      "port_id": "b1",
+      "position_m": [
+        500.0,
+        2.0,
+        0
+      ],
+      "forward_unit": [
+        1.0,
+        0.0,
+        0
+      ],
+      "grade": 0,
+      "role": "exit",
+      "native_entity_ref": null,
+      "native_port_ref": null
+    }
+  ],
+  "neighbours": {
+    "protected-1": {
+      "asset_key": "protected-1",
+      "start_node": "n0",
+      "end_node": "n1",
+      "points": [
+        [
+          -30,
+          30,
+          0
+        ],
+        [
+          -20,
+          30,
+          0
+        ]
+      ],
+      "mode": "plain",
+      "direction": "forward"
+    }
+  }
+}

@@ -439,6 +439,102 @@ class BatchTests(unittest.TestCase):
         self.assertEqual((control / 'state.json').read_bytes(), before)
         self.assertEqual(self.launches, [])
 
+    def prepare_pair_batch(self, actions):
+        self.prepare_named_batch()
+        self.run_named()
+        self.batch_id = 'pair-l09-l14'
+        control = self.root / runner.CONTROL / self.batch_id
+        control.mkdir()
+        (control / 'fake_plan.json').write_text(json.dumps(actions))
+        (self.root / 'tools/fake.py').write_text(
+            FAKE.replace("control=root/'.task_batch'", "control=root/'.task_batch/pair-l09-l14'"))
+        template = self.queue['tasks'][0]
+        self.named_queue = {'version': 1, 'tasks': []}
+        for i in range(9, 15):
+            task = json.loads(json.dumps(template))
+            task.update(id=f'L{i:02}', depends_on=[] if i == 9 else [f'L{i-1:02}'])
+            self.named_queue['tasks'].append(task)
+        self.limits = {**runner.LIMITS, **runner.BATCH_POLICIES[self.batch_id]}
+        self.launches.clear()
+        return control
+
+    def test_pair_six_tasks_eight_invocations_two_exact_repairs(self):
+        control = self.prepare_pair_batch(['fail', 'ok', 'fail', 'ok', 'ok', 'ok', 'ok', 'ok'])
+        prior = (self.root / runner.CONTROL / 'connection-l06-l08/state.json').read_bytes()
+        result = self.run_named()
+        record = json.loads((control / 'state.json').read_text())
+        self.assertEqual(result['invocations'], 8)
+        self.assertEqual(len(result['completed']), 6)
+        self.assertEqual(record['repairs_used'], 2)
+        self.assertEqual(record['attempts'][0]['session_id'], record['attempts'][1]['session_id'])
+        self.assertEqual(record['attempts'][2]['session_id'], record['attempts'][3]['session_id'])
+        self.assertEqual((self.root / runner.CONTROL / 'connection-l06-l08/state.json').read_bytes(), prior)
+        prompts = [prompt for _, prompt in self.launches if prompt]
+        self.assertEqual(len(prompts), 8)
+        self.assertTrue(all('Read only this task card' in prompt for prompt in prompts))
+        self.launches.clear()
+        self.assertEqual(self.run_named()['status'], 'queue_exhausted')
+        self.assertEqual(self.launches, [])
+
+    def test_pair_third_repair_stops_below_invocation_cap(self):
+        control = self.prepare_pair_batch(['fail', 'ok', 'fail', 'ok', 'fail'])
+        with self.assertRaisesRegex(runner.Stop, 'repair allowance'):
+            self.run_named()
+        record = json.loads((control / 'state.json').read_text())
+        self.assertEqual(record['invocations'], 5)
+        self.assertEqual(record['repairs_used'], 2)
+        self.assertEqual(record['completed'], ['L09', 'L10'])
+        before = (control / 'state.json').read_bytes()
+        self.launches.clear()
+        with self.assertRaisesRegex(runner.Stop, 'reconciliation'):
+            self.run_named()
+        self.assertEqual(self.launches, [])
+        self.assertEqual((control / 'state.json').read_bytes(), before)
+
+    def test_pair_interrupted_repair_remains_charged(self):
+        control = self.prepare_pair_batch(['fail', 'ok'])
+        original = self.launch
+        def interrupt(command, root, out, timeout, prompt=None):
+            if prompt and 'resume' in command:
+                raise KeyboardInterrupt
+            return original(command, root, out, timeout, prompt)
+        with patch.object(self, 'launch', side_effect=interrupt):
+            with self.assertRaises(KeyboardInterrupt):
+                self.run_named()
+        record = json.loads((control / 'state.json').read_text())
+        self.assertEqual(record['repairs_used'], 1)
+        self.assertEqual(record['invocations'], 2)
+        with self.assertRaisesRegex(runner.Stop, 'reconciliation'):
+            self.run_named()
+
+    def test_pair_requires_its_actual_predecessor(self):
+        self.prepare_pair_batch(['ok'])
+        p = self.root / runner.CONTROL / 'connection-l06-l08/state.json'
+        old = json.loads(p.read_text()); old['completed'] = ['L06']
+        runner.write_json(p, old)
+        with self.assertRaisesRegex(runner.Stop, 'previous batch'):
+            self.run_named()
+        self.assertEqual(self.launches, [])
+
+    def test_batch_specific_limits_cannot_enlarge_older_batches(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(runner.main(['--dry-run', '--max-tasks', '6']), 1)
+        self.prepare_pair_batch(['ok'])
+        self.limits['repairs'] = 3
+        with self.assertRaisesRegex(runner.Stop, 'approved batch policy'):
+            self.run_named()
+        self.assertEqual(self.launches, [])
+
+    def test_pair_dry_run_limits_and_no_launch(self):
+        with patch.object(runner.shutil, 'which', return_value='FAKE_NOT_CODEX'), patch.object(runner, 'run_batch') as batch:
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                self.assertEqual(runner.main(['--batch', 'pair-l09-l14', '--dry-run']), 0)
+            value = json.loads(out.getvalue())
+            self.assertEqual(value['limits'], {**runner.LIMITS, 'tasks': 6, 'invocations': 8, 'repairs': 2})
+            self.assertEqual([t['id'] for t in value['tasks']], [f'L{i:02}' for i in range(9, 15)])
+            batch.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -18,7 +18,10 @@ OUTCOMES = (*SUCCESS, 'invalid_input', 'incomplete_search', 'no_accepted_candida
 CONNECTION_OUTCOMES = ('connection_ready', 'unsupported_input', 'invalid_input',
                        'failed_checks', 'no_accepted_candidate', 'incomplete_search',
                        'unexpected_failure')
-SUCCESS = (*SUCCESS, 'connection_ready')
+PAIR_OUTCOMES = ('pair_ready', 'mock_verified', 'mock_failed', *CONNECTION_OUTCOMES[1:])
+PAIR_SCOPE = ('Offline pair design checks; mock_verified checks realised current in-memory state. '
+              'File integrity is separate; native game behaviour remains unprobed.')
+SUCCESS = (*SUCCESS, 'connection_ready', 'pair_ready')
 CONNECTION_SCOPE = 'Offline plain-track connection fit only; no game construction or adapter execution.'
 CONNECTION_DOMAIN = ('Level, zero grade/cant; positive start-tangent forward span >1e-7 m; '
                      'relative end heading within +/-45 degrees; map x/y within +/-1e7 m; '
@@ -71,7 +74,7 @@ def inspect_run(directory, *, verify=False):
         record = json.loads(path.read_text(encoding='utf-8'), object_pairs_hook=unique)
         if (not isinstance(record, dict) or record.get('schema_version') != '1.0'
                 or record.get('game_constructed') is not False
-                or record.get('mode') not in ('design', 'mock', 'connection')
+                or record.get('mode') not in ('design', 'mock', 'connection', 'pair', 'pair_mock')
                 or record.get('record_state') not in ('unfinished', 'final')):
             raise ValueError('unsupported or malformed manifest')
         if record['record_state'] == 'unfinished':
@@ -79,15 +82,18 @@ def inspect_run(directory, *, verify=False):
                 raise ValueError('unfinished manifest has no finalized verification data')
             return {**unavailable, 'status': 'run_incomplete',
                     'mode': record['mode'], 'record_state': 'unfinished',
-                    **({'scope': CONNECTION_SCOPE} if record['mode'] == 'connection' else {}),
+                    **({'scope': CONNECTION_SCOPE} if record['mode'] == 'connection' else
+                       {'scope': PAIR_SCOPE} if record['mode'] in ('pair', 'pair_mock') else {}),
                     'blockers': ['Run was not finalized; current process state is unknown.']}
         summary = record['summary']
         hashes = record['artifact_sha256']
         identity = record['input_identity']
         is_hash = lambda v: isinstance(v, str) and len(v) == 64 and all(c in '0123456789abcdef' for c in v)
         connection = record['mode'] == 'connection'
-        outcomes = CONNECTION_OUTCOMES if connection else OUTCOMES
-        search_states = ((None, 'not_started', 'complete', 'budget_exhausted') if connection else
+        pair = record['mode'] in ('pair', 'pair_mock')
+        mock = record['mode'] in ('mock', 'pair_mock')
+        outcomes = PAIR_OUTCOMES if pair else CONNECTION_OUTCOMES if connection else OUTCOMES
+        search_states = ((None, 'not_started', 'complete', 'budget_exhausted') if connection or pair else
                          (None, 'search_exhausted', 'grid_complete_candidates_found', 'grid_complete_no_candidate'))
         if (not isinstance(summary, dict) or summary.get('status') not in outcomes
                 or not {'search_status', 'candidate_hash'} <= summary.keys()
@@ -95,7 +101,7 @@ def inspect_run(directory, *, verify=False):
                 or not isinstance(identity, dict)
                 or not isinstance(identity.get('source'), str)
                 or (identity.get('sha256') is not None and not is_hash(identity['sha256']))
-                or not isinstance(hashes, dict) or not set(hashes) <= ARTIFACTS
+                or not isinstance(hashes, dict) or not set(hashes) <= (ARTIFACTS | {'snapshot.json'} if pair else ARTIFACTS)
                 or not all(is_hash(h) for h in hashes.values())
                 or summary.get('paths') != {name: name for name in hashes}
                 or 'summary.json' not in hashes
@@ -108,23 +114,30 @@ def inspect_run(directory, *, verify=False):
                 or summary.get('search_status') not in search_states
                 or (summary.get('candidate_hash') is not None and not is_hash(summary['candidate_hash']))):
             raise ValueError('malformed final metadata')
-        if connection:
-            if (summary.get('scope') != CONNECTION_SCOPE
-                    or (summary['status'] != 'connection_ready' and summary['candidate_hash'] is not None)
+        if connection or pair:
+            if (summary.get('scope') != (PAIR_SCOPE if pair else CONNECTION_SCOPE)
+                    or (not pair and summary['status'] != 'connection_ready' and summary['candidate_hash'] is not None)
                     or (summary['status'] == 'incomplete_search' and summary['search_status'] != 'budget_exhausted')
                     or (summary['status'] == 'no_accepted_candidate' and
                         (summary['search_status'] != 'complete' or summary['accepted'] != 0))):
                 raise ValueError('inconsistent connection metadata')
+        if pair:
+            if ((record['mode'] == 'pair' and (summary['status'] in ('mock_verified', 'mock_failed')
+                    or set(hashes) & {'snapshot.json', 'plan.json', 'execution.json'}))
+                    or (record['mode'] == 'pair_mock' and summary['status'] == 'pair_ready')):
+                raise ValueError('inconsistent pair mode')
         if summary['status'] in SUCCESS:
             required = {'fixture.json', 'context.json', 'search.json', 'candidate.json'}
-            if record['mode'] == 'mock':
+            if mock:
                 required |= {'plan.json', 'execution.json'}
+                if pair:
+                    required.add('snapshot.json')
             if (not required <= hashes.keys() or not is_hash(identity.get('sha256'))
                     or not is_hash(summary.get('candidate_hash')) or not summary['accepted']
-                    or summary['search_status'] != ('complete' if connection else 'grid_complete_candidates_found')
-                    or summary['status'] != ('connection_ready' if connection else
-                                            'mock_verified' if record['mode'] == 'mock' else 'design_ready')
-                    or (record['mode'] == 'mock' and summary.get('mock_status') != 'mock_verified')
+                    or summary['search_status'] != ('complete' if connection or pair else 'grid_complete_candidates_found')
+                    or summary['status'] != ('connection_ready' if connection else 'mock_verified' if mock else
+                                            'pair_ready' if pair else 'design_ready')
+                    or (mock and summary.get('mock_status') != 'mock_verified')
                     or summary['blockers']):
                 raise ValueError('inconsistent success metadata')
         changed_files, missing_files = [], []
@@ -141,7 +154,7 @@ def inspect_run(directory, *, verify=False):
                 missing_files.append(name)
         if verify:
             return {**unavailable,
-                    **({'scope': CONNECTION_SCOPE} if connection else {}),
+                    **({'scope': CONNECTION_SCOPE} if connection else {'scope': PAIR_SCOPE} if pair else {}),
                     'status': 'integrity_failed' if changed_files or missing_files else 'integrity_verified',
                     'changed_files': changed_files, 'missing_files': missing_files}
         if changed_files or missing_files:
@@ -153,7 +166,9 @@ def inspect_run(directory, *, verify=False):
                       paths={name: str(root / name) for name in (*hashes, MANIFEST)})
         if connection:
             result['scope'] = CONNECTION_SCOPE
-        return compact_connection_summary(result) if connection else result
+        if pair:
+            result['scope'] = PAIR_SCOPE
+        return compact_connection_summary(result) if connection or pair else result
     except (OSError, ValueError, TypeError, KeyError, RecursionError):
         unavailable['blockers'] = ['Run metadata/evidence missing, malformed or unsupported; legacy folders are not rewritten.']
         return unavailable
@@ -267,6 +282,157 @@ def connect(input_path, output):
                 summary['candidate_hash'] = file_hash(out / 'candidate.json')
         else:
             summary['blockers'] = ['Connection outcome: ' + result['status'] + '; see fixture.json and search.json.']
+    except Exception:
+        summary.update(status='unexpected_failure', candidate_hash=None,
+                       blockers=['Unexpected failure; inspect local error log if available.'])
+        log_error(out, summary)
+    # KeyboardInterrupt/SystemExit deliberately leave an unfinished atomic record.
+    if out is not None:
+        try:
+            save('summary.json', summary)
+            manifest.update(record_state='final',
+                            summary={**summary, 'paths': {name: name for name in summary['paths']}},
+                            artifact_sha256={name: file_hash(out / name) for name in summary['paths']})
+            atomic_json(out / MANIFEST, manifest)
+            summary['paths'][MANIFEST] = str(out / MANIFEST)
+        except Exception:
+            summary.update(status='unexpected_failure', candidate_hash=None,
+                           blockers=['Could not finalize run metadata; saved status may be incomplete.'])
+            log_error(out, summary)
+    return compact_connection_summary(summary)
+
+
+def connect_pair(input_path, output, mock_execute=False, snapshot_path=None):
+    """Fit both tracks; only explicit mock execution loads a plan and fresh world."""
+    summary = initial_summary()
+    summary.pop('mock_scope')
+    summary['scope'] = PAIR_SCOPE
+    out = manifest = None
+
+    def save(name, value):
+        path = out / name
+        if path.exists():
+            raise FileExistsError(path)
+        atomic_json(path, value)
+        summary['paths'][name] = str(path)
+
+    try:
+        source = Path(input_path)
+        destination = Path(output).resolve()
+        if destination.exists() and (not destination.is_dir() or any(destination.iterdir())):
+            summary.update(status='output_refused', blockers=['Output destination must be an empty directory or absent.'])
+            return compact_connection_summary(summary)
+        destination.mkdir(parents=True, exist_ok=True)
+        out = destination
+        manifest = dict(schema_version='1.0', record_state='unfinished', mode='pair_mock' if mock_execute else 'pair',
+                        input_identity={'source': str(source), 'sha256': None}, game_constructed=False)
+        atomic_json(out / MANIFEST, manifest)
+        from bridge_pair import load_pair, fit_pair, UnsupportedPair
+        record = None
+        try:
+            # Parse the exact saved bytes so identity cannot race a changing input file.
+            if type(mock_execute) is not bool or bool(mock_execute) != (snapshot_path is not None):
+                raise ValueError('Explicit mock execution requires --snapshot; snapshot requires --mock-execute.')
+            raw = source.read_bytes()
+            manifest['input_identity']['sha256'] = hashlib.sha256(raw).hexdigest()
+            with (out / 'fixture.json').open('xb') as stream:
+                stream.write(raw)
+            summary['paths']['fixture.json'] = str(out / 'fixture.json')
+            record = load_pair(out / 'fixture.json')
+        except UnsupportedPair as exc:
+            result = dict(status='unsupported_input', search_status='not_started', evaluated=0,
+                          candidate=None, candidate_checks=[], checks=[{'pass': False, 'reason': str(exc)}],
+                          game_constructed=False)
+        except (ValueError, TypeError, KeyError, OSError, OverflowError, RecursionError) as exc:
+            result = dict(status='invalid_input', search_status='not_started', evaluated=0,
+                          candidate=None, candidate_checks=[], checks=[{'pass': False, 'reason': str(exc)}],
+                          game_constructed=False)
+        else:
+            result = fit_pair(record)
+        save('search.json', result)
+        accepted = sum(row['pass'] is True for row in result['candidate_checks'])
+        summary.update(status=result['status'], search_status=result['search_status'],
+                       evaluated=result['evaluated'], accepted=accepted)
+        if result['status'] == 'pair_ready':
+            selected = result['candidate_checks'][result['selected_index']]
+            required = {'regularity', 'ordering', 'radius', 'joins', 'length', 'separation', 'region', 'endpoints'}
+            if (result['search_status'] != 'complete' or result['evaluated'] != result['required_candidates']
+                    or not result['candidate'] or not selected['pass'] or not selected['centreline_pass']
+                    or not required <= selected['checks'].keys()
+                    or not all(check['pass'] is True for check in selected['checks'].values())
+                    or not all(check['pass'] is True for check in result['checks'])):
+                summary.update(status='failed_checks', blockers=['Fit did not supply complete passing evidence; see search.json.'])
+            else:
+                save('candidate.json', result['candidate'])
+                summary['candidate_hash'] = file_hash(out / 'candidate.json')
+        else:
+            summary['blockers'] = ['Pair outcome: ' + result['status'] + '; see fixture.json and search.json.']
+        if summary['status'] == 'pair_ready' and mock_execute:
+            summary['status'] = 'mock_failed'
+            try:
+                from bridge_pair_mock import compile_pair_plan, PairMock, execute_pair
+                raw = Path(snapshot_path).read_bytes()
+                with (out / 'snapshot.json').open('xb') as stream:
+                    stream.write(raw)
+                summary['paths']['snapshot.json'] = str(out / 'snapshot.json')
+
+                def unique(pairs):
+                    value = {}
+                    for key, item in pairs:
+                        if key in value:
+                            raise ValueError('duplicate snapshot key')
+                        value[key] = item
+                    return value
+
+                def nonfinite(value):
+                    raise ValueError('nonfinite snapshot constant')
+
+                snapshot = json.loads(raw.decode('utf-8'), object_pairs_hook=unique,
+                                      parse_constant=nonfinite)
+                plan = compile_pair_plan(result['candidate'], record, snapshot)
+                save('plan.json', plan)
+                adapter = PairMock(snapshot)
+                execution = dict(status='execution_unfinished', game_constructed=False)
+                try:
+                    execution = execute_pair(plan, adapter)
+                finally:
+                    # Live state is distinct from historical receipts, including partial effects.
+                    execution['current_state'] = dict(tracks=adapter.tracks, nodes=adapter.nodes,
+                        revision=adapter.revision, writes=adapter.writes, receipts=adapter.ledger,
+                        effects=adapter._effects)
+                    save('execution.json', execution)
+                summary['mock_status'] = execution['status']
+                if execution['status'] == 'mock_verified':
+                    summary['status'] = 'mock_verified'
+                else:
+                    summary['blockers'] = ['Mock failed; see execution.json for current read-back and retained effects.']
+            except (ValueError, TypeError, KeyError, OSError, OverflowError, RecursionError) as exc:
+                summary['blockers'] = ['Mock preparation or evidence failed; partial effects may remain: ' + str(exc)[:300]]
+                log_error(out, summary)
+        # Capture after fitting: includes transitive loaded geometry helpers, not just wrappers.
+        sources = {ROOT / 'bridge_cli.py', ROOT / 'bridge_app.py', ROOT / 'bridge_connection.py', ROOT / 'bridge_pair.py'}
+        if mock_execute and 'bridge_pair_mock' in sys.modules:
+            sources.add(ROOT / 'bridge_pair_mock.py')
+        for module in tuple(sys.modules.values()):
+            filename = getattr(module, '__file__', None)
+            if filename:
+                path = Path(filename).resolve()
+                if path.is_relative_to(ROOT / 'proof') and path.suffix == '.py':
+                    sources.add(path)
+        save('context.json', {
+            'source_sha256': {str(p.relative_to(ROOT)): file_hash(p) for p in sorted(sources)},
+            'input_identity': manifest['input_identity'],
+            'provenance': record['provenance'] if record is not None else None,
+            'provenance_scope': 'Caller-supplied source_refs, project_choices and assumptions; not verified game or UK evidence.',
+            'supported_domain': 'Level, equal-spaced analytic normal-offset pair; finite centreline family.',
+            'scope': PAIR_SCOPE,
+            'mock_scope': initial_summary()['mock_scope'],
+            'selection_policy': 'minimum maximum conservative track length, then grid index; finite family only',
+            'check_scope': 'Both analytic tracks: endpoint position/tangent/curvature, joins, ordering, radius, separation, region and length bounds; floating bounds, not interval certification.',
+            'unresolved': ['No global feasibility claim', 'No terrain, collision, station or specialist certification',
+                           'Native game API, geometry and topology unprobed'],
+            'game_constructed': False,
+        })
     except Exception:
         summary.update(status='unexpected_failure', candidate_hash=None,
                        blockers=['Unexpected failure; inspect local error log if available.'])

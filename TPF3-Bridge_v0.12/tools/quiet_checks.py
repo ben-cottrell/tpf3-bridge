@@ -17,6 +17,12 @@ import time
 import unittest
 
 SUITES = {
+    'pair_input': ('.', 'tests', 'test_pair_input.py'),
+    'pair_geometry': ('.', 'tests', 'test_pair_geometry.py'),
+    'pair_plan': ('.', 'tests', 'test_pair_plan.py'),
+    'pair_mock': ('.', 'tests', 'test_pair_mock.py'),
+    'pair_application': ('.', 'tests', 'test_pair_app.py'),
+    'pair_combined': ('.', 'tests', 'test_pair_*.py'),
     'batch_setup': ('.', 'tests', 'test_cli_batch.py'),
     'connection_input': ('.', 'tests', 'test_connection_input.py'),
     'connection_geometry': ('.', 'tests', 'test_connection_geometry.py'),
@@ -42,7 +48,9 @@ def input_hashes(root: Path) -> dict[str, str]:
         paths.update((root / folder).rglob(pattern))
     for name in ['bridge_cli.py', 'bridge_app.py', 'bridge_connection.py',
                  'tools/quiet_checks.py', 'tools/task_runner.py',
-                 'tools/connection_acceptance.py', 'tools/task_queue_connection.json']:
+                 'tools/connection_acceptance.py', 'tools/task_queue_connection.json',
+                 'bridge_pair.py', 'bridge_pair_mock.py', 'tools/pair_acceptance.py',
+                 'tools/task_queue_pair.json']:
         p = root / name
         if p.is_file():
             paths.add(p)

@@ -1,5 +1,32 @@
 # Finite development batches
 
+## Current approved batch: pair-l09-l14
+
+L06-L08 is complete. The next distinct batch is `pair-l09-l14`, with six cards
+in `tools/task_queue_pair.json`: input, paired fitting, bound physical plan,
+in-memory execution/read-back, application integration, combined acceptance.
+It requires completed L06-L08 and preserves all older ledgers and limits.
+
+```powershell
+python tools/task_runner.py --batch pair-l09-l14 --dry-run
+python tools/task_runner.py --batch pair-l09-l14
+```
+
+Only this identity defaults to six tasks and eight total worker invocations.
+It permits at most one repair per task and two repairs across the whole batch.
+Repair usage is charged durably before launch, including interrupted invocations.
+A third repair stops even if invocation allowance remains. Limits may be reduced
+with --max-tasks / --max-invocations; neither flag can exceed the selected policy.
+One shared lock/worker, 900-second worker and 240-second check timeouts, existing
+model/authentication and restricted permissions remain unchanged.
+The new record is `.task_batch/pair-l09-l14/state.json`; no state is created by
+dry-run. Each worker receives only its current card, short state, standing
+instructions and pointers. It must not read the full queue or prior transcripts.
+Acceptance commands and `tools/pair_acceptance.py` are host-owned and protected.
+No workers are launched during preparation; setup checks use fake workers only.
+
+## Earlier connection batch
+
 The original L03-L05 batch is complete. Its queue remains `tools/task_queue.json`
 and its ledger/logs remain in `.task_batch/`. Do not delete or replace them.
 The separately approved next batch is **connection-l06-l08**:
@@ -31,7 +58,7 @@ Another future identity requires explicit approval; changing an existing identit
 queue, runner, limits, instructions or checkpoint stops it for reconciliation.
 Do not modify these files after launching a batch.
 
-Defaults remain one worker, three tasks, six total invocations, one repair per
+Earlier batches retain one worker, three tasks, six total invocations, one repair per
 task, 900 seconds per invocation and 240 seconds per acceptance command.
 `--timeout` accepts 1-3600 seconds; `--max-tasks` 1-3 and `--max-invocations` 1-6.
 Settings are pinned on first launch. No limit is increased automatically.
