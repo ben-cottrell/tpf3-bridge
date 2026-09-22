@@ -1,74 +1,70 @@
-# Finite development batch
+# Finite development batches
 
-L02 passed before setup. `task_queue.json` contains the complete approved batch:
-L03 integrity diagnostics (reuse L02 hashes), L04 a callable application interface,
-and L05 combined acceptance and usage notes. Setup does not implement these tasks
-or launch a real worker. All setup worker tests use a fake process.
+The original L03-L05 batch is complete. Its queue remains `tools/task_queue.json`
+and its ledger/logs remain in `.task_batch/`. Do not delete or replace them.
+The separately approved next batch is **connection-l06-l08**:
+L06 connection input, L07 bounded endpoint fitting, L08 application integration.
+Task cards, exact acceptance commands and permitted files are in
+`tools/task_queue_connection.json`.
 
-From the extracted project directory, in a persistent local terminal:
-
-```powershell
-python tools/task_runner.py
-```
-
-Preview without creating a session or writing batch state:
+From this project directory in a persistent local terminal:
 
 ```powershell
-python tools/task_runner.py --dry-run
+python tools/task_runner.py --batch connection-l06-l08 --dry-run
+python tools/task_runner.py --batch connection-l06-l08
 ```
 
-Defaults: one worker, three tasks, six total invocations including at most one
-repair per task, 900 seconds per invocation, 240 seconds per acceptance command.
-`--timeout 1800` selects a finite timeout (1–3600 seconds). `--max-tasks` (1–3)
-and `--max-invocations` (1–6) may reduce the batch. Options are pinned on first run;
-changing them after a checkpoint requires review, not an automatic restart.
+Dry-run shows tasks, commands, write scope, limits and the selected ledger; it
+launches nothing and writes no state. The launch creates the distinct ledger
+`.task_batch/connection-l06-l08/state.json` only after confirming the predecessor
+completed. A shared `.task_batch/lock` prevents overlapping batches. Prior ledger
+and log bytes are included in the new batch's protected workspace checkpoint.
+No old fingerprint is overwritten or ignored to resume the old batch. The new
+batch takes its own initial workspace checkpoint and seals its own queue/identity.
+The default command still selects the old queue; it does not start new work.
+Old runner fingerprints may now reject a restart; that rejection preserves the
+ledger and is not an instruction to reconcile or clear the completed batch.
 
-Each task starts a new `codex exec --json` session. A single repair uses
-`codex exec resume --json <exact-session-id>`, never `--last`. Existing CLI
-ChatGPT authentication and model settings are retained. API-key environments
-are rejected. Worker shell permissions use project workspace-write, no extra
-writable roots, no network, and approval policy `never`; no bypass/full-access
-flags, installations, or authentication changes. Explicitly configured MCP
-servers are disabled for the invocation only. Parent instructions and rules
-remain loaded. No nested workers are permitted.
+Batch identities are explicitly registered with a fixed queue SHA-256 in the
+runner. There is no arbitrary queue/path or automatic next-batch discovery.
+Another future identity requires explicit approval; changing an existing identity,
+queue, runner, limits, instructions or checkpoint stops it for reconciliation.
+Do not modify these files after launching a batch.
 
-The runner pins queue content, limits, instruction/configuration hashes, its own
-code and a workspace checkpoint. It compares file hashes before advancement,
-protects existing evidence/unrelated files, and refuses missing existing tests.
-Task acceptance commands and runner smoke checks cannot be edited by workers.
-These are detection/stop guards, not rollback or a separate security boundary
-against a malicious process. Use the restricted worker sandbox; do not weaken it.
+Defaults remain one worker, three tasks, six total invocations, one repair per
+task, 900 seconds per invocation and 240 seconds per acceptance command.
+`--timeout` accepts 1-3600 seconds; `--max-tasks` 1-3 and `--max-invocations` 1-6.
+Settings are pinned on first launch. No limit is increased automatically.
+Each task starts a new session; a repair resumes its exact session ID, never
+`--last`. The separately approved historical third L03 invocation is not a
+new-batch allowance. Unknown usage remains unknown; limits are not credit caps.
 
-Full prompts, commands, JSONL events, stderr, check logs and usage events are in
-`.task_batch/`; quiet checks also write `.local_checks/`. Smoke evidence goes to
-new `.local_runs/batch_*` directories. Normal output is compact progress JSON.
-The host prepares original source copies in each invocation's `sources/` folder.
-Workers use those copies for diffs instead of creating backup/scratch directories:
-Python private temporary-directory ACLs can fail inside the Windows sandbox.
-Only actual CLI usage events are recorded; absent usage is null. Fake test usage
-is test data. Invocation/time limits are not a hard token, credit or money cap.
+Existing CLI ChatGPT authentication/model settings and parent instructions remain
+in force. Workspace-write stays restricted to the project, with network disabled,
+no extra writable roots and approval policy never. No full-access/bypass flags,
+new dependencies, API billing switch, authentication changes, game/save writes,
+nested workers, automatic push or destructive Git reset. Worker invocations keep
+configured MCP servers disabled. Startup checks CLI authentication and supported
+non-interactive execution without installing or repairing the environment.
 
-Completion is saved atomically before proceeding. Re-running an exhausted batch
-launches nothing. A lock, stopped record, unfinished invocation, changed scope,
-or changed checkpoint stops immediately. Do not delete state to retry: that would
-discard the completed-task ledger. For reconciliation, inspect `.task_batch/state.json`,
-the exact session's logs and workspace diff; confirm no worker/descendant is alive,
-then ask for an explicit reconciliation of that task and its acceptance evidence.
-There is deliberately no automatic unlock, resume, rollback, queue expansion,
-polling, daemon, scheduler, database or Git reset/push.
+Full commands, prompts, source snapshots, JSONL output and usage events stay under
+the selected batch directory. Quiet check logs go to `.local_checks`; independent
+connection acceptance evidence goes to new `.local_runs/batch_connection_*`
+folders. Worker narratives are not acceptance. The host runs task commands after
+exit and checks protected files, test names, instruction hashes and the journal
+before advancement. Frozen `tools/connection_acceptance.py` checks L06-L08;
+workers cannot edit it, the quiet runner, queue or batch runner.
 
-After an explicit human reconciliation, the journal may contain `reconciled_repair`.
-It must identify the recorded task and its original session. The next manual run
-consumes that task's single repair and retains the prior invocation count; it
-does not restart the task in a new session or grant another repair. Workers must
-not perform unscoped `git status` or inspect old check directories; the host
-runner performs scope checks and independent acceptance. Config fingerprint
-changes still stop the batch and require review.
+Workers use host source snapshots for diffs. They must not create private Python
+temporary directories or inspect old evidence; Windows sandbox ACLs can deny
+those paths. Host tests use ordinary local directories outside the worker sandbox.
+All setup worker tests are fake processes and consume no model calls.
 
-The user has approved one exceptional third L03 invocation after the two
-environment-blocked attempts. It is recorded explicitly in the journal, resumes
-the original session, consumes the normal total budget, and allows no further L03
-repair. The default policy for all other tasks is unchanged.
-
-CLI invocation options follow the installed help and
-[official non-interactive documentation](https://learn.chatgpt.com/docs/non-interactive-mode).
+Completion is atomic. An unchanged exhausted batch launches nothing. Interrupted,
+stopped, locked or changed records require manual reconciliation; they do not
+prove a worker is still running. Confirm no worker/descendant is alive and inspect
+the relevant ledger/evidence before explicitly reconciling. Never delete state
+or reset counters to retry. At most one same-session repair is available for each
+new task. There is no automatic resume, polling, daemon, scheduler or rollback.
+The guards detect changes; they are not a separate security boundary against a
+malicious process.

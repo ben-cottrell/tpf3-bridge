@@ -9,6 +9,9 @@ python bridge_cli.py design --fixture proof/corridor_fixtures/release.json --out
 python bridge_cli.py design --fixture proof/corridor_fixtures/release.json --output .local_runs/my_mock --mock-execute
 python bridge_cli.py status --run .local_runs/my_design
 python bridge_cli.py verify --run .local_runs/my_design
+python bridge_cli.py connect --input connection_example.json --output .local_runs/my_connection
+python bridge_cli.py status --run .local_runs/my_connection
+python bridge_cli.py verify --run .local_runs/my_connection
 ```
 
 `design` validates the fixture, searches the configured grid and saves the selected
@@ -26,9 +29,10 @@ Long paths may be abbreviated to filenames with a `paths_relative_to` explanatio
 
 | Exit | JSON status | Meaning |
 | --- | --- | --- |
-| 0 | `design_ready`, `mock_verified` | Design or explicit mock succeeded; also returned by `status` for an intact successful record. |
+| 0 | `design_ready`, `mock_verified`, `connection_ready` | Design, explicit mock or complete checked connection fit succeeded; also returned by `status` for an intact successful record. |
 | 0 | `integrity_verified` | All recorded artifact hashes match, including when the recorded design failed. |
 | 1 | `invalid_input`, `output_refused` | Invalid arguments/fixture or protected output destination. |
+| 1 | `unsupported_input`, `failed_checks` | Connection outside the supported domain, or failed geometric checks; inspect saved evidence. |
 | 1 | `incomplete_search`, `no_accepted_candidate` | Search incomplete or completed grid has no accepted candidate. |
 | 1 | `mock_failed`, `unexpected_failure` | Mock or application failed; inspect retained evidence and any error log. |
 | 1 | `run_incomplete`, `status_unavailable`, `verification_unavailable`, `integrity_failed` | See record handling below. |
@@ -70,6 +74,7 @@ result = bridge_app.design(
 )
 saved = bridge_app.status(".local_runs/my_api_design")
 integrity = bridge_app.verify(".local_runs/my_api_design")
+connection = bridge_app.connect("connection_example.json", ".local_runs/my_api_connection")
 ```
 
 These functions accept strings or pathlib-compatible paths and return summary
@@ -78,8 +83,8 @@ values using the table above. Output protection and evidence rules match the CLI
 
 ## Scope
 
-Geometry is restricted to fixed x-parallel boundary tangents, synthetic terrain and
-existing profile inputs; arbitrary track-stub fitting is unsupported. Preserve the
+Corridor `design` geometry is restricted to fixed x-parallel boundary tangents,
+synthetic terrain and existing profile inputs. Preserve the
 saved UK evidence, assumptions and hard geometry constraints when interpreting results.
 Full UK assessment, station internals, detailed train physics and specialist
 certification remain outside this workflow.
@@ -88,3 +93,52 @@ Every result has `game_constructed: false`. `mock_verified` describes only the m
 native game API, geometry and topology remain unprobed. No game installations or saves
 are written. Metadata persists, but the mock world does not: each invocation starts
 fresh, with no cross-process replay protection.
+
+## Offline connection fitting
+
+`connect` consumes the strict version `0.12.0` plain-track record shown in
+`connection_example.json`. It calls the existing connection validator and fitter;
+it does not call corridor design/search, adapter lowering or mock execution.
+The callable `bridge_app.connect(input_path, output)` returns a compact summary
+dictionary without printing. API and CLI connection summaries fit within 4,096
+bytes; long evidence paths become relative filenames. All connection summaries
+state their offline scope and `game_constructed: false`.
+
+The supported domain is level track with exactly equal endpoint elevations,
+horizontal unit tangents, zero grade and zero cant. Coordinates use metres,
+right-handed axes and z-up. The end must have positive forward span greater than
+1e-7 m in the start-tangent frame, with relative heading within +/-45 degrees.
+Map x/y coordinates are bounded by +/-1e7 m; arbitrary translation and rotation
+within those bounds are supported. The family is one line, one quintic or two
+joined quintics, with 29 deterministic candidates. Input constraints are never
+relaxed or rewritten. The selected fit minimizes conservative upper length, with
+grid index breaking ties; it is not a global optimum.
+
+`connection_ready` requires a complete search and passing endpoint position,
+tangent and curvature checks, G2 joins, forward derivative regularity, continuous
+region containment by subdivided control hulls, curvature bounds and conservative
+length bounds. These checks evaluate constructed curves separately from their
+construction, using the existing floating-point geometry kernel. Tests include
+independent polynomial and numerical witnesses; neither those tests nor the
+runtime checks are specialist certification, interval arithmetic proof or game
+evidence. Terrain, collisions, other tracks, station internals, detailed train
+physics and actual native track compatibility remain outside this scope.
+
+`search.json` retains the full fitter result, candidate geometry and checks,
+including rejected candidates. `candidate.json` exists only for a complete checked
+fit; `fixture.json` preserves exact input bytes, even for rejected input when
+readable. `context.json` records input identity, implementation SHA-256 hashes
+including loaded geometry helpers, supported domain and check limitations.
+Validated input provenance keeps `source_refs`, `project_choices` and `assumptions`
+separate; they are caller declarations, not independently verified UK or game
+evidence. Rejected records retain their original declarations in `fixture.json`.
+
+`unsupported_input`, `invalid_input` and `failed_checks` remain distinct.
+A complete finite search without a passing candidate gives `no_accepted_candidate`;
+this does not prove impossibility. Budget exhaustion gives `incomplete_search`
+with `search_status: budget_exhausted`, even if some evaluated candidates pass.
+No candidate is selected from an incomplete search. Interruptions leave an
+unfinished record, reported as `run_incomplete` with process state unknown.
+The same atomic publication, output protection and saved-artifact integrity rules
+apply as for corridor records. Fresh-process `status` and `verify` load no geometry
+or search modules, and never refit, execute or repair a connection.

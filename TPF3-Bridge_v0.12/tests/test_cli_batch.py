@@ -237,10 +237,15 @@ class BatchTests(unittest.TestCase):
         self.assertIn('mcp_servers.node_repl.enabled=false', command)
 
     def test_nonfinite_or_unbounded_limits_are_rejected(self):
-        with contextlib.redirect_stdout(io.StringIO()), patch.object(runner, 'run_batch') as batch:
+        # Exercise error logging against a saved fake journal, never the real batch.
+        (self.root / runner.CONTROL / 'state.json').write_text('{}')
+        with patch.object(runner, 'ROOT', self.root), contextlib.redirect_stdout(io.StringIO()), patch.object(runner, 'run_batch') as batch:
             self.assertEqual(runner.main(['--timeout', '0']), 1)
             self.assertEqual(runner.main(['--timeout', '3601']), 1)
             batch.assert_not_called()
+        self.assertIn('timeout must be finite',
+                      (self.root / runner.CONTROL / 'runner_errors.log').read_text())
+        self.assertEqual((self.root / runner.CONTROL / 'state.json').read_text(), '{}')
 
     def reconcile_for_test(self):
         journal = self.record()
@@ -314,6 +319,125 @@ class BatchTests(unittest.TestCase):
         with self.assertRaisesRegex(runner.Stop, 'invalid reconciled repair'):
             self.run_batch()
         self.assertEqual(self.record()['invocations'], 3)
+
+    def prepare_named_batch(self):
+        self.run_batch(['ok'])
+        self.previous = (self.root / runner.CONTROL / 'state.json').read_bytes()
+        self.batch_id = 'connection-l06-l08'
+        control = self.root / runner.CONTROL / self.batch_id
+        control.mkdir()
+        (control / 'fake_plan.json').write_text('["ok"]')
+        (self.root / 'tools/fake.py').write_text(
+            FAKE.replace("control=root/'.task_batch'", "control=root/'.task_batch/connection-l06-l08'"))
+        self.named_queue = json.loads(json.dumps(self.queue))
+        for task, name in zip(self.named_queue['tasks'], ('L06', 'L07', 'L08')):
+            task['id'] = name
+        self.launches.clear()
+        return control
+
+    def run_named(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            return runner.run_batch(self.root, self.named_queue, self.limits, 'FAKE_NOT_CODEX',
+                                    launch=self.launch, authenticate=False, batch_id=self.batch_id)
+
+    def test_named_batch_preserves_old_ledger_and_restarts_without_workers(self):
+        control = self.prepare_named_batch()
+        result = self.run_named()
+        self.assertEqual(result['completed'], ['L06', 'L07', 'L08'])
+        self.assertEqual(result['invocations'], 3)
+        self.assertEqual((self.root / runner.CONTROL / 'state.json').read_bytes(), self.previous)
+        self.assertEqual(json.loads((control / 'state.json').read_text())['seal']['batch_id'], self.batch_id)
+        self.launches.clear()
+        self.assertEqual(self.run_named()['status'], 'queue_exhausted')
+        self.assertEqual(self.launches, [])
+
+    def test_named_batch_requires_completed_predecessor_and_shared_lock(self):
+        self.prepare_named_batch()
+        path = self.root / runner.CONTROL / 'state.json'
+        old = json.loads(self.previous)
+        old['phase'] = 'invoking'
+        runner.write_json(path, old)
+        with self.assertRaisesRegex(runner.Stop, 'previous batch'):
+            self.run_named()
+        self.assertEqual(self.launches, [])
+        path.write_bytes(self.previous)
+        (path.parent / 'lock').write_text('another runner')
+        with self.assertRaisesRegex(runner.Stop, 'locked'):
+            self.run_named()
+
+    def test_named_batch_failed_repair_and_restart_keep_limits(self):
+        control = self.prepare_named_batch()
+        (control / 'fake_plan.json').write_text('["fail"]')
+        with self.assertRaisesRegex(runner.Stop, 'unrepaired'):
+            self.run_named()
+        journal = (control / 'state.json').read_bytes()
+        self.assertEqual(json.loads(journal)['invocations'], 2)
+        self.launches.clear()
+        with self.assertRaisesRegex(runner.Stop, 'reconciliation'):
+            self.run_named()
+        self.assertEqual(self.launches, [])
+        self.assertEqual((control / 'state.json').read_bytes(), journal)
+        self.assertEqual((self.root / runner.CONTROL / 'state.json').read_bytes(), self.previous)
+
+    def test_named_batch_history_mutation_stops(self):
+        self.prepare_named_batch()
+        fake = self.root / 'tools/fake.py'
+        fake.write_text(fake.read_text() + "\n")
+        original = self.launch
+        def tamper(command, root, out, timeout, prompt=None):
+            result = original(command, root, out, timeout, prompt)
+            if prompt:
+                (root / runner.CONTROL / 'old.log').write_text('unauthorised history change')
+            return result
+        with patch.object(self, 'launch', side_effect=tamper):
+            with self.assertRaisesRegex(runner.Stop, 'out-of-scope'):
+                self.run_named()
+
+    def test_named_dry_run_is_read_only_and_queue_is_pinned(self):
+        with patch.object(runner.shutil, 'which', return_value='FAKE_NOT_CODEX'), patch.object(runner, 'run_batch') as batch:
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                self.assertEqual(runner.main(['--batch', 'connection-l06-l08', '--dry-run']), 0)
+            value = json.loads(stdout.getvalue())
+            self.assertEqual([t['id'] for t in value['tasks']], ['L06', 'L07', 'L08'])
+            self.assertIn('connection-l06-l08', value['record'])
+            self.assertEqual(value['limits'], runner.LIMITS)
+            with patch.object(runner, 'digest', return_value='changed'), contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(runner.main(['--batch', 'connection-l06-l08', '--dry-run']), 1)
+            batch.assert_not_called()
+
+    def test_named_batch_six_invocations_include_repairs(self):
+        control = self.prepare_named_batch()
+        (control / 'fake_plan.json').write_text('["fail", "ok", "fail", "ok", "fail", "ok"]')
+        result = self.run_named()
+        self.assertEqual(result['invocations'], 6)
+        self.assertEqual(result['status'], 'queue_exhausted')
+        attempts = json.loads((control / 'state.json').read_text())['attempts']
+        for first, repair in zip(attempts[::2], attempts[1::2]):
+            self.assertEqual(first['session_id'], repair['session_id'])
+
+    def test_named_interrupted_restart_does_not_spend_another_invocation(self):
+        control = self.prepare_named_batch()
+        with patch.object(self, 'launch', side_effect=KeyboardInterrupt):
+            with self.assertRaises(KeyboardInterrupt):
+                self.run_named()
+        before = (control / 'state.json').read_bytes()
+        self.assertEqual(json.loads(before)['invocations'], 1)
+        with self.assertRaisesRegex(runner.Stop, 'reconciliation'):
+            self.run_named()
+        self.assertEqual((control / 'state.json').read_bytes(), before)
+        self.assertEqual(self.launches, [])
+
+    def test_rejected_named_fingerprint_change_preserves_completed_record(self):
+        control = self.prepare_named_batch()
+        self.run_named()
+        before = (control / 'state.json').read_bytes()
+        self.limits['timeout'] += 1
+        self.launches.clear()
+        with self.assertRaisesRegex(runner.Stop, 'scope, limits'):
+            self.run_named()
+        self.assertEqual((control / 'state.json').read_bytes(), before)
+        self.assertEqual(self.launches, [])
 
 
 if __name__ == '__main__':

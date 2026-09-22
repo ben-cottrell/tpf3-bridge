@@ -1,17 +1,23 @@
 # Approved batch task
 
 {
-  "id": "L05",
-  "card": "Run the approved combined acceptance commands and write short USAGE.md covering design-only, explicit mock, status, verify and callable API; explain exit statuses, old/corrupt/unfinished records, local evidence, restricted geometry, mock-only game status and lack of mock-world persistence. Add missing acceptance cases only if needed in tests/test_cli.py, preserving existing assertions. Update STATE.md with actual results and blockers. Do not add or change application features; if a code defect needs files outside this task's write scope, report the blocker and stop.",
+  "id": "L08",
+  "card": "Expose bridge_app.connect(input_path, output) and python bridge_cli.py connect --input <record.json> --output <new-directory>, reusing L06/L07. Return compact <=4096-byte JSON, status connection_ready for fully checked complete fits; explicit offline scope and game_constructed:false. Reuse run.json atomic publication, output protection, saved artifact hashes, status and verify. Extend the existing versioned record validation for connection mode/outcomes without breaking old design/mock records; reuse fixture.json,context.json,search.json,candidate.json,summary.json filenames. Save full geometry, checks, input identity, implementation hashes (including loaded geometry helpers), source/project/assumption distinctions and supported domain. Preserve honest unsupported, invalid, failed-check, complete-no-candidate, budget-exhausted and interrupted outcomes; missing/corrupt records unavailable. No calls to corridor design/search, adapters or mock execution for connect; fresh status/verify never import geometry/search. Add tests/test_connection_app.py including new CLI/API, fresh-process status/verify, failed/incomplete runs, tamper/missing artifacts, output refusal, compact output and forbidden engine/adapter calls. Preserve all existing corridor commands/tests. Document commands, domain, independent-check scope, limitations and usage in USAGE.md. No new feature beyond integration. Update short STATE.md and stop after host acceptance.",
   "pointers": [
-    "bridge_cli.py",
-    "bridge_app.py",
-    "tests/test_cli.py",
+    "bridge_app.py:design,inspect_run,atomic_json,initial_summary",
+    "bridge_cli.py:main,emit",
+    "bridge_connection.py:validate_connection,fit_connection",
+    "tools/connection_acceptance.py:application_checks",
+    "tests/test_cli.py:CliTests,WrapperTests",
+    "connection_example.json",
+    "USAGE.md",
     "STATE.md"
   ],
   "write_files": [
+    "bridge_app.py",
+    "bridge_cli.py",
+    "tests/test_connection_app.py",
     "USAGE.md",
-    "tests/test_cli.py",
     "STATE.md"
   ],
   "acceptance": [
@@ -19,9 +25,55 @@
       "python",
       "tools/quiet_checks.py",
       "--suite",
+      "connection_input",
+      "--label",
+      "batch_l08_input"
+    ],
+    [
+      "python",
+      "tools/quiet_checks.py",
+      "--suite",
+      "connection_geometry",
+      "--label",
+      "batch_l08_geometry"
+    ],
+    [
+      "python",
+      "tools/quiet_checks.py",
+      "--suite",
+      "connection_application",
+      "--label",
+      "batch_l08_app"
+    ],
+    [
+      "python",
+      "tools/connection_acceptance.py",
+      "--task",
+      "L08"
+    ],
+    [
+      "python",
+      "tools/quiet_checks.py",
+      "--suite",
       "application",
       "--label",
-      "batch_l05"
+      "batch_l08_regression"
+    ],
+    [
+      "python",
+      "tools/quiet_checks.py",
+      "--suite",
+      "geometry",
+      "--label",
+      "batch_l08_kernel"
+    ],
+    [
+      "python",
+      "tools/quiet_checks.py",
+      "--suite",
+      "branch",
+      "--label",
+      "batch_l08_branch"
     ],
     [
       "python",
@@ -29,13 +81,7 @@
       "--suite",
       "corridor",
       "--label",
-      "batch_l05_corridor"
-    ],
-    [
-      "python",
-      "tools/task_runner.py",
-      "--acceptance",
-      "L05"
+      "batch_l08_corridor"
     ]
   ]
 }

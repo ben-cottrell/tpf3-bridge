@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 QUEUE = 'tools/task_queue.json'
 APPROVED_QUEUE_SHA256 = 'af747ce78b765ae31a78ffc79c5dd759e95ee4217843e9fe14b89bceae1d769e'
 CONTROL = '.task_batch'
+BATCHES = {'connection-l06-l08': ('tools/task_queue_connection.json', 'd26ea35fed5a4cf77dfc4b82978cc9acf6da0fbe5863849f7e60a6c44d70db3e')}
 LIMITS = {'tasks': 3, 'invocations': 6, 'timeout': 900, 'check_timeout': 240}
 FATAL = re.compile(r'usage.limit|rate.limit|quota|insufficient.credit|authentication|unauthorized|'
                    r'not.logged.in|permission.denied|access.is.denied|approval.required|sandbox.denied|'
@@ -45,16 +46,20 @@ def write_json(path, value):
     os.replace(temporary, path)
 
 
-def snapshot(root):
+def snapshot(root, active_batch=None):
     """Hash locally, including existing evidence; never send the tree to a model."""
     files = {}
     for folder, dirs, names in os.walk(root, onerror=lambda e: (_ for _ in ()).throw(e)):
-        dirs[:] = [n for n in dirs if n not in ('.git', '__pycache__', CONTROL)]
+        dirs[:] = [n for n in dirs if n not in ('.git', '__pycache__')
+                   and not (n == CONTROL and active_batch is None)
+                   and not (Path(folder) == root / CONTROL and n == active_batch)]
         for name in dirs + names:
             p = Path(folder) / name
             if p.is_symlink() or (hasattr(p, 'is_junction') and p.is_junction()):
                 raise Stop('Linked project paths need manual review: ' + str(p))
         for name in names:
+            if active_batch and Path(folder) == root / CONTROL and name == 'lock':
+                continue
             p = Path(folder) / name
             files[p.relative_to(root).as_posix()] = digest(p)
     return files
@@ -67,7 +72,7 @@ def scope_changes(before, after, allowed):
 
 
 def test_names(root):
-    return sorted(f'{p.name}:{node.name}' for p in (root / 'tests').glob('test_cli*.py')
+    return sorted(f'{p.name}:{node.name}' for p in (root / 'tests').glob('test_*.py')
                   for node in ast.walk(ast.parse(p.read_text(encoding='utf-8')))
                   if isinstance(node, ast.FunctionDef) and node.name.startswith('test_'))
 
@@ -211,12 +216,16 @@ def prompt_for(task, state, repair=None, sources=None):
     return header + '\nTask card:\n' + json.dumps(task, indent=2) + '\nShort state:\n' + state
 
 
-def run_batch(root, queue, limits, executable, *, launch=process, authenticate=True):
+def run_batch(root, queue, limits, executable, *, launch=process, authenticate=True, batch_id=None):
     """No retries on restart: only this live invocation can spend its one repair."""
     root = root.resolve()
-    control = root / CONTROL
-    control.mkdir(exist_ok=True)
-    lock = control / 'lock'
+    if batch_id is not None and batch_id not in BATCHES:
+        raise Stop('unknown approved batch identity')
+    base = root / CONTROL
+    base.mkdir(exist_ok=True)
+    control = base / batch_id if batch_id else base
+    checkpoint = lambda: snapshot(root, active_batch=batch_id)
+    lock = base / 'lock'
     try:
         with lock.open('x') as stream:
             stream.write(str(os.getpid()))
@@ -224,10 +233,21 @@ def run_batch(root, queue, limits, executable, *, launch=process, authenticate=T
         raise Stop('batch locked; possible interruption or another runner; manual reconciliation required')
     journal_path = control / 'state.json'
     journal = None
+    owned = False
     try:
+        if batch_id:
+            previous = json.loads((base / 'state.json').read_text(encoding='utf-8'))
+            if (previous.get('phase') != 'idle'
+                    or previous.get('completed') != ['L03', 'L04', 'L05']
+                    or [t['id'] for t in previous['seal']['queue']['tasks']] != previous['completed']
+                    or not 3 <= previous.get('invocations', -1) <= 6):
+                raise Stop('previous batch is not completed; manual reconciliation required')
+            control.mkdir(exist_ok=True)
         seal = {'queue': queue, 'limits': limits, 'instructions': instructions(root),
                 'runner_sha256': digest(Path(__file__)), 'python': sys.executable,
                 'codex': executable}
+        if batch_id:
+            seal['batch_id'] = batch_id
         if journal_path.exists():
             journal = json.loads(journal_path.read_text(encoding='utf-8'))
             if journal['seal'] != seal:
@@ -240,16 +260,17 @@ def run_batch(root, queue, limits, executable, *, launch=process, authenticate=T
                     or len(journal['completed']) > len(queue['tasks'])
                     or not 0 <= journal['invocations'] <= limits['invocations']):
                 raise Stop('invalid durable task record; manual reconciliation required')
-            if snapshot(root) != journal['checkpoint']:
+            if checkpoint() != journal['checkpoint']:
                 raise Stop('workspace changed since checkpoint; manual reconciliation required')
         else:
             journal = dict(version=1, seal=seal, phase='idle', completed=[], invocations=0,
-                           attempts=[], checkpoint=snapshot(root), baseline_tests=test_names(root))
+                           attempts=[], checkpoint=checkpoint(), baseline_tests=test_names(root))
             write_json(journal_path, journal)
+        owned = True
         for task in queue['tasks'][len(journal['completed']):limits['tasks']]:
             if journal['invocations'] >= limits['invocations']:
                 raise Stop('agent invocation limit reached')
-            if snapshot(root) != journal['checkpoint']:
+            if checkpoint() != journal['checkpoint']:
                 raise Stop('workspace changed between tasks')
             before = journal['checkpoint']
             session = None
@@ -298,7 +319,7 @@ def run_batch(root, queue, limits, executable, *, launch=process, authenticate=T
                     raise Stop('worker changed runner journal')
                 if instructions(root) != seal['instructions']:
                     raise Stop('instruction/configuration scope changed')
-                after = snapshot(root)
+                after = checkpoint()
                 allowed = set(task['write_files']) | {'CURRENT_TASK.md'}
                 violations = scope_changes(before, after, allowed)
                 if violations:
@@ -331,7 +352,7 @@ def run_batch(root, queue, limits, executable, *, launch=process, authenticate=T
                     check.mkdir()
                     check_command = [sys.executable, *acceptance[1:]]
                     result = launch(check_command, root, check, limits['check_timeout'])
-                    if (scope_changes(before, snapshot(root), allowed)
+                    if (scope_changes(before, checkpoint(), allowed)
                             or instructions(root) != seal['instructions']
                             or digest(root / 'CURRENT_TASK.md') != card_hash
                             or digest(journal_path) != checking_hash):
@@ -346,17 +367,17 @@ def run_batch(root, queue, limits, executable, *, launch=process, authenticate=T
                         record = {'status': 'invalid_check_output'}
                     if record.get('status') in ('timeout', 'runner_error'):
                         raise Stop('acceptance infrastructure failure; inspect ' + str(check))
-                    minimum = max(1, len(journal['baseline_tests'])) if 'application' in acceptance else 1
+                    minimum = max(1, sum(n.startswith('test_cli') for n in journal['baseline_tests'])) if 'application' in acceptance else 1
                     if result or record.get('status') != 'passed' or record.get('tests_run', 1) < minimum:
                         failures.append({'command': acceptance, 'status': record.get('status'),
                                          'first_issues': record.get('first_issues', [])[:3], 'log': str(check.relative_to(root))})
-                violations = scope_changes(before, snapshot(root), allowed)
+                violations = scope_changes(before, checkpoint(), allowed)
                 if (violations or instructions(root) != seal['instructions']
                         or digest(root / 'CURRENT_TASK.md') != card_hash):
                     raise Stop('acceptance changed protected scope; manual reconciliation required')
                 if not code and completed and not errors and not failures:
                     journal['completed'].append(task['id'])
-                    journal.update(phase='idle', checkpoint=snapshot(root))
+                    journal.update(phase='idle', checkpoint=checkpoint())
                     write_json(journal_path, journal)
                     print(json.dumps({'status': 'completed', 'task': task['id'], 'invocations': journal['invocations']}))
                     break
@@ -366,7 +387,7 @@ def run_batch(root, queue, limits, executable, *, launch=process, authenticate=T
         return {'status': 'queue_exhausted' if len(journal['completed']) == len(queue['tasks']) else 'task_limit_reached',
                 'completed': journal['completed'], 'invocations': journal['invocations'], 'record': str(journal_path)}
     except BaseException as exc:
-        if journal is not None:
+        if journal is not None and owned:
             journal['phase'] = 'stopped_requires_reconciliation'
             journal['stop_reason'] = str(exc)[:1000]
             write_json(journal_path, journal)
@@ -433,6 +454,7 @@ def acceptance(task):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--batch', choices=sorted(BATCHES), help='Approved batch with a separate durable ledger')
     parser.add_argument('--acceptance', choices=['L03', 'L04', 'L05'])
     parser.add_argument('--max-tasks', type=int, default=3, choices=range(1, 4))
     parser.add_argument('--max-invocations', type=int, default=6, choices=range(1, 7))
@@ -444,25 +466,28 @@ def main(argv=None):
         if args.acceptance:
             result = acceptance(args.acceptance)
         else:
-            if digest(ROOT / QUEUE) != APPROVED_QUEUE_SHA256:
+            queue_path, approved_hash = BATCHES[args.batch] if args.batch else (QUEUE, APPROVED_QUEUE_SHA256)
+            if digest(ROOT / queue_path) != approved_hash:
                 raise Stop('approved queue changed; review and approval required')
-            queue = json.loads((ROOT / QUEUE).read_text(encoding='utf-8'))
+            queue = json.loads((ROOT / queue_path).read_text(encoding='utf-8'))
             limits = {**LIMITS, 'tasks': args.max_tasks, 'invocations': args.max_invocations, 'timeout': args.timeout}
             executable = shutil.which('codex')
             if not executable:
                 raise Stop('Codex CLI not installed/on PATH; no installation attempted')
             if args.dry_run:
-                result = dict(status='dry_run', project=str(ROOT), limits=limits, tasks=queue['tasks'],
+                result = dict(status='dry_run', project=str(ROOT), batch_id=args.batch or 'legacy-l03-l05',
+                              record=str(ROOT / CONTROL / (args.batch or '') / 'state.json'),
+                              limits=limits, tasks=queue['tasks'],
                               new_session=codex_command(executable, ROOT),
                               repair=codex_command(executable, ROOT, '<EXACT_SESSION_ID>'),
                               write_scope='task write_files; runner-owned CURRENT_TASK.md; new local evidence only',
                               model='existing CLI account/model settings; no override', hard_credit_cap=False)
             else:
-                result = run_batch(ROOT, queue, limits, executable)
+                result = run_batch(ROOT, queue, limits, executable, batch_id=args.batch)
         print(json.dumps(result, separators=(',', ':')))
         return 0
     except (Exception, KeyboardInterrupt) as exc:
-        record = ROOT / CONTROL / 'state.json'
+        record = ROOT / CONTROL / (args.batch or '') / 'state.json'
         log = None
         if record.is_file() and not args.dry_run:
             try:

@@ -31,6 +31,9 @@ def main(argv=None):
         design.add_argument('--fixture', required=True, type=Path)
         design.add_argument('--output', required=True, type=Path)
         design.add_argument('--mock-execute', action='store_true')
+        connect = commands.add_parser('connect')
+        connect.add_argument('--input', required=True, type=Path)
+        connect.add_argument('--output', required=True, type=Path)
         status = commands.add_parser('status')
         status.add_argument('--run', required=True, type=Path)
         verify = commands.add_parser('verify')
@@ -42,6 +45,8 @@ def main(argv=None):
     else:
         if args.command == 'design':
             summary = bridge_app.design(args.fixture, args.output, args.mock_execute)
+        elif args.command == 'connect':
+            summary = bridge_app.connect(args.input, args.output)
         elif args.command == 'status':
             summary = bridge_app.status(args.run)
         else:
