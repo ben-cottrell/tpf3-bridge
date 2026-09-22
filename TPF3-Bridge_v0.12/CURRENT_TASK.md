@@ -1,98 +1,27 @@
-# Approved batch task
+# Next milestone: read-only native TPF3 probe
 
-{
-  "id": "L14",
-  "depends_on": [
-    "L13"
-  ],
-  "card": "Combined acceptance and short usage/implementation-to-test record only. Demonstrate pair_example.json -> checked design -> explicit bound mock plan -> current read-back for both connections and preserved neighbours; include representative invalid/stale/corrupted-result scenarios and fresh-process status/verify without construction. Reuse implemented functionality and existing tests. Document runnable API/CLI commands, finite geometry family, normal-offset/approximation certificates and limits, same-instance idempotency versus fresh-process mock, explicit game_constructed:false, preserved legacy commands and no live game capability claim. Write a compact mapping of L09-L13 requirements to test file/cases in USAGE.md; detailed results remain local. Add missing acceptance cases only in tests/test_pair_acceptance.py, no application feature/code changes; report any out-of-scope defect and stop. Host executes all queued combined checks; do not duplicate passing test runs in worker. Update STATE.md concisely with actual evidence/pending host checks and stop at L14.",
-  "pointers": [
-    "USAGE.md",
-    "pair_example.json",
-    "pair_snapshot_example.json",
-    "tests/test_pair_input.py",
-    "tests/test_pair_geometry.py",
-    "tests/test_pair_plan.py",
-    "tests/test_pair_mock.py",
-    "tests/test_pair_app.py",
-    "tools/pair_acceptance.py",
-    "STATE.md"
-  ],
-  "write_files": [
-    "USAGE.md",
-    "tests/test_pair_acceptance.py",
-    "STATE.md"
-  ],
-  "acceptance": [
-    [
-      "python",
-      "tools/quiet_checks.py",
-      "--suite",
-      "pair_combined",
-      "--label",
-      "batch_l14_pair"
-    ],
-    [
-      "python",
-      "tools/pair_acceptance.py",
-      "--task",
-      "L14"
-    ],
-    [
-      "python",
-      "tools/quiet_checks.py",
-      "--suite",
-      "application",
-      "--label",
-      "batch_l14_cli"
-    ],
-    [
-      "python",
-      "tools/quiet_checks.py",
-      "--suite",
-      "connection_input",
-      "--label",
-      "batch_l14_single_input"
-    ],
-    [
-      "python",
-      "tools/quiet_checks.py",
-      "--suite",
-      "connection_geometry",
-      "--label",
-      "batch_l14_single_geom"
-    ],
-    [
-      "python",
-      "tools/quiet_checks.py",
-      "--suite",
-      "connection_application",
-      "--label",
-      "batch_l14_single_app"
-    ],
-    [
-      "python",
-      "tools/quiet_checks.py",
-      "--suite",
-      "geometry",
-      "--label",
-      "batch_l14_kernel"
-    ],
-    [
-      "python",
-      "tools/quiet_checks.py",
-      "--suite",
-      "corridor",
-      "--label",
-      "batch_l14_corridor"
-    ],
-    [
-      "python",
-      "tools/quiet_checks.py",
-      "--suite",
-      "branch",
-      "--label",
-      "batch_l14_branch"
-    ]
-  ]
-}
+**BLOCKED / NOT AUTHORISED TO RUN YET**
+
+The offline L01-L14 milestone is closed and paused. Leave all approved queues
+exhausted. Do not launch workers, poll, schedule checks, install dependencies,
+generate a mod or begin another implementation batch.
+
+Prerequisites: a runnable local Transport Fever 3 game and verified native API
+mapping for the actual installed build. Neither is established by mock evidence.
+Resume only after prerequisites are available and explicit user authorisation
+for the bounded read-only probe is given. Do not invent native functions or assume
+Transport Fever 2 API compatibility.
+
+Future authorised scope: reuse the existing adapter/capability and snapshot
+contracts (`contracts/bridge.schema.json`, `contracts/tpf3_unprobed_capabilities.json`;
+existing adapter manifests in `proof/railcorridor/adapter.py`). Establish actual
+game/mod build, loaded save identity, coordinate mapping, and a small explicitly
+bounded snapshot of terrain, track and available assets. Report inaccessible or
+unverified fields and incomplete coverage honestly; retain source/probe provenance.
+
+Keep raw observations/results local in a new evidence location, never overwrite
+older results. Normal response contains identities, coverage, counts and blockers
+only. Read-only: no construction, game/save edits or automatic resume. No MCP,
+physics, station detail, new dependencies or task-runner feature. No second world
+schema or large specification. Preserve source, ledgers, counts and acceptance
+records. Refer to STATE.md and USAGE.md; do not re-audit or rerun unchanged tests.
