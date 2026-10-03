@@ -35,8 +35,9 @@ end
 local function in_region(p,region)
  assert(p[1]>=region.min[1] and p[1]<=region.max[1] and p[2]>=region.min[2] and p[2]<=region.max[2] and p[3]>=region.min[3] and p[3]<=region.max[3],"outside_authorised_region")
 end
-local function sample(g,u)
- local row=api.engine.util.transport.calcPositionAndDirection(g,u,true)
+local function sample(g,u,forward)
+ if forward==nil then forward=true end
+ local row=api.engine.util.transport.calcPositionAndDirection(g,u,forward)
  assert(type(row)=="table" and row[1] and row[2],"sample_contract")
  local p,t=arr(row[1]),arr(row[2]);vector(p);vector(t);norm(t);return p,t
 end
@@ -222,12 +223,27 @@ function M.fit(p,s,request_id,target,start)
  local result=api.engine.util.pathfinding.findDubinsPath(v({pos[1],pos[2],0}),v(t0),v({p.end_xy[1],p.end_xy[2],0}),v(t1),p.radius)
  assert(type(result)=="table" and #result>0 and #result<=8,"no_supported_bounded_fit")
  local controls,samples,total,maxerr,maxheading={}, {},0,0,0
+ local orientation={forward_parts=0,backward_parametrised_parts=0};local orientation_evidence={}
  for i,row in ipairs(result) do
-  assert(row[2]==true,"unsupported_reverse_geometry")
+  assert(type(row[2])=="boolean","native_direction_flag_unavailable")
   local g=row[1];assert(g and finite(g.length) and g.length>0,"invalid_fit_length")
   assert(g.type==api.type.EdgeGeometry.Type.ARC or g.type==api.type.EdgeGeometry.Type.STRAIGHT,"unsupported_fit_family")
   if g.type==api.type.EdgeGeometry.Type.ARC then assert(math.abs(g.arc.radius)>=p.radius-.001,"fit_radius_below_selected_constraint") end
-  local p0,d0=sample(g,0);local p1,d1=sample(g,1)
+  -- The declared flag is EdgeGeometry traversal direction. Ask the native sampler
+  -- to apply it; never equate canonical orientation with railway reversal.
+  local p0,d0=sample(g,0,row[2]);local p1,d1=sample(g,1,row[2])
+  if row[2] then orientation.forward_parts=orientation.forward_parts+1
+  else
+   orientation.backward_parametrised_parts=orientation.backward_parametrised_parts+1
+   local raw0,rawdir0=sample(g,0,true);local raw1,rawdir1=sample(g,1,true)
+   assert(distance(raw0,p1)<=.001 and distance(raw1,p0)<=.001 and
+    angle(rawdir0,{-d1[1],-d1[2],0})<=.1 and angle(rawdir1,{-d0[1],-d0[2],0})<=.1,"native_orientation_contract_mismatch")
+   orientation_evidence[#orientation_evidence+1]={piece=i,forward=false,length=g.length,
+    canonical_start=raw0,canonical_finish=raw1,canonical_tangent_start=rawdir0,canonical_tangent_finish=rawdir1,
+    -- Snapshot planar native values before controls receive their height profile.
+    travel_start={p0[1],p0[2],p0[3]},travel_finish={p1[1],p1[2],p1[3]},
+    travel_tangent_start={d0[1],d0[2],d0[3]},travel_tangent_finish={d1[1],d1[2],d1[3]}}
+  end
   if i==1 then assert(distance(p0,pos)<=.001 and angle(d0,t0)<=.1,"fit_start_mismatch");p0[1]=pos[1];p0[2]=pos[2]
   else assert(distance(p0,controls[i-1].p1)<=.001 and angle(d0,controls[i-1].t1)<=.1,"fit_join_mismatch");p0[1]=controls[i-1].p1[1];p0[2]=controls[i-1].p1[2] end
   p0[3]=pos[3]+grade*total;p1[3]=pos[3]+grade*(total+g.length)
@@ -271,7 +287,7 @@ function M.fit(p,s,request_id,target,start)
   end
   local cg=cubic(c);samples[i]={};vertical_samples[i]={}
   for _,u in ipairs({0,.25,.5,.75,1}) do
-   local np,nd=sample(result[i][1],u);local cp,cd=sample(cg,u)
+   local np,nd=sample(result[i][1],u,result[i][2]);local cp,cd=sample(cg,u)
    maxerr=math.max(maxerr,distance(np,cp));if u==0 or u==1 then maxheading=math.max(maxheading,angle(nd,cd)) end
    local grade_here=slope(cd);maxsampledgrade=math.max(maxsampledgrade,math.abs(grade_here))
    if maxgrade then assert(math.abs(grade_here)<=maxgrade+.000001,"sampled_grade_exceeds_limit") end
@@ -289,7 +305,8 @@ function M.fit(p,s,request_id,target,start)
  s.fits[request_id]={anchor=a,node=p.anchor_node,target=target,controls=controls,samples=samples,region=p.region,total_length=total,grade=grade,end_grade=endgrade,max_grade=maxgrade,built=false}
  return {fit_request=request_id,pieces=#controls,total_length=total,start_node=p.anchor_node,target_node=target and target.node or nil,start=pos,finish=last.p1,radius=p.radius,grade=grade,end_grade=endgrade,
   vertical_domain=profile and "native_cubic_endpoint_height_grade" or "constant_grade_compatible_endpoints",max_grade=maxgrade,max_sampled_grade=maxsampledgrade,sampled_Z_error=maxzerr,
-  vertical_samples=profile and vertical_samples or nil,controls=profile and controls or nil,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=false}
+  vertical_samples=profile and vertical_samples or nil,controls=profile and controls or nil,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,
+  native_orientation=orientation,orientation_evidence=orientation_evidence,sampled_only=true,game_constructed=false}
 end
 function M.readback(f)
  assert(f.ids and #f.ids==#f.controls,"construction_receipt_incomplete")
@@ -410,7 +427,8 @@ function M.corridor(p,s,state,request_id,respond)
    grade=grade,end_grade=target.grade,max_grade=p.vertical.max_grade,total_length=0,built=false}
   local start={anchor=a,pos=pos,direction=direction,grade=grade}
   fit={legs={},pieces=0,total_length=0,radius=p.radius,grade=grade,end_grade=target.grade,max_grade=p.vertical.max_grade,
-   max_sampled_grade=0,sampled_XY_error=0,sampled_Z_error=0,sampled_only=true,guide_nodes_realised=false,game_constructed=false}
+   max_sampled_grade=0,sampled_XY_error=0,sampled_Z_error=0,sampled_only=true,guide_nodes_realised=false,game_constructed=false,
+   native_orientation={forward_parts=0,backward_parametrised_parts=0},orientation_evidence={}}
   stage="fit"
   for i,goal in ipairs(goals) do
    local id=request_id.."_leg_"..i
@@ -422,6 +440,8 @@ function M.corridor(p,s,state,request_id,respond)
    assert(all.total_length<=3200 and #all.controls<=32,"corridor_fit_bound")
    fit.legs[i]={index=i,first_piece=first,last_piece=#all.controls,length=leg.total_length,start=start.pos,finish=goal.pos,
     grade=start.grade,end_grade=goal.grade,max_sampled_grade=leg.max_sampled_grade}
+   for key,value in pairs(leg.native_orientation) do fit.native_orientation[key]=fit.native_orientation[key]+value end
+   if #leg.orientation_evidence>0 then fit.orientation_evidence[#fit.orientation_evidence+1]={leg=i,parts=leg.orientation_evidence} end
    fit.max_sampled_grade=math.max(fit.max_sampled_grade,leg.max_sampled_grade)
    fit.sampled_XY_error=math.max(fit.sampled_XY_error,leg.sampled_XY_error)
    fit.sampled_Z_error=math.max(fit.sampled_Z_error,leg.sampled_Z_error)

@@ -433,11 +433,35 @@ TRAIN route1540.063845 through all pieces passed. Sampled maximum grade0.0150000
 zero join-height gap; radius120/max_grade0.04. Wrong-direction and strict-grade briefs
 stopped before construction. Fit-only did not report realised guide-node identity.
 
-The first authored layout and three fit-only variants were rejected because a native
-leg contained reverse geometry. A distinct gradual-bend layout passed; no constraint
-was relaxed and rejected inputs remain rejected. Only forward native pieces are
-supported, not arbitrary guide arrangements or unrestricted routing. Actual node
-identities are acquired from the build receipt/readback, never fit placeholders.
+At the P09 checkpoint, the first authored layout and three fit-only variants were
+rejected by a guard against backward-parametrised native pieces. A distinct gradual
+bend passed without relaxing constraints. P10 resolves that particular limitation
+below; arbitrary guide arrangements and unrestricted routing remain unclaimed.
+Actual node identities come from the build receipt/readback, never fit placeholders.
 The initial automatic-review denial was resolved by the user's explicit approval;
 two short disposable target fixtures and one coherent corridor were built. There is
 no transaction/rollback claim. Full failed/successful receipts remain local.
+
+## Native orientation and alternating bends (P10)
+
+The installed `findDubinsPath` declaration returns geometry plus a direction flag.
+The adapter passes that flag to native `calcPositionAndDirection` for endpoint,
+tangent and comparison samples. Backward parametrisation is not a requirement to
+reverse a supplied railway direction. Native samples must independently establish
+reversed canonical endpoints/opposed canonical tangents, then pass the same exact
+travel endpoints, joins, radius, grade, region and sampled-conversion checks. No
+global tolerance or constraint was relaxed. Height interpolation remains native.
+Compact fit summaries include `native_orientation` counts; full orientation evidence
+stays in local receipts. No extra input fields or execution option are required.
+
+Build40408 demonstrated the previously rejected relative pattern: three500-unit
+chords at+12°/−8°/+4°, corresponding guide/final directions, rise4/7/12 and grades
+0.005/0.01/0.015, translated/rotated from a fresh native attachment. Native fit length
+1501.283859 contained six forward and three backward-parametrised pieces. Nine TRACK
+edges131319–131327 connected source131250/node131232 to target131268/node131160,
+with exact shared guide nodes131313/131316. Independent committed inspection and
+native TRAIN route1541.342245 passed. Radius120/max_grade0.04 were unchanged;
+sampledXYerror0.005695,Zerror0.000003815,maximum grade0.015000002,zero join-height gap.
+Legacy straight/forward curved fits and wrong-direction/strict-grade rejection passed.
+57affected client tests passed. Geometry/grade remain sampled, native routing is not
+physical train traversal, and one proposal provides no rollback guarantee.

@@ -1,6 +1,31 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
 ## Current checkpoint
+P10 complete: native findDubinsPath direction flag is passed to its native sampler
+for endpoints/tangents and comparisons; false pieces additionally verify canonical
+endpoint/tangent reversal. Existing exact travel/join/radius/grade/region checks remain.
+No supplied direction, guide or hard requirement changed; no Python replacement fitter.
+Build40408: translated/rotated previously rejected+12°/−8°/+4° relative pattern,
+3legs/9TRACK131319–131327,source131250/node131232→target131268/node131160,
+exact guide nodes131313/131316. Length1501.283859,rise12,grades0.015→0.005→0.01→0.015,
+radius120/max_grade0.04; six forward/three backward-parametrised native pieces.
+Independent committed inspection/native TRAIN1541.342245 pass;sampledXYerror0.005695,
+Zerror0.000003815,grade0.015000002,joinheightgap0. Legacy forward straight/curved fits
+and wrong-direction/strict-grade rejection pass. Initial fixtureZ envelope120 rejected
+prebuild; corrected to80 within existing100 bound, unchanged fixture geometry.
+python tools/quiet_checks.py --suite live_client --label pif-p10-client:57passed;
+.local_checks/pif-p10-client_uwkb_h39/report.json; unchanged tested Python hashes verified.
+python .local_runs/live_python_interface/p10/check_evidence.py: local receipts/hash/
+orientation/guide/TRAIN-path/compact-output checks. Native Lua executed; no standalone
+checker.14unchanged runner tests reused. One fixture/one corridor; two normal loads/one save,
+paused/non-maximised,no restart. Full evidence/result/checks/HANDOFF in p10; reviewed
+local milestone SHA in p10/checkpoint.json,P09 base2c2f60c,no push. Geometry sampled;
+physical traversal/native save identity unprobed; actual usage unavailable.
+Receipt review found aliased orientation-log arrays changed by later height assignment;
+fixed immutable capture, retained first receipt and native fit-only verification after
+reload. Existing built TRACK chain independently reacquired; no construction replay.
+
+## P09 coherent corridor accepted
 P09 complete: connect_corridor/CLI connect-corridor reuses P08 discovery/selection and
 native fit/build/readback;1–3ordered XYZ/direction/grade guides, all legs pre-fitted,
 one coherent native proposal, exact shared guide nodes/final attachments and TRAIN route.

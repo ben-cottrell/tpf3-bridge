@@ -291,7 +291,7 @@ def _connect_project(client, brief, execute, guides=None):
             summary.update(selected={'source_edge':source['edge_id'],'source_node':source['node_id'],
                                      'target_edge':target['edge_id'],'target_node':target['node_id']},
                            native_request_id=response['request_id'],game_constructed=result.get('game_constructed',False),
-                           fit={k:result.get('fit',{}).get(k) for k in ('pieces','total_length','radius','grade','end_grade','max_grade','max_sampled_grade','sampled_XY_error','sampled_Z_error','sampled_only')})
+                           fit={k:result.get('fit',{}).get(k) for k in ('pieces','total_length','radius','grade','end_grade','max_grade','max_sampled_grade','sampled_XY_error','sampled_Z_error','sampled_only','native_orientation')})
             if guides:
                 summary['legs']=result.get('fit',{}).get('legs',[])
                 summary['guide_nodes_realised']=False

@@ -296,6 +296,18 @@ class LiveClientTests(unittest.TestCase):
         with patch.object(self.client,'request',side_effect=query):v=connect_corridor(self.client,b,execute=True)
         self.assertEqual(v['status'],'no_eligible_candidates');self.assertEqual(len(calls),2)
 
+    def test_native_orientation_counts_are_evidence_not_direction_rewrites(self):
+        query,calls=self.project_query();orientation={'forward_parts':2,'backward_parametrised_parts':1}
+        def worker(op,p):
+            response=query(op,p)
+            if op=='selected_connection':response['result']['fit']['native_orientation']=orientation
+            return response
+        with patch.object(self.client,'request',side_effect=worker):v=connect_brief(self.client,self.project_brief())
+        self.assertEqual(v['fit']['native_orientation'],orientation)
+        self.assertEqual(calls[2][1]['source']['outward_direction'],[1,0,0])
+        self.assertEqual(calls[2][1]['target']['outward_direction'],[-1,0,0])
+        self.assertFalse(v['game_constructed']);self.assertLessEqual(len(json.dumps(v).encode()),4096)
+
     def test_discovery_invalid_bounds_never_query(self):
         for params in ({'region':{'min':[0,0,0],'max':[401,1,1]},'max_edges':1},
                        {'region':{'min':[0,0,0],'max':[1,1,1]},'max_edges':True}):
