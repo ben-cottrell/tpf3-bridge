@@ -116,13 +116,14 @@ function M.discover(p,request_id)
 end
 function M.connect_selected(p,s,state,request_id,respond)
  assert(type(p.source)=="table" and type(p.target)=="table","selected_candidates_required")
+ assert(p.execute==nil or type(p.execute)=="boolean","invalid_selected_execution")
  for _,c in ipairs({p.source,p.target}) do
   local current=assert_fresh(c.edge_snapshot)
   assert(current.id==c.edge_id and (current.node0==c.node_id or current.node1==c.node_id),"selected_endpoint_mismatch")
   local all,owner=incidence(c.node_id)
   assert(#all==1 and all[1]==c.edge_id and not (owner and owner>0),"selected_endpoint_not_free")
  end
- M.extension({execute=false,brief={anchor_edge=p.source.edge_id,anchor_node=p.source.node_id,
+ M.extension({execute=p.execute==true,brief={anchor_edge=p.source.edge_id,anchor_node=p.source.node_id,
   target_edge=p.target.edge_id,target_node=p.target.node_id,radius=p.radius,region=p.region,vertical=p.vertical}},s,state,request_id,respond,true)
 end
 local function node_id(n)
@@ -206,7 +207,8 @@ function M.fit(p,s,request_id,target)
  assert(type(p.region)=="table","region_required");vector(p.region.min);vector(p.region.max)
  assert(#p.region.min==3 and #p.region.max==3,"region_needs_xyz")
  for i=1,3 do assert(p.region.max[i]>p.region.min[i],"invalid_region") end
- assert(p.region.max[1]-p.region.min[1]<=400 and p.region.max[2]-p.region.min[2]<=400,"P01_local_region_bound")
+ -- Longer connection envelope; discovery remains local and total fit length<=800.
+ assert(p.region.max[1]-p.region.min[1]<=1000 and p.region.max[2]-p.region.min[2]<=1000,"fit_region_bound")
  local a,pos,t0,grade=anchor(p);in_region(pos,p.region)
  local t1=norm(p.end_direction)
  local result=api.engine.util.pathfinding.findDubinsPath(v({pos[1],pos[2],0}),v(t0),v({p.end_xy[1],p.end_xy[2],0}),v(t1),p.radius)

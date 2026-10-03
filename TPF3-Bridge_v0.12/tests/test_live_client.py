@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import contextlib
 import io
-from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, discover_session, client_from_context
+from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, discover_session, client_from_context
 
 class LiveClientTests(unittest.TestCase):
     def setUp(self):
@@ -138,6 +138,94 @@ class LiveClientTests(unittest.TestCase):
     def selected_brief(self):
         return {'source_ref':'source','target_ref':'target','radius':100,
                 'region':{'min':[0,0,-10],'max':[300,300,10]}}
+
+    def project_brief(self):
+        region={'min':[-10,-10,-10],'max':[100,100,10]}
+        intent={'region':region,'max_edges':8,'guide_xyz':[0,0,0],
+                'travel_direction':[1,0],'heading_tolerance_deg':5}
+        return {'source':intent,'target':intent|{'guide_xyz':[20,0,0]},'radius':100,
+                'region':region,'vertical':{'max_grade':.04},'max_fit_attempts':2,'max_route_length':300}
+
+    def project_query(self, *, failure=None, extra=False, truncated=False):
+        counter={'discover':0,'native':0};calls=[]
+        def candidate(edge,node,ref,pos,direction):
+            return dict(ref=ref,edge_id=edge,node_id=node,pos=pos,outward_direction=direction,
+                        eligible=True,incidence_complete=True,incident_count=1,incident_edges=[edge],
+                        edge_snapshot={'id':edge,'node0':node if edge==20 else node-1,'node1':node+1 if edge==20 else node})
+        def query(op,params):
+            calls.append((op,params))
+            if op=='discover':
+                counter['discover']+=1;source=counter['discover']==1
+                cs=[candidate(10,11,'src',[0,0,0],[1,0,0])] if source else [candidate(20,21,'dst',[20,0,0],[-1,0,0])]
+                if source and extra:cs.append(candidate(12,13,'alt',[1,0,0],[1,0,0]))
+                # A closer opposite-direction endpoint must never be silently reversed.
+                cs.append(candidate(50,51,'wrong_src' if source else 'wrong_dst',[0,0,0],[-1,0,0] if source else [1,0,0]))
+                return self.response('ds' if source else 'dt',op,result={'candidates':cs,'complete':not truncated})
+            if op=='selected_connection':
+                counter['native']+=1
+                if failure in ('fit','budget') and (failure=='budget' or counter['native']==1):
+                    return self.response('fit'+str(counter['native']),op,result={'stage':'fit','game_constructed':False,'error':'unsupported_reverse_geometry'})|{'status':'error'}
+                if failure=='build':
+                    return self.response('rejected',op,result={'stage':'build','game_constructed':'unknown','error':'native_construction_rejected'})|{'status':'error'}
+                a=params['source'];b=params['target']
+                return self.response('native',op,result={'game_constructed':params['execute'],'fit':{'pieces':1},
+                    'readback':{'connected':True,'ordered_edges':[30],'ordered_nodes':[a['node_id'],b['node_id']],
+                        'attachments':{'source_edge':a['edge_id'],'target_edge':b['edge_id']}}})
+            self.assertEqual(op,'route')
+            return self.response('route',op,result={'requested_route_verified':failure!='route','total_path_length':40})
+        return query,calls
+
+    def test_project_default_and_execute_select_directions_and_exact_attachments(self):
+        for execute in (False,True):
+            query,calls=self.project_query(truncated=True)
+            with patch.object(self.client,'request',side_effect=query):value=connect_brief(self.client,self.project_brief(),execute=execute)
+            self.assertEqual(value['status'],'ok');self.assertIs(value['discovery_complete'],False)
+            self.assertEqual(value['selected'],{'source_edge':10,'source_node':11,'target_edge':20,'target_node':21})
+            self.assertEqual([c[0] for c in calls],['discover','discover','selected_connection']+(['route'] if execute else []))
+            self.assertIs(calls[2][1]['execute'],execute)
+            if execute:self.assertEqual(calls[-1][1]['required_edges'],[30]);self.assertTrue(value['native_route_verified'])
+            self.assertLessEqual(len(json.dumps(value).encode()),4096)
+            self.assertTrue(Path(value['evidence']).exists())
+
+    def test_project_fit_alternative_is_bounded_and_does_not_retry_build(self):
+        for failure,status,attempts in [('fit','ok',2),('build','error',1),('budget','no_accepted_candidate',2),('route','native_route_unverified',1)]:
+            query,calls=self.project_query(failure=failure,extra=True)
+            with patch.object(self.client,'request',side_effect=query):value=connect_brief(self.client,self.project_brief(),execute=True)
+            self.assertEqual(value['status'],status);self.assertEqual(value['attempt_count'],attempts)
+            if failure=='route':self.assertIs(value['game_constructed'],True)
+        query,calls=self.project_query(failure='budget',extra=True);brief=self.project_brief()|{'max_fit_attempts':1}
+        with patch.object(self.client,'request',side_effect=query):value=connect_brief(self.client,brief)
+        self.assertEqual(value['status'],'search_budget_exhausted')
+
+    def test_project_no_candidates_and_bad_briefs_never_build(self):
+        b=self.project_brief();b['source']=b['source']|{'travel_direction':[0,1]}
+        query,calls=self.project_query()
+        with patch.object(self.client,'request',side_effect=query):value=connect_brief(self.client,b,execute=True)
+        self.assertEqual(value['status'],'no_eligible_candidates');self.assertEqual(len(calls),2)
+        for brief in (self.project_brief()|{'max_fit_attempts':17},self.project_brief()|{'max_route_length':float('nan')},
+                      self.project_brief()|{'region':{'min':[0,0,-10],'max':[1001,300,10]}},
+                      self.project_brief()|{'source':b['source']|{'travel_direction':[0,0]}},
+                      self.project_brief()|{'target':b['target']|{'heading_tolerance_deg':True}}):
+            with patch.object(self.client,'request') as calls:
+                with self.assertRaises(ValueError):connect_brief(self.client,brief)
+                calls.assert_not_called()
+
+    def test_project_pending_blocks_execute_and_selected_execution_is_a_mutation(self):
+        self.client.journal.write_text(json.dumps({'session':'test_session','pending':{'request_id':'old'},'next_sequence':1}))
+        with patch.object(self.client,'request') as calls:
+            value=connect_brief(self.client,self.project_brief(),execute=True)
+            self.assertEqual(value['status'],'reconciliation_required');calls.assert_not_called()
+        with self.assertRaises(LiveError) as error:self.client.request('selected_connection',{'execute':True})
+        self.assertEqual(error.exception.status,'reconciliation_required')
+        self.client.journal.unlink();self.client.timeout=.01
+        with self.assertRaises(LiveError) as error:self.client.request('selected_connection',{'execute':True})
+        self.assertEqual(error.exception.status,'mutation_outcome_unknown')
+
+    def test_project_cli_routes_new_brief_to_one_callable(self):
+        params=self.root/'project.json';params.write_text(json.dumps(self.project_brief()))
+        args=['connect-brief','--params',str(params),'--mod-directory',str(self.client.mod),'--log',str(self.log),'--evidence',str(self.client.evidence),'--session','test_session','--execute']
+        with patch('bridge_live.connect_brief',return_value={'status':'ok','native_route_verified':True}) as call,contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(args),0);self.assertTrue(call.call_args.kwargs['execute'])
 
     def test_discovery_invalid_bounds_never_query(self):
         for params in ({'region':{'min':[0,0,0],'max':[401,1,1]},'max_edges':1},

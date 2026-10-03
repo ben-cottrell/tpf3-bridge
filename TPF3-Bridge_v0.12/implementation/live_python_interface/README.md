@@ -262,7 +262,7 @@ endpoint, absent required edge and wrong entry direction were rejected without b
 The separately declared bounded `findPath` route failed with error300; its constructor
 was unavailable at runtime. That unresolved contract is not used by this operation.
 
-46client/fake-worker tests passed;14unchanged quiet-runner tests reused. Run:
+51client/fake-worker tests passed;14unchanged quiet-runner tests reused. Run:
 
 ```powershell
 python tools/quiet_checks.py --suite live_client --label live-client
@@ -317,3 +317,69 @@ resend construction and provide no rollback/crash-recovery guarantee. Native
 mutation guards can still require an authorised ordinary load. The repaired
 compound callback now captures its fit locally and preserves returned identities
 if a later readback fails; the new extension verified that repair at runtime.
+
+## Brief-driven connection (P08)
+
+`connect_brief(client, brief, execute=False)` and the CLI below discover/select
+endpoints and perform the native fit in one workflow. Add `--execute` to build,
+read back exact attachments and require a native TRAIN route through every built
+edge and both approach tracks. Fit-only is the default. No manual entity IDs or
+model calls are needed inside the workflow.
+
+```powershell
+python bridge_live.py connect-brief --context context.json --params connection.json
+python bridge_live.py connect-brief --context context.json --params connection.json --execute
+```
+
+Example shape (replace coordinates/directions with the intended native map sites):
+
+```json
+{
+  "source": {
+    "region": {"min":[85,185,-40],"max":[115,215,60]},
+    "max_edges":8, "guide_xyz":[100,200,5],
+    "travel_direction":[0.308,-0.951], "heading_tolerance_deg":5
+  },
+  "target": {
+    "region": {"min":[309,-371,-40],"max":[339,-341,60]},
+    "max_edges":8, "guide_xyz":[324,-356,11],
+    "travel_direction":[0.437,-0.899], "heading_tolerance_deg":5
+  },
+  "region":{"min":[0,-456,-40],"max":[424,300,60]},
+  "radius":120, "vertical":{"max_grade":0.04},
+  "max_fit_attempts":4, "max_route_length":750
+}
+```
+
+Each search is bounded to400 native units per axis and1–16TRACK edges. Fully
+verified free endpoints must match the brief's heading tolerance. Source direction
+is travel **away** from its approach; target direction is travel **into** its
+approach. Supplied tangents are never altered to match a criterion. Guide proximity
+ranks already-identified candidates; it does not establish identity/connectivity.
+Pairs sort by summed squared guide distance, then summed heading error, then exact
+native edge/node IDs for ties. Complete and truncated discovery remain explicit.
+
+At most1–16candidate fits may be attempted. Only explicit pre-build fit rejection
+with `game_constructed:false` permits another pair; construction rejection, timeout,
+unknown effects or verification failure stop immediately. An unfinished journal
+blocks execution. Native snapshots/full incidence are revalidated immediately before
+the compound fit/build. Normal success needs four native requests: two discoveries,
+one compound connection and one route query. Local workflow files correlate all
+receipts; stdout remains compact. There is no automatic mutation retry/resume.
+
+`no_eligible_candidates` describes the observed selection; `no_accepted_candidate`
+describes all observed pairs tried; `search_budget_exhausted` means pairs remain.
+None claims global impossibility, especially with incomplete discovery.
+`native_route_unverified` after building keeps `game_constructed:true`; it is not
+rollback. The route limit includes approach edges and is an acceptance bound,
+not a bound imposed on TPF3's internal pathfinder.
+
+P08 built600.013514 native units with about8degrees overall heading change/rise6,
+endpoint grades0.005→0.015, radius120/max_grade0.04. Exact TRACK131275/131276/
+131277 connected nodes131264→131273→131274→131255; independent inspection and
+native TRAIN route623.538651 passed. Sampled grade0.015000001, zero join-height gap.
+Wrong direction and out-of-region briefs were rejected before building. The initial
+old400-unit fitting envelope rejected the fixture before any proposal; the finite
+fit envelope is now1000 XY units per axis. Total fit length≤800, at most8pieces and
+five samples/piece remain. Discovery bounds were unchanged. Geometry/grade remain
+sampled; physical train traversal, unrestricted routing and save identity are unprobed.

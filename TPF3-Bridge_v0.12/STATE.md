@@ -1,8 +1,29 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
 ## Current checkpoint
-P07 accepted by coordinator; P08 first checkpoints its reviewed source locally, then
-continues integrated brief-driven longer connection work. Base4f07bed before checkpoint.
+P08 complete: connect_brief/CLI connect-brief integrates two bounded native discoveries,
+deterministic guide/heading selection and one native compound fit/build/readback plus
+TRAIN route. Default fit-only; exact candidate snapshots/incidence revalidated before
+build. Only explicit pre-build fit failure allows another pair; unknown/build/route
+failure stops, no replay. Partial discovery/no pair/fit exhaustion remain explicit.
+Build40408: source131267/node131264→target131271/node131255; TRACK131275/131276/
+131277, nodes131264→131273→131274→131255. Length600.013514,rise6,grades0.005→0.015,
+radius120/max_grade0.04. Fresh readback/independent inspection and native TRAIN
+route623.538651 pass. SampledXYerror0.000503309,Zerror0.000001907,joinheightgap0;
+wrong-direction and out-of-region briefs rejected without construction.
+Initial fixture rejected by old400-unit fit envelope before proposal; expanded finite
+fit envelope to1000XY per axis, retaining800length/8pieces/5samples per piece.
+Discovery400-unit/16edge limits unchanged; no continuous geometry/train traversal claim.
+python tools/quiet_checks.py --suite live_client --label pif-p08-final:51passed,
+.local_checks/pif-p08-final_lla66d68/report.json.14unchanged quiet-runner tests reused.
+First51-test run had1test-helper error; fixed and retained. Current tested hashes match.
+python .local_runs/live_python_interface/p08/check_evidence.py:passed; local receipts,
+source/staged hashes and diff reviewed. Result/checks/history/HANDOFF in p08.
+P07 reviewed local commitd328782601b8e08386811b512fabda3ab63acaa5. Final P08 commit
+and reviewed scope recorded in p08/checkpoint.json; no push. Evidence remains ignored.
+Normal save/load only; game paused/non-maximised. Actual usage unavailable.
+
+## P07 native height/grade accepted
 Native cubic height/grade support in existing extend/connect/connect-selected; Python
 validates explicit vertical constraints, mod retains native XY fit/interpolation.
 Build40408: isolated connection131258/131259/131260, exact nodes131248→131256→
