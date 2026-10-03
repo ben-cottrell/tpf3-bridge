@@ -355,6 +355,7 @@ def _connect_project(client, brief, execute, guides=None, *, junction=False, int
                 source=source|{'edge_id':incoming['id'],'edge_snapshot':incoming,'node_id':placement['junction_node'],'through_edge':through['id']}
                 summary['selected'].update(source_edge=source['edge_id'],source_node=source['node_id'])
             rb=result.get('readback',{});nodes=rb.get('ordered_nodes',[]);edges=rb.get('ordered_edges',[])
+            _require_engineering_readback(rb,brief)
             summary.update(stage='readback',game_constructed=True,edges=edges,nodes=nodes)
             if rb.get('connected') is not True or not nodes or nodes[0]!=source['node_id'] or nodes[-1]!=target['node_id'] or rb.get('attachments',{}).get('source_edge')!=source['edge_id'] or rb.get('attachments',{}).get('target_edge')!=target['edge_id']:
                 summary.update(status='native_verification_failed',error='exact attachments not established');return summary
@@ -381,7 +382,8 @@ def _connect_project(client, brief, execute, guides=None, *, junction=False, int
             summary['stage']='route'
             route_params={'source_edge':source['edge_id'],'source_node':other(source),
                 'target_edge':target['edge_id'],'target_node':other(target),'mode':'TRAIN',
-                'max_length':brief['max_route_length'],'required_edges':edges}
+                'max_length':brief['max_route_length'],'required_edges':edges,
+                'geometry_constraints':{'edge_ids':edges,'radius':brief['radius'],'max_grade':brief['vertical']['max_grade'],'region':brief['region']}}
             if junction:route_params['junction_nodes']=(junction_nodes or [])+[source['node_id']]
             verified=client.request('route',route_params)
             record['route_request_id']=verified['request_id']
@@ -398,6 +400,19 @@ def _connect_project(client, brief, execute, guides=None, *, junction=False, int
     finally:
         try:atomic_json(path,record)
         finally:lock.unlink()
+
+def _require_engineering_readback(readback,brief):
+    """Fitter settings cannot substitute for current selected engineering acceptance."""
+    minimum=readback.get('min_sampled_radius')
+    if (readback.get('engineering_checks_verified') is not True
+            or readback.get('requested_min_radius')!=brief['radius']
+            or (minimum is None and readback.get('straight_only') is not True)
+            or (minimum is not None and (type(minimum) not in (int,float) or not math.isfinite(minimum) or minimum<brief['radius']))):
+        raise LiveError('native_verification_failed','selected realised radius not established')
+    if 'vertical' in brief:
+        grade=readback.get('max_sampled_grade')
+        if type(grade) not in (int,float) or not math.isfinite(grade) or grade>brief['vertical']['max_grade']+1e-6:
+            raise LiveError('native_verification_failed','selected realised grade not established')
 
 def connect_adjacent(client,brief,*,execute=False):
     """Native normal-offset sampling at actual template spacing; no Python fitter."""
@@ -433,6 +448,7 @@ def connect_adjacent(client,brief,*,execute=False):
         if response['status']!='ok':summary['error']=v.get('error','native_adjacent_failed');return summary
         if not execute:summary.update(stage='preflight',sampled_only=True);return summary
         rb=v.get('readback',{});adj=v.get('adjacency',{})
+        _require_engineering_readback(rb,brief)
         if rb.get('connected') is not True or adj.get('sampled_verified') is not True or adj.get('independent_native_nodes') is not True:
             summary.update(status='native_verification_failed',error='adjacent shape/independence unverified');return summary
         p.update(source_edge=rb['ordered_edges'][0],source_node=rb['ordered_nodes'][0],target_edge=rb['ordered_edges'][-1],target_node=rb['ordered_nodes'][-1],required_edges=rb['ordered_edges'],
@@ -721,17 +737,19 @@ def reconcile_rejected_crossover(client):
 def reconcile_rejected_junction(client):
     """Fresh fit-only identity/incidence checks after an explicit native rejection."""
     state=json.loads(client.journal.read_text());pending=state.get('pending')
-    if not pending or pending['operation']!='junction' or pending['params'].get('execute') is not True:
+    if not pending or pending['operation'] not in ('junction','interior_junction') or pending['params'].get('execute') is not True:
         raise LiveError('reconciliation_required','no pending native-rejected junction')
+    operation=pending['operation']
     rid=pending['request_id'];response_path=client.evidence/(rid+'.response.json')
     response=json.loads(response_path.read_text());result=response.get('result',{})
-    if (response.get('session')!=client.session or response.get('request_id')!=rid or response.get('operation')!='junction'
+    if (response.get('session')!=client.session or response.get('request_id')!=rid or response.get('operation')!=operation
             or response.get('status')!='error' or result.get('native_command_success') is not False
             or result.get('error')!='native_construction_rejected' or result.get('stage')!='build'):
         raise LiveError('reconciliation_required','no explicit native junction rejection',rid)
-    params=pending['params']|{'execute':False};observed=client.request('junction',params)
-    if observed['status']!='ok' or observed.get('result',{}).get('through_before',{}).get('requested_route_verified') is not True:
-        raise LiveError('reconciliation_required','unchanged two-edge source/free target not established',rid)
+    params=pending['params']|{'execute':False};observed=client.request(operation,params)
+    if (observed['status']!='ok' or observed.get('result',{}).get('game_constructed') is not False
+            or observed.get('result',{}).get('through_before',{}).get('requested_route_verified') is not True):
+        raise LiveError('reconciliation_required','unchanged junction source/free target not established',rid)
     latest=json.loads(client.journal.read_text())
     if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
     record={'status':'reconciled_rejected_junction','original_pending':pending,'original_response':str(response_path.resolve()),
@@ -837,10 +855,24 @@ def reconcile_constructed_connection(client, discoveries, edge_ids):
         matches=[c for c in candidates if c['edge_id']==brief[ek] and c['node_id']==brief[nk]]
         if len(matches)!=1:raise ValueError('original exact attachment missing or ambiguous')
         expected.append(matches[0]['edge_snapshot'])
-    observed=client.request('inspect',{'edge_ids':[brief['anchor_edge'],*edge_ids,brief['target_edge']]})
+    maxgrade=brief.get('vertical',{}).get('max_grade',fit.get('max_grade'))
+    if type(maxgrade) not in (int,float) or not math.isfinite(maxgrade) or maxgrade<0:
+        raise LiveError('reconciliation_required','recorded engineering grade limit unavailable',rid)
+    bounds={'radius':brief['radius'],'max_grade':maxgrade,'region':brief['region']}
+    observed=client.request('inspect',{'edge_ids':[brief['anchor_edge'],*edge_ids,brief['target_edge']],
+                                      'geometry_constraints':bounds})
     rows=observed.get('result',{}).get('edges',[])
-    if observed['status']!='ok' or len(rows)!=len(controls)+2 or rows[0]!=expected[0] or rows[-1]!=expected[1]:
+    snapshot=lambda e:{k:v for k,v in e.items() if k!='engineering_checks'}
+    if observed['status']!='ok' or len(rows)!=len(controls)+2 or snapshot(rows[0])!=expected[0] or snapshot(rows[-1])!=expected[1]:
         raise LiveError('reconciliation_required','attachments changed or inspection incomplete',rid)
+    for e in rows:
+        check=e.get('engineering_checks',{});radius=check.get('min_sampled_radius');grade=check.get('max_sampled_grade')
+        # The native inspector omits radius only for an infinite sampled radius.
+        # Its positive sampled_verified marker certifies the supplied hard bounds.
+        if (check.get('sampled_verified') is not True or check.get('samples')!=17
+                or (radius is not None and (type(radius) not in (int,float) or not math.isfinite(radius) or radius<brief['radius']))
+                or type(grade) not in (int,float) or not math.isfinite(grade) or grade>maxgrade+.000001):
+            raise LiveError('reconciliation_required','realised engineering bounds not established',rid)
     remaining={e['id']:e for e in rows[1:-1]};current=brief['anchor_node'];ordered=[];nodes=[current]
     for control in controls:
         matches=[e for e in remaining.values() if e['node0']==current]
@@ -862,7 +894,8 @@ def reconcile_constructed_connection(client, discoveries, edge_ids):
     if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
     record={'status':'reconciled_verified_connection','original_pending':pending,'original_response':str((client.evidence/(rid+'.response.json')).resolve()),
             'observations':[observed['request_id'],path['request_id']],'ordered_edges':ordered,'ordered_nodes':nodes,
-            'connected':True,'native_route_verified':True,'native_effect_history_complete':False,'automatic_replay':False,'train_traversal':'unprobed'}
+            'connected':True,'native_route_verified':True,'engineering_constraints':bounds,'engineering_sampled_only':True,
+            'native_effect_history_complete':False,'automatic_replay':False,'train_traversal':'unprobed'}
     evidence=client.evidence/(rid+'.reconciliation.json');atomic_json(evidence,record)
     latest.setdefault('reconciled_constructions',{})[rid]={'evidence':str(evidence.resolve()),'automatic_replay':False}
     latest.pop('pending');atomic_json(client.journal,latest)
@@ -916,6 +949,7 @@ def _workflow(client, brief, execute, operation):
                 summary['reason_class'] = result['reason_class']
         elif execute:
             read = result.get('readback', {})
+            _require_engineering_readback(read,brief)
             if (read.get('connected') is not True or not read.get('ordered_edges') or not read.get('ordered_nodes')
                     or read['ordered_nodes'][0] != brief['anchor_node']
                     or (operation == 'connection' and (read['ordered_nodes'][-1] != brief['target_node']

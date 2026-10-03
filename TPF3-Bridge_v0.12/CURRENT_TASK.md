@@ -1,9 +1,7 @@
-# PIF-P14 - PARTIAL / close-crossover proposal blocked
-Card: .local_runs/live_python_interface/p14/orchestrator/TASK.md; P13 base5f3bc6f.
-Curved native normal-offset adjacent approach at actual spacing5 demonstrated on40408;
-independent current identities/spacing/radius120 and both through TRAIN routes pass.
-Two distinct close-crossover proposals rejected; five-movement final matrix NOT accepted.
-87client tests pass. Evidence: .local_runs/live_python_interface/p14/.
-Report concrete native proposal gap to coordinator before further method/geometry work;
-also retain reference fixture native-fit160/realised157.374 conversion diagnostic.
-No claim of P14 completion, stations or remote push.
+# PIF-P15 - complete: widened connection and realised-radius correction
+Active card: .local_runs/live_python_interface/p15/orchestrator/TASK.md
+Build40408: all5declared TRAIN movements pass on the disclosed local fan-out alternative;
+100-unit5m approach retained, direct5m crossover remains unresolved. Realised hard-radius
+acceptance fixed;89client tests and fresh native/independent geometry checks pass.
+Evidence: .local_runs/live_python_interface/p15/fresh_acceptance.json and HANDOFF.md.
+Local milestone checkpoint; no remote push. Stop at P15 boundary; coordinator reviews next.

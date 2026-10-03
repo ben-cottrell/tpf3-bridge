@@ -592,8 +592,8 @@ Stop on failed or uncertain construction; completed partial effects remain visib
 Explicit `reconcile_constructed_crossover` checks recorded receipts against fresh native
 state without fitting/building. Optional `--reconciled-crossover <record>` requires
 `--execute`, matching approved first-step constraints and another read-only check;
-it is not automatic resume. This continuation path has local tests, not a successful
-native demonstration. `remove_branch` is a bounded, explicitly authorised native repair
+it is not automatic resume. This continuation path has local tests and the P15 native
+demonstration below. `remove_branch` is a bounded, explicitly authorised native repair
 of an exact observed exclusive branch; it is not rollback.
 
 Build40408 demonstrated two approaches, four destinations, one crossover and two ladder
@@ -641,12 +641,13 @@ native node identities. Left-side construction is demonstrated; right-side deliv
 has local tests only. This is native offset sampling/construction, not demonstrated
 player-style parallel snapping or a dedicated native parallel-track tool API.
 
-P14's integrated close crossover/branch outcome remains blocked. Existing P13 crossover
+P14's original direct close crossover/branch outcome remains blocked. Existing P13 crossover
 proposals at spacing5, selected radius120 and two distinct60/90-unit lead layouts were
 natively rejected as Construction Not Possible. Fresh through-edge/preflight checks
 reconciled both rejections without rebuilding; other effects remain unknown. Five
-required throat movements remain declared; only the two independent through movements
-exist. No crossover/branch/final-matrix success is claimed. This does not establish that
+required throat movements were declared; only the two independent through movements
+existed at that checkpoint. P14 did not establish crossover/branch/final-matrix success.
+P15 below delivers a wider equivalent. The direct rejection does not establish that
 TPF3's player tools cannot build an equivalent.
 
 The initial reference site collided and was relocated; its rejected corridor was also
@@ -655,5 +656,42 @@ explicit bounded current-state checks, not rollback or automatic resume. The ref
 fixture's native fit input160 produced sampled BaseEdge minimum157.374230: its separate
 160-radius acceptance is false. The final adjacent workflow explicitly checks120 on both
 realised tracks and passes; native fit radius alone is not a realised-radius guarantee.
-Keep that conversion diagnostic for the next adopted repair, without rewriting receipts.
+P15 below fixes that acceptance gap while preserving the original conversion diagnostic.
 87client tests pass. No physical traversal/reservations/capacity claim.
+
+## Widened native connection and realised constraints (P15)
+
+The existing `connect-throat` command demonstrated all five movements A1→D1/D2/D3
+and A2→D2/D3 on build40408. This is a disclosed functional alternative: a100-unit
+five-metre adjacent approach fans out locally to a widened destination and a branch.
+The original direct5m crossover remains unresolved. The new D2 ends near local(620,105)
+and D3 near(1120,460), with parallel destination headings, in the translated/rotated
+brief frame. It does not preserve the earlier full curved adjacent run. Old incidental
+test tracks crossing the new corridor were explicitly removed; historical acceptance
+records remain evidence of those earlier tests, not promises about the current map.
+
+```powershell
+python bridge_live.py connect-throat --context context.json --params throat_brief.json
+python bridge_live.py connect-throat --context context.json --params throat_brief.json --execute
+```
+
+Native fitting controls and hard realised requirements are separate. Ordinary fitting
+uses a1.05 radius margin; crossover fitting uses1.25. Neither margin is an acceptance
+guarantee. Converted proposals and current BaseEdge/readback geometry must pass the
+selected hard radius, grade and region with17samples per piece. Missing engineering
+evidence fails; a straight-only result explicitly represents an infinite sampled radius.
+The old160-fit/157.374-realised shortfall now rejects, while the selected120 pair passes.
+`inspect` accepts `geometry_constraints` (`radius`, `max_grade`, `region`) for fresh
+read-only checks. Constructed-connection reconciliation also requires these bounds.
+
+Fresh independent checks of28TRACK edges gave minimum sampled radius122.281680≥120,
+grade0≤0.04 and retained approach spacing4.999835–4.999948. All five directed native
+paths, including turnout connectors, pass. Missing required movement, excluded region,
+hard160 radius and stale original attachment reject. Explicit retained-crossover
+continuation was demonstrated without rebuilding it. Rejected interior junctions can
+be reconciled through `reconcile_rejected_junction`; its fit-only check retains unknown
+effects. `remove_branch` with explicit `free_ends:true` supports an exact exclusive chain
+of at most16ordinary edges between two-edge attachments, leaving verified free stubs;
+the ordinary removal bound remains8. These are authorised local operations, not rollback
+or automatic resume.89client tests pass. Geometry is sampled, not a continuous proof;
+physical train traversal, reservations/capacity and general save identity remain unprobed.

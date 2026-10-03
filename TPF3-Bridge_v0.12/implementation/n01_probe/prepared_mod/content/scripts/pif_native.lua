@@ -60,10 +60,11 @@ local function native_geometry(id)
  assert(count==1 and g,"rail_movement_geometry_not_unique");return g
 end
 -- Engineering checks on native geometry, not a replacement curve generator.
--- Five observations are a sampled check, not continuous curvature/clearance proof.
+-- Seventeen observations are a sampled check, not continuous curvature/clearance proof.
 local function geometry_bounds(g,region,minradius,maxgrade)
  local minimum,maximum=math.huge,0
- for _,u in ipairs({0,.25,.5,.75,1}) do
+ for j=0,16 do
+  local u=j/16
   local pos,dir=sample(g,u);in_region(pos,region)
   local grade=math.abs(slope(dir));assert(finite(grade) and grade<=maxgrade+.000001,"realised_sampled_grade_exceeds_limit");maximum=math.max(maximum,grade)
   local radius=math.huge
@@ -97,6 +98,11 @@ function M.inspect(p)
     radius=g.type==api.type.EdgeGeometry.Type.ARC and g.arc.radius or nil}
   end
   out[#out+1]=e
+  if p.geometry_constraints then
+   local q=p.geometry_constraints
+   local radius,grade=geometry_bounds(cubic({p0=e.p0,p1=e.p1,t0=e.t0,t1=e.t1,length=distance(e.p0,e.p1)}),q.region,q.radius,q.max_grade)
+   e.engineering_checks={sampled_verified=true,min_sampled_radius=radius~=math.huge and radius or nil,max_sampled_grade=grade,samples=17,continuous_proof=false}
+  end
   if p.resources==true then
    local resource=api.res.streetTemplateRep.findAndGet(e.template)
    e.resource={track_distance=resource.trackDistance,min_curve_radius=resource.minCurveRadius,
@@ -205,7 +211,7 @@ function M.adjacent(p,s,state,request_id,respond)
     for _,item in ipairs(res.proposal.proposal.addedSegments) do ids[#ids+1]=item.entity end
     local first
     for _,id in ipairs(ids) do local e=edge(id);if near(e.p0,controls[1].p0,.001) then assert(not first,"ambiguous_adjacent_start");first=e.node0 end end
-    local f={anchor=refs[1],node=first,ids=ids,controls=controls,samples=samples,region=p.region,grade=0,end_grade=0,max_grade=p.max_grade}
+    local f={anchor=refs[1],node=first,ids=ids,controls=controls,samples=samples,region=p.region,grade=0,end_grade=0,max_grade=p.max_grade,min_radius=p.radius}
     local rb=M.readback(f);local paired={};for _,id in ipairs(rb.ordered_edges) do paired[#paired+1]={edge={id=id},forward=true} end
     local checked=M.verify_adjacency({reference=p.reference,adjacent=paired,spacing=p.spacing,tolerance=p.tolerance,region=p.region,radius=p.radius,max_grade=p.max_grade})
     directed_rows(p.reference,true);s.mutationPending=nil
@@ -471,6 +477,8 @@ end
 function M.fit(p,s,request_id,target,start)
  vector(p.end_xy);vector(p.end_direction)
  assert(finite(p.radius) and p.radius>0,"invalid_radius")
+ local fitradius=p.fit_radius or p.radius*1.05
+ assert(finite(fitradius) and fitradius>=p.radius,"invalid_native_fit_radius")
  assert(type(p.region)=="table","region_required");vector(p.region.min);vector(p.region.max)
  assert(#p.region.min==3 and #p.region.max==3,"region_needs_xyz")
  for i=1,3 do assert(p.region.max[i]>p.region.min[i],"invalid_region") end
@@ -483,7 +491,7 @@ function M.fit(p,s,request_id,target,start)
  else a,pos,t0,grade=anchor(p) end
  in_region(pos,p.region)
  local t1=norm(p.end_direction)
- local result=api.engine.util.pathfinding.findDubinsPath(v({pos[1],pos[2],0}),v(t0),v({p.end_xy[1],p.end_xy[2],0}),v(t1),p.radius)
+ local result=api.engine.util.pathfinding.findDubinsPath(v({pos[1],pos[2],0}),v(t0),v({p.end_xy[1],p.end_xy[2],0}),v(t1),fitradius)
  assert(type(result)=="table" and #result>0 and #result<=8,"no_supported_bounded_fit")
  local controls,samples,total,maxerr,maxheading={}, {},0,0,0
  local orientation={forward_parts=0,backward_parametrised_parts=0};local orientation_evidence={}
@@ -491,7 +499,7 @@ function M.fit(p,s,request_id,target,start)
   assert(type(row[2])=="boolean","native_direction_flag_unavailable")
   local g=row[1];assert(g and finite(g.length) and g.length>0,"invalid_fit_length")
   assert(g.type==api.type.EdgeGeometry.Type.ARC or g.type==api.type.EdgeGeometry.Type.STRAIGHT,"unsupported_fit_family")
-  if g.type==api.type.EdgeGeometry.Type.ARC then assert(math.abs(g.arc.radius)>=p.radius-.001,"fit_radius_below_selected_constraint") end
+  if g.type==api.type.EdgeGeometry.Type.ARC then assert(math.abs(g.arc.radius)>=fitradius-.001,"fit_radius_below_selected_constraint") end
   -- The declared flag is EdgeGeometry traversal direction. Ask the native sampler
   -- to apply it; never equate canonical orientation with railway reversal.
   local p0,d0=sample(g,0,row[2]);local p1,d1=sample(g,1,row[2])
@@ -539,7 +547,7 @@ function M.fit(p,s,request_id,target,start)
   last.p1={target.pos[1],target.pos[2],target.pos[3]};last.t1[3]=target.grade*last.length
   in_region(last.p1,p.region)
  end
- local offset,maxsampledgrade,maxzerr=0,0,0
+ local offset,maxsampledgrade,maxzerr,minsampledradius=0,0,0,math.huge
  local vertical_samples={}
  for i,c in ipairs(controls) do
   if profile then
@@ -549,6 +557,8 @@ function M.fit(p,s,request_id,target,start)
    c.t1[3]=slope(d1)*math.sqrt(c.t1[1]^2+c.t1[2]^2)
   end
   local cg=cubic(c);samples[i]={};vertical_samples[i]={}
+  local checkedradius=geometry_bounds(cg,p.region,p.radius,maxgrade or math.abs(grade))
+  minsampledradius=math.min(minsampledradius,checkedradius)
   for _,u in ipairs({0,.25,.5,.75,1}) do
    local np,nd=sample(result[i][1],u,result[i][2]);local cp,cd=sample(cg,u)
    maxerr=math.max(maxerr,distance(np,cp));if u==0 or u==1 then maxheading=math.max(maxheading,angle(nd,cd)) end
@@ -565,16 +575,19 @@ function M.fit(p,s,request_id,target,start)
  assert(maxerr<=.1 and maxheading<=.1,"sampled_conversion_outside_tolerance")
  assert(maxzerr<=.001,"native_vertical_subdivision_mismatch")
  assert(math.abs(slope(controls[1].t0)-grade)<=.000001 and math.abs(slope(last.t1)-endgrade)<=.000001,"endpoint_grade_mismatch")
- s.fits[request_id]={anchor=a,node=p.anchor_node,target=target,controls=controls,samples=samples,region=p.region,total_length=total,grade=grade,end_grade=endgrade,max_grade=maxgrade,built=false}
+ s.fits[request_id]={anchor=a,node=p.anchor_node,target=target,controls=controls,samples=samples,region=p.region,total_length=total,grade=grade,end_grade=endgrade,max_grade=maxgrade,min_radius=p.radius,built=false}
  return {fit_request=request_id,pieces=#controls,total_length=total,start_node=p.anchor_node,target_node=target and target.node or nil,start=pos,finish=last.p1,radius=p.radius,grade=grade,end_grade=endgrade,
   vertical_domain=profile and "native_cubic_endpoint_height_grade" or "constant_grade_compatible_endpoints",max_grade=maxgrade,max_sampled_grade=maxsampledgrade,sampled_Z_error=maxzerr,
   vertical_samples=profile and vertical_samples or nil,controls=profile and controls or nil,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,
+  native_fit_radius=fitradius,requested_min_radius=p.radius,min_sampled_converted_radius=minsampledradius~=math.huge and minsampledradius or nil,
   native_orientation=orientation,orientation_evidence=orientation_evidence,sampled_only=true,game_constructed=false}
 end
 function M.readback(f)
  assert(f.ids and #f.ids==#f.controls,"construction_receipt_incomplete")
  local remaining={};for _,id in ipairs(f.ids) do assert(not remaining[id],"duplicate_receipt_edge");remaining[id]=true end
  local current=f.node;local ordered,nodes,observations={},{current},{};local maxerr,maxheading,maxzerr,maxgrade,maxjoinz,maxjoingrade=0,0,0,0,0,0
+ assert(finite(f.min_radius) and f.min_radius>0,"realised_radius_requirement_missing")
+ local minradius=math.huge
  for i,c in ipairs(f.controls) do
   local found,e=nil,nil
   for id in pairs(remaining) do local x=edge(id);if x.node0==current then assert(not found,"ambiguous_connection");found=id;e=x end end
@@ -595,7 +608,9 @@ function M.readback(f)
    if f.max_grade then assert(math.abs(bg)<=f.max_grade+.000001,"realised_sampled_grade_exceeds_limit") end
    in_region({pos[1],pos[2],bp[3]},f.region)
   end
-  if f.junction_node then geometry_bounds(actualbase,f.region,f.min_radius,f.max_grade);geometry_bounds(ng,f.region,f.min_radius,f.max_grade) end
+  local checkedradius=geometry_bounds(actualbase,f.region,f.min_radius,f.max_grade or math.abs(f.grade))
+  minradius=math.min(minradius,checkedradius)
+  if f.junction_node then geometry_bounds(ng,f.region,f.min_radius,f.max_grade) end
   if i>1 then
    local prev=observations[i-1];maxjoinz=math.max(maxjoinz,math.abs(prev.p1[3]-e.p0[3]));maxjoingrade=math.max(maxjoingrade,math.abs(slope(prev.t1)-slope(e.t0)))
   end
@@ -625,7 +640,7 @@ function M.readback(f)
   assert(math.abs(slope(before.t1)-g.grade)<=.000001 and math.abs(slope(after.t0)-g.grade)<=.000001,"guide_grade_mismatch")
   guides[#guides+1]={node=before.node1,after_piece=g.after_piece,position=before.p1,grade=slope(before.t1),verified=true}
  end
- return {ordered_edges=ordered,ordered_nodes=nodes,edges=observations,attachments=attachments,connected=true,realised_guides=guides,sampled_XY_error=maxerr,sampled_base_Z_error=maxzerr,max_sampled_grade=maxgrade,max_join_height_gap=maxjoinz,max_join_grade_gap=maxjoingrade,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=true,train_traversal="unprobed",native_effect_history_complete=false}
+ return {ordered_edges=ordered,ordered_nodes=nodes,edges=observations,attachments=attachments,connected=true,realised_guides=guides,sampled_XY_error=maxerr,sampled_base_Z_error=maxzerr,max_sampled_grade=maxgrade,max_join_height_gap=maxjoinz,max_join_grade_gap=maxjoingrade,endpoint_heading_error=maxheading,engineering_checks_verified=true,straight_only=minradius==math.huge,requested_min_radius=f.min_radius,min_sampled_radius=minradius~=math.huge and minradius or nil,sampled_only=true,game_constructed=true,train_traversal="unprobed",native_effect_history_complete=false}
 end
 function M.build(p,s,state,request_id,respond)
  assert(p.authorised==true,"explicit_build_option_required")
@@ -691,7 +706,7 @@ function M.corridor(p,s,state,request_id,respond)
   end
   goals[#goals+1]=target
   local all={anchor=a,node=p.source.node_id,target=target,controls={},samples={},guides={},region=p.region,
-   grade=grade,end_grade=target.grade,max_grade=p.vertical.max_grade,total_length=0,built=false}
+   grade=grade,end_grade=target.grade,max_grade=p.vertical.max_grade,min_radius=p.radius,total_length=0,built=false}
   local start={anchor=a,pos=pos,direction=direction,grade=grade}
   fit={legs={},pieces=0,total_length=0,radius=p.radius,grade=grade,end_grade=target.grade,max_grade=p.vertical.max_grade,
    max_sampled_grade=0,sampled_XY_error=0,sampled_Z_error=0,sampled_only=true,guide_nodes_realised=false,game_constructed=false,
@@ -756,7 +771,7 @@ function M.extension(p,s,state,request_id,respond,connect_mode,junction_context)
   stage="fit"
   -- A small explicit native-fit margin accommodates ARC-to-cubic conversion;
   -- the requested minimum remains binding on sampled realised branch geometry.
-  if junction_context then b.radius=junction_context.radius*1.05 end
+  if junction_context then b.fit_radius=junction_context.radius*1.05 end
   local fit_id=request_id.."_fit";fit=M.fit(b,s,fit_id,target)
   local fitted=s.fits[fit_id] -- retain invocation-local data across command callback
   if junction_context then
@@ -854,7 +869,7 @@ function M.interior_junction(p,s,state,request_id,respond)
   assert(before.requested_route_verified,"existing_through_route_unverified")
   local splits=interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade)
   stage="fit"
-  local fit_id=request_id.."_fit";fit=M.fit({end_xy={tp[1],tp[2]},end_direction=td,radius=p.radius*1.05,region=p.region,vertical=p.vertical},s,fit_id,
+  local fit_id=request_id.."_fit";fit=M.fit({end_xy={tp[1],tp[2]},end_direction=td,radius=p.radius,fit_radius=p.radius*1.05,region=p.region,vertical=p.vertical},s,fit_id,
    {edge=te,node=target.node_id,pos=tp,direction=td,grade=tg},{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
   fit.start_node=nil;fit.requested_min_radius=p.radius
   local f=s.fits[fit_id];f.node=-100;f.junction_node=-100;f.min_radius=p.radius
@@ -958,7 +973,7 @@ function M.crossover(p,s,state,request_id,respond)
    assert(before[i].requested_route_verified,"existing_through_route_unverified")
   end
   stage="fit";local fitid=request_id.."_fit"
-  fit=M.fit({end_xy={d.pos[1],d.pos[2]},end_direction=d.outward_direction,radius=p.radius*1.25,region=p.region,vertical=p.vertical},s,fitid,
+  fit=M.fit({end_xy={d.pos[1],d.pos[2]},end_direction=d.outward_direction,radius=p.radius,fit_radius=p.radius*1.25,region=p.region,vertical=p.vertical},s,fitid,
    {edge=b,pos=d.pos,direction=d.outward_direction,grade=d.grade},{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
   fit.requested_min_radius=p.radius;fit.start_node=nil;fit.target_node=nil
   local f=s.fits[fitid];f.min_radius=p.radius
@@ -997,7 +1012,8 @@ end
 
 -- Bounded explicit removal of an observed failed test branch, not rollback.
 function M.remove_branch(p,s,state,request_id,respond)
- assert(p.authorised==true and type(p.edges)=="table" and #p.edges>=1 and #p.edges<=8,"invalid_branch_removal")
+ assert(p.free_ends==nil or type(p.free_ends)=="boolean","invalid_free_end_removal_option")
+ assert(p.authorised==true and type(p.edges)=="table" and #p.edges>=1 and #p.edges<=(p.free_ends and 16 or 8),"invalid_branch_removal")
  assert(not s.mutationPending,"unreconciled_mutation")
  local ids,expected={},{};local interior={}
  for i,snapshot in ipairs(p.edges) do
@@ -1008,6 +1024,13 @@ function M.remove_branch(p,s,state,request_id,respond)
   if i>1 then assert(p.edges[i-1].node1==a.node0,"removal_chain_disconnected");interior[#interior+1]=a.node0 end
  end
  for _,node in ipairs(interior) do local all,owner=incidence(node);assert(#all==2 and not(owner and owner>0),"removal_node_not_exclusive");for _,id in ipairs(all) do assert(expected[id],"removal_node_not_exclusive") end end
+ if p.free_ends then
+  for _,node in ipairs({p.edges[1].node0,p.edges[#p.edges].node1}) do
+   local all,owner=incidence(node);assert(#all==2 and not(owner and owner>0),"removal_endpoint_not_two_edge_attachment")
+   local removed=0;for _,id in ipairs(all) do if expected[id] then removed=removed+1 else edge(id) end end
+   assert(removed==1,"removal_endpoint_chain_ambiguous")
+  end
+ end
  local proposal=api.type.SimpleProposal.new();proposal.streetProposal.edgesToRemove=ids;proposal.streetProposal.nodesToRemove=interior
  s.mutationPending=request_id;local root=state:get() or {};root.pifLive=s;state:set(root)
  api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(_,success)
@@ -1015,7 +1038,7 @@ function M.remove_branch(p,s,state,request_id,respond)
    assert(success==true,"native_removal_rejected")
    for _,id in ipairs(ids) do assert(not api.engine.entityExists(id) or api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)==nil,"branch_edge_removal_unverified") end
    local endpoints={p.edges[1].node0,p.edges[#p.edges].node1};local observations={}
-   for _,node in ipairs(endpoints) do local all=incidence(node);assert(#all==2,"remaining_through_incidence_unverified");for _,id in ipairs(all) do edge(id) end;observations[#observations+1]={node=node,incident_edges=all} end
+   for _,node in ipairs(endpoints) do local all=incidence(node);assert(#all==(p.free_ends==true and 1 or 2),"remaining_through_incidence_unverified");for _,id in ipairs(all) do edge(id) end;observations[#observations+1]={node=node,incident_edges=all} end
    s.mutationPending=nil;return {game_constructed=true,removed_edges=ids,remaining_endpoints=observations,native_effect_history_complete=false,rollback=false}
   end)
   respond(request_id,ok and "ok" or "mutation_unverified",ok and value or {game_constructed="unknown",error=tostring(value):sub(1,400),retry=false})

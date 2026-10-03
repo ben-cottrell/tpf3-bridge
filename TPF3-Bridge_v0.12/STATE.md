@@ -1,32 +1,42 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
-## Current checkpoint
-P14 partial/native adjacent approach demonstrated; integrated throat remains blocked.
-connect_adjacent / CLI connect-adjacent [--execute] uses actual StreetTemplate.trackDistance,
-native CUBIC_OFFSET_SPLINE sampler, bounded lowering/readback and directed TRAIN checks.
-40408: translated/rotated curved reference plus12adjacent TRACK138938-138949 at spacing5;
-distinct nodes138890/138894/138927-138937. Fresh24TRACK,independent17samples/piece signed
-spacing4.999835-5.000129,sampled minimum151.616767>=selected120,grade0. Two through routes
-pass. Native normal-offset observations204,not continuous clearance/gauging proof.
-No dedicated parallel-snapping API established; player snapping remains an unprobed lead.
-First reference site: explicit Collision rejection,reconciled read-only then relocated.
-Close crossover:60and90unit leads,hard120/native-fit150; both rejected Construction Not
-Possible, original through snapshots/routes unchanged on explicit read-only reconciliation.
-Five declared final routes retained:2observed,3missing; no accepted crossover/branch/matrix.
-This is current scripted proposal gap,not global impossibility. No blind replay/ignoreErrors.
-Reference fixture input160 yields sampled actual157.374230; its160acceptance is false.
-Final pair120acceptance passes; do not interpret native fit radius as realised guarantee.
-python tools/quiet_checks.py --suite live_client --label pif-p14-client:87passed;
-.local_checks/pif-p14-client_adh6o_ew/report.json (all81P13regressions included).
-python .local_runs/live_python_interface/p14/observe_pair.py:fresh pair/5route observations,
-wrong-spacing/strict-radius rejection,zero mutations; fresh_pair_checks.json retains
-reference-radius diagnostic. Full receipts/failed sites/layouts/native_contracts/checkpoint
-and handoff in .local_runs/live_python_interface/p14/. P13 accepted base5f3bc6f;no push.
-python .local_runs/live_python_interface/p14/check_evidence.py: retained subset evidence,
-unchanged87-test inputs/environment,staging parity,correlated routes/rejections,no pending.
-Disposable world saved normally after observations; left paused/nonmaximised,no restart.
-Physical traversal/reservations/capacity/general save identity unprobed. Right-side native
-construction not demonstrated. No station/physics/runner change; actual usage unavailable.
+## Current checkpoint — P15 complete
+Native widened connection through connect_throat / CLI connect-throat [--execute]:
+all5declared TRAIN movements A1->D1/D2/D3,A2->D2/D3 pass on build40408.
+Disclosed local fan-out:100-unit5m approach retained;D2 ends near local(620,105),D3 near
+(1120,460),parallel destination headings. Direct5m crossover remains unresolved;
+no claim that the earlier full curved adjacent pair remains on the current map.
+Fresh28TRACK/17samples per BaseEdge:minimum radius122.281680>=hard120,grade0<=0.04,
+authorised region passes,straight approach spacing4.999835-4.999948. Exact native roles,
+turnout connectors and all5routes verified; physical traversal/reservations unprobed.
+Native fitting margin separated from hard realised acceptance:ordinary1.05,crossover1.25;
+converted and current BaseEdge bounds required in connection/corridor/readback/reconciliation.
+Original160-fit/157.374-realised diagnostic preserved and rejected; selected120pair passes.
+Explicit rejected interior-junction reconciliation and retained-crossover continuation
+are read-only/no replay. Initial full fan-out Collision,short merge Construction Not
+Possible,then branch Collision retained/reconciled. Bounded discovery found incidental
+old P11/P12 fixtures; exact69391 and131325/135522 removed before fresh successful build.
+Native IDs can be reused:final junction69391 is a new node,not the removed TRACK.
+Earlier acceptance records describe historical states; no implicit fixture preservation.
+python tools/quiet_checks.py --suite live_client --label pif-p15-reconciliation:89passed;
+.local_checks/pif-p15-reconciliation_1h7w0baw/report.json; prior87regressions included.
+python .local_runs/live_python_interface/p15/observe_final.py:5fresh routes,28TRACK,
+independent17sample geometry,4negative cases,zero mutations;fresh_acceptance.json.
+Read-only hard160/retained120pair evidence:radius_regression.json in same p15 directory.
+Full receipts,failed layouts,clearance evidence,hashes,HANDOFF/checkpoint stay local in p15.
+python .local_runs/live_python_interface/p15/check_evidence.py:retained receipts/hashes,
+unchanged89-test inputs/environment,staging parity,no pending,771-byte completed summary.
+Disposable TPF3_Bridge_NCD_C09_Test_20261002_1902 saved normally after acceptance;
+game left paused/nonmaximised,no restart. Local milestone commit recorded in p15/checkpoint.json;
+no remote push.
+No Python fitter,station/physics/runner changes; general save identity/native effect history
+unknown,continuous geometry proof unclaimed,actual usage unavailable. P14 base4afbf3c.
+
+## P14 historical partial checkpoint
+4afbf3c: native curved12-edge adjacent approach at template spacing5 and two through routes;
+close crossover60/90lead proposals rejected.87tests passed at
+.local_checks/pif-p14-client_adh6o_ew/report.json. Full historical evidence in
+.local_runs/live_python_interface/p14/;failed160acceptance preserved,corrected by P15.
 
 ## P13 integrated throat accepted
 P13 complete: connect_throat / CLI connect-throat [--execute] composes two native

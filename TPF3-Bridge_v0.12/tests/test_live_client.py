@@ -22,6 +22,9 @@ class LiveClientTests(unittest.TestCase):
         return dict(version=1, session='test_session', request_id=request_id,
                     operation=operation, status='ok', **changes)
 
+    def engineering_readback(self,radius=100):
+        return {'engineering_checks_verified':True,'requested_min_radius':radius,'min_sampled_radius':radius+1,'max_sampled_grade':0}
+
     def test_data_literals_cannot_escape_strings(self):
         data = lua_literal({'x': '";os.execute("evil")--\n£', 'a': [True, 3.5]})
         self.assertIn('\\034;os.execute(\\034evil\\034)', data)
@@ -169,7 +172,7 @@ class LiveClientTests(unittest.TestCase):
                     return self.response('rejected',op,result={'stage':'build','game_constructed':'unknown','error':'native_construction_rejected'})|{'status':'error'}
                 a=params['source'];b=params['target']
                 return self.response('native',op,result={'game_constructed':params['execute'],'fit':{'pieces':1},
-                    'readback':{'connected':True,'ordered_edges':[30],'ordered_nodes':[a['node_id'],b['node_id']],
+                    'readback':self.engineering_readback(params['radius'])|{'connected':True,'ordered_edges':[30],'ordered_nodes':[a['node_id'],b['node_id']],
                         'attachments':{'source_edge':a['edge_id'],'target_edge':b['edge_id']}}})
             self.assertEqual(op,'route')
             return self.response('route',op,result={'requested_route_verified':failure!='route','total_path_length':40})
@@ -248,7 +251,7 @@ class LiveClientTests(unittest.TestCase):
             def worker(op,p):
                 if op=='corridor':
                     return self.response('cb',op,result={'game_constructed':True,'fit':{'legs':[{'index':1},{'index':2}]},
-                        'readback':{'connected':True,'ordered_edges':[30,31],'ordered_nodes':[11,40,21],
+                        'readback':self.engineering_readback(p['radius'])|{'connected':True,'ordered_edges':[30,31],'ordered_nodes':[11,40,21],
                             'attachments':{'source_edge':10,'target_edge':20},'realised_guides':[{'node':40,'verified':verified}]}})
                 if op=='route':self.assertEqual(p['required_edges'],[30,31]);self.assertEqual(p['max_length'],2000)
                 return query(op,p)
@@ -649,12 +652,12 @@ class LiveClientTests(unittest.TestCase):
             self.assertNotIn('execute',calls.call_args.args[1])
 
     def test_rejected_junction_reconciliation_is_read_only_and_preserves_unknowns(self):
-        for defect in ('none','failed_query','through'):
-            pending=self.rejected_connection_pending();pending['operation']='junction'
+        for operation,defect in [(op,d) for op in ('junction','interior_junction') for d in ('none','failed_query','through','constructed')]:
+            pending=self.rejected_connection_pending();pending['operation']=operation
             pending['params']={'execute':True,'source':{'node_id':11},'target':{'node_id':21}}
             self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending}))
-            original=self.client.evidence/'rejected_connection.response.json';r=json.loads(original.read_text());r['operation']='junction';original.write_text(json.dumps(r))
-            response=self.response('fresh','junction',result={'through_before':{'requested_route_verified':defect!='through'}})
+            original=self.client.evidence/'rejected_connection.response.json';r=json.loads(original.read_text());r['operation']=operation;original.write_text(json.dumps(r))
+            response=self.response('fresh',operation,result={'game_constructed':defect=='constructed','through_before':{'requested_route_verified':defect!='through'}})
             if defect=='failed_query':response['status']='error'
             with patch.object(self.client,'request',return_value=response) as calls:
                 if defect=='none':
@@ -664,7 +667,7 @@ class LiveClientTests(unittest.TestCase):
                 else:
                     with self.assertRaises(LiveError):reconcile_rejected_junction(self.client)
                     self.assertEqual(json.loads(self.client.journal.read_text())['pending'],pending)
-                self.assertEqual(calls.call_args.args[0],'junction');self.assertIs(calls.call_args.args[1]['execute'],False)
+            self.assertEqual(calls.call_args.args[0],operation);self.assertIs(calls.call_args.args[1]['execute'],False)
 
     def test_junction_reconciliation_requires_explicit_native_failure(self):
         pending=self.rejected_connection_pending();pending['operation']='junction'
@@ -691,18 +694,24 @@ class LiveClientTests(unittest.TestCase):
         for c,e in zip(record['result']['candidates'],[source,target]):c['edge_snapshot']=e
         edge={'id':30,'node0':11,'node1':21,'template':'track','style':'style',**control}
         response=self.response('built','connection',result={'stage':'readback','game_constructed':True,
-            'stages':[{'stage':'build','status':'ok'}],'fit':{'controls':[control]}});response['status']='mutation_unverified'
+            'stages':[{'stage':'build','status':'ok'}],'fit':{'controls':[control],'max_grade':.04}});response['status']='mutation_unverified'
         self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending}))
         (self.client.evidence/'built.response.json').write_text(json.dumps(response))
-        return pending,record,[source,edge,target]
+        rows=[dict(e,engineering_checks={'sampled_verified':True,'samples':17,'min_sampled_radius':101,'max_sampled_grade':.01}) for e in (source,edge,target)]
+        return pending,record,rows
 
     def test_constructed_reconciliation_requires_exact_controls_chain_and_native_route(self):
-        for defect in ('none','controls','node','route'):
+        for defect in ('none','controls','node','route','radius','grade','missing_checks','nonfinite'):
             pending,record,rows=self.constructed_pending()
             if defect=='controls':rows[1]['p1']=[2,0,1]
             if defect=='node':rows[1]['node1']=99
+            if defect=='radius':rows[1]['engineering_checks']['min_sampled_radius']=99
+            if defect=='grade':rows[1]['engineering_checks']['max_sampled_grade']=.041
+            if defect=='missing_checks':rows[1].pop('engineering_checks')
+            if defect=='nonfinite':rows[1]['engineering_checks']['min_sampled_radius']=float('nan')
             def query(op,params):
                 self.assertIn(op,('inspect','route'))
+                if op=='inspect':self.assertEqual(params['geometry_constraints'],{'radius':100,'max_grade':.04,'region':self.connection_brief()['region']})
                 return self.response('observed_'+op,op,result={'edges':rows} if op=='inspect' else {'requested_route_verified':defect!='route'})
             with patch.object(self.client,'request',side_effect=query):
                 if defect=='none':
@@ -799,7 +808,7 @@ class LiveClientTests(unittest.TestCase):
                 'fit':{'target_node':21},'game_constructed':False}
         if params['execute']:
             result.update(stage='readback',game_constructed=True,
-                readback={'connected':True,'ordered_edges':[30,31],'ordered_nodes':[11,40,21],
+                readback=self.engineering_readback(params['brief']['radius'])|{'connected':True,'ordered_edges':[30,31],'ordered_nodes':[11,40,21],
                           'attachments':{'source_edge':10,'source_node':11,'target_edge':20,'target_node':21}})
         return self.response(request_id, operation, result=result)
 
@@ -907,7 +916,7 @@ class LiveClientTests(unittest.TestCase):
         return self.response(request_id, operation, result={'stage': stages[-1]['stage'], 'stages': stages,
             'fit': {'fit_request': request_id+'_fit', 'pieces': 3, 'sampled_only': True},
             'game_constructed': params['execute'],
-            'readback': {'connected': True, 'ordered_edges': [4, 5], 'ordered_nodes': [2, 6, 7]}})
+            'readback': self.engineering_readback(params['brief']['radius'])|{'connected': True, 'ordered_edges': [4, 5], 'ordered_nodes': [2, 6, 7]}})
 
     def test_workflow_fit_only_and_explicit_execution(self):
         with patch.object(self.client, 'request', side_effect=self.workflow_worker) as calls:
@@ -1163,7 +1172,7 @@ class LiveClientTests(unittest.TestCase):
             result={'edges':[{'id':eid,'resource':{'track_distance':self.template_spacing}} for eid in (11,12)]}
         elif op=='adjacent':
             self.assertEqual(abs(params['spacing']),5);self.assertEqual(params['tolerance'],.1)
-            result={'game_constructed':params['execute'],'readback':{'connected':True,'ordered_edges':[21,22],'ordered_nodes':[201,202,203]},
+            result={'game_constructed':params['execute'],'readback':self.engineering_readback(params['radius'])|{'connected':True,'ordered_edges':[21,22],'ordered_nodes':[201,202,203]},
                     'adjacency':{'sampled_verified':True,'independent_native_nodes':True}}
             if self.adjacent_failure:return self.response('a'+str(len(self.adjacent_calls)),op,result={'game_constructed':'unknown','error':'readback_failed'})|{'status':'mutation_unverified'}
         else:
@@ -1208,6 +1217,33 @@ class LiveClientTests(unittest.TestCase):
             with patch.object(self.client,'request') as worker:
                 with self.assertRaises(ValueError):connect_adjacent(self.client,b,execute=True)
                 worker.assert_not_called()
+
+    def test_corridor_realised_radius_shortfall_rejects_without_retry_or_route(self):
+        for hard,accepted in [(160,False),(120,True)]:
+            b=self.corridor_brief()|{'radius':hard};query,calls=self.project_query();native=[]
+            def worker(op,p):
+                if op=='corridor':
+                    native.append(p)
+                    return self.response('current',op,result={'game_constructed':True,'fit':{'radius':hard,'native_fit_radius':168},
+                        'readback':self.engineering_readback(hard)|{'min_sampled_radius':157.37422991553754,
+                            'connected':True,'ordered_edges':[30,31],'ordered_nodes':[11,40,21],
+                            'attachments':{'source_edge':10,'target_edge':20},'realised_guides':[{'node':40,'verified':True}]}})
+                if op=='route':
+                    self.assertEqual(p['geometry_constraints']['radius'],hard)
+                    self.assertEqual(p['geometry_constraints']['edge_ids'],[30,31])
+                return query(op,p)
+            with patch.object(self.client,'request',side_effect=worker):r=connect_corridor(self.client,b,execute=True)
+            self.assertEqual(r['status'],'ok' if accepted else 'native_verification_failed');self.assertTrue(r['game_constructed'])
+            self.assertEqual(len(native),1)
+            self.assertEqual(any(op=='route' for op,p in calls),accepted)
+
+    def test_engineering_readback_missing_nonfinite_or_grade_failure_is_not_success(self):
+        from bridge_live import _require_engineering_readback
+        b=self.project_brief();good=self.engineering_readback(b['radius'])
+        for defect in [{'engineering_checks_verified':False},{'requested_min_radius':1},{'min_sampled_radius':None},
+                       {'min_sampled_radius':float('nan')},{'max_sampled_grade':.5}]:
+            with self.assertRaises(LiveError):_require_engineering_readback(good|defect,b)
+        _require_engineering_readback(good|{'min_sampled_radius':None,'straight_only':True},b)
 
     def test_rejected_corridor_and_crossover_reconcile_without_replay(self):
         from bridge_live import reconcile_rejected_corridor,reconcile_rejected_crossover
