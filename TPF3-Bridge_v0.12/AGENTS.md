@@ -1,3 +1,13 @@
+## Junction and branching-route scope - user approval, 3 October 2026
+User approved the proposed next capability, "junction construction and connecting
+branching routes", with "I agree with your next step - continue with the same process".
+Native junction/turnout construction and branching-route connection through the reusable
+Python/mod interface are now authorised, including practical disposable-map construction,
+clearance/terrain changes, routine fixes/tests/docs and local milestone commits. Continue
+automated integrated handoffs; no per-API approval pauses. This supersedes earlier
+endpoint-only/topology-expansion restrictions for this scope. Existing map-owner delegation
+and external tool review apply. Stations, unrelated services and remote pushes remain
+outside this task. Keep exact topology/path evidence distinct from physical train traversal.
 ## Explicit disposable-map ownership delegation - 3 October 2026
 User directly approved the prepared P09 short approach fixture and approximately
 1500-unit three-leg corridor experiment, including native attachment/TRAIN route checks,

@@ -14,10 +14,10 @@ import time
 import uuid
 
 MARKER = 'TPF3_BRIDGE_LIVE_RESPONSE '
-OPERATIONS = {'inspect', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'selected_connection', 'corridor'}
+OPERATIONS = {'inspect', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'discover_junction', 'junction', 'selected_connection', 'corridor'}
 
 def is_mutation(operation, params):
-    return operation in ('build', 'test_approach') or (operation in ('extension', 'connection', 'selected_connection', 'corridor') and params.get('execute') is True)
+    return operation in ('build', 'test_approach') or (operation in ('extension', 'connection', 'selected_connection', 'corridor', 'junction') and params.get('execute') is True)
 
 def discover_session(log_path):
     """Read transport markers locally; a later request must still prove responsiveness."""
@@ -120,7 +120,7 @@ def connect(client, brief, *, execute=False):
     validate_connection_brief(brief)
     return _workflow(client, brief, execute, 'connection')
 
-def discover(client, brief):
+def discover(client, brief, *, junction=False):
     """Bounded native TRACK discovery, with complete per-node incidence checks."""
     if not isinstance(brief, dict) or set(brief) != {'region', 'max_edges'}:
         raise ValueError('discovery requires region and max_edges')
@@ -130,20 +130,20 @@ def discover(client, brief):
         raise ValueError('discovery region spans at most400 native units per axis')
     if type(brief['max_edges']) is not int or not 1 <= brief['max_edges'] <= 16:
         raise ValueError('discovery max_edges must be within1–16')
-    return client.request('discover', brief)
+    return client.request('discover_junction' if junction else 'discover', brief)
 
 def connect_selected(client, discovery, brief):
     """Select two recorded free endpoints; reacquire natively and fit only."""
     return client.request('selected_connection', _selected_parameters(client, discovery, brief))
 
-def _selected_parameters(client, discovery, brief):
+def _selected_parameters(client, discovery, brief, *, junction=False):
     if not isinstance(brief, dict) or set(brief) - {'vertical'} != {'source_ref','target_ref','radius','region'}:
         raise ValueError('selection requires source_ref, target_ref, radius and region')
     records=discovery if isinstance(discovery,list) else [discovery]
     if not 1<=len(records)<=2:raise ValueError('selection accepts one or two local discoveries')
     candidates=[];request_ids=[]
     for record in records:
-        if (not isinstance(record,dict) or record.get('status')!='ok' or record.get('operation')!='discover'
+        if (not isinstance(record,dict) or record.get('status')!='ok' or record.get('operation') not in ({'discover','discover_junction'} if junction else {'discover'})
                 or record.get('session')!=client.session):
             raise ValueError('selection requires successful current-session discoveries')
         rows=record.get('result',{}).get('candidates',[])
@@ -156,7 +156,13 @@ def _selected_parameters(client, discovery, brief):
         matches=[c for c in candidates if c.get('ref')==brief[key]]
         if len(matches)!=1:raise ValueError('candidate reference missing or ambiguous')
         c=matches[0]
-        if (c.get('eligible') is not True or c.get('incidence_complete') is not True
+        if junction and key=='source_ref':
+            if (c.get('junction_eligible') is not True or c.get('incidence_complete') is not True or c.get('incident_output_truncated') is True
+                    or c.get('incident_count')!=2 or c.get('through_edge')==c.get('edge_id')
+                    or set(c.get('incident_edges',[]))!={c.get('edge_id'),c.get('through_edge')}
+                    or not isinstance(c.get('through_snapshot'),dict) or c['through_snapshot'].get('id')!=c.get('through_edge')):
+                raise ValueError('candidate is not a fully verified through attachment')
+        elif (c.get('eligible') is not True or c.get('incidence_complete') is not True
                 or c.get('incident_count')!=1 or c.get('incident_edges')!=[c.get('edge_id')]):
             raise ValueError('candidate is not a fully verified free endpoint')
         if not isinstance(c.get('edge_snapshot'),dict):raise ValueError('candidate snapshot missing')
@@ -208,6 +214,11 @@ def connect_brief(client, brief, *, execute=False):
     validate_project_brief(brief)
     return _connect_project(client,brief,execute)
 
+def connect_junction(client, brief, *, execute=False):
+    """Explicit two-edge through attachment to free branch target; native movement proof."""
+    validate_project_brief(brief)
+    return _connect_project(client,brief,execute,junction=True)
+
 def connect_corridor(client, brief, *, execute=False):
     """Native-fitted ordered guide legs, one coherent build, exact joins and route."""
     if not isinstance(brief,dict) or 'guides' not in brief:
@@ -233,10 +244,10 @@ def connect_corridor(client, brief, *, execute=False):
             raise ValueError('guide outside authorised region')
     return _connect_project(client,base,execute,guides)
 
-def _connect_project(client, brief, execute, guides=None):
+def _connect_project(client, brief, execute, guides=None, *, junction=False):
     if type(execute) is not bool:raise ValueError('execute must be boolean')
     job=uuid.uuid4().hex;path=client.evidence/(job+'.workflow.json')
-    summary={'status':'incomplete','job_id':job,'session':client.session,'operation':'connect-corridor' if guides else 'connect-brief',
+    summary={'status':'incomplete','job_id':job,'session':client.session,'operation':'connect-junction' if junction else ('connect-corridor' if guides else 'connect-brief'),
              'execute':execute,'game_constructed':False,'stage':'discover','evidence':str(path.resolve()),
              'attempt_count':0,'train_traversal':'unprobed'}
     record={'summary':summary,'brief':brief|({'guides':guides} if guides else {}),'discoveries':[],'attempts':[]}
@@ -250,13 +261,14 @@ def _connect_project(client, brief, execute, guides=None):
         atomic_json(path,record)
         records=[];choices=[]
         for name in ('source','target'):
-            intent=brief[name];found=discover(client,{k:intent[k] for k in ('region','max_edges')})
+            intent=brief[name];found=discover(client,{k:intent[k] for k in ('region','max_edges')},junction=junction and name=='source')
             record['discoveries'].append(found['request_id']);records.append(found)
             if found['status']!='ok':
                 summary.update(status=found['status'],error=found.get('result',{}).get('error','discovery_failed'));return summary
             ranked=[];direction=intent['travel_direction'];size=math.hypot(*direction)
             for c in found['result']['candidates']:
-                if c.get('eligible') is not True or c.get('incidence_complete') is not True:continue
+                eligible=c.get('junction_eligible') if junction and name=='source' else c.get('eligible')
+                if eligible is not True or c.get('incidence_complete') is not True:continue
                 actual=c['outward_direction'];sign=1 if name=='source' else -1
                 dot=sign*(actual[0]*direction[0]+actual[1]*direction[1])/size
                 heading=math.degrees(math.acos(max(-1,min(1,dot))))
@@ -270,13 +282,15 @@ def _connect_project(client, brief, execute, guides=None):
                if a[2]['edge_id']!=b[2]['edge_id'] and a[2]['node_id']!=b[2]['node_id']]
         pairs.sort(key=lambda p:(p[0],p[1],p[2]['edge_id'],p[2]['node_id'],p[3]['edge_id'],p[3]['node_id']))
         if not pairs:summary.update(status='no_eligible_candidates');return summary
-        summary['stage']='native_connection'
+        summary['stage']='select'
         for _,_,source,target in pairs[:brief['max_fit_attempts']]:
             selection={k:brief[k] for k in ('radius','region','vertical')}
             selection.update(source_ref=source['ref'],target_ref=target['ref'])
-            params=_selected_parameters(client,records,selection);params['execute']=execute
+            params=_selected_parameters(client,records,selection,junction=junction);params['execute']=execute
+            if junction:params['max_route_length']=brief['max_route_length']
             if guides:params['guides']=guides
-            response=client.request('corridor' if guides else 'selected_connection',params)
+            summary['stage']='native_connection'
+            response=client.request('junction' if junction else ('corridor' if guides else 'selected_connection'),params)
             result=response.get('result',{})
             record['attempts'].append({'request_id':response['request_id'],'source_ref':source['ref'],
                 'target_ref':target['ref'],'status':response['status'],'stage':result.get('stage'),
@@ -295,6 +309,11 @@ def _connect_project(client, brief, execute, guides=None):
             if guides:
                 summary['legs']=result.get('fit',{}).get('legs',[])
                 summary['guide_nodes_realised']=False
+            if junction:
+                summary['fit']['requested_min_radius']=result.get('fit',{}).get('requested_min_radius')
+                if result.get('through_before',{}).get('requested_route_verified') is not True:
+                    summary.update(status='native_verification_failed',error='existing through movement not established');return summary
+                summary['through_before_verified']=True
             if not execute:summary.update(status='ok',stage='fit');return summary
             rb=result.get('readback',{});nodes=rb.get('ordered_nodes',[]);edges=rb.get('ordered_edges',[])
             summary.update(stage='readback',game_constructed=True,edges=edges,nodes=nodes)
@@ -302,6 +321,17 @@ def _connect_project(client, brief, execute, guides=None):
                 summary.update(status='native_verification_failed',error='exact attachments not established');return summary
             summary.update(connected=True,max_sampled_grade=rb.get('max_sampled_grade'),
                            max_join_height_gap=rb.get('max_join_height_gap'),max_join_grade_gap=rb.get('max_join_grade_gap'))
+            if junction:
+                j=result.get('junction',{});incident=j.get('incident_edges',[])
+                if (j.get('node')!=source['node_id'] or j.get('incoming_edge')!=source['edge_id'] or j.get('through_edge')!=source['through_edge']
+                        or j.get('branch_edge')!=edges[0] or j.get('exact_native_identity') is not True or len(incident)!=3
+                        or set(incident)!={source['edge_id'],source['through_edge'],edges[0]}
+                        or result.get('through_after',{}).get('requested_route_verified') is not True):
+                    summary.update(status='native_verification_failed',error='exact junction/through movement not established');return summary
+                if j.get('branch_geometry_verified') is not True or result.get('branch_after',{}).get('requested_route_verified') is not True:
+                    summary.update(status='native_verification_failed',error='branch movement/geometry not established');return summary
+                summary['junction']=j
+                summary['through_route_length']=result['through_after'].get('total_path_length')
             if guides:
                 realised=rb.get('realised_guides',[])
                 if len(realised)!=len(guides) or any(g.get('verified') is not True for g in realised):
@@ -409,6 +439,31 @@ def reconcile_rejected_connection(client, discoveries):
     latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
     latest.pop('pending');atomic_json(client.journal,latest)
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
+def reconcile_rejected_junction(client):
+    """Fresh fit-only identity/incidence checks after an explicit native rejection."""
+    state=json.loads(client.journal.read_text());pending=state.get('pending')
+    if not pending or pending['operation']!='junction' or pending['params'].get('execute') is not True:
+        raise LiveError('reconciliation_required','no pending native-rejected junction')
+    rid=pending['request_id'];response_path=client.evidence/(rid+'.response.json')
+    response=json.loads(response_path.read_text());result=response.get('result',{})
+    if (response.get('session')!=client.session or response.get('request_id')!=rid or response.get('operation')!='junction'
+            or response.get('status')!='error' or result.get('native_command_success') is not False
+            or result.get('error')!='native_construction_rejected' or result.get('stage')!='build'):
+        raise LiveError('reconciliation_required','no explicit native junction rejection',rid)
+    params=pending['params']|{'execute':False};observed=client.request('junction',params)
+    if observed['status']!='ok' or observed.get('result',{}).get('through_before',{}).get('requested_route_verified') is not True:
+        raise LiveError('reconciliation_required','unchanged two-edge source/free target not established',rid)
+    latest=json.loads(client.journal.read_text())
+    if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
+    record={'status':'reconciled_rejected_junction','original_pending':pending,'original_response':str(response_path.resolve()),
+            'observation':observed['request_id'],'completed_junction_constructed':False,
+            'other_effects':'unknown','effects_history_complete':False,'automatic_replay':False}
+    path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
+    latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(client.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
 
 def reconcile_constructed_connection(client, discoveries, edge_ids):
     """Verify reported construction after a readback failure; no build or replay."""
@@ -619,7 +674,7 @@ class LiveClient:
         if state['session'] != self.session:
             raise LiveError('session_changed', 'use a new evidence directory for a new runtime session')
         unresolved = state.get('pending')
-        if unresolved and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'selected_connection')):
+        if unresolved and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'discover_junction', 'selected_connection', 'junction')):
             raise LiveError('reconciliation_required', 'previous request is unfinished; inspect its matching response/current world before any repeat', state['pending']['request_id'])
         if (self.evidence / (request_id + '.request.json')).exists():
             raise LiveError('request_id_reused', 'request ID already recorded', request_id)
@@ -736,7 +791,7 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--context', type=Path)
     parser.add_argument('--discovery', type=Path, help='saved full discover response for connect-selected')
@@ -759,18 +814,22 @@ def main(argv=None):
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor'):
-            raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor; low-level build uses explicit authorised parameter')
+        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction'):
+            raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction; low-level build uses explicit authorised parameter')
         if args.operation in ('extend', 'connect'):
             response = (extend if args.operation == 'extend' else connect)(client, params, execute=args.execute)
         elif args.operation == 'connect-brief':
             response = connect_brief(client,params,execute=args.execute)
         elif args.operation == 'connect-corridor':
             response = connect_corridor(client,params,execute=args.execute)
+        elif args.operation == 'connect-junction':
+            response = connect_junction(client,params,execute=args.execute)
         elif args.operation == 'route':
             response = route(client, params)
         elif args.operation == 'discover':
             response = discover(client, params)
+        elif args.operation == 'discover_junction':
+            response = discover(client,params,junction=True)
         elif args.operation == 'connect-selected':
             if not args.discovery:raise ValueError('connect-selected requires --discovery')
             response = connect_selected(client,json.loads(args.discovery.read_text(encoding='utf-8-sig')),params)

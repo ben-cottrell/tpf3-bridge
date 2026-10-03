@@ -1,6 +1,34 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
 ## Current checkpoint
+P11 complete: callable connect_junction / CLI connect-junction [--execute], explicit
+junction discovery; exact compatible two-edge through node to free branch target.
+Native fit/build/readback reused; normal free-end/corridor eligibility unchanged.
+Build40408: junction node131316, incoming131324/through131325/branch132538;
+branch TRACK132538/69391/44868 to target132441/node21454; length350.987255,rise3,
+grade0.01 to0.015,max_grade0.04. Requested minimum120; native-fit margin126;
+sampled realised minimum124.509571. Exact native TRAIN through27.697297 and
+branch372.902615 pass, including indexed node-owned turnout connectors.
+Trimmed turnout movement curves use exact native connection entity/index;
+BaseEdge controls/joins and realised sampled radius/grade/region stay checked.
+No global tolerance reduction, Python fitter or relaxed hard constraint.
+Initial branch131338-131340 built but failed geometry; fresh through/branch routes
+confirmed and sampled radius120 rejection retained. Separate near-parallel proposal
+natively rejected; fresh fit-only reconciliation confirmed unchanged attachments/no
+completed junction, other effects unknown. Distinct diverging layout accepted.
+No blind replay/assumed rollback; original failures/evidence preserved.
+python tools/quiet_checks.py --suite live_client --label pif-p11-client-checkpoint:
+66passed; .local_checks/pif-p11-client-checkpoint_80yvuwmh/report.json.
+python .local_runs/live_python_interface/p11/check_evidence.py: passed; 39 correlated
+current-session requests,1614-byte CLI; independent sampled BaseEdge minimum124.575029.
+Disposable test map saved through normal UI and left paused/nonmaximised.
+Full P11 evidence/HANDOFF/result, correlated receipts/hashes, independent endpoint/
+constraint checks and local checkpoint: .local_runs/live_python_interface/p11/.
+P10 basee799c04; local milestone only,no push. No edge splitting, construction-owned
+station access or all-movements claim. Geometry sampled; physical traversal,
+reservation/native save identity unprobed; actual usage unavailable.
+
+## P10 alternating bends accepted
 P10 complete: native findDubinsPath direction flag is passed to its native sampler
 for endpoints/tangents and comparisons; false pieces additionally verify canonical
 endpoint/tangent reversal. Existing exact travel/join/radius/grade/region checks remain.

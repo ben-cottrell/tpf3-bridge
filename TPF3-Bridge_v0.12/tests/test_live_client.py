@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import contextlib
 import io
-from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, discover_session, client_from_context
+from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, connect_junction, reconcile_rejected_junction, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, discover_session, client_from_context
 
 class LiveClientTests(unittest.TestCase):
     def setUp(self):
@@ -308,6 +308,81 @@ class LiveClientTests(unittest.TestCase):
         self.assertEqual(calls[2][1]['target']['outward_direction'],[-1,0,0])
         self.assertFalse(v['game_constructed']);self.assertLessEqual(len(json.dumps(v).encode()),4096)
 
+    def junction_query(self, *, failure=None):
+        base,_=self.project_query();calls=[]
+        def query(op,p):
+            calls.append((op,p))
+            if op=='discover_junction':
+                r=base('discover',p);r['operation']=op
+                c=r['result']['candidates'][0]
+                c.update(eligible=False,junction_eligible=True,incident_count=2,incident_edges=[10,12],
+                         through_edge=12,through_snapshot={'id':12,'node0':11,'node1':13})
+                if failure=='eligibility':c['junction_eligible']=False
+                if failure=='incidence':c['incident_edges']=[10,99]
+                return r
+            if op=='junction':
+                r=base('selected_connection',p);r['operation']=op
+                r['result'].update(through_before={'requested_route_verified':True},
+                    through_after={'requested_route_verified':failure!='through','total_path_length':30},
+                    branch_after={'requested_route_verified':failure!='native_branch'},
+                    junction={'node':11,'incoming_edge':10,'through_edge':12,'branch_edge':30,
+                              'incident_edges':[10,12,30],'exact_native_identity':True,'through_route_verified':True,
+                              'branch_geometry_verified':failure!='geometry'})
+                if failure=='identity':r['result']['junction']['node']=999
+                if failure=='unknown':r.update(status='mutation_unverified');r['result'].update(stage='build',game_constructed='unknown')
+                return r
+            if op=='route' and failure=='branch':return self.response('route',op,result={'requested_route_verified':False})
+            return base(op,p)
+        return query,calls
+
+    def test_junction_fit_only_and_execute_require_both_movements(self):
+        for execute in (False,True):
+            query,calls=self.junction_query()
+            with patch.object(self.client,'request',side_effect=query):v=connect_junction(self.client,self.project_brief(),execute=execute)
+            self.assertEqual(v['status'],'ok');self.assertEqual(v['operation'],'connect-junction')
+            self.assertEqual([x[0] for x in calls],['discover_junction','discover','junction']+(['route'] if execute else []))
+            self.assertTrue(v['through_before_verified']);self.assertEqual(v['game_constructed'],execute)
+            if execute:self.assertEqual(v['junction']['incident_edges'],[10,12,30]);self.assertTrue(v['native_route_verified'])
+            else:self.assertNotIn('junction',v)
+            self.assertLessEqual(len(json.dumps(v).encode()),4096)
+
+    def test_junction_degree_three_or_through_failure_is_not_success(self):
+        for failure in ('identity','through','branch','native_branch','geometry'):
+            query,calls=self.junction_query(failure=failure)
+            with patch.object(self.client,'request',side_effect=query):v=connect_junction(self.client,self.project_brief(),execute=True)
+            self.assertEqual(v['status'],'native_route_unverified' if failure=='branch' else 'native_verification_failed')
+            self.assertTrue(v['game_constructed']);self.assertEqual(sum(x[0]=='junction' for x in calls),1)
+
+    def test_junction_wrong_attachment_never_executes(self):
+        for failure,status in [('eligibility','no_eligible_candidates'),('incidence','local_input_or_storage_error')]:
+            query,calls=self.junction_query(failure=failure)
+            with patch.object(self.client,'request',side_effect=query):v=connect_junction(self.client,self.project_brief(),execute=True)
+            self.assertEqual(v['status'],status);self.assertFalse(v['game_constructed'])
+            self.assertEqual(len(calls),2)
+
+    def test_junction_unknown_mutation_never_replayed(self):
+        query,calls=self.junction_query(failure='unknown')
+        with patch.object(self.client,'request',side_effect=query):v=connect_junction(self.client,self.project_brief(),execute=True)
+        self.assertEqual(v['status'],'mutation_unverified');self.assertEqual(v['game_constructed'],'unknown');self.assertEqual(len(calls),3)
+        self.client.timeout=.01
+        with self.assertRaises(LiveError) as error:self.client.request('junction',{'execute':True})
+        self.assertEqual(error.exception.status,'mutation_outcome_unknown')
+
+    def test_junction_keeps_free_endpoint_and_constraint_checks(self):
+        query,calls=self.junction_query()
+        b=self.project_brief();b['source']=b['source']|{'travel_direction':[0,1]}
+        with patch.object(self.client,'request',side_effect=query):v=connect_junction(self.client,b,execute=True)
+        self.assertEqual(v['status'],'no_eligible_candidates');self.assertEqual(len(calls),2)
+        with patch.object(self.client,'request') as call:
+            with self.assertRaises(ValueError):connect_junction(self.client,self.project_brief()|{'radius':0})
+            call.assert_not_called()
+
+    def test_junction_cli_explicit_execution(self):
+        params=self.root/'junction.json';params.write_text(json.dumps(self.project_brief()))
+        args=['connect-junction','--params',str(params),'--mod-directory',str(self.client.mod),'--log',str(self.log),'--evidence',str(self.client.evidence),'--session','test_session','--execute']
+        with patch('bridge_live.connect_junction',return_value={'status':'ok'}) as call,contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(args),0);self.assertTrue(call.call_args.kwargs['execute'])
+
     def test_discovery_invalid_bounds_never_query(self):
         for params in ({'region':{'min':[0,0,0],'max':[401,1,1]},'max_edges':1},
                        {'region':{'min':[0,0,0],'max':[1,1,1]},'max_edges':True}):
@@ -489,6 +564,32 @@ class LiveClientTests(unittest.TestCase):
             self.assertEqual(calls.call_args.args[0],'selected_connection')
             self.assertNotIn('execute',calls.call_args.args[1])
 
+    def test_rejected_junction_reconciliation_is_read_only_and_preserves_unknowns(self):
+        for defect in ('none','failed_query','through'):
+            pending=self.rejected_connection_pending();pending['operation']='junction'
+            pending['params']={'execute':True,'source':{'node_id':11},'target':{'node_id':21}}
+            self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending}))
+            original=self.client.evidence/'rejected_connection.response.json';r=json.loads(original.read_text());r['operation']='junction';original.write_text(json.dumps(r))
+            response=self.response('fresh','junction',result={'through_before':{'requested_route_verified':defect!='through'}})
+            if defect=='failed_query':response['status']='error'
+            with patch.object(self.client,'request',return_value=response) as calls:
+                if defect=='none':
+                    r=reconcile_rejected_junction(self.client)
+                    self.assertFalse(r['result']['completed_junction_constructed']);self.assertEqual(r['result']['other_effects'],'unknown')
+                    self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+                else:
+                    with self.assertRaises(LiveError):reconcile_rejected_junction(self.client)
+                    self.assertEqual(json.loads(self.client.journal.read_text())['pending'],pending)
+                self.assertEqual(calls.call_args.args[0],'junction');self.assertIs(calls.call_args.args[1]['execute'],False)
+
+    def test_junction_reconciliation_requires_explicit_native_failure(self):
+        pending=self.rejected_connection_pending();pending['operation']='junction'
+        self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending}))
+        path=self.client.evidence/'rejected_connection.response.json';r=json.loads(path.read_text());r['result'].pop('native_command_success');path.write_text(json.dumps(r))
+        with patch.object(self.client,'request') as calls:
+            with self.assertRaises(LiveError):reconcile_rejected_junction(self.client)
+            calls.assert_not_called()
+
     def test_rejected_connection_without_explicit_rejection_cannot_be_cleared(self):
         self.rejected_connection_pending()
         path=self.client.evidence/'rejected_connection.response.json';r=json.loads(path.read_text())
@@ -568,6 +669,22 @@ class LiveClientTests(unittest.TestCase):
         self.assertEqual(json.loads(self.client.journal.read_text())['pending']['request_id'],'unknown')
         with self.assertRaises(LiveError):self.client.request('build',{'fit_request':'f'},request_id='replay')
         self.assertEqual(len(list(self.client.mod.rglob('*.lua'))),2)
+
+    def test_junction_observations_keep_pending_and_never_allow_replay(self):
+        self.client.timeout=.02
+        with self.assertRaises(LiveError):self.client.request('junction',{'execute':True},request_id='unknown')
+        self.client.timeout=.5
+        for sequence,op in enumerate(('discover_junction','junction'),start=2):
+            def worker():
+                slot=self.client.mod/f'content/scripts/pif_live/test_session/{sequence:06d}.lua'
+                deadline=time.monotonic()+1
+                while not slot.exists() and time.monotonic()<deadline:time.sleep(.005)
+                with self.log.open('a') as f:f.write(MARKER+json.dumps(self.response(op,op,result={'game_constructed':False}))+'\n')
+            thread=threading.Thread(target=worker);thread.start()
+            self.client.request(op,{'execute':False},request_id=op);thread.join()
+            self.assertEqual(json.loads(self.client.journal.read_text())['pending']['request_id'],'unknown')
+        with self.assertRaises(LiveError):self.client.request('junction',{'execute':True},request_id='replay')
+        self.assertEqual(len(list(self.client.mod.rglob('*.lua'))),3)
 
     def test_route_cli_keeps_large_native_path_local(self):
         params=self.root/'route.json';params.write_text(json.dumps(self.route_brief()))

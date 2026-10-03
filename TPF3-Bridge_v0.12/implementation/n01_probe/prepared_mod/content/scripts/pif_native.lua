@@ -59,9 +59,45 @@ local function native_geometry(id)
  end
  assert(count==1 and g,"rail_movement_geometry_not_unique");return g
 end
+-- Engineering checks on native geometry, not a replacement curve generator.
+-- Five observations are a sampled check, not continuous curvature/clearance proof.
+local function geometry_bounds(g,region,minradius,maxgrade)
+ local minimum,maximum=math.huge,0
+ for _,u in ipairs({0,.25,.5,.75,1}) do
+  local pos,dir=sample(g,u);in_region(pos,region)
+  local grade=math.abs(slope(dir));assert(finite(grade) and grade<=maxgrade+.000001,"realised_sampled_grade_exceeds_limit");maximum=math.max(maximum,grade)
+  local radius=math.huge
+  if g.type==api.type.EdgeGeometry.Type.ARC then radius=math.abs(g.arc.radius)
+  elseif g.type==api.type.EdgeGeometry.Type.CUBIC_SPLINE then
+   local c=g.cubicSpline;local p0,p1,t0,t1=c.pos[1],c.pos[2],c.tangent[1],c.tangent[2]
+   local function derivative(k)
+    return (6*u*u-6*u)*p0[k]+(3*u*u-4*u+1)*t0[k]+(-6*u*u+6*u)*p1[k]+(3*u*u-2*u)*t1[k],
+     (12*u-6)*p0[k]+(6*u-4)*t0[k]+(-12*u+6)*p1[k]+(6*u-2)*t1[k]
+   end
+   local dx,ddx=derivative("x");local dy,ddy=derivative("y");local speed2=dx*dx+dy*dy
+   assert(speed2>1e-12,"realised_irregular_curve")
+   local cross=math.abs(dx*ddy-dy*ddx);if cross>1e-12 then radius=speed2^1.5/cross end
+  else assert(g.type==api.type.EdgeGeometry.Type.STRAIGHT,"unsupported_realised_geometry") end
+  assert(radius>=minradius,"realised_sampled_radius_below_limit");minimum=math.min(minimum,radius)
+ end
+ return minimum,maximum
+end
 function M.inspect(p)
  assert(type(p.edge_ids)=="table" and #p.edge_ids>=1 and #p.edge_ids<=16,"edge_read_bound")
- local out={};for _,id in ipairs(p.edge_ids) do out[#out+1]=edge(id) end
+ local out={};for _,id in ipairs(p.edge_ids) do
+  local e=edge(id)
+  if p.geometry==true then
+   local g=native_geometry(id);local samples={}
+   for _,u in ipairs({0,.25,.5,.75,1}) do local pos,dir=sample(g,u);samples[#samples+1]={u=u,pos=pos,direction=dir} end
+   local network=api.engine.getComponent(id,api.type.ComponentType.TRANSPORT_NETWORK);local connections={}
+   for _,row in ipairs(network.edges) do if row.transportModes[E.TransportMode.TRAIN]==true then
+    for _,n in ipairs(row.conns) do connections[#connections+1]={entity=n.entity,index=n.index} end
+   end end
+   e.movement_geometry={type=g.type,length=g.length,samples=samples,connections=connections,
+    radius=g.type==api.type.EdgeGeometry.Type.ARC and g.arc.radius or nil}
+  end
+  out[#out+1]=e
+ end
  return {edges=out,game_constructed=false,native_save_identity="unknown",load_epoch="unknown"}
 end
 local function region_check(region)
@@ -115,15 +151,82 @@ function M.discover(p,request_id)
   edge_count=#edges,candidate_count=#candidates,truncated=truncated,complete=not truncated,game_constructed=false,
   native_save_identity="unknown",load_epoch="unknown",identity_scope="current_adapter_session_only"}
 end
-local function selected_attachments(p)
+function M.discover_junction(p,request_id)
+ local result=M.discover(p,request_id)
+ for _,c in ipairs(result.candidates) do
+  c.junction_eligible=false
+  if c.incident_count==2 and c.incidence_complete and not c.incident_output_truncated and
+   not (type(c.construction_owner)=="number" and c.construction_owner>0) then
+   local other=c.incident_edges[1]==c.edge_id and c.incident_edges[2] or c.incident_edges[1]
+   local ok,t=pcall(edge,other)
+   if ok and (t.node0==c.node_id or t.node1==c.node_id) then
+    local _,_,d,g=anchor({anchor_edge=other,anchor_node=c.node_id})
+    if t.template==c.template and t.style==c.style and angle(c.outward_direction,{-d[1],-d[2],0})<=.1 and math.abs(c.grade+g)<=.000001 then
+     c.junction_eligible=true;c.junction_eligibility="two_incident_compatible_TRACK_unowned"
+     c.through_edge=other;c.through_snapshot=t
+    end
+   end
+  end
+ end
+ return result
+end
+local function selected_attachments(p,junction)
  assert(type(p.source)=="table" and type(p.target)=="table","selected_candidates_required")
  assert(p.execute==nil or type(p.execute)=="boolean","invalid_selected_execution")
  for _,c in ipairs({p.source,p.target}) do
   local current=assert_fresh(c.edge_snapshot)
   assert(current.id==c.edge_id and (current.node0==c.node_id or current.node1==c.node_id),"selected_endpoint_mismatch")
   local all,owner=incidence(c.node_id)
-  assert(#all==1 and all[1]==c.edge_id and not (owner and owner>0),"selected_endpoint_not_free")
+  if junction and c==p.source then
+   local through=assert_fresh(c.through_snapshot)
+   assert(#all==2 and ((all[1]==c.edge_id and all[2]==through.id) or (all[2]==c.edge_id and all[1]==through.id)) and
+    through.id==c.through_edge and not (owner and owner>0),"selected_junction_not_supported")
+   local _,_,d,g=anchor({anchor_edge=through.id,anchor_node=c.node_id})
+   local _,_,incoming,grade=anchor({anchor_edge=c.edge_id,anchor_node=c.node_id})
+   assert(through.template==current.template and through.style==current.style and
+    angle(incoming,{-d[1],-d[2],0})<=.1 and math.abs(grade+g)<=.000001,"unsupported_through_alignment")
+  else assert(#all==1 and all[1]==c.edge_id and not (owner and owner>0),"selected_endpoint_not_free") end
  end
+end
+-- Existing two-edge through attachment only; native routing decides movement support.
+function M.junction(p,s,state,request_id,respond)
+ selected_attachments(p,true)
+ local source=p.source;local through=source.through_snapshot;local incoming=source.edge_snapshot
+ local function other(e) return e.node0==source.node_id and e.node1 or e.node0 end
+ local route_params={source_edge=source.edge_id,source_node=other(incoming),target_edge=through.id,target_node=other(through),
+  mode="TRAIN",max_length=p.max_route_length,required_edges={source.edge_id,through.id}}
+ local before=M.route(route_params)
+ assert(before.requested_route_verified,"existing_through_route_unverified")
+ M.extension({execute=p.execute==true,brief={anchor_edge=source.edge_id,anchor_node=source.node_id,
+  target_edge=p.target.edge_id,target_node=p.target.node_id,radius=p.radius,region=p.region,vertical=p.vertical}},s,state,request_id,
+  function(id,status,value)
+   value.through_before=before
+   if status=="ok" and p.execute then
+    local ok,err=pcall(function()
+     assert_fresh(through);assert_fresh(incoming)
+     local ids=incidence(source.node_id);local expected={[incoming.id]=true,[through.id]=true,[value.readback.ordered_edges[1]]=true}
+     assert(#ids==3,"junction_incidence_mismatch")
+     for _,eid in ipairs(ids) do assert(expected[eid],"junction_incidence_mismatch");edge(eid) end
+     route_params.junction_node=source.node_id
+     local after=M.route(route_params)
+     value.through_after=after;assert(after.requested_route_verified,"realised_through_route_unverified")
+     local target=p.target.edge_snapshot;local required={incoming.id,target.id}
+     for _,eid in ipairs(value.readback.ordered_edges) do required[#required+1]=eid end
+     local branch=M.route({source_edge=incoming.id,source_node=other(incoming),target_edge=target.id,
+      target_node=target.node0==p.target.node_id and target.node1 or target.node0,mode="TRAIN",
+      max_length=p.max_route_length,required_edges=required,junction_node=source.node_id,
+      geometry_constraints={edge_ids=value.readback.ordered_edges,junction_node=source.node_id,
+       region=p.region,radius=p.radius,max_grade=p.vertical.max_grade}})
+     value.branch_after=branch;assert(branch.requested_route_verified,"realised_branch_route_unverified")
+     value.readback.attachments.source_incident_edges=ids
+     value.junction={node=source.node_id,incoming_edge=incoming.id,through_edge=through.id,branch_edge=value.readback.ordered_edges[1],
+      incident_edges=ids,exact_native_identity=true,through_route_verified=true,branch_geometry_verified=true,
+      min_sampled_radius=branch.min_sampled_radius,max_sampled_grade=branch.max_sampled_grade}
+    end)
+    if not ok then status="mutation_unverified";value.error=tostring(err):sub(1,400);value.game_constructed=true;value.retry=false end
+   end
+   respond(id,status,value)
+  end,true,{node=source.node_id,radius=p.radius})
 end
 function M.connect_selected(p,s,state,request_id,respond)
  selected_attachments(p)
@@ -135,7 +238,7 @@ local function node_id(n)
  return {entity=n.entity,index=n.index}
 end
 local function same_node(a,b) return a.entity==b.entity and a.index==b.index end
-local function rail_lane(id,mode)
+local function rail_lane(id,mode,junction_node)
  local base=edge(id);local n=api.engine.getComponent(id,api.type.ComponentType.TRANSPORT_NETWORK)
  assert(n and n.edges,"transport_network_unavailable")
  local found,index=nil,nil
@@ -145,7 +248,11 @@ local function rail_lane(id,mode)
  assert(found and #found.conns==2,"rail_transport_lane_unavailable")
  local p0=sample(found.geometry,0);local p1=sample(found.geometry,1)
  -- Geometry verifies the native row's orientation; identities come from conns.
- assert(distance(p0,base.p0)<=.001 and distance(p1,base.p1)<=.001,"transport_orientation_unestablished")
+ if junction_node and (base.node0==junction_node or base.node1==junction_node) then
+  -- Turnout movement edges are trimmed. Native connection entities establish
+  -- correspondence; their indexes name distinct native junction ports.
+  assert(found.conns[1].entity==base.node0 and found.conns[2].entity==base.node1,"junction_transport_identity_mismatch")
+ else assert(distance(p0,base.p0)<=.001 and distance(p1,base.p1)<=.001,"transport_orientation_unestablished") end
  return base,found,index
 end
 function M.route(p)
@@ -153,7 +260,7 @@ function M.route(p)
  assert(finite(p.max_length) and p.max_length>0 and p.max_length<=4000,"invalid_route_length_bound")
  assert(type(p.required_edges)=="table" and #p.required_edges>=1 and #p.required_edges<=32,"route_required_edge_bound")
  local mode=E.TransportMode[p.mode]
- local a,start,index=rail_lane(p.source_edge,mode);local b,finish,target_index=rail_lane(p.target_edge,mode)
+ local a,start,index=rail_lane(p.source_edge,mode,p.junction_node);local b,finish,target_index=rail_lane(p.target_edge,mode,p.junction_node)
  assert(p.source_edge~=p.target_edge and p.source_node~=p.target_node,"distinct_route_attachments_required")
  assert(p.source_node==a.node0 or p.source_node==a.node1,"source_not_edge_endpoint")
  assert(p.target_node==b.node0 or p.target_node==b.node1,"target_not_edge_endpoint")
@@ -189,6 +296,15 @@ function M.route(p)
   if track then seen[id.entity]=true end
   assert(finite(row.geometry.length) and row.geometry.length>=0,"native_path_length_unavailable")
   length=length+row.geometry.length
+  if p.geometry_constraints then
+   local q=p.geometry_constraints;local check=id.entity==q.junction_node
+   for _,eid in ipairs(q.edge_ids) do if id.entity==eid then check=true end end
+   if check then
+    local radius,grade=geometry_bounds(row.geometry,q.region,q.radius,q.max_grade)
+    out.min_sampled_radius=math.min(out.min_sampled_radius or math.huge,radius)
+    out.max_sampled_grade=math.max(out.max_sampled_grade or 0,grade)
+   end
+  end
   out.path[i]={edge={entity=id.entity,index=id.index},forward=forward,from=from,to=to,
    confirmed_TRACK=track,forward_only=row.forwardOnly,length=row.geometry.length}
   previous=to
@@ -202,6 +318,7 @@ function M.route(p)
  out.target_direction_matches=last.edge.entity==p.target_edge and last.edge.index==target_index and last.forward==(p.target_node==b.node1)
  out.requested_route_verified=continuous and out.origin_matches and out.destination_matches and #missing==0 and
   out.source_direction_matches and out.target_direction_matches and length<=p.max_length+.001
+ if out.min_sampled_radius==math.huge then out.min_sampled_radius=nil;out.straight_only=true end
  if not out.requested_route_verified then out.reason=length>p.max_length+.001 and "native_path_exceeds_requested_length" or "native_path_does_not_establish_requested_route" end
  return out
 end
@@ -321,14 +438,18 @@ function M.readback(f)
   local ng=native_geometry(found)
   local actualbase=cubic({p0=e.p0,p1=e.p1,t0=e.t0,t1=e.t1,length=c.length})
   for _,expected in ipairs(f.samples[i]) do
-   local pos,dir=sample(ng,expected.u);maxerr=math.max(maxerr,distance(pos,expected.pos))
-   if expected.u==0 or expected.u==1 then maxheading=math.max(maxheading,angle(dir,expected.dir)) end
+   local pos,dir=sample(ng,expected.u)
+   local comparison_pos,comparison_dir=pos,dir
+   if f.junction_node then comparison_pos,comparison_dir=sample(actualbase,expected.u) end
+   maxerr=math.max(maxerr,distance(comparison_pos,expected.pos))
+   if expected.u==0 or expected.u==1 then maxheading=math.max(maxheading,angle(comparison_dir,expected.dir)) end
    -- Movement Z can differ from BaseEdge profile; C13 established that distinction.
    local bp,bd=sample(actualbase,expected.u);local bg=slope(bd)
    maxzerr=math.max(maxzerr,math.abs(bp[3]-expected.base_pos[3]));maxgrade=math.max(maxgrade,math.abs(bg))
    if f.max_grade then assert(math.abs(bg)<=f.max_grade+.000001,"realised_sampled_grade_exceeds_limit") end
    in_region({pos[1],pos[2],bp[3]},f.region)
   end
+  if f.junction_node then geometry_bounds(actualbase,f.region,f.min_radius,f.max_grade);geometry_bounds(ng,f.region,f.min_radius,f.max_grade) end
   if i>1 then
    local prev=observations[i-1];maxjoinz=math.max(maxjoinz,math.abs(prev.p1[3]-e.p0[3]));maxjoingrade=math.max(maxjoingrade,math.abs(slope(prev.t1)-slope(e.t0)))
   end
@@ -466,7 +587,7 @@ function M.corridor(p,s,state,request_id,respond)
   reply(uncertain and "mutation_unverified" or "error",{error=tostring(err):sub(1,400),game_constructed=uncertain and "unknown" or false,retry=false})
  end
 end
-function M.extension(p,s,state,request_id,respond,connect_mode)
+function M.extension(p,s,state,request_id,respond,connect_mode,junction_context)
  local stage,stages,fit="inspect",{},nil
  local function reply(status,value)
   value.stage=stage;value.stages=stages;value.fit=fit
@@ -486,8 +607,17 @@ function M.extension(p,s,state,request_id,respond,connect_mode)
    b={anchor_edge=b.anchor_edge,anchor_node=b.anchor_node,end_xy={pos[1],pos[2]},end_direction=target.direction,radius=b.radius,region=b.region,vertical=b.vertical}
   end
   stages[#stages+1]={stage="inspect",status="ok"}
-  stage="fit";local fit_id=request_id.."_fit";fit=M.fit(b,s,fit_id,target)
+  stage="fit"
+  -- A small explicit native-fit margin accommodates ARC-to-cubic conversion;
+  -- the requested minimum remains binding on sampled realised branch geometry.
+  if junction_context then b.radius=junction_context.radius*1.05 end
+  local fit_id=request_id.."_fit";fit=M.fit(b,s,fit_id,target)
   local fitted=s.fits[fit_id] -- retain invocation-local data across command callback
+  if junction_context then
+   fitted.junction_node=junction_context.node;fitted.min_radius=junction_context.radius
+   fit.requested_min_radius=junction_context.radius
+   for _,c in ipairs(fitted.controls) do geometry_bounds(cubic(c),fitted.region,fitted.min_radius,fitted.max_grade) end
+  end
   stages[#stages+1]={stage="fit",status="ok"}
   if not p.execute then reply("ok",{game_constructed=false});return end
   stage="build";assert(not s.mutationPending,"unreconciled_mutation")

@@ -465,3 +465,51 @@ sampledXYerror0.005695,Zerror0.000003815,maximum grade0.015000002,zero join-heig
 Legacy straight/forward curved fits and wrong-direction/strict-grade rejection passed.
 57affected client tests passed. Geometry/grade remain sampled, native routing is not
 physical train traversal, and one proposal provides no rollback guarantee.
+
+
+## Junction branch connection (P11)
+
+Use `connect_junction(client, brief, execute=False)` or:
+
+```powershell
+python bridge_live.py connect-junction --context context.json --params junction_brief.json
+python bridge_live.py connect-junction --context context.json --params junction_brief.json --execute
+```
+
+The brief uses the existing connection schema: bounded source/target regions,
+guide XYZ locations, explicit travel directions/heading tolerances, minimum radius,
+authorised XYZ region, maximum grade, finite fit attempts and route-length acceptance.
+Source discovery requires an exact existing node with two compatible TRACK edges,
+aligned travel tangents/grades and no construction owner; the target remains a free
+endpoint. `discover(..., junction=True)` / CLI `discover_junction` exposes these
+candidates without changing ordinary free-end eligibility. No native edge splitting,
+station connection, crossover or general junction routing is claimed.
+
+Fit-only checks the existing through TRAIN route and proposed branch. The native fitter
+uses 1.05 times the requested radius as a modest conversion margin; compact output
+separates `fit.radius` from `fit.requested_min_radius`. The requested minimum is never
+lowered. Execution rechecks snapshots/incidence, submits one proposal, reacquires exact
+TRACK/node identities, checks the three incident edges and verifies incoming-to-through
+and incoming-to-branch TRAIN paths in their specified directions. A third edge alone
+is insufficient. Native node-owned transport connectors are included in path evidence.
+
+TPF3 trims movement curves at turnouts and exposes indexed native transport ports.
+Junction verification uses those exact identities rather than requiring trimmed curves
+to equal a preliminary sketch. BaseEdge controls, attachments and joins still match;
+realised branch and turnout movement geometry must pass sampled radius, grade and region
+checks. Five samples per geometry are not continuous curvature or clearance proof.
+Free-end/corridor tolerances remain unchanged. Physical train traversal, reservation,
+all possible junction movements and general save identity remain unprobed.
+
+A native rejection or uncertain result stops mutation. For an explicitly rejected
+junction, `reconcile_rejected_junction(client)` performs fresh fit-only snapshot/incidence
+and through-route checks before clearing its pending journal. Other effects remain
+unknown; it neither rolls back nor replays. Fit-only observations remain available
+while a mutation is pending, but another construction is blocked.
+
+Build40408 demonstrated a curved/graded 350.987255-unit branch from node131316,
+TRACK132538/69391/44868 to target132441/node21454. Through TRAIN27.697297 and branch
+TRAIN372.902615 passed; sampled realised minimum radius124.509571 exceeds requested120,
+maximum grade0.015 is below0.04. An initial branch failed geometry verification and
+remains failed evidence; a distinct near-parallel proposal was natively rejected and
+reconciled before the diverging layout passed. No rollback or automatic replay occurred.
