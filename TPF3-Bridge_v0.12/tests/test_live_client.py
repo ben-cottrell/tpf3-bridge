@@ -1892,6 +1892,124 @@ class LiveClientTests(unittest.TestCase):
                 with self.assertRaises(ValueError):method(self.client,record)
             native.assert_not_called()
 
+    def reciprocal_brief(self):
+        return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/reciprocal_layout_example.json').read_text())
+
+    def test_reciprocal_plan_retains_base_hash_and_ten_explicit_movements(self):
+        from bridge_live import plan_reciprocal_layout,plan_switching_layout
+        b=self.reciprocal_brief();p=plan_reciprocal_layout(b)
+        self.assertEqual(p['base_plan'],plan_switching_layout(self.switching_brief()))
+        self.assertEqual(p['base_plan']['plan_hash'],'c74d45bb11c00ef720bfa0296af3e4e0025b707774f05b5c2501685dc6d896a2')
+        self.assertEqual(len(p['movements']),10);self.assertEqual(p['returns'][1]['transfer'],{'from':'D1:east','to':'D2:west'})
+        self.assertEqual(p,plan_reciprocal_layout(b));self.assertFalse(p['game_constructed'])
+        b['route_reference']['heading_deg']=90;b['region']={'min':[-10000,-10000,0],'max':[10000,10000,80]};r=plan_reciprocal_layout(b)
+        for m in r['returns']:
+            self.assertAlmostEqual(m['source']['guide_xyz'][1]-b['route_reference']['origin'][1],750)
+            self.assertAlmostEqual(m['fixture']['position'][1]-b['route_reference']['origin'][1],1200)
+        for change in ('missing','duplicate','opposite','grade','region'):
+            bad=self.reciprocal_brief()
+            if change=='missing':bad['movements'].pop()
+            elif change=='duplicate':bad['movements'][-1]=bad['movements'][-2]
+            elif change=='opposite':bad['movements'][-1]={'from':'U1:west','to':'D1:east'}
+            elif change=='grade':bad['route_reference']['origin'][2]=90
+            else:bad['region']['max'][0]=4000
+            with self.subTest(change=change),self.assertRaises((ValueError,LiveError)):plan_reciprocal_layout(bad)
+
+    def test_reciprocal_offline_cli_never_creates_native_client(self):
+        path=self.root/'brief.json';path.write_text(json.dumps(self.reciprocal_brief()));out=io.StringIO()
+        with patch('bridge_live.client_from_context') as native,contextlib.redirect_stdout(out):
+            code=main(['reciprocal-layout','--params',str(path),'--evidence',str(self.root/'plans')])
+            self.assertEqual(code,0);native.assert_not_called()
+        self.assertLess(len(out.getvalue().encode()),4096);self.assertFalse(json.loads(out.getvalue())['game_constructed'])
+
+    def test_single_crossover_reuses_throat_contract_without_adding_branch(self):
+        b=self.throat_brief();b['roles'].pop('D3');b['steps']=b['steps'][:1]
+        b['required_routes']=[{'from':'A1','to':'D1','via':[]},{'from':'A2','to':'D2','via':[]},{'from':'A1','to':'D2','via':['cross']}]
+        validate_throat_brief(b);calls=[]
+        def request(op,q):
+            calls.append((op,q));v={'requested_route_verified':True}
+            if op=='crossover':v={'readback':{'connected':True,'ordered_edges':[81]},'placements':[{'original_removed':True,'subdivision_sampled_verified':True}]*2,
+                'through_after':[{'requested_route_verified':True}]*2,'crossover_after':{'requested_route_verified':True},'junction_nodes':[91,92]}
+            return self.response('single',op,result=v)
+        with patch('bridge_live._select_throat_port',return_value=({'edge_id':1,'node_id':2},'port')),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_junction_at') as branch:
+            r=connect_throat(self.client,b,execute=True);self.assertEqual(r['routes_verified'],3);branch.assert_not_called()
+        self.assertIn(81,calls[-1][1]['required_edges']);self.assertEqual(len(calls),4)
+        b['steps'][0]['kind']='branch'
+        with self.assertRaises(ValueError):validate_throat_brief(b)
+
+    def test_return_target_is_on_exact_verified_reference_and_rejects_curved_or_missing_segment(self):
+        from bridge_live import plan_reciprocal_layout,_return_target
+        b=self.reciprocal_brief();b['route_reference']['heading_deg']=0;b['region']={'min':[-10000,-10000,0],'max':[10000,10000,80]};p=plan_reciprocal_layout(b);m=p['returns'][0];o=b['route_reference']['origin']
+        edge={'id':71,'road_type':'TRACK','p0':[o[0]+800,o[1]-80,33],'p1':[o[0]+1200,o[1]-120,33],'t0':[400,-40,0],'t1':[400,-40,0]}
+        proof={'routes':[{'from':'U2:west','to':'U2:east','verified':True,'response':{'result':{'path':[{'confirmed_TRACK':True,'edge':{'entity':71}}]}}}]}
+        with patch.object(self.client,'request',return_value=self.response('current',result={'edges':[edge]})) as read:
+            target,ids=_return_target(self.client,p,m,proof);self.assertEqual(read.call_args.args[1]['edge_ids'],[71]);self.assertEqual(target['guide_xyz'],[o[0]+1000,o[1]-100,33]);self.assertEqual(ids,['current'])
+            edge['t1']=[400,30,0]
+            with self.assertRaises(LiveError):_return_target(self.client,p,m,proof)
+
+    def test_reciprocal_reuses_fresh_base_then_stops_partial_without_replay(self):
+        import hashlib
+        from bridge_live import plan_reciprocal_layout,execute_reciprocal_layout
+        p=plan_reciprocal_layout(self.reciprocal_brief());base=self.root/'base.json';base.write_text(json.dumps({'plan':p['base_plan'],'summary':{'status':'ok'},'pair_runtime':{}}));calls=[]
+        def verify(c,plan,record):record['current_ports']={m['fan']+':east':{'edge_id':71+i} for i,m in enumerate(p['returns'])};return {'routes_verified':8}
+        def request(op,q):calls.append(op);return self.response('fixture',op,result={'game_constructed':True,'edges':[{'id':99,'road_type':'TRACK'}]})
+        def throat(c,b,**kw):
+            path=self.root/('return_'+str(len(calls))+'.json');path.write_text(json.dumps({'brief':b}));calls.append('cross');return {'status':'ok','game_constructed':True,'evidence':str(path)}
+        with patch('bridge_live._verify_switching_layout',side_effect=verify),patch('bridge_live._return_target',return_value=(p['returns'][0]['source'],['target'])),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_brief',return_value={'status':'ok','game_constructed':True}) as extend,patch('bridge_live.connect_throat',side_effect=throat),patch('bridge_live._verify_reciprocal_layout',return_value={'routes_verified':10,'transfers_verified':4}):
+            r=execute_reciprocal_layout(self.client,p,base_layout_record=base);self.assertEqual(r['status'],'ok');self.assertEqual(extend.call_count,2);self.assertEqual(calls,['test_approach','cross','test_approach','cross']);self.assertTrue(r['game_constructed'])
+            calls.clear();extend.side_effect=[{'status':'ok','game_constructed':True},{'status':'no_accepted_candidate','game_constructed':False}]
+            r=execute_reciprocal_layout(self.client,p,base_layout_record=base);self.assertEqual(r['status'],'no_accepted_candidate');self.assertTrue(r['game_constructed']);self.assertEqual(calls,['test_approach','cross','test_approach']);self.assertEqual(len(json.loads(Path(r['evidence']).read_text())['return_runtime']),1)
+        self.assertFalse((self.client.evidence/'reciprocal.lock').exists())
+        base.write_text(json.dumps({'plan':p['base_plan'],'summary':{'status':'ok'},'pair_runtime':{},'unfinished_step':'unknown'}))
+        with patch.object(self.client,'request') as native,self.assertRaises(ValueError):execute_reciprocal_layout(self.client,p,base_layout_record=base)
+        native.assert_not_called()
+        base.write_text('{}')
+        with patch('bridge_live.execute_switching_layout') as create,self.assertRaises(ValueError):execute_reciprocal_layout(self.client,p,base_layout_record=base)
+        create.assert_not_called()
+
+    def test_reciprocal_new_base_and_unknown_mutation_stop_before_later_stages(self):
+        from bridge_live import plan_reciprocal_layout,execute_reciprocal_layout
+        p=plan_reciprocal_layout(self.reciprocal_brief())
+        with patch('bridge_live.execute_switching_layout',return_value={'status':'no_accepted_candidate','game_constructed':True}) as base,patch.object(self.client,'request') as native:
+            r=execute_reciprocal_layout(self.client,p);self.assertEqual(r['stage'],'base_build');self.assertEqual(r['status'],'no_accepted_candidate');self.assertTrue(r['game_constructed']);base.assert_called_once_with(self.client,p['base_plan']);native.assert_not_called()
+        saved=self.root/'base.json';saved.write_text(json.dumps({'plan':p['base_plan'],'summary':{'status':'ok'},'pair_runtime':{}}))
+        def verify(c,plan,record):record['current_ports']={m['fan']+':east':{'edge_id':71+i} for i,m in enumerate(p['returns'])}
+        with patch('bridge_live._verify_switching_layout',side_effect=verify),patch('bridge_live._return_target',return_value=(p['returns'][0]['source'],[])),patch.object(self.client,'request',side_effect=LiveError('mutation_outcome_unknown','lost acknowledgement')) as native,patch('bridge_live.connect_brief') as extend:
+            r=execute_reciprocal_layout(self.client,p,base_layout_record=saved);self.assertEqual(r['status'],'mutation_outcome_unknown');self.assertEqual(r['game_constructed'],'unknown');self.assertEqual(json.loads(Path(r['evidence']).read_text())['unfinished_step'],'up_return_fixture');native.assert_called_once();extend.assert_not_called()
+
+    def test_reciprocal_pending_incomplete_inspection_and_stale_base_never_build(self):
+        from bridge_live import plan_reciprocal_layout,execute_reciprocal_layout,inspect_reciprocal_layout
+        p=plan_reciprocal_layout(self.reciprocal_brief());saved=self.root/'incomplete.json';saved.write_text(json.dumps({'plan':p,'summary':{'status':'incomplete'}}))
+        self.client.journal.write_text(json.dumps({'pending':{'request_id':'unknown'}}))
+        with patch.object(self.client,'request') as native,patch('bridge_live.execute_switching_layout') as base:
+            r=execute_reciprocal_layout(self.client,p);self.assertEqual(r['status'],'reconciliation_required');base.assert_not_called()
+            r=inspect_reciprocal_layout(self.client,saved);self.assertEqual(r['status'],'incomplete_layout');native.assert_not_called();self.assertFalse(r['game_constructed'])
+        self.client.journal.write_text('{}');saved.write_text(json.dumps({'plan':p['base_plan'],'summary':{'status':'ok'},'pair_runtime':{}}))
+        with patch('bridge_live._verify_switching_layout',side_effect=LiveError('stale_switching_connector','gone')),patch.object(self.client,'request') as native:
+            r=execute_reciprocal_layout(self.client,p,base_layout_record=saved);self.assertEqual(r['status'],'stale_switching_connector');self.assertFalse(r['game_constructed']);native.assert_not_called()
+
+    def test_reciprocal_verification_requires_all_four_connector_paths_and_ten_junctions(self):
+        import hashlib
+        from bridge_live import plan_reciprocal_layout,_verify_reciprocal_layout,_return_throat
+        p=plan_reciprocal_layout(self.reciprocal_brief());runtime,briefs=self.switching_runtime(p);record={'pair_runtime':runtime,'return_runtime':{},'summary':{'evidence':str(self.root/'verify10.json')}}
+        for index,m in enumerate(p['returns']):
+            d=p['native_construction_direction'];o=p['brief']['route_reference']['origin'];target=m['source']|{'guide_xyz':[o[k]+1000*(d[k] if k<2 else 0) for k in range(3)]}
+            b=_return_throat(p,m,target);path=self.root/(m['name']+'.json');path.write_text(json.dumps({'brief':b,'summary':{'status':'ok'},'semantic_mapping':{'step_edges':{'return':[950+index]}}}))
+            record['return_runtime'][m['name']]={'throat_record':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+        def inspect(op,q):return self.response('connector',op,result={'edges':[{'id':i,'road_type':'TRACK'} for i in q['edge_ids']]})
+        def verify(c,v,r,**kw):
+            self.assertEqual(len(v['branches']),10);self.assertEqual(len(kw['movement_edges']),4)
+            self.assertEqual(kw['movement_edges'][('U1:west','U2:east')],[950]);self.assertEqual(kw['movement_edges'][('D1:east','D2:west')],[951])
+            for row in v['movements'][-4:]:self.assertEqual(len(row['via']),2)
+            self.assertEqual(v['movements'][0]['via'],['up_cross_target','branch_up','up_return_source'])
+            self.assertEqual(v['movements'][2]['via'],['down_cross_source','down_return_target'])
+            self.assertEqual(v['ports']['D2:east']['running_direction'],'DOWN');return {'routes_verified':10}
+        with patch.object(self.client,'request',side_effect=inspect),patch('bridge_live._verify_parallel_layout',side_effect=verify):
+            result=_verify_reciprocal_layout(self.client,p,record);self.assertEqual(result['transfers_verified'],4)
+            with patch.object(self.client,'request',return_value=self.response('stale',result={'edges':[]})),self.assertRaises(LiveError):_verify_reciprocal_layout(self.client,p,record)
+        Path(record['return_runtime']['up_return']['throat_record']).write_text('{}')
+        with patch.object(self.client,'request',side_effect=inspect),self.assertRaises(ValueError):_verify_reciprocal_layout(self.client,p,record)
+
     def test_rejected_corridor_and_crossover_reconcile_without_replay(self):
         from bridge_live import reconcile_rejected_corridor,reconcile_rejected_crossover
         for op,fn in [('corridor',reconcile_rejected_corridor),('crossover',reconcile_rejected_crossover)]:

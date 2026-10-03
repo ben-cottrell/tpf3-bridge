@@ -1,10 +1,11 @@
-# PIF-P19 - complete; stop at acceptance boundary
-Four-track UUDD widened switching workflow implemented/demonstrated on build40408:
-four through/two outer branch movements plus UP U2west->U1east and DOWN D2east->D1west.
-All8fresh native routes require exact functional attachments/junctions/transfer connectors;
-sampled radius/grade/region and three retained5m approach pairs pass.126client tests.
-Original partial/failed receipts retained; exact-fixture/prebuild-only continuations
-completed the known missing stages without replaying built UP/reference geometry.
-P18 compatibility preserved. No continuous/train/signalling/enforcement claims.
-Commands/evidence: STATE.md and .local_runs/live_python_interface/p19/HANDOFF.md.
-Local milestone checkpoint in p19/checkpoint.json; no push or next task adopted.
+# PIF-P20 - complete; awaiting coordinator acceptance
+
+Card: .local_runs/live_python_interface/p20/orchestrator/TASK.md
+Prior checkpoint: 980bb23 (P19 accepted). P20 local revision: p20/checkpoint.json.
+Reciprocal UUDD callable/CLI outcome implemented: ten intended native movements,
+four transfers, ten current junctions; fresh-process and independent sampled
+geometry/spacing acceptance on build40408.134affected quiet tests pass.
+Evidence/handoff: .local_runs/live_python_interface/p20/{HANDOFF.md,checks.json,result.json}.
+Disposable sandbox saved normally, paused/non-maximised. No remote push, native
+Lua/runner/L01-L14 changes, signalling/reservation/direction-enforcement or traversal claim.
+No next task started; coordinator retrieves the local handoff. Actual usage unknown.

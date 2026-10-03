@@ -1,6 +1,33 @@
-# TPF3-Bridge milestone state — 3 October 2026
+# TPF3-Bridge milestone state — 4 October 2026
 
-## Current task - P19 complete, native acceptance passed
+## Current task - P20 complete, reciprocal native acceptance passed
+Callable plan/publish/execute/inspect_reciprocal_layout; CLI reciprocal-layout
+(offline default;--execute), reciprocal-layout-inspect; explicit --base-layout-record
+requires matching completed P19 plus fresh eight-route readback before extension.
+Retains four through/two branch/two transfers; adds U1west->U2east and D1east->D2west.
+Ten required native TRAIN routes/four exact transfer connectors/ten junctions pass
+build40408, including intended through-track junction visits. Level UUDD increasing-UP,
+radius120/retained5m, widened separated switching; translation/rotation supported.
+Same(3500,6500,33)/heading-50/authorised region as P19; fan east ports now x1220.
+Native execution extended accepted P19 in one successful invocation, no build repair.
+66TRACK/17independent samples:radius122.278962>=120,grade0,region; three100-unit
+approach pairs spacing4.999844-5.000128. Wrong original/return connector, strict200
+radius and excluded region reject. Fresh-network composition tested, not rebuilt natively.
+python tools/quiet_checks.py --suite live_client --label pif-p20-reviewed-acceptance:134passed;
+.local_checks/pif-p20-reviewed-acceptance_3srw7aff/report.json.
+python .local_runs/live_python_interface/p20/native_execute.py:10routes,4transfers;
+python bridge_live.py reciprocal-layout-inspect --context .local_runs/live_python_interface/p02/context.json --params implementation/live_python_interface/reciprocal_layout_example.json --layout-record .local_runs/live_python_interface/p20/native_execution_result.json:10fresh routes,zero construction;
+python .local_runs/live_python_interface/p20/independent_acceptance.py --reuse-observations:passed;
+original read-only observations retained; local assertion corrected to outside_authorised_region.
+No native queries repeated for that correction. Full receipts via native_execution_result.json/
+fresh_inspection_summary.json; HANDOFF/checks/result/checkpoint in p20. Local commit,no push.
+P18/P19 hashes/interfaces retained; old native port evidence historical after explicit extension.
+No Lua/runner/L01-L14 change. Partial/unknown effects visible; no automatic resume/rollback.
+Sampled only; traversal,signals,reservations,direction enforcement/save-load identity unprobed.
+Disposable TPF3_Bridge_NCD_C09_Test_20261002_1902 saved; paused/non-maximised.
+No blocker/next task. Actual usage unavailable; no inferred credits.
+
+## P19 baseline - 980bb23 (historical native state)
 Widened UUDD plan/execute/inspect application and CLI: switching-layout (offline
 default;--execute), switching-layout-inspect. Four through/two outer branch functions
 plus U2west->U1east and D2east->D1west; all8fresh native TRAIN routes pass build40408.

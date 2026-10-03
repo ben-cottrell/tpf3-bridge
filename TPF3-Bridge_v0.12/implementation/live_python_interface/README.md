@@ -899,3 +899,53 @@ The successful current-state receipt proves this assembled layout, not universal
 unattended success on every placement. Game-world side-effect history is incomplete.
 Geometry is sampled; physical traversal, reservation, signalling and direction
 enforcement remain unprobed. Other patterns/transfers are unsupported; P18 unchanged.
+
+## Reciprocal UUDD track choice (P20 demonstrated)
+
+`reciprocal_layout_example.json` retains all eight P19 functions and adds
+UP U1:west->U2:east and DOWN D1:east->D2:west. Four through, two outer branch and
+four same-direction transfer movements are explicit. Level, increasing-reference
+UP, radius120 and retained5m ordered approaches remain the supported domain.
+Translation/rotation are supported; switching zones widen. This is not scissors,
+slips, opposite-direction switching or a constant5m crossover.
+
+```powershell
+python bridge_live.py reciprocal-layout --params implementation/live_python_interface/reciprocal_layout_example.json --evidence .local_runs/reciprocal_plans
+python bridge_live.py reciprocal-layout --context context.json --params implementation/live_python_interface/reciprocal_layout_example.json --execute
+python bridge_live.py reciprocal-layout --context context.json --params implementation/live_python_interface/reciprocal_layout_example.json --execute --base-layout-record COMPLETED_P19_RECORD.json
+python bridge_live.py reciprocal-layout-inspect --context context.json --params implementation/live_python_interface/reciprocal_layout_example.json --layout-record RECORD.json
+```
+
+Callable interfaces: plan_reciprocal_layout, publish_reciprocal_layout,
+execute_reciprocal_layout, inspect_reciprocal_layout. Offline planning is default.
+Execution composes the existing switching layout, two native fan-track extensions
+and two single-crossover modules through connect_throat. An explicit matching
+completed P19 receipt may be supplied; all eight current routes/ports/junctions
+must pass fresh readback before extending it. It is not automatic cached continuation.
+Malformed, unfinished or stale base evidence stops before new construction.
+The stored native end-tangent guide correction is retained in ordinary base execution.
+
+Return switches use fan local x750 and a unique straight native reference segment
+at x1000. Actual reference geometry/direction is read from the verified through route,
+then exact native interior attachments are acquired. Fan east interfaces move from
+x620 to x1220; reference/branch interfaces stay unchanged. The declared footprint
+remains local x[-60,1660], normal[-500,515], with the selected authorised XYZ region.
+Incidental map content is redevelopable. Partial effects/unfinished stages stay visible;
+no automatic replay, clearance, rollback or crash continuation is supplied.
+
+Fresh inspection requires ten distinct functional ports, ten current three-TRACK
+junctions, all ten native TRAIN paths and all four exact built transfer connectors.
+Through paths must visit their intended switching/branch junctions. Sampled
+radius/grade/region and three100-unit approach spacing checks remain binding.
+Receipt hashes establish saved-file consistency separately from native acceptance.
+
+Build40408 demonstration extended the accepted P19 network in one successful
+construction invocation, without construction repair: ten fresh-process routes,
+66current TRACK edges/17independent samples each, minimum radius122.278962>=120,
+grade0 and spacing4.999844-5.000128. Wrong original/return connectors, strict200
+radius and an excluded region reject.134client tests pass. The fresh-network base
+creation path is composed/tested; this native demonstration reused the matching
+P19 base rather than constructing another duplicate site. P18/P19 brief hashes and
+receipt formats remain unchanged; older native evidence describes historical state.
+No physical traversal, signalling, reservation, direction enforcement or complete
+side-effect/save-load identity claim. Detailed evidence remains local under p20.
