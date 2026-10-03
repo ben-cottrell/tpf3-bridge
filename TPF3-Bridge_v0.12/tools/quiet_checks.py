@@ -17,6 +17,8 @@ import time
 import unittest
 
 SUITES = {
+    'quiet_runner': ('tools', '.', 'test_quiet_checks.py'),
+    'live_client': ('.', 'tests', 'test_live_client.py'),
     'pair_input': ('.', 'tests', 'test_pair_input.py'),
     'pair_geometry': ('.', 'tests', 'test_pair_geometry.py'),
     'pair_plan': ('.', 'tests', 'test_pair_plan.py'),
@@ -46,7 +48,7 @@ def input_hashes(root: Path) -> dict[str, str]:
     paths: set[Path] = set()
     for folder, pattern in [('proof', '*.py'), ('evidence', '*.json'), ('tests', '*.py')]:
         paths.update((root / folder).rglob(pattern))
-    for name in ['bridge_cli.py', 'bridge_app.py', 'bridge_connection.py',
+    for name in ['bridge_live.py', 'bridge_cli.py', 'bridge_app.py', 'bridge_connection.py',
                  'tools/quiet_checks.py', 'tools/task_runner.py',
                  'tools/connection_acceptance.py', 'tools/task_queue_connection.json',
                  'bridge_pair.py', 'bridge_pair_mock.py', 'tools/pair_acceptance.py',

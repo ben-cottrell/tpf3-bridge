@@ -1,0 +1,197 @@
+{
+  "format_version": "1.0",
+  "purpose": "Planning-only capability classification template; not a runtime capability manifest, native API map or authority grant.",
+  "authority": "../NATIVE_FIRST_ARCHITECTURE.md",
+  "existing_contract": "../GAME_ADAPTER_CONTRACT.md",
+  "existing_native_evidence": "../contracts/tpf3_unprobed_capabilities.json",
+  "merge_rule": "For each requirements entry, shallow-merge over entry_template. Null/unknown means unestablished, not unsupported. IDs name project requirements, never TPF3 function names. Preferred ownership is policy intent, not demonstrated availability.",
+  "owner_classifications": [
+    "ENGINE_NATIVE",
+    "MOD_SEMANTIC",
+    "PYTHON_ENGINEERING",
+    "PYTHON_CACHE",
+    "FALLBACK_ONLY",
+    "UNSUPPORTED"
+  ],
+  "evidence_states": [
+    "unknown",
+    "published_feature",
+    "api_documented",
+    "demonstrated",
+    "unsupported"
+  ],
+  "evidence_epochs": [
+    "DESIGN",
+    "PREVIEW",
+    "COMMITTED"
+  ],
+  "support_states": [
+    "unknown",
+    "supported",
+    "unsupported"
+  ],
+  "entry_template": {
+    "capability_id": null,
+    "project_need": null,
+    "preferred_owner_classification": null,
+    "evidence_state": "unknown",
+    "evidence_refs": [],
+    "evidence_epoch": null,
+    "native_mechanism": null,
+    "semantic_adapter_operation": null,
+    "python_fallback": null,
+    "preview_support": "unknown",
+    "committed_readback_support": "unknown",
+    "identity_support": "unknown",
+    "mutation_support": "unknown",
+    "tested_game_mod_build": {
+      "game": null,
+      "mod": null
+    },
+    "limitations": [],
+    "production_decision": "pending_native_survey"
+  },
+  "requirements": [
+    {
+      "capability_id": "game.identity.read",
+      "project_need": "Actual game/mod build, loaded save identity and load epoch",
+      "preferred_owner_classification": "MOD_SEMANTIC"
+    },
+    {
+      "capability_id": "game.coordinates.map",
+      "project_need": "Verified native-to-engineering coordinate transform",
+      "preferred_owner_classification": "MOD_SEMANTIC"
+    },
+    {
+      "capability_id": "game.topology.read",
+      "project_need": "Bounded ports, connectivity and required/forbidden movements",
+      "preferred_owner_classification": "MOD_SEMANTIC"
+    },
+    {
+      "capability_id": "game.terrain.read",
+      "project_need": "Bounded terrain facts needed for engineering, with coverage/uncertainty",
+      "preferred_owner_classification": "MOD_SEMANTIC"
+    },
+    {
+      "capability_id": "game.assets.enumerate",
+      "project_need": "Actual available asset capabilities and native identity",
+      "preferred_owner_classification": "MOD_SEMANTIC"
+    },
+    {
+      "capability_id": "game.track.construct",
+      "project_need": "Native track construction, snapping and validity/collision decisions",
+      "preferred_owner_classification": "ENGINE_NATIVE"
+    },
+    {
+      "capability_id": "game.structure.construct",
+      "project_need": "Native bridges/tunnels and authorised terrain realisation",
+      "preferred_owner_classification": "ENGINE_NATIVE"
+    },
+    {
+      "capability_id": "game.geometry.read",
+      "project_need": "Fresh committed realised geometry for engineering acceptance",
+      "preferred_owner_classification": "MOD_SEMANTIC"
+    },
+    {
+      "capability_id": "game.routes.verify",
+      "project_need": "Native pathfinding and required route availability",
+      "preferred_owner_classification": "ENGINE_NATIVE"
+    },
+    {
+      "capability_id": "game.operation.receipt",
+      "project_need": "Reconcile ambiguous semantic submission/effects within a healthy running session; no crash-job continuation guarantee",
+      "preferred_owner_classification": "MOD_SEMANTIC"
+    },
+    {
+      "capability_id": "game.change.observe",
+      "project_need": "Bounded relevant state changes and error normalisation",
+      "preferred_owner_classification": "MOD_SEMANTIC"
+    },
+    {
+      "capability_id": "game.vehicle.observe",
+      "project_need": "Authoritative motion/traversal observation when separately authorised",
+      "preferred_owner_classification": "ENGINE_NATIVE"
+    },
+    {
+      "capability_id": "game.asset.remove",
+      "project_need": "Native lifecycle/removal under explicit effect and protection policy",
+      "preferred_owner_classification": "ENGINE_NATIVE"
+    },
+    {
+      "capability_id": "game.preview.validate",
+      "project_need": "Native proposed geometry, validity and bounded side effects",
+      "preferred_owner_classification": "ENGINE_NATIVE"
+    },
+    {
+      "capability_id": "game.signal.configure",
+      "project_need": "Native reservation/signalling semantics where exposed",
+      "preferred_owner_classification": "ENGINE_NATIVE"
+    },
+    {
+      "capability_id": "project.passenger_behaviour",
+      "project_need": "Native passenger behaviour, not a new Python simulation",
+      "preferred_owner_classification": "ENGINE_NATIVE"
+    },
+    {
+      "capability_id": "project.save_load_recovery",
+      "project_need": "Ordinary save/load identity changes and demonstrated railway-operation recovery while TPF3 stays healthy; no process restart or crash recovery",
+      "preferred_owner_classification": "ENGINE_NATIVE"
+    },
+    {
+      "capability_id": "project.identity_mapping",
+      "project_need": "Canonical identity to exact native entity plus in-session load epoch; fresh inspection after ordinary save/load and preview reacquisition",
+      "preferred_owner_classification": "MOD_SEMANTIC"
+    },
+    {
+      "capability_id": "project.uk_engineering",
+      "project_need": "Qualified profiles, geometry/topology alternatives, fit/holding, hard constraints and bounded search",
+      "preferred_owner_classification": "PYTHON_ENGINEERING"
+    },
+    {
+      "capability_id": "project.acceptance_orchestration",
+      "project_need": "Intent/preview/committed comparison, explicit protection/function policies and bounded repair",
+      "preferred_owner_classification": "PYTHON_ENGINEERING"
+    },
+    {
+      "capability_id": "project.semantic_cache",
+      "project_need": "Derived bounded observations invalidated by build/save/load/state changes; not workflow continuation across crashes",
+      "preferred_owner_classification": "PYTHON_CACHE"
+    },
+    {
+      "capability_id": "project.local_screening",
+      "project_need": "Cheap conflict/clearance/terrain/civil approximations only when useful before native preview",
+      "preferred_owner_classification": "FALLBACK_ONLY"
+    },
+    {
+      "capability_id": "project.deep_native_fallback",
+      "project_need": "Native-mechanic substitute only after a demonstrated gap and measurable quality/safety/GPT benefit",
+      "preferred_owner_classification": "FALLBACK_ONLY"
+    }
+  ],
+  "notes": [
+    "No entry claims demonstrated native support. Unsupported requires build/scope-specific negative evidence.",
+    "Python offline acceptance is retained separately; it is not native evidence for these categories.",
+    "First survey is read-only; native mutation stays blocked pending successful capability/identity/terrain/topology/asset probes and separate authority.",
+    "State preservation labels PROTECTED/FUNCTION_ONLY/REPLACEABLE/REDEVELOPABLE/ENGINE_DELEGATED belong to the brief/effect scope, not inferred from capability rows or snapshot existence.",
+    "No fallback implementation, binding or refactor is authorised by this template."
+  ],
+  "runtime_scope": {
+    "preconditions": [
+      "healthy_game_already_running",
+      "intended_save_already_loaded",
+      "semantic_adapter_loaded_and_reachable",
+      "python_and_local_files_usable",
+      "permissions_authentication_machine_network_functioning"
+    ],
+    "terminal_blockers": [
+      "game_session_unavailable",
+      "adapter_unavailable",
+      "external_environment_unavailable",
+      "local_storage_unavailable"
+    ],
+    "on_unavailable": "Stop current job; external intervention required. No environment diagnostics, retries, watchdogs or remediation.",
+    "recovery_scope": "Finite authorised railway-semantic retries in a healthy session only; ordinary in-session save/load requires fresh inspection.",
+    "persistence_scope": "Engineering evidence, result history and in-session semantic operation reconciliation/deduplication; no crash-resilient workflow continuation.",
+    "status": "Production policy only; no native/runtime implementation or demonstration claimed."
+  }
+}

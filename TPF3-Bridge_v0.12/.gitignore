@@ -5,3 +5,16 @@
 # Durable local batch ledger, prompts, source snapshots and worker logs.
 # Keep on disk for restart/reconciliation; never publish with the source.
 /.task_batch/
+
+# Local research/coordination history; retain paths referenced by acceptance.
+/N01_ORCHESTRATION_HANDOFF.md
+/N01_CONTINUATION_01_ORCHESTRATOR_HANDOFF.md
+/implementation/n01_probe/PREPARATION.json
+/implementation/n01_probe/CONTINUATION_*
+/implementation/n01_probe/n01_read.*
+/implementation/n01_probe/prepared_mod/content/scripts/pif_requests/
+/implementation/n01_probe/prepared_mod/content/scripts/pif_live/
+/implementation/n02_probe/
+/implementation/native_construction_discovery/
+/implementation/live_python_interface/P01.md
+/implementation/live_python_interface/P02.md
