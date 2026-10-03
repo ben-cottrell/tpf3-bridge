@@ -1,9 +1,14 @@
-# PIF-P18 - prepared, awaiting concrete native construction approval
-Card: .local_runs/live_python_interface/p18/orchestrator/TASK.md.
-Ordered-direction planning/CLI and fake-native checks implemented; no P18 runtime
-acceptance. Automatic review rejected four-track live construction before execution.
-Do not retry or bypass. Await explicit user approval for the supplied UUDD example:
-origin(1700,6500,33),heading-50,region[1300,5000,0]..[3350,7200,80],four through tracks,
-two outward branches and six directed routes, including required terrain/map clearance.
-Evidence/blocker/HANDOFF/checkpoint in .local_runs/live_python_interface/p18/.
-No next task, signals/stations/physics or remote push. No denied cross-chat retry.
+# PIF-P18 - complete; stop at acceptance boundary
+Ordered parallel-track running-direction intent, native UUDD branching construction
+and fresh read-only inspection are implemented and demonstrated on build40408.
+All six predeclared directed routes, exact functional attachments/two junctions,
+selected radius/grade/region and three retained5m approach pairs passed.
+117affected client tests reused with verified unchanged source/test/runner hashes;
+fresh-process readback and independent26TRACK sampled geometry passed. Detailed
+commands/evidence are in STATE.md and .local_runs/live_python_interface/p18/HANDOFF.md.
+Direct human approval in this worker chat resolved external review; denied attempts
+and historical acceptance remain intact. Test world saved, paused/non-maximised.
+UD and UDUD/reversed-UP have planning evidence only. No cross-track switching,
+continuous geometry proof, direction enforcement or physical train-operation claim.
+Local completion checkpoint: p18/completion_checkpoint.json. No remote push.
+No follow-on task is adopted; await separately approved orchestration outcome.

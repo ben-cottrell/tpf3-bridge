@@ -1,21 +1,28 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
-## Current task - P18 prepared; native execution blocked by approval review
-Added ordered UP/DOWN intent relative to explicit route reference, separate native
-construction direction; patterns UD/UDUD/UUDD validate, explicit named movements.
-Prepared parallel-layout plan/execute and parallel-layout-inspect plus callable APIs.
-Four-track UUDD increasing-UP execution domain, outer diverging UP/merging DOWN branches;
-no cross-track switching/close crossover, direction enforcement/signals/traversal claim.
-Fresh route/attachment/junction and retained100-unit spacing checks reuse native primitives.
-Fake-native and planning tests pass; exact latest report/checkpoint in p18/checks.json.
-Native command rejected BEFORE execution: automatic approval review could not establish
-trusted approval for this concrete live-map mutation. No retry/workaround, P18 native
-queries/builds/save edits or mod-source changes. Existing game running/nonmaximised/paused
-was observed; no UI input was needed. Native acceptance NOT passed, not task complete.
-Approval needed for example origin(1700,6500,33),heading-50,region[1300,5000,0]..
-[3350,7200,80], four through tracks/two outer branches/six directed movements, including
-necessary in-game clearance/terrain effects on disposable map. No OS repair/restart/push.
-Prepared source/local evidence retained; actual usage unavailable. P17 accepted1ecee4f.
+## Current task - P18 complete, native acceptance passed
+Prepared checkpoint6b0b607; completion milestone recorded in p18/completion_checkpoint.json.
+Explicit route reference, ordered UP/DOWN intent and complete named movement matrix;
+UD/UDUD/UUDD planning; parallel-layout (offline default;--execute), parallel-layout-inspect.
+Build40408/sessionpif_1791059997_59546572: four UUDD through tracks/two outward branches,
+origin(1700,6500,33),heading-50, authorised[1300,5000,0]..[3350,7200,80]; all6TRAIN routes.
+Fresh-process inspect rechecked current10ports/two junctions/all6paths with zero builds.
+Independent26TRACK/17samples:radius124.118567>=hard120,grade0; three retained100-unit
+pairs/17spacing samples each4.999878-5.000075. Sampled evidence, no continuous proof.
+Direct human "approve all" in worker chat resolved review blocker; both original denied
+attempts remain preserved as zero-action history. No native repair/clearance required.
+Normal disposable save completed; game remains paused/non-maximised. No native-source,
+runner, station, physics or old recipe behaviour change; no operational direction claim.
+python tools/quiet_checks.py --suite live_client --label pif-p18-final-preparation:117passed;
+.local_checks/pif-p18-final-preparation_ktnndw9f/report.json; unchanged tested hashes reused.
+python .local_runs/live_python_interface/p18/native_execute.py:passed;
+python bridge_live.py parallel-layout-inspect --context .local_runs/live_python_interface/p02/context.json --params implementation/live_python_interface/parallel_layout_example.json --layout-record .local_runs/live_python_interface/p18/native_execution_result.json:passed;
+python .local_runs/live_python_interface/p18/independent_acceptance.py:passed.
+Receipts/fresh_inspection_summary.json/independent_acceptance.json/HANDOFF/completion_*
+in .local_runs/live_python_interface/p18; earlier preparation/denials/P16/P17 retained.
+Limit: native UUDD increasing-UP only; outer branches/no cross-track switching; physical
+traversal/signals/reservations/save/load identity unprobed. No blocker or next task/push.
+Actual usage unavailable; no inferred credits. Local scoped diff reviewed.
 
 ## P17 baseline - 1ecee4f
 Callable inspect_junction_recipe/continue_junction_recipe; CLI junction-recipe-inspect

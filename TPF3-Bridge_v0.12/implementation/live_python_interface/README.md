@@ -784,7 +784,7 @@ This establishes checked continuation on the demonstrated network, not arbitrary
 success, continuous geometry proof, signalling permission or physical train traversal.
 
 
-## Ordered running-direction layout (P18 prepared)
+## Ordered running-direction layout (P18 demonstrated)
 
 `parallel_layout_example.json` declares UP-UP-DOWN-DOWN, the ordered track IDs, an
 explicit route reference and six required functional movements. UP means increasing
@@ -800,12 +800,12 @@ python bridge_live.py parallel-layout-inspect --context context.json --params im
 
 The first command is offline and publishes a reviewable hashed plan. Callable
 interfaces: plan_parallel_layout, publish_parallel_layout, execute_parallel_layout
-and inspect_parallel_layout. `native_execution_supported` identifies the prepared
+and inspect_parallel_layout. `native_execution_supported` identifies the supported
 execution domain; `native_runtime_demonstrated:false` on a DESIGN plan makes no game
-capability claim. The execution command has not yet passed native acceptance.
+capability claim. Native execution/read-only inspection have passed on build40408.
 
 Planning validates UP-DOWN, UP-DOWN-UP-DOWN and UP-UP-DOWN-DOWN, including reversed
-UP/reference convention and rotation. Native execution is narrowly prepared for
+UP/reference convention and rotation. Native execution is demonstrated for
 four-track UUDD with increasing-reference UP, level radius120/spacing5. It creates
 four straight through tracks, a diverging UP branch from the low outer track, and a
 DOWN branch merging into the high outer track. Outward branches avoid a close
@@ -819,17 +819,24 @@ with reversed source/target attachment roles. This does not reverse supplied nat
 construction tangents or claim that TPF3 enforces traffic direction. An unsignalled
 native reverse path does not authorise a movement contrary to the design brief.
 
-Prepared execution uses existing native fixtures, corridor fitting and interior
+Execution uses existing native fixtures, corridor fitting and interior
 junction construction. Fresh verification reacquires all functional ports and exact
 junction incidence, checks directed TRAIN paths with selected radius/grade/region,
 and17spacing samples for each of three retained100-unit adjacent approach pairs.
 Partial effects/unfinished steps stay in durable evidence. No automatic retry,
 clearance, crash resume, rollback or operational/signal enforcement is provided.
 
-P18 currently has117passing client tests, including deterministic pattern/direction
-transforms and fake-native execution/readback. The attempted native experiment was
-rejected by automatic approval review before process execution; no P18 construction
-occurred. P17's five-route evidence remains valid for P17, not a four-track proof.
-Concrete native approval is pending for the supplied disposable-map example at
-(1700,6500,33),heading-50 within[1300,5000,0]..[3350,7200,80], including necessary map
-clearance/terrain effects. Physical traversal, reservations and signals remain unprobed.
+P18 has117passing client tests, including deterministic pattern/direction transforms,
+fake-native execution/readback, partial failures and pending-operation stops. On
+build40408, the example at(1700,6500,33),heading-50 built four through tracks and two
+outward branches, then verified all six declared TRAIN paths. A fresh-process
+parallel-layout-inspect repeated acceptance without construction. Independent samples
+of26current TRACK BaseEdges measured minimum radius124.118567>=hard120 and grade0;
+three adjacent retained100-unit approaches each passed17signed spacing samples,
+4.999878-5.000075. Exact current junction incidence and attachment IDs were checked.
+This is sampled geometry evidence, not a continuous proof. All source/tests stayed
+unchanged after the117-test report; original approval denials and receipts remain local.
+The disposable test world was saved and left paused/non-maximised. Physical train
+traversal, direction enforcement, reservations and signals remain unprobed. Other
+patterns/reversed-UP conventions have planning/test evidence only. No cross-track
+switching or close crossover is supplied; P17's separate five-route receipt is retained.
