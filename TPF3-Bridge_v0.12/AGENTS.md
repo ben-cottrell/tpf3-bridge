@@ -1,3 +1,14 @@
+## Integrated outcome scope - user direction, 3 October 2026
+Prefer substantial end-to-end implementation tasks over one-API micro-tasks. Combine
+endpoint discovery/selection, native curved and graded fitting, construction, attachment
+and route verification in a useful connection workflow from a brief. Use documented,
+low-uncertainty API capabilities together and validate the resulting outcome; each new
+API call does not require a separate experiment or handoff. Narrow scope for concrete
+failures, contradictory contracts or material uncertainty, not hypothetical risk.
+Routine fixes and affected checks belong inside the same task. Group cleanup/local
+commits around useful milestones. Preserve honest native evidence and existing product
+boundaries. Finish current grade task uninterrupted, then use this integrated approach
+for the longer practical connection; automated handoffs continue.
 ## Automated milestone commits - user instruction, 3 October 2026
 At notable verified milestones, the coordinator should instruct the existing implementation
 agent to clean up Git scope and make a local milestone commit, then continue approved

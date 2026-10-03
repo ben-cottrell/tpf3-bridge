@@ -262,7 +262,7 @@ endpoint, absent required edge and wrong entry direction were rejected without b
 The separately declared bounded `findPath` route failed with error300; its constructor
 was unavailable at runtime. That unresolved contract is not used by this operation.
 
-39client/fake-worker tests passed;14unchanged quiet-runner tests reused. Run:
+46client/fake-worker tests passed;14unchanged quiet-runner tests reused. Run:
 
 ```powershell
 python tools/quiet_checks.py --suite live_client --label live-client
@@ -273,3 +273,47 @@ Raw acceptance logs are intentionally local, not required to use the source.
 native save/load identity, arbitrary-version compatibility and production transport.
 Detailed station modelling and train physics remain outside this milestone.
 Usage unavailable; no invented credit savings.
+
+## Native height and grade (P07)
+
+The same `extend`, `connect` and fit-only `connect-selected` commands accept an
+optional `vertical` field in their JSON brief. For an extension, supply
+`{"end_height":5.5,"end_grade":0.005,"max_grade":0.04}`. Heights use native world
+coordinates; grade is rise divided by horizontal distance, with its sign in the
+selected travel direction. For a connection/selection, supply only
+`{"max_grade":0.04}`: target height and incoming grade come from the exact native
+attachment. Explicit constraints are never silently changed. Without `vertical`,
+the existing constant-grade-compatible endpoint domain remains in force.
+
+Native Dubins fitting supplies XY ARC/STRAIGHT pieces. The adapter supplies one
+native `EdgeGeometry` cubic height profile's endpoint heights/tangent grades over
+the cumulative native XY length; TPF3 evaluates its interpolation. Per-piece
+heights/tangents preserve those endpoints and join grades. This is a selected
+native cubic profile, not a higher-level native vertical routing/optimisation API.
+Five samples per piece check XYZ region, grade and subdivision; fresh readback
+checks actual BaseEdge controls/geometry and exact attachment identity. These are
+sampled checks, not continuous proofs. Movement geometry Z remains distinct from
+the BaseEdge height profile. Forward-family/reverse-geometry limitations remain.
+
+Build40408 demonstrated a roughly100-unit connection rising2 native height units
+between grades0.005 and0.015, selected radius100/max_grade0.04. Exact realised
+TRACK131258/131259/131260 connected nodes131248→131256→131257→131251.
+A further100-unit extension rose1 unit to grade0.005 through TRACK131265/131266/
+131267. Native TRAIN pathfinding verified the whole240.031993-unit chain. A strict
+grade limit, out-of-region profile and omitted vertical option were rejected before
+construction. A normal save/load reacquired current-session attachment facts.
+These IDs describe that disposable demonstration; never reuse them as a brief.
+
+One station-adjacent connection was rejected with native Collision. Another was
+built but a subsequent callback cache lookup failed. Neither was blindly replayed.
+Narrow callable reconciliation is available for those recorded outcomes:
+`reconcile_rejected_connection(client, original_discoveries)` requires explicit
+native rejection plus fresh unchanged/free exact attachments; incidental effects
+remain unknown. `reconcile_constructed_connection(client, original_discoveries,
+observed_edge_ids)` requires reported native success, recorded fit controls, fresh
+exact directed chain/resource checks and a native TRAIN route. It records evidence
+before closing the Python pending record. Both are read-only, in-session, never
+resend construction and provide no rollback/crash-recovery guarantee. Native
+mutation guards can still require an authorised ordinary load. The repaired
+compound callback now captures its fit locally and preserves returned identities
+if a later readback fails; the new extension verified that repair at runtime.

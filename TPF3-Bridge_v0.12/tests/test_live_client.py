@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import contextlib
 import io
-from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, reconcile_rejected_fixture, discover_session, client_from_context
+from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, discover_session, client_from_context
 
 class LiveClientTests(unittest.TestCase):
     def setUp(self):
@@ -217,6 +217,44 @@ class LiveClientTests(unittest.TestCase):
                 with self.assertRaises(ValueError):connect_selected(self.client,bad,self.selected_brief())
                 calls.assert_not_called()
 
+    def test_vertical_briefs_reject_bad_limits_and_endpoint_values_before_request(self):
+        for vertical in ({'max_grade':0},{'max_grade':True},{'max_grade':float('nan')},
+                         {'max_grade':.04,'end_height':3}):
+            with patch.object(self.client,'request') as calls:
+                with self.assertRaises(ValueError):connect(self.client,self.connection_brief()|{'vertical':vertical})
+                calls.assert_not_called()
+        base=self.connection_brief();base.pop('target_edge');base.pop('target_node')
+        base.update(end_xy=[100,100],end_direction=[1,0])
+        for vertical in ({'max_grade':.04},{'max_grade':.04,'end_height':float('inf'),'end_grade':.01},
+                         {'max_grade':.04,'end_height':3,'end_grade':.05}):
+            with patch.object(self.client,'request') as calls:
+                with self.assertRaises(ValueError):extend(self.client,base|{'vertical':vertical})
+                calls.assert_not_called()
+
+    def test_explicit_native_vertical_constraints_reach_one_compound_workflow(self):
+        for execute in (False,True):
+            brief=self.connection_brief()|{'vertical':{'max_grade':.04}}
+            with patch.object(self.client,'request',return_value=self.response(operation='connection')) as calls:
+                connect(self.client,brief,execute=execute)
+            self.assertEqual(calls.call_count,1)
+            self.assertEqual(calls.call_args.args[1]['brief'],brief)
+            self.assertIs(calls.call_args.args[1]['execute'],execute)
+        base=self.connection_brief();base.pop('target_edge');base.pop('target_node')
+        base.update(end_xy=[100,100],end_direction=[1,0],vertical={'max_grade':.04,'end_height':3,'end_grade':.01})
+        with patch.object(self.client,'request',return_value=self.response()) as calls:extend(self.client,base)
+        self.assertEqual(calls.call_args.args[1]['brief']['vertical'],base['vertical'])
+
+    def test_selected_vertical_keeps_native_endpoint_identity_and_fit_only(self):
+        brief=self.selected_brief()|{'vertical':{'max_grade':.04}}
+        with patch.object(self.client,'request',return_value=self.response()) as calls:
+            connect_selected(self.client,self.discovery_record(),brief)
+        self.assertEqual(calls.call_args.args[1]['vertical'],{'max_grade':.04})
+        self.assertNotIn('execute',calls.call_args.args[1])
+        with patch.object(self.client,'request') as calls:
+            with self.assertRaises(ValueError):
+                connect_selected(self.client,self.discovery_record(),brief|{'vertical':{'max_grade':.04,'end_height':3}})
+            calls.assert_not_called()
+
     def fixture_pending(self):
         brief=self.connection_brief();brief.pop('target_edge');brief.pop('target_node')
         brief.update(end_xy=[100,100],end_direction=[1,0])
@@ -252,6 +290,81 @@ class LiveClientTests(unittest.TestCase):
         path=self.client.evidence/'failed_fixture.response.json';response=json.loads(path.read_text());response['result']['error']='unknown response';path.write_text(json.dumps(response))
         with patch.object(self.client,'request') as calls:
             with self.assertRaises(LiveError):reconcile_rejected_fixture(self.client,record)
+            calls.assert_not_called()
+
+    def rejected_connection_pending(self):
+        pending={'request_id':'rejected_connection','operation':'connection',
+                 'params':{'execute':True,'brief':self.connection_brief()}}
+        self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending}))
+        response=self.response('rejected_connection','connection',result={'stage':'build',
+                 'native_command_success':False,'error':'native_construction_rejected','game_constructed':'unknown'})
+        response['status']='error'
+        (self.client.evidence/'rejected_connection.response.json').write_text(json.dumps(response))
+        return pending
+
+    def test_rejected_connection_reconciliation_requires_fresh_free_exact_attachments(self):
+        for defect in ('none','failed_query','wrong_node'):
+            pending=self.rejected_connection_pending()
+            response=self.response('fresh','selected_connection',result={'fit':{'start_node':11,'target_node':21 if defect!='wrong_node' else 22}})
+            if defect=='failed_query':response['status']='error'
+            with patch.object(self.client,'request',return_value=response) as calls:
+                if defect=='none':
+                    result=reconcile_rejected_connection(self.client,self.discovery_record())
+                    self.assertEqual(result['result']['other_effects'],'unknown')
+                    self.assertEqual(result['result']['original_pending'],pending)
+                    self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+                else:
+                    with self.assertRaises(LiveError):reconcile_rejected_connection(self.client,self.discovery_record())
+                    self.assertEqual(json.loads(self.client.journal.read_text())['pending'],pending)
+            self.assertEqual(calls.call_count,1)
+            self.assertEqual(calls.call_args.args[0],'selected_connection')
+            self.assertNotIn('execute',calls.call_args.args[1])
+
+    def test_rejected_connection_without_explicit_rejection_cannot_be_cleared(self):
+        self.rejected_connection_pending()
+        path=self.client.evidence/'rejected_connection.response.json';r=json.loads(path.read_text())
+        r['result'].pop('native_command_success');path.write_text(json.dumps(r))
+        with patch.object(self.client,'request') as calls:
+            with self.assertRaises(LiveError):reconcile_rejected_connection(self.client,self.discovery_record())
+            calls.assert_not_called()
+
+    def constructed_pending(self):
+        pending={'request_id':'built','operation':'connection','params':{'execute':True,'brief':self.connection_brief()}}
+        control={'p0':[0,0,0],'p1':[2,0,.01],'t0':[2,0,0],'t1':[2,0,.02]}
+        source={'id':10,'node0':12,'node1':11,'template':'track','style':'style'}
+        target={'id':20,'node0':21,'node1':22,'template':'track','style':'style'}
+        record=self.discovery_record()
+        for c,e in zip(record['result']['candidates'],[source,target]):c['edge_snapshot']=e
+        edge={'id':30,'node0':11,'node1':21,'template':'track','style':'style',**control}
+        response=self.response('built','connection',result={'stage':'readback','game_constructed':True,
+            'stages':[{'stage':'build','status':'ok'}],'fit':{'controls':[control]}});response['status']='mutation_unverified'
+        self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending}))
+        (self.client.evidence/'built.response.json').write_text(json.dumps(response))
+        return pending,record,[source,edge,target]
+
+    def test_constructed_reconciliation_requires_exact_controls_chain_and_native_route(self):
+        for defect in ('none','controls','node','route'):
+            pending,record,rows=self.constructed_pending()
+            if defect=='controls':rows[1]['p1']=[2,0,1]
+            if defect=='node':rows[1]['node1']=99
+            def query(op,params):
+                self.assertIn(op,('inspect','route'))
+                return self.response('observed_'+op,op,result={'edges':rows} if op=='inspect' else {'requested_route_verified':defect!='route'})
+            with patch.object(self.client,'request',side_effect=query):
+                if defect=='none':
+                    value=reconcile_constructed_connection(self.client,record,[30])
+                    self.assertEqual(value['result']['ordered_nodes'],[11,21]);self.assertEqual(value['result']['original_pending'],pending)
+                    self.assertIs(value['result']['automatic_replay'],False)
+                    self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+                else:
+                    with self.assertRaises(LiveError):reconcile_constructed_connection(self.client,record,[30])
+                    self.assertEqual(json.loads(self.client.journal.read_text())['pending'],pending)
+
+    def test_constructed_reconciliation_without_reported_native_success_never_queries(self):
+        _,record,_=self.constructed_pending();p=self.client.evidence/'built.response.json';r=json.loads(p.read_text())
+        r['result']['game_constructed']='unknown';p.write_text(json.dumps(r))
+        with patch.object(self.client,'request') as calls:
+            with self.assertRaises(LiveError):reconcile_constructed_connection(self.client,record,[30])
             calls.assert_not_called()
 
     def test_route_invalid_input_never_sends(self):

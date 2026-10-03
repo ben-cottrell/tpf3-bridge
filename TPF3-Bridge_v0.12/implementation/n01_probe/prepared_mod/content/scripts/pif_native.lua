@@ -49,6 +49,7 @@ local function cubic(c)
  assert(g.cubicSpline.pos[1].x==cs.pos[1].x and g.cubicSpline.pos[2].y==cs.pos[2].y,"whole_member_writeback_failed")
  return g
 end
+local function slope(t) return t[3]/math.sqrt(t[1]^2+t[2]^2) end
 local function native_geometry(id)
  local n=api.engine.getComponent(id,api.type.ComponentType.TRANSPORT_NETWORK);assert(n and n.edges,"network_unavailable")
  local g,count=nil,0
@@ -122,7 +123,7 @@ function M.connect_selected(p,s,state,request_id,respond)
   assert(#all==1 and all[1]==c.edge_id and not (owner and owner>0),"selected_endpoint_not_free")
  end
  M.extension({execute=false,brief={anchor_edge=p.source.edge_id,anchor_node=p.source.node_id,
-  target_edge=p.target.edge_id,target_node=p.target.node_id,radius=p.radius,region=p.region}},s,state,request_id,respond,true)
+  target_edge=p.target.edge_id,target_node=p.target.node_id,radius=p.radius,region=p.region,vertical=p.vertical}},s,state,request_id,respond,true)
 end
 local function node_id(n)
  assert(n and type(n.entity)=="number" and type(n.index)=="number","transport_node_identity_unavailable")
@@ -221,33 +222,69 @@ function M.fit(p,s,request_id,target)
   else assert(distance(p0,controls[i-1].p1)<=.001 and angle(d0,controls[i-1].t1)<=.1,"fit_join_mismatch");p0[1]=controls[i-1].p1[1];p0[2]=controls[i-1].p1[2] end
   p0[3]=pos[3]+grade*total;p1[3]=pos[3]+grade*(total+g.length)
   d0[3]=grade*g.length;d1[3]=grade*g.length
-  local c={p0=p0,p1=p1,t0=d0,t1=d1,length=g.length};controls[i]=c;samples[i]={}
-  local cg=cubic(c)
-  for _,u in ipairs({0,.25,.5,.75,1}) do
-   local np,nd=sample(g,u);local cp,cd=sample(cg,u)
-   maxerr=math.max(maxerr,distance(np,cp));if u==0 or u==1 then maxheading=math.max(maxheading,angle(nd,cd)) end
-   samples[i][#samples[i]+1]={u=u,pos=np,dir=nd}
-   in_region({cp[1],cp[2],p0[3]+u*(p1[3]-p0[3])},p.region)
-  end
+  local c={p0=p0,p1=p1,t0=d0,t1=d1,length=g.length};controls[i]=c
   total=total+g.length
  end
  assert(total<=800,"fit_length_bound")
  local last=controls[#controls];assert(distance(last.p1,p.end_xy)<=.001 and angle(last.t1,t1)<=.1,"fit_end_mismatch")
- assert(maxerr<=.1 and maxheading<=.1,"sampled_conversion_outside_tolerance")
- if target then
+ local endgrade=target and target.grade or grade
+ local endheight=target and target.pos[3] or last.p1[3]
+ local profile,maxgrade=nil,nil
+ if p.vertical then
+  local q=p.vertical;assert(type(q)=="table" and finite(q.max_grade) and q.max_grade>0,"invalid_vertical_limit")
+  maxgrade=q.max_grade
+  if not target then
+   assert(finite(q.end_height) and finite(q.end_grade),"vertical_endpoint_required")
+   endheight=q.end_height;endgrade=q.end_grade
+  end
+  assert(math.abs(grade)<=maxgrade and math.abs(endgrade)<=maxgrade,"endpoint_grade_exceeds_limit")
+  -- The engine supplies the vertical interpolation. This is one explicitly
+  -- chosen native cubic height profile over cumulative native XY fit length.
+  profile=cubic({p0={0,0,pos[3]},p1={total,0,endheight},t0={total,0,grade*total},
+                 t1={total,0,endgrade*total},length=total})
+ elseif target then
   assert(math.abs(grade-target.grade)<=.000001,"unsupported_endpoint_grades")
   assert(math.abs(last.p1[3]-target.pos[3])<=.001,"unsupported_endpoint_height")
-  -- Numerical compatibility only: exact native endpoint position and slope.
+ end
+ if target then
   last.p1={target.pos[1],target.pos[2],target.pos[3]};last.t1[3]=target.grade*last.length
   in_region(last.p1,p.region)
  end
- s.fits[request_id]={anchor=a,node=p.anchor_node,target=target,controls=controls,samples=samples,region=p.region,total_length=total,grade=grade,built=false}
- return {fit_request=request_id,pieces=#controls,total_length=total,start_node=p.anchor_node,target_node=target and target.node or nil,start=pos,finish=last.p1,radius=p.radius,grade=grade,vertical_domain="constant_grade_compatible_endpoints",sampled_XY_error=maxerr,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=false}
+ local offset,maxsampledgrade,maxzerr=0,0,0
+ local vertical_samples={}
+ for i,c in ipairs(controls) do
+  if profile then
+   local p0,d0=sample(profile,offset/total);local p1,d1=sample(profile,(offset+c.length)/total)
+   c.p0[3]=i==1 and pos[3] or controls[i-1].p1[3];c.p1[3]=i==#controls and endheight or p1[3]
+   c.t0[3]=slope(d0)*math.sqrt(c.t0[1]^2+c.t0[2]^2)
+   c.t1[3]=slope(d1)*math.sqrt(c.t1[1]^2+c.t1[2]^2)
+  end
+  local cg=cubic(c);samples[i]={};vertical_samples[i]={}
+  for _,u in ipairs({0,.25,.5,.75,1}) do
+   local np,nd=sample(result[i][1],u);local cp,cd=sample(cg,u)
+   maxerr=math.max(maxerr,distance(np,cp));if u==0 or u==1 then maxheading=math.max(maxheading,angle(nd,cd)) end
+   local grade_here=slope(cd);maxsampledgrade=math.max(maxsampledgrade,math.abs(grade_here))
+   if maxgrade then assert(math.abs(grade_here)<=maxgrade+.000001,"sampled_grade_exceeds_limit") end
+   if profile then local vp=sample(profile,(offset+u*c.length)/total);maxzerr=math.max(maxzerr,math.abs(cp[3]-vp[3])) end
+   in_region(cp,p.region)
+   samples[i][#samples[i]+1]={u=u,pos=np,dir=nd,base_pos=cp,base_grade=grade_here}
+   vertical_samples[i][#vertical_samples[i]+1]={u=u,height=cp[3],grade=grade_here}
+  end
+  if i>1 then assert(math.abs(c.p0[3]-controls[i-1].p1[3])<=.001 and math.abs(slope(c.t0)-slope(controls[i-1].t1))<=.000001,"vertical_join_mismatch") end
+  offset=offset+c.length
+ end
+ assert(maxerr<=.1 and maxheading<=.1,"sampled_conversion_outside_tolerance")
+ assert(maxzerr<=.001,"native_vertical_subdivision_mismatch")
+ assert(math.abs(slope(controls[1].t0)-grade)<=.000001 and math.abs(slope(last.t1)-endgrade)<=.000001,"endpoint_grade_mismatch")
+ s.fits[request_id]={anchor=a,node=p.anchor_node,target=target,controls=controls,samples=samples,region=p.region,total_length=total,grade=grade,end_grade=endgrade,max_grade=maxgrade,built=false}
+ return {fit_request=request_id,pieces=#controls,total_length=total,start_node=p.anchor_node,target_node=target and target.node or nil,start=pos,finish=last.p1,radius=p.radius,grade=grade,end_grade=endgrade,
+  vertical_domain=profile and "native_cubic_endpoint_height_grade" or "constant_grade_compatible_endpoints",max_grade=maxgrade,max_sampled_grade=maxsampledgrade,sampled_Z_error=maxzerr,
+  vertical_samples=profile and vertical_samples or nil,controls=profile and controls or nil,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=false}
 end
 function M.readback(f)
  assert(f.ids and #f.ids==#f.controls,"construction_receipt_incomplete")
  local remaining={};for _,id in ipairs(f.ids) do assert(not remaining[id],"duplicate_receipt_edge");remaining[id]=true end
- local current=f.node;local ordered,nodes,observations={},{current},{};local maxerr,maxheading=0,0
+ local current=f.node;local ordered,nodes,observations={},{current},{};local maxerr,maxheading,maxzerr,maxgrade,maxjoinz,maxjoingrade=0,0,0,0,0,0
  for i,c in ipairs(f.controls) do
   local found,e=nil,nil
   for id in pairs(remaining) do local x=edge(id);if x.node0==current then assert(not found,"ambiguous_connection");found=id;e=x end end
@@ -255,16 +292,25 @@ function M.readback(f)
   assert(e.template==f.anchor.template and e.style==f.anchor.style,"resource_mismatch")
   assert(near(e.p0,c.p0,.001) and near(e.p1,c.p1,.001) and near(e.t0,c.t0,.001) and near(e.t1,c.t1,.001),"realised_controls_differ")
   local ng=native_geometry(found)
+  local actualbase=cubic({p0=e.p0,p1=e.p1,t0=e.t0,t1=e.t1,length=c.length})
   for _,expected in ipairs(f.samples[i]) do
    local pos,dir=sample(ng,expected.u);maxerr=math.max(maxerr,distance(pos,expected.pos))
    if expected.u==0 or expected.u==1 then maxheading=math.max(maxheading,angle(dir,expected.dir)) end
    -- Movement Z can differ from BaseEdge profile; C13 established that distinction.
-   in_region({pos[1],pos[2],c.p0[3]+expected.u*(c.p1[3]-c.p0[3])},f.region)
+   local bp,bd=sample(actualbase,expected.u);local bg=slope(bd)
+   maxzerr=math.max(maxzerr,math.abs(bp[3]-expected.base_pos[3]));maxgrade=math.max(maxgrade,math.abs(bg))
+   if f.max_grade then assert(math.abs(bg)<=f.max_grade+.000001,"realised_sampled_grade_exceeds_limit") end
+   in_region({pos[1],pos[2],bp[3]},f.region)
+  end
+  if i>1 then
+   local prev=observations[i-1];maxjoinz=math.max(maxjoinz,math.abs(prev.p1[3]-e.p0[3]));maxjoingrade=math.max(maxjoingrade,math.abs(slope(prev.t1)-slope(e.t0)))
   end
   ordered[#ordered+1]=found;nodes[#nodes+1]=e.node1;observations[#observations+1]=e;current=e.node1
  end
  for _ in pairs(remaining) do error("unreconciled_returned_edge") end
  assert(maxerr<=.1 and maxheading<=.1,"realised_sampled_shape_failed")
+ assert(maxzerr<=.001 and maxjoinz<=.001 and maxjoingrade<=.000001,"realised_vertical_profile_failed")
+ assert(math.abs(slope(observations[1].t0)-f.grade)<=.000001 and math.abs(slope(observations[#observations].t1)-f.end_grade)<=.000001,"realised_endpoint_grade_failed")
  local attachments=nil
  if f.target then
   assert(current==f.target.node,"actual_target_attachment_missing")
@@ -276,7 +322,7 @@ function M.readback(f)
    source_incident_edges={source.id,ordered[1]},target_incident_edges={ordered[#ordered],target.id},
    exact_native_identity=true,resources_compatible=true}
  end
- return {ordered_edges=ordered,ordered_nodes=nodes,edges=observations,attachments=attachments,connected=true,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=true,train_traversal="unprobed",native_effect_history_complete=false}
+ return {ordered_edges=ordered,ordered_nodes=nodes,edges=observations,attachments=attachments,connected=true,sampled_XY_error=maxerr,sampled_base_Z_error=maxzerr,max_sampled_grade=maxgrade,max_join_height_gap=maxjoinz,max_join_grade_gap=maxjoingrade,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=true,train_traversal="unprobed",native_effect_history_complete=false}
 end
 function M.build(p,s,state,request_id,respond)
  assert(p.authorised==true,"explicit_build_option_required")
@@ -337,10 +383,11 @@ function M.extension(p,s,state,request_id,respond,connect_mode)
    local t,pos,outward,grade=anchor({anchor_edge=b.target_edge,anchor_node=b.target_node})
    assert(a.template==t.template and a.style==t.style,"unsupported_attachment_resources")
    target={edge=t,node=b.target_node,pos=pos,direction={-outward[1],-outward[2],0},grade=-grade}
-   b={anchor_edge=b.anchor_edge,anchor_node=b.anchor_node,end_xy={pos[1],pos[2]},end_direction=target.direction,radius=b.radius,region=b.region}
+   b={anchor_edge=b.anchor_edge,anchor_node=b.anchor_node,end_xy={pos[1],pos[2]},end_direction=target.direction,radius=b.radius,region=b.region,vertical=b.vertical}
   end
   stages[#stages+1]={stage="inspect",status="ok"}
   stage="fit";local fit_id=request_id.."_fit";fit=M.fit(b,s,fit_id,target)
+  local fitted=s.fits[fit_id] -- retain invocation-local data across command callback
   stages[#stages+1]={stage="fit",status="ok"}
   if not p.execute then reply("ok",{game_constructed=false});return end
   stage="build";assert(not s.mutationPending,"unreconciled_mutation")
@@ -349,8 +396,8 @@ function M.extension(p,s,state,request_id,respond,connect_mode)
    stages[#stages+1]={stage="build",status="ok"}
    -- A separate fresh native component/geometry query after the build callback's
    -- own readback, using invocation-local receipt rather than lagging script state.
-   stage="readback";local verified,result=pcall(M.readback,s.fits[fit_id])
-   if not verified then reply("mutation_unverified",{error=tostring(result):sub(1,400),game_constructed=true,retry=false});return end
+   stage="readback";local verified,result=pcall(M.readback,fitted)
+   if not verified then reply("mutation_unverified",{error=tostring(result):sub(1,400),game_constructed=true,initial_readback=value,returned_edges=value.ordered_edges,effects=value.effects,retry=false});return end
    stages[#stages+1]={stage="readback",status="ok"}
    s.mutationPending=nil
    reply("ok",{game_constructed=true,readback=result,effects=value.effects})
@@ -369,7 +416,7 @@ function M.test_approach(p,s,state,request_id,respond)
  assert(not s.mutationPending,"unreconciled_mutation")
  M.fit(p.brief,s,request_id.."_fixture_fit")
  local f=s.fits[request_id.."_fixture_fit"];local c=f.controls[#f.controls];local direction=norm(c.t1)
- local finish={c.p1[1]+direction[1]*p.length,c.p1[2]+direction[2]*p.length,c.p1[3]+f.grade*p.length}
+ local finish={c.p1[1]+direction[1]*p.length,c.p1[2]+direction[2]*p.length,c.p1[3]+f.end_grade*p.length}
  in_region(finish,f.region);assert_fresh(f.anchor)
  local resource=api.res.streetTemplateRep.get(api.res.streetTemplateRep.find(f.anchor.template))
  assert(resource and resource.laneConfigs,"track_template_unavailable")
@@ -377,7 +424,7 @@ function M.test_approach(p,s,state,request_id,respond)
  for i,pos in ipairs({c.p1,finish}) do local n=api.type.NodeAndEntity.new();n.entity=-i-1;n.comp.position=v(pos);nodes[i]=n end
  local e=api.type.SegmentAndEntity.new();e.entity=-1;e.type=1;e.comp.node0=-2;e.comp.node1=-3
  e.comp.position0=v(c.p1);e.comp.position1=v(finish)
- e.comp.tangent0=v({direction[1]*p.length,direction[2]*p.length,f.grade*p.length});e.comp.tangent1=e.comp.tangent0
+ e.comp.tangent0=v({direction[1]*p.length,direction[2]*p.length,f.end_grade*p.length});e.comp.tangent1=e.comp.tangent0
  e.comp.type=E.BaseEdgeType.NORMAL;e.comp.typeIndex=1;e.comp.laneConfigs=resource.laneConfigs
  e.comp.roadTemplate=f.anchor.template;e.comp.roadStyle=f.anchor.style;e.comp.roadType=E.RoadType.TRACK
  proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd={e}

@@ -1,4 +1,5 @@
-# GIT-G03 - endpoint selection local milestone checkpoint
-P05/P06 accepted. Source/tests/concise policy and usage included; raw evidence ignored.
-Checkpoint: .local_runs/milestone_git/g03/checkpoint.json and HANDOFF.md; no push.
-Coordinator reviews the local commit and continues native grade/longer connection work.
+# PIF-P08 - integrated brief-to-connection workflow
+P07 accepted; follow .local_runs/live_python_interface/p08/orchestrator/TASK.md.
+Clean up and locally commit P07, then implement/test reusable brief-driven discovery,
+selection, native curved/graded construction and exact attachment/route verification.
+Finish with useful milestone cleanup/local commit. Automatic handoffs; no remote push.

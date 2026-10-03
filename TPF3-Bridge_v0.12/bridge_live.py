@@ -59,7 +59,7 @@ def validate_brief(brief):
     if not isinstance(brief, dict):
         raise ValueError('extension brief must be an object')
     keys = {'anchor_edge', 'anchor_node', 'end_xy', 'end_direction', 'radius', 'region'}
-    if set(brief) != keys:
+    if set(brief) - {'vertical'} != keys:
         raise ValueError('extension brief requires only ' + ', '.join(sorted(keys)))
     for key in ('anchor_edge', 'anchor_node'):
         if type(brief[key]) is not int or brief[key] <= 0:
@@ -80,7 +80,20 @@ def validate_brief(brief):
             raise ValueError('region requires finite XYZ bounds')
     if any(region['min'][i] >= region['max'][i] for i in range(3)):
         raise ValueError('region bounds must be ordered')
+    if 'vertical' in brief:
+        validate_vertical(brief['vertical'], endpoint=True)
     return brief
+
+def validate_vertical(value, *, endpoint=False):
+    keys={'max_grade'} | ({'end_height','end_grade'} if endpoint else set())
+    if not isinstance(value,dict) or set(value)!=keys:
+        raise ValueError('vertical requires only '+', '.join(sorted(keys)))
+    if any(type(x) not in (int,float) or not math.isfinite(x) for x in value.values()):
+        raise ValueError('vertical values must be finite numbers')
+    if value['max_grade']<=0:
+        raise ValueError('vertical max_grade must be positive')
+    if endpoint and abs(value['end_grade'])>value['max_grade']:
+        raise ValueError('end_grade exceeds selected max_grade')
 
 def extend(client, brief, *, execute=False):
     """One inspect/fit/(explicit build)/fresh-readback job; never retry a mutation."""
@@ -89,7 +102,7 @@ def extend(client, brief, *, execute=False):
 
 def validate_connection_brief(brief):
     keys = {'anchor_edge', 'anchor_node', 'target_edge', 'target_node', 'radius', 'region'}
-    if not isinstance(brief, dict) or set(brief) != keys:
+    if not isinstance(brief, dict) or set(brief) - {'vertical'} != keys:
         raise ValueError('connection brief requires only ' + ', '.join(sorted(keys)))
     for key in ('target_edge', 'target_node'):
         if type(brief[key]) is not int or brief[key] <= 0:
@@ -98,6 +111,8 @@ def validate_connection_brief(brief):
                    {'end_xy':[0, 0], 'end_direction':[1, 0]})
     if brief['anchor_node'] == brief['target_node'] or brief['anchor_edge'] == brief['target_edge']:
         raise ValueError('connection requires distinct source and target attachments')
+    if 'vertical' in brief:
+        validate_vertical(brief['vertical'])
     return brief
 
 def connect(client, brief, *, execute=False):
@@ -119,7 +134,7 @@ def discover(client, brief):
 
 def connect_selected(client, discovery, brief):
     """Select two recorded free endpoints; reacquire natively and fit only."""
-    if not isinstance(brief, dict) or set(brief) != {'source_ref','target_ref','radius','region'}:
+    if not isinstance(brief, dict) or set(brief) - {'vertical'} != {'source_ref','target_ref','radius','region'}:
         raise ValueError('selection requires source_ref, target_ref, radius and region')
     records=discovery if isinstance(discovery,list) else [discovery]
     if not 1<=len(records)<=2:raise ValueError('selection accepts one or two local discoveries')
@@ -144,11 +159,12 @@ def connect_selected(client, discovery, brief):
         if not isinstance(c.get('edge_snapshot'),dict):raise ValueError('candidate snapshot missing')
         selected.append(c)
     source,target=selected
+    vertical={'vertical':brief['vertical']} if 'vertical' in brief else {}
     validate_connection_brief({'anchor_edge':source['edge_id'],'anchor_node':source['node_id'],
-        'target_edge':target['edge_id'],'target_node':target['node_id'],'radius':brief['radius'],'region':brief['region']})
+        'target_edge':target['edge_id'],'target_node':target['node_id'],'radius':brief['radius'],'region':brief['region'],**vertical})
     return client.request('selected_connection',{'source':source,'target':target,
         'radius':brief['radius'],'region':brief['region'],'discovery_request':request_ids[0],
-        'discovery_requests':request_ids})
+        'discovery_requests':request_ids,**vertical})
 
 def reconcile_rejected_fixture(client, discovery):
     """Close a reported failed fixture using bounded current-state evidence, never replay."""
@@ -189,6 +205,105 @@ def reconcile_rejected_fixture(client, discovery):
     latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
     latest.pop('pending');atomic_json(client.journal,latest)
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
+def reconcile_rejected_connection(client, discoveries):
+    """Record a native-rejected connection as absent using fresh exact incidence."""
+    state=json.loads(client.journal.read_text());pending=state.get('pending')
+    if not pending or pending['operation']!='connection' or pending['params'].get('execute') is not True:
+        raise LiveError('reconciliation_required','only a pending native-rejected connection is supported')
+    rid=pending['request_id'];response_path=client.evidence/(rid+'.response.json')
+    response=json.loads(response_path.read_text());result=response.get('result',{})
+    if (response.get('session')!=client.session or response.get('request_id')!=rid
+            or response.get('status')!='error' or result.get('native_command_success') is not False
+            or result.get('error')!='native_construction_rejected' or result.get('stage')!='build'):
+        raise LiveError('reconciliation_required','no explicit native connection rejection evidence',rid)
+    records=discoveries if isinstance(discoveries,list) else [discoveries]
+    if not 1<=len(records)<=2 or any(not isinstance(r,dict) or r.get('operation')!='discover'
+            or r.get('status')!='ok' or r.get('session')!=client.session for r in records):
+        raise ValueError('reconciliation requires original current-session discoveries')
+    candidates=[c for r in records for c in r['result']['candidates']];brief=pending['params']['brief']
+    selected=[]
+    for edge_key,node_key in (('anchor_edge','anchor_node'),('target_edge','target_node')):
+        matches=[c for c in candidates if c['edge_id']==brief[edge_key] and c['node_id']==brief[node_key]]
+        if len(matches)!=1:raise ValueError('original exact connection attachment missing or ambiguous')
+        selected.append(matches[0])
+    selection={'source_ref':selected[0]['ref'],'target_ref':selected[1]['ref'],
+               'radius':brief['radius'],'region':brief['region']}
+    if 'vertical' in brief:selection['vertical']=brief['vertical']
+    # Reuse the already-loaded fit-only operation, which first checks exact
+    # unchanged snapshots and full single-edge incidence at both attachments.
+    observed=connect_selected(client,records,selection);fit=observed.get('result',{}).get('fit',{})
+    if (observed['status']!='ok' or fit.get('start_node')!=brief['anchor_node']
+            or fit.get('target_node')!=brief['target_node']):
+        raise LiveError('reconciliation_required','attachment observations do not establish absence',rid)
+    facts={'attachments_unchanged_and_free':True,'completed_connection_absent':True,
+           'source_node':brief['anchor_node'],'target_node':brief['target_node']}
+    latest=json.loads(client.journal.read_text())
+    if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
+    record={'status':'reconciled_rejected_connection','original_pending':pending,'original_response':str(response_path.resolve()),
+            'observation':observed['request_id'],'facts':facts,'completed_connection_constructed':False,
+            'other_effects':'unknown','effects_history_complete':False,'automatic_replay':False}
+    path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
+    latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(client.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
+def reconcile_constructed_connection(client, discoveries, edge_ids):
+    """Verify reported construction after a readback failure; no build or replay."""
+    state=json.loads(client.journal.read_text());pending=state.get('pending')
+    if not pending or pending['operation']!='connection' or pending['params'].get('execute') is not True:
+        raise LiveError('reconciliation_required','no pending constructed connection')
+    rid=pending['request_id'];original=json.loads((client.evidence/(rid+'.response.json')).read_text())
+    result=original.get('result',{});fit=result.get('fit',{})
+    if (original.get('session')!=client.session or original.get('request_id')!=rid
+            or original.get('status')!='mutation_unverified' or result.get('game_constructed') is not True
+            or result.get('stage')!='readback' or {'stage':'build','status':'ok'} not in result.get('stages',[])):
+        raise LiveError('reconciliation_required','no reported successful native build/readback failure',rid)
+    brief=pending['params']['brief'];validate_connection_brief(brief)
+    controls=fit.get('controls')
+    if (not isinstance(controls,list) or not 1<=len(controls)<=8 or not isinstance(edge_ids,list)
+            or len(edge_ids)!=len(controls) or any(type(e) is not int or e<=0 for e in edge_ids)
+            or len(set(edge_ids))!=len(edge_ids)):
+        raise ValueError('provide distinct observed native edges matching recorded controls')
+    records=discoveries if isinstance(discoveries,list) else [discoveries]
+    if not 1<=len(records)<=2 or any(r.get('operation')!='discover' or r.get('session')!=client.session or r.get('status')!='ok' for r in records):
+        raise ValueError('original current-session attachment records required')
+    candidates=[c for r in records for c in r['result']['candidates']]
+    expected=[]
+    for ek,nk in (('anchor_edge','anchor_node'),('target_edge','target_node')):
+        matches=[c for c in candidates if c['edge_id']==brief[ek] and c['node_id']==brief[nk]]
+        if len(matches)!=1:raise ValueError('original exact attachment missing or ambiguous')
+        expected.append(matches[0]['edge_snapshot'])
+    observed=client.request('inspect',{'edge_ids':[brief['anchor_edge'],*edge_ids,brief['target_edge']]})
+    rows=observed.get('result',{}).get('edges',[])
+    if observed['status']!='ok' or len(rows)!=len(controls)+2 or rows[0]!=expected[0] or rows[-1]!=expected[1]:
+        raise LiveError('reconciliation_required','attachments changed or inspection incomplete',rid)
+    remaining={e['id']:e for e in rows[1:-1]};current=brief['anchor_node'];ordered=[];nodes=[current]
+    for control in controls:
+        matches=[e for e in remaining.values() if e['node0']==current]
+        if len(matches)!=1:raise LiveError('reconciliation_required','exact directed chain missing or ambiguous',rid)
+        e=matches[0]
+        if (e['template']!=expected[0]['template'] or e['style']!=expected[0]['style']
+                or any(len(e[k])!=3 or any(abs(e[k][i]-control[k][i])>.001 for i in range(3)) for k in ('p0','p1','t0','t1'))):
+            raise LiveError('reconciliation_required','realised controls/resources differ from recorded fit',rid)
+        ordered.append(e['id']);current=e['node1'];nodes.append(current);remaining.pop(e['id'])
+    if remaining or current!=brief['target_node']:
+        raise LiveError('reconciliation_required','requested exact target not reached',rid)
+    source,target=expected
+    path=route(client,{'source_edge':source['id'],'source_node':source['node0'] if brief['anchor_node']==source['node1'] else source['node1'],
+                      'target_edge':target['id'],'target_node':target['node1'] if brief['target_node']==target['node0'] else target['node0'],
+                      'mode':'TRAIN','max_length':800,'required_edges':ordered})
+    if path['status']!='ok' or path.get('result',{}).get('requested_route_verified') is not True:
+        raise LiveError('reconciliation_required','native path does not establish requested connection',rid)
+    latest=json.loads(client.journal.read_text())
+    if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
+    record={'status':'reconciled_verified_connection','original_pending':pending,'original_response':str((client.evidence/(rid+'.response.json')).resolve()),
+            'observations':[observed['request_id'],path['request_id']],'ordered_edges':ordered,'ordered_nodes':nodes,
+            'connected':True,'native_route_verified':True,'native_effect_history_complete':False,'automatic_replay':False,'train_traversal':'unprobed'}
+    evidence=client.evidence/(rid+'.reconciliation.json');atomic_json(evidence,record)
+    latest.setdefault('reconciled_constructions',{})[rid]={'evidence':str(evidence.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(client.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(evidence.resolve())}
 
 def route(client, brief):
     """Query native transport routing; does not build or establish train traversal."""

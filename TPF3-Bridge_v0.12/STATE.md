@@ -1,6 +1,30 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
 ## Current checkpoint
+P07 accepted by coordinator; P08 first checkpoints its reviewed source locally, then
+continues integrated brief-driven longer connection work. Base4f07bed before checkpoint.
+Native cubic height/grade support in existing extend/connect/connect-selected; Python
+validates explicit vertical constraints, mod retains native XY fit/interpolation.
+Build40408: isolated connection131258/131259/131260, exact nodes131248→131256→
+131257→131251, rise2/grades0.005→0.015; further extension131265/131266/131267,
+nodes131252→131236→131254→131264,rise1/grade0.015→0.005. Radius100,max_grade0.04.
+Fresh exact readback/independent inspection and native TRAIN path pass; combined
+length240.031993. Five samples/piece, no continuous proof or train traversal claim.
+Native strict-grade/out-of-region/no-vertical rejection and legacy fit pass.
+Station-side Collision retained/reconciled absent; built-connection callback error
+retained/independently reconciled present without replay. Other incidental effects
+unknown. Captured-fit callback repair runtime-verified by new extension after load.
+Narrow read-only in-session connection reconciliation callables record evidence
+before closing Python pending jobs; no automatic resume/rollback or identity across loads.
+python tools/quiet_checks.py --suite live_client --label pif-p07-final-client:46passed,
+.local_checks/pif-p07-final-client_ruox9syq/report.json.14unchanged runner tests reused.
+python .local_runs/live_python_interface/p07/check_evidence.py:passed; local receipts,
+tested/staged hashes and diff checked; checks/result/workflow_history/HANDOFF in p07.
+Python/tests/native/usage/state/task changed; coordinator policy edits preserved.
+Disposable save saved normally; game paused/non-maximised. Actual usage unavailable.
+28native requests,6build submissions/5verified builds,2normal loads/2saves;
+0process restarts/simulation diagnostics. No unresolved current-session pending job.
+
 P05/P06 accepted; GIT-G03 local endpoint-discovery/selection checkpoint. Its SHA,
 reviewed scope and cleanliness are recorded in .local_runs/milestone_git/g03/
 checkpoint.json; no remote push.39client acceptance reused after source/environment
