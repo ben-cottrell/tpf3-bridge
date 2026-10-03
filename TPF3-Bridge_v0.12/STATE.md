@@ -1,6 +1,34 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
-## Current task - P18 complete, native acceptance passed
+## Current task - P19 complete, native acceptance passed
+Widened UUDD plan/execute/inspect application and CLI: switching-layout (offline
+default;--execute), switching-layout-inspect. Four through/two outer branch functions
+plus U2west->U1east and D2east->D1west; all8fresh native TRAIN routes pass build40408.
+Six current junctions/10distinct functional ports; each transfer requires both exact
+switching junctions and freshly inspected built connector TRACK IDs, no remote substitute.
+At(3500,6500,33),heading-50 in[3000,4700,0]..[5200,7100,80], 52TRACK/17independent samples:
+radius122.278962>=hard120,grade0,region; three retained100-unit approach pairs/17samples
+spacing4.999844-5.000128. Wrong connector/strict200 radius natively reject. Sampled only.
+Initial UP reference failed prebuild160check after5fixtures. Collinear final guide kept
+hard160/120; explicit exact-fixture reuse completed UP/reference. DOWN-fanout degenerate
+fit stopped before construction; native end-tangent straight guide fixed it inside the
+existing0.001tolerances. Rounded-chord guide rejected locally before native write.
+Only known missing DOWN stages continued, then all8fresh routes verified. Original
+failed/partial receipts remain intact; no automatic resume/replay/rollback/clearance.
+python tools/quiet_checks.py --suite live_client --label pif-p19-final-acceptance:126passed;
+.local_checks/pif-p19-final-acceptance_k18b0jgk/report.json. Fresh-process acceptance:
+python bridge_live.py switching-layout-inspect --context .local_runs/live_python_interface/p02/context.json --params implementation/live_python_interface/switching_layout_example.json --layout-record .local_runs/live_python_interface/p19/native_tangent_result.json:passed;
+python .local_runs/live_python_interface/p19/independent_acceptance.py:passed,zero mutations.
+Native execution/checked continuations: native_execute.py/native_continue.py/
+native_finish_down.py/native_finish_down_tangent.py in p19; results/failures retained.
+Full receipts via native_tangent_result.json/fresh_inspection_summary.json; checks/HANDOFF/
+result/checkpoint in .local_runs/live_python_interface/p19. Local milestone,no push.
+Domain: level UUDD increasing-UP,selected120/retained5m,widened zones,one transfer each;
+no direct5m crossover/opposite-direction transfer/signal/reservation/traversal claim.
+P18 hash/receipts and old interfaces preserved; no native-source/runner/physics change.
+Actual usage unavailable. Stop P19; no blocker or further task adopted.
+
+## P18 baseline complete - e241015
 Prepared checkpoint6b0b607; completion milestone recorded in p18/completion_checkpoint.json.
 Explicit route reference, ordered UP/DOWN intent and complete named movement matrix;
 UD/UDUD/UUDD planning; parallel-layout (offline default;--execute), parallel-layout-inspect.

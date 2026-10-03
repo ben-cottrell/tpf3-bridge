@@ -1711,6 +1711,187 @@ class LiveClientTests(unittest.TestCase):
         old=json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/junction_recipe_example.json').read_text())
         self.assertEqual(plan_junction_recipe(old)['plan_hash'],'19cb06710e1ecf27a4387619450053d0f1e27b810855bfdaf93a4c516023f71f')
 
+    def switching_brief(self):
+        return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/switching_layout_example.json').read_text())
+
+    def switching_runtime(self,p):
+        import hashlib
+        from bridge_live import _recipe_throat_brief
+        runtime={};briefs={}
+        for index,pair in enumerate(p['pairs']):
+            fixtures={f['name']:{'p0':f['position'],'p1':[f['position'][k]+20*(f['travel_direction'][k] if k<2 else 0) for k in range(3)]} for f in pair['fixtures']}
+            a=pair['fanout']['guides'][0]['position'];z=pair['fanout']['target']['guide_xyz'];chord=[z[k]-a[k] for k in range(3)]
+            b=_recipe_throat_brief(pair,fixtures,[{'p0':a,'p1':z,'t0':chord,'t1':chord}]);briefs[pair['name']]=b
+            path=self.root/(pair['name']+'_throat.json');path.write_text(json.dumps({'brief':b,'summary':{'status':'ok'},'semantic_mapping':{'step_edges':{'cross':[900+index]}}}))
+            runtime[pair['name']]={'throat_record':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+        return runtime,briefs
+
+    def test_switching_plan_has_explicit_directional_transfers_and_outward_widening(self):
+        from bridge_live import plan_switching_layout,plan_parallel_layout
+        b=self.switching_brief();p=plan_switching_layout(b);self.assertEqual(p,plan_switching_layout(b));self.assertEqual(len(p['movements']),8)
+        self.assertEqual(p['pairs'][0]['transfer'],{'from':'U2:west','to':'U1:east'})
+        self.assertEqual(p['pairs'][1]['transfer'],{'from':'D2:east','to':'D1:west'})
+        self.assertEqual(p['ports']['D2:east']['function'],'entry');self.assertEqual(p['ports']['branch_down']['function'],'entry')
+        self.assertFalse(p['native_runtime_demonstrated']);self.assertFalse(p['game_constructed'])
+        # Zero-degree rotation makes outward displacement/order independently visible.
+        b['route_reference']['heading_deg']=0;b['region']={'min':[-10000,-10000,0],'max':[10000,10000,80]};p=plan_switching_layout(b)
+        origin=b['route_reference']['origin'];self.assertLess(p['ports']['U1:east']['position'][1],origin[1]);self.assertGreater(p['ports']['D2:east']['position'][1],origin[1]+15)
+        west=[p['ports'][t['id']+':west']['position'][1] for t in b['tracks']];self.assertEqual([west[i+1]-west[i] for i in range(3)],[5,5,5])
+        self.assertLess(p['ports']['U2:east']['construction_direction'][1],0);self.assertGreater(p['ports']['D1:east']['construction_direction'][1],0)
+        old=json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/parallel_layout_example.json').read_text())
+        self.assertEqual(plan_parallel_layout(old)['plan_hash'],'ffc95fefd91d2e821cbcc69d9075ec38cb3fe3bfe1a3ba311353cb29f2d0aec4')
+
+    def test_switching_invalid_matrices_pattern_region_and_offline_cli(self):
+        from bridge_live import plan_switching_layout
+        b=self.switching_brief();cases=[]
+        for movement in ({'from':'U1:west','to':'U2:east'},{'from':'U2:east','to':'U1:west'},{'from':'U2:west','to':'D1:east'}):
+            bad=json.loads(json.dumps(b));bad['movements'][-2]=movement;cases.append(bad)
+        bad=json.loads(json.dumps(b));bad['movements'].pop();cases.append(bad)
+        bad=json.loads(json.dumps(b));bad['tracks'][1]['direction']='DOWN';cases.append(bad)
+        bad=json.loads(json.dumps(b));bad['region']={'min':[3499,6499,32],'max':[3501,6501,34]};cases.append(bad)
+        for bad in cases:
+            with patch.object(self.client,'request') as native:
+                with self.assertRaises((LiveError,ValueError)):plan_switching_layout(bad)
+                native.assert_not_called()
+        path=self.root/'brief.json';path.write_text(json.dumps(b))
+        with patch('bridge_live.client_from_context') as native,contextlib.redirect_stdout(io.StringIO()) as out:
+            code=main(['switching-layout','--params',str(path),'--evidence',str(self.root/'plans')])
+        self.assertEqual(code,0);native.assert_not_called();self.assertLess(len(out.getvalue().encode()),4096)
+
+    def test_switching_build_sequences_both_pairs_and_stops_visible_partial_effects(self):
+        from bridge_live import plan_switching_layout,execute_switching_layout
+        p=plan_switching_layout(self.switching_brief());calls=[]
+        def request(op,q):
+            calls.append(op)
+            if op=='discover':v={'complete':True,'candidates':[{'edge_id':800,'edge_snapshot':{'template':'t','style':'s'}}]}
+            elif op=='inspect' and q.get('resources'):v={'edges':[{'resource':{'track_distance':5}}]}
+            elif op=='test_approach':
+                f=q['fixture'];chord=[20*x for x in f['travel_direction']]+[0];v={'game_constructed':True,'edges':[{'id':801,'road_type':'TRACK','p0':f['position'],'p1':[f['position'][k]+chord[k] for k in range(3)],'t1':chord}]}
+            else:v={'edges':[{'p0':[0,0,33],'p1':[600,0,33],'t0':[600,0,0],'t1':[600,0,0]}]}
+            return self.response('r'+str(len(calls)),op,result=v)
+        def throat(client,b,**opts):
+            path=self.root/(str(len(calls))+'_built.json');path.write_text(json.dumps({'brief':b}));return {'status':'ok','game_constructed':True,'evidence':str(path)}
+        with patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_corridor',return_value={'status':'ok','game_constructed':True,'edges':[801]}) as corridor,patch('bridge_live.connect_throat',side_effect=throat) as cross,patch('bridge_live._verify_switching_layout',return_value={'routes_verified':8,'transfers_verified':2,'final_network_verified':True}):
+            result=execute_switching_layout(self.client,p);self.assertEqual(result['status'],'ok');self.assertEqual(corridor.call_count,4);self.assertEqual(cross.call_count,2);self.assertEqual(calls.count('test_approach'),10)
+        with patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_corridor',return_value={'status':'mutation_unverified','game_constructed':'unknown','error':'lost acknowledgement'}) as corridor,patch('bridge_live.connect_throat') as cross:
+            result=execute_switching_layout(self.client,p);self.assertEqual(result['status'],'mutation_unverified');self.assertEqual(result['game_constructed'],'unknown');corridor.assert_called_once();cross.assert_not_called()
+        self.assertFalse((self.client.evidence/'switching.lock').exists())
+
+    def test_switching_fresh_routes_require_exact_connectors_and_both_junctions(self):
+        from bridge_live import plan_switching_layout,_verify_switching_layout
+        b=self.switching_brief();b['route_reference']['heading_deg']=0;b['region']={'min':[-10000,-10000,0],'max':[10000,10000,80]};p=plan_switching_layout(b)
+        runtime,briefs=self.switching_runtime(p);ports={name:({'edge_id':100+i,'node_id':200+i},v) for i,(name,v) in enumerate(p['ports'].items())}
+        junctions={}
+        for index,label in enumerate(('up','down')):
+            for i,pos in enumerate((briefs[label]['steps'][0]['source'],briefs[label]['steps'][0]['target'],briefs[label]['steps'][1]['source'])):junctions[tuple(pos['guide_xyz'])]=500+index*3+i
+        def select(client,intent,**opts):
+            if opts.get('interior'):
+                i=round((intent['guide_xyz'][1]-b['route_reference']['origin'][1])/5);o=b['route_reference']['origin'];y=o[1]+5*i
+                return {'edge_id':800+i,'edge_snapshot':{'id':800+i,'p0':[o[0],y,o[2]],'p1':[o[0]+400,y,o[2]],'t0':[400,0,0],'t1':[400,0,0]}},'spacing'
+            for name,(c,v) in ports.items():
+                if v['position']==intent['guide_xyz']:
+                    self.assertEqual(intent['travel_direction'],v['construction_direction']);return c,'port'
+            raise AssertionError(intent)
+        requests=[]
+        def request(op,q):
+            if op=='inspect':return self.response('connector',op,result={'edges':[{'id':i,'road_type':'TRACK'} for i in q['edge_ids']]})
+            requests.append(q);return self.response('route',op,result={'requested_route_verified':True,'path':[{'from':{'entity':i},'to':{'entity':i}} for i in junctions.values()]})
+        record={'pair_runtime':runtime,'summary':{'evidence':str(self.root/'verified.json')}}
+        with patch('bridge_live._select_throat_port',side_effect=select),patch('bridge_live._recipe_junction',side_effect=lambda c,i:(junctions[tuple(i['guide_xyz'])],['junction'])),patch.object(self.client,'request',side_effect=request):
+            result=_verify_switching_layout(self.client,p,record)
+            self.assertEqual(result['routes_verified'],8);self.assertEqual(result['transfers_verified'],2)
+            self.assertIn(900,requests[-2]['required_edges']);self.assertIn(901,requests[-1]['required_edges'])
+            self.assertEqual(requests[-1]['source_node'],ports['D2:east'][0]['node_id']);self.assertEqual(requests[-1]['target_node'],ports['D1:west'][0]['node_id'])
+            def bypass(op,q):
+                if op=='inspect':return request(op,q)
+                return self.response('bypass',op,result={'requested_route_verified':True,'path':[{'from':{'entity':i},'to':{'entity':i}} for i in (502,505)]})
+            with patch.object(self.client,'request',side_effect=bypass):
+                with self.assertRaises(LiveError):_verify_switching_layout(self.client,p,record)
+            with patch.object(self.client,'request',return_value=self.response('stale','inspect',result={'edges':[]})):
+                with self.assertRaises(LiveError) as exc:_verify_switching_layout(self.client,p,record)
+                self.assertEqual(exc.exception.status,'stale_switching_connector')
+        # Changed native-receipt evidence cannot silently authorise another connection.
+        Path(runtime['up']['throat_record']).write_text('{}')
+        with patch.object(self.client,'request') as native:
+            with self.assertRaises(ValueError):_verify_switching_layout(self.client,p,record)
+            native.assert_not_called()
+
+    def test_switching_pending_and_incomplete_inspection_do_not_construct(self):
+        from bridge_live import plan_switching_layout,execute_switching_layout,inspect_switching_layout
+        p=plan_switching_layout(self.switching_brief());self.client.journal.write_text(json.dumps({'pending':{'request_id':'old'}}))
+        record=self.root/'incomplete.json';record.write_text(json.dumps({'plan':p,'pair_runtime':{}}))
+        with patch.object(self.client,'request') as native:
+            r=execute_switching_layout(self.client,p);self.assertEqual(r['status'],'reconciliation_required');self.assertFalse(r['game_constructed'])
+            r=inspect_switching_layout(self.client,record);self.assertEqual(r['status'],'incomplete_layout');self.assertFalse(r['game_constructed']);native.assert_not_called()
+
+    def test_switching_explicit_prepared_reuse_requires_fresh_exact_fixtures(self):
+        from bridge_live import plan_switching_layout,execute_switching_layout
+        p=plan_switching_layout(self.switching_brief());fixtures=[{'id':700+i,'road_type':'TRACK'} for i in range(5)]
+        ops=[{'name':n,'response':{'status':'ok'}} for n in ('discover_asset','inspect_asset')]
+        ops += [{'name':'up_prepare_'+f['name'],'response':{'status':'ok','result':{'edges':[e]}}} for f,e in zip(p['pairs'][0]['fixtures'],fixtures)]
+        ops += [{'name':'up_reference','response':{'status':'no_accepted_candidate','game_constructed':False}}]
+        record=self.root/'prepared.json';record.write_text(json.dumps({'plan':p,'operations':ops}))
+        def request(op,q):
+            if op=='inspect':return self.response('fresh',op,result={'edges':fixtures})
+            if op=='discover':return self.response('asset',op,result={'complete':True,'candidates':[]})
+            raise AssertionError('no fixtures/build may be repeated')
+        with patch.object(self.client,'request',side_effect=request) as native:
+            r=execute_switching_layout(self.client,p,prepared_record=record);self.assertEqual(r['status'],'asset_unavailable');self.assertEqual(native.call_count,2)
+        with patch.object(self.client,'request',return_value=self.response('changed','inspect',result={'edges':[]})) as native:
+            r=execute_switching_layout(self.client,p,prepared_record=record);self.assertEqual(r['status'],'stale_prepared_layout');self.assertFalse(r['game_constructed']);native.assert_called_once()
+        ops[-1]['response']['game_constructed']='unknown';record.write_text(json.dumps({'plan':p,'operations':ops}))
+        with patch.object(self.client,'request') as native:
+            with self.assertRaises(ValueError):execute_switching_layout(self.client,p,prepared_record=record)
+            native.assert_not_called()
+        pair=p['pairs'][0];last=pair['reference']['guides'][-1];end=pair['reference']['target']['guide_xyz'];d=last['travel_direction'];delta=[end[k]-last['position'][k] for k in range(2)]
+        self.assertAlmostEqual(delta[0]*d[1]-delta[1]*d[0],0,places=8);self.assertEqual(pair['reference']['radius'],160)
+
+    def test_switching_native_straight_guide_preserves_existing_tolerances(self):
+        from bridge_live import plan_switching_layout,_switching_fanout
+        p=plan_switching_layout(self.switching_brief());pair=p['pairs'][1];f=pair['fixtures'][1];d=f['travel_direction']
+        e={'p0':f['position'],'p1':[f['position'][k]+20*(d[k] if k<2 else 0) for k in range(3)],'t1':[20*d[0],20*d[1],0]}
+        actual=_switching_fanout(pair,{'A2':e});self.assertEqual(actual['radius'],120);self.assertEqual(actual['region'],p['brief']['region'])
+        self.assertLess(sum((actual['guides'][0]['position'][k]-pair['fanout']['guides'][0]['position'][k])**2 for k in range(3)),1e-6)
+        e['p1'][0]+=1
+        with self.assertRaises(LiveError):_switching_fanout(pair,{'A2':e})
+
+    def test_switching_missing_down_stage_continues_only_after_exact_readback(self):
+        from bridge_live import plan_switching_layout,continue_switching_layout
+        p=plan_switching_layout(self.switching_brief());pair=p['pairs'][1];runtime,briefs=self.switching_runtime(p)
+        fixtures=[{'id':710+i,'road_type':'TRACK','p0':f['position'],'p1':[f['position'][k]+20*(f['travel_direction'][k] if k<2 else 0) for k in range(3)],'t1':[20*f['travel_direction'][0],20*f['travel_direction'][1],0]} for i,f in enumerate(pair['fixtures'])]
+        ops=[{'name':'down_prepare_'+f['name'],'response':{'status':'ok','result':{'edges':[e]}}} for f,e in zip(pair['fixtures'],fixtures)]
+        ops += [{'name':'down_reference','response':{'status':'ok','game_constructed':True}},{'name':'down_fanout','response':{'status':'no_accepted_candidate','game_constructed':False}}]
+        source=self.root/'partial_switching.json';record={'plan':p,'summary':{'stage':'down_fanout'},'pair_runtime':{'up':runtime['up']},'operations':ops};source.write_text(json.dumps(record))
+        self.client.journal.write_text(json.dumps({'pending':{'request_id':'unknown'}}))
+        with patch.object(self.client,'request') as native:
+            r=continue_switching_layout(self.client,source);self.assertEqual(r['status'],'reconciliation_required');native.assert_not_called()
+        self.client.journal.write_text(json.dumps({'pending':None}))
+        with patch.object(self.client,'request',return_value=self.response('changed','inspect',result={'edges':[]})),patch('bridge_live.connect_corridor') as build:
+            r=continue_switching_layout(self.client,source);self.assertEqual(r['status'],'stale_prepared_layout');build.assert_not_called()
+        count=[]
+        def request(op,q):
+            count.append(op)
+            if op=='route':v={'requested_route_verified':True}
+            elif q['edge_ids']==[e['id'] for e in fixtures]:v={'edges':fixtures}
+            else:v={'edges':[{'p0':[0,0,33],'p1':[600,0,33],'t0':[600,0,0],'t1':[600,0,0]}]}
+            return self.response('read',op,result=v)
+        def built(client,b,**opts):
+            out=self.root/'down_built.json';out.write_text(json.dumps({'brief':b}));return {'status':'ok','game_constructed':True,'evidence':str(out)}
+        with patch.object(self.client,'request',side_effect=request),patch('bridge_live._select_throat_port',side_effect=[({'edge_id':1,'node_id':2},'a'),({'edge_id':3,'node_id':4},'b')]),patch('bridge_live.connect_corridor',return_value={'status':'ok','game_constructed':True,'edges':[999]}) as fan,patch('bridge_live.connect_throat',side_effect=built) as throat,patch('bridge_live._verify_switching_layout',return_value={'routes_verified':8,'transfers_verified':2}):
+            r=continue_switching_layout(self.client,source);self.assertEqual(r['status'],'ok');self.assertTrue(r['game_constructed']);fan.assert_called_once();throat.assert_called_once();self.assertNotIn('test_approach',count)
+        record['operations'][-1]['response']['game_constructed']='unknown';source.write_text(json.dumps(record))
+        with patch.object(self.client,'request') as native:
+            with self.assertRaises(ValueError):continue_switching_layout(self.client,source)
+            native.assert_not_called()
+
+    def test_switching_malformed_records_fail_before_native_calls(self):
+        from bridge_live import inspect_switching_layout,continue_switching_layout
+        record=self.root/'malformed.json';record.write_text('[]')
+        with patch.object(self.client,'request') as native:
+            for method in (inspect_switching_layout,continue_switching_layout):
+                with self.assertRaises(ValueError):method(self.client,record)
+            native.assert_not_called()
+
     def test_rejected_corridor_and_crossover_reconcile_without_replay(self):
         from bridge_live import reconcile_rejected_corridor,reconcile_rejected_crossover
         for op,fn in [('corridor',reconcile_rejected_corridor),('crossover',reconcile_rejected_crossover)]:

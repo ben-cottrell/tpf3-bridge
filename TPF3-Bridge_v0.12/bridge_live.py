@@ -1029,10 +1029,10 @@ def publish_parallel_layout(plan,evidence):
             'movements':plan['movements'],'direction_enforcement':'not_provided','evidence':str(path.resolve())}
 
 
-def _verify_parallel_layout(client,plan,record):
+def _verify_parallel_layout(client,plan,record,*,movement_edges=None):
     ports={};observations=[];d=plan['native_construction_direction'];ref=plan['brief']['route_reference']
     for name,p in plan['ports'].items():
-        c,rid=_select_throat_port(client,_recipe_intent(plan,p['position'],d),tolerance=.5,
+        c,rid=_select_throat_port(client,_recipe_intent(plan,p['position'],p.get('construction_direction',d)),tolerance=.5,
                                   outward_sign=-1 if p['end']=='west' else 1)
         ports[name]=c;observations.append(rid)
     if len({c['node_id'] for c in ports.values()})!=len(ports):raise LiveError('native_verification_failed','functional ports share current native attachment')
@@ -1043,12 +1043,12 @@ def _verify_parallel_layout(client,plan,record):
     for row in plan['movements']:
         a,b=(ports[row[k]] for k in ('from','to'))
         q={'source_edge':a['edge_id'],'source_node':a['node_id'],'target_edge':b['edge_id'],'target_node':b['node_id'],
-           'mode':'TRAIN','required_edges':[a['edge_id'],b['edge_id']],'max_length':2500,
+               'mode':'TRAIN','required_edges':list(dict.fromkeys([a['edge_id'],b['edge_id']]+(movement_edges or {}).get((row['from'],row['to']),[]))),'max_length':2500,
            'geometry_constraints':{'all_path':True,'edge_ids':[],'radius':120,'region':plan['brief']['region'],'max_grade':plan['brief']['max_grade']}}
         r=client.request('route',q);v=r.get('result',{});accepted=r['status']=='ok' and v.get('requested_route_verified') is True
         current_nodes={x[k]['entity'] for x in v.get('path',[]) for k in ('from','to')}
-        via=next((name for name in nodes if name in (row['from'],row['to'])),None)
-        if via and nodes[via] not in current_nodes:accepted=False
+        via=row.get('via',[name for name in nodes if name in (row['from'],row['to'])])
+        if any(name not in nodes or nodes[name] not in current_nodes for name in via):accepted=False
         routes.append(row|{'verified':accepted,'request_id':r['request_id'],'response':r})
         record['routes']=routes;atomic_json(Path(record['summary']['evidence']),record)
         if not accepted:raise LiveError('native_verification_failed','required intended movement not verified: '+row['from']+'->'+row['to'])
@@ -1128,6 +1128,266 @@ def execute_parallel_layout(client,plan):
             r=perform(b['name'],lambda b=b:connect_junction_at(client,common|{'placement_tolerance':.5,'source':b['source'],'target':b['target']},execute=True,junction_nodes=junctions),True)
             junctions.append(r['junction']['node'])
         summary['stage']='fresh_intended_movements';summary.update(_verify_parallel_layout(client,plan,record),status='ok',stage='verified')
+    except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:
+        summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
+        if getattr(exc,'status',None)=='mutation_outcome_unknown':summary['game_constructed']='unknown'
+    finally:atomic_json(path,record);lock.unlink()
+    return summary
+
+
+SWITCHING_LAYOUT = 'widened_uudd_switching_v1'
+
+
+def plan_switching_layout(brief):
+    """Two outward widened native throats; eight explicit intended movements."""
+    if not isinstance(brief,dict) or brief.get('layout')!=SWITCHING_LAYOUT:
+        raise LiveError('unsupported_layout','only '+SWITCHING_LAYOUT+' is supported')
+    tracks=brief.get('tracks')
+    if not isinstance(tracks,list) or len(tracks)!=4 or any(not isinstance(t,dict) or not isinstance(t.get('id'),str) for t in tracks):
+        raise ValueError('switching layout requires four explicitly ordered tracks')
+    if not isinstance(brief.get('route_reference'),dict):raise ValueError('explicit route reference required')
+    if [t.get('direction') for t in tracks]!=['UP','UP','DOWN','DOWN'] or brief['route_reference'].get('up')!='increasing':
+        raise LiveError('unsupported_native_pattern','switching v1 supports UUDD with increasing-reference UP only')
+    names=[t['id'] for t in tracks]
+    transfers=[{'from':names[1]+':west','to':names[0]+':east'}, {'from':names[3]+':east','to':names[2]+':west'}]
+    rows=brief.get('movements')
+    if not isinstance(rows,list) or any(not isinstance(row,dict) or set(row)!={'from','to'} for row in rows):raise ValueError('explicit directed movement matrix required')
+    base=brief|{'layout':PARALLEL_LAYOUT,'movements':[row for row in rows if row not in transfers]}
+    p=plan_parallel_layout(base)
+    if len(rows)!=8 or any(rows.count(row)!=1 for row in transfers):raise ValueError('eight movements must include each same-direction transfer once')
+    ref=brief['route_reference'];o=ref['origin'];h=math.radians(ref['heading_deg']);d=[math.cos(h),math.sin(h)]
+    def pos(x,y):return [o[0]+x*d[0]-y*d[1],o[1]+x*d[1]+y*d[0],o[2]]
+    def direction(a):return [math.cos(h+math.radians(a)),math.sin(h+math.radians(a))]
+    ports={};pairs=[]
+    # Same native reference/fanout/cross/branch controls as the demonstrated widened
+    # recipe. UP reflects them outward; DOWN retains native construction orientation
+    # and reverses only intended traffic, not supplied construction tangents.
+    for label,offset,sign,reference,fan,branch in [('up',5,-1,names[1],names[0],'branch_up'),('down',10,1,names[2],names[3],'branch_down')]:
+        def q(x,y=0):return pos(x,offset+sign*y)
+        def intent(x,y=0,a=0):return _recipe_intent(p,q(x,y),direction(sign*a))
+        specs=[('A1',reference,-20,0,0),('A2',fan,-20,5,0),('D1',reference,1600,180,12),('D2',fan,600,105,0),('D3',branch,1100,460,0)]
+        fixtures=[]
+        for name,track,x,y,a in specs:
+            point=q(x,y);con=direction(sign*a)
+            fixtures.append({'name':name,'position':point,'travel_direction':con,'length':20,
+                'region':{'min':[max(point[k]-40,brief['region']['min'][k]) for k in range(3)],'max':[min(point[k]+40,brief['region']['max'][k]) for k in range(3)]}})
+            west=name.startswith('A');port=track+(':west' if west else ':east') if track!=branch else branch
+            end='west' if west else ('branch' if track==branch else 'east')
+            traffic=1 if label=='up' else -1
+            ports[port]={'track':track,'end':end,'position':point if west else [point[k]+20*(con[k] if k<2 else 0) for k in range(3)],
+                'construction_direction':con,'running_direction':'UP' if traffic==1 else 'DOWN','travel_direction':[traffic*z for z in con],
+                'function':'entry' if west==(traffic==1) else 'exit'}
+        common={'radius':120,'region':brief['region'],'vertical':{'max_grade':brief['max_grade']},'max_fit_attempts':1,'max_route_length':2500}
+        pairs.append({'name':label,'brief':{'origin':o},'fixtures':fixtures,
+            'reference':common|{'radius':160,'source':intent(0),'target':intent(1600,180,12),
+                'guides':[{'position':q(x,y),'travel_direction':direction(sign*a),'grade':0} for x,y,a in [(400,0,0),(800,30,8),(1200,180-400*math.tan(math.radians(12)),12)]]},
+            'fanout':common|{'source':intent(0,5),'target':intent(600,105), 'guides':[{'position':q(100,5),'travel_direction':d,'grade':0}]},
+            'cross_source':intent(250),'required_routes':[{'from':'A1','to':dest,'via':via} for dest,via in [('D1',[]),('D2',['cross']),('D3',['cross','branch'])]]+[
+                {'from':'A2','to':'D2','via':[]},{'from':'A2','to':'D3','via':['branch']}],
+            'transfer':transfers[0 if label=='up' else 1],'branch_port':branch})
+    corners=[pos(x,y) for x,y in [(-60,-500),(1660,-500),(1660,515),(-60,515)]]
+    footprint={'min':[min(q[k] for q in corners) for k in range(2)]+[o[2]-1],'max':[max(q[k] for q in corners) for k in range(2)]+[o[2]+1]}
+    if any(footprint['min'][k]<brief['region']['min'][k] or footprint['max'][k]>brief['region']['max'][k] for k in range(3)):raise LiveError('unsupported_layout','authorised region excludes widened switching footprint')
+    plan={k:p[k] for k in ('version','epoch','pattern','order_convention','native_construction_direction','native_execution_supported','native_runtime_demonstrated','direction_enforcement','train_traversal','game_constructed')}
+    plan.update(layout=SWITCHING_LAYOUT,brief=brief,ports=ports,pairs=pairs,movements=rows,footprint=footprint,
+        limitations=['fixed level UUDD increasing-UP/radius120/retained spacing5','widened outgoing ports; not constant5m switching zones','one UP transfer U2->U1 and one DOWN transfer D2->D1','no opposite-direction switching/operational enforcement'])
+    plan['plan_hash']=hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+    return plan
+
+
+def publish_switching_layout(plan,evidence):
+    if plan!=plan_switching_layout(plan.get('brief')):raise ValueError('switching plan differs from brief')
+    path=Path(evidence)/(uuid.uuid4().hex+'.switching_plan.json');path.parent.mkdir(parents=True,exist_ok=True);atomic_json(path,plan)
+    return {'status':'ok','operation':'switching-layout','stage':'plan','game_constructed':False,'plan_hash':plan['plan_hash'],
+        'movements':plan['movements'],'native_runtime_demonstrated':False,'direction_enforcement':'not_provided','evidence':str(path.resolve())}
+
+
+def _switching_fanout(pair,fixtures):
+    """Represent the nominal straight guide along the actual native end tangent.
+
+    Avoid tiny Dubins corrections from mixing float-native endpoints with an ideal
+    map-frame line. Preserve the existing0.001 conversion/heading tolerances.
+    """
+    e=fixtures['A2'];tangent=e['t1'];length=math.hypot(*tangent[:2])
+    if length<1e-6 or abs(tangent[2])>1e-6:raise LiveError('unsupported_native_result','level native fixture tangent required')
+    old=pair['fanout']['guides'][0];point=[e['p1'][k]+5*tangent[k] for k in range(3)];d=[z/length for z in tangent[:2]]
+    angle=math.degrees(math.acos(max(-1,min(1,sum(d[k]*old['travel_direction'][k] for k in range(2))))))
+    if math.dist(point,old['position'])>.001 or angle>.001:raise LiveError('unsupported_native_result','native straight guide exceeds existing conversion tolerances')
+    return pair['fanout']|{'guides':[{'position':point,'travel_direction':d,'grade':0}]}
+
+
+def _verify_switching_layout(client,plan,record):
+    verify=plan|{'branches':[],'movements':[dict(row) for row in plan['movements']]};edges={};observations=[]
+    runtime=record.get('pair_runtime',{})
+    if set(runtime)!={'up','down'}:raise LiveError('incomplete_layout','both built native throat receipts required')
+    for pair in plan['pairs']:
+        saved=runtime[pair['name']];path=Path(saved['throat_record']);raw=path.read_bytes()
+        if hashlib.sha256(raw).hexdigest()!=saved['sha256']:raise ValueError('built throat receipt changed')
+        built=json.loads(raw.decode('utf-8-sig'));b=built['brief'];cross,branch=b['steps']
+        if (built['summary'].get('status')!='ok' or cross['source']!=pair['cross_source'] or b['region']!=plan['brief']['region']
+                or b['radius']!=120 or b['vertical']!={'max_grade':plan['brief']['max_grade']}
+                or math.dist(branch['target']['guide_xyz'],pair['fixtures'][-1]['position'])>.001
+                or branch['target']['travel_direction']!=pair['fixtures'][-1]['travel_direction']):
+            raise ValueError('throat evidence does not match approved pair intent')
+        label=pair['name'];a=label+'_cross_source';z=label+'_cross_target'
+        verify['branches'] += [{'name':a,'source':cross['source']},{'name':z,'source':cross['target']},{'name':pair['branch_port'],'source':branch['source']}]
+        connector=built['semantic_mapping']['step_edges']['cross']
+        if not isinstance(connector,list) or not connector or len(connector)>16 or any(type(i) is not int for i in connector):raise ValueError('bounded exact connector identities required')
+        current=client.request('inspect',{'edge_ids':connector,'geometry_constraints':{'radius':120,'max_grade':plan['brief']['max_grade'],'region':plan['brief']['region']}});observations.append(current['request_id'])
+        if current['status']!='ok' or {e['id'] for e in current['result']['edges']}!=set(connector) or any(e['road_type']!='TRACK' for e in current['result']['edges']):
+            raise LiveError('stale_switching_connector','exact current transfer connector no longer established')
+        for row in verify['movements']:
+            if {k:row[k] for k in ('from','to')}==pair['transfer']:
+                row['via']=[a,z];edges[(row['from'],row['to'])]=connector
+    answer=_verify_parallel_layout(client,verify,record,movement_edges=edges)
+    record['connector_observations']=observations
+    return answer|{'transfers_verified':2,'widened_switching':True,'direct5m_crossover':False}
+
+
+def execute_switching_layout(client,plan,*,prepared_record=None):
+    if plan!=plan_switching_layout(plan.get('brief')):raise ValueError('switching plan differs from brief')
+    prepared=None
+    if prepared_record:
+        prepared=json.loads(Path(prepared_record).read_text(encoding='utf-8-sig'))
+        if not isinstance(prepared,dict):raise ValueError('prepared switching record must be an object')
+        ops=prepared.get('operations',[]);old=prepared.get('plan',{})
+        if (not isinstance(old,dict) or not isinstance(old.get('pairs'),list) or len(old['pairs'])!=2
+                or not isinstance(ops,list) or any(not isinstance(o,dict) or not isinstance(o.get('response'),dict) for o in ops)):
+            raise ValueError('prepared switching operations/plan malformed')
+        canonical={k:v for k,v in old.items() if k!='plan_hash'}
+        if (old.get('brief')!=plan['brief'] or old.get('plan_hash')!=hashlib.sha256(json.dumps(canonical,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+                or old.get('pairs',[{}])[0].get('fixtures')!=plan['pairs'][0]['fixtures']
+                or [o.get('name') for o in ops]!=['discover_asset','inspect_asset']+['up_prepare_'+f['name'] for f in plan['pairs'][0]['fixtures']]+['up_reference']
+                or ops[-1]['response'].get('status')!='no_accepted_candidate' or ops[-1]['response'].get('game_constructed') is not False):
+            raise ValueError('prepared switching record must prove matching fixtures and prebuild UP reference fit failure')
+    path=client.evidence/(uuid.uuid4().hex+'.switching.json');lock=client.evidence/'switching.lock'
+    summary={'status':'incomplete','operation':'switching-layout','stage':'asset','game_constructed':False,'plan_hash':plan['plan_hash'],
+        'evidence':str(path.resolve()),'routes_verified':0,'direction_enforcement':'not_provided','train_traversal':'unprobed'}
+    record={'plan':plan,'summary':summary,'operations':[],'pair_runtime':{}}
+    try:
+        with lock.open('x'):pass
+    except FileExistsError:raise LiveError('client_busy','one switching layout at a time') from None
+    def perform(name,call,mutation=False):
+        summary['stage']=name;record['unfinished_step']=name;atomic_json(path,record);r=call()
+        record['operations'].append({'name':name,'response':r});record.pop('unfinished_step');atomic_json(path,record)
+        if mutation:
+            effect=r.get('game_constructed',r.get('result',{}).get('game_constructed','unknown'))
+            if effect in (True,'unknown') or summary['game_constructed'] is not True:summary['game_constructed']=effect
+        if r['status']!='ok':raise LiveError(r['status'],r.get('error',r.get('result',{}).get('error','switching stage failed')))
+        return r
+    try:
+        if client.journal.exists() and json.loads(client.journal.read_text()).get('pending'):raise LiveError('reconciliation_required','unfinished native request; no layout construction')
+        retained={}
+        if prepared:
+            old=[o['response']['result']['edges'][0] for o in prepared['operations'][2:7]]
+            r=perform('reacquire_prepared',lambda:client.request('inspect',{'edge_ids':[e['id'] for e in old]}))
+            if r['result'].get('edges')!=old:raise LiveError('stale_prepared_layout','prepared fixtures differ from exact current native state')
+            retained={f['name']:e for f,e in zip(plan['pairs'][0]['fixtures'],old)}
+            record['original_prepared']=str(Path(prepared_record).resolve());record['prepared_reacquisition']=r['request_id']
+        found=perform('discover_asset',lambda:discover(client,{'region':plan['brief']['asset_region'],'max_edges':16}));v=found['result']
+        assets={c['edge_id']:c['edge_snapshot'] for c in v['candidates']}
+        if v.get('complete') is not True or not assets:raise LiveError('asset_unavailable','complete native asset observation required')
+        if len({(e['template'],e['style']) for e in assets.values()})!=1:raise LiveError('asset_choice_ambiguous','mixed native track families')
+        seed=min(assets);r=perform('inspect_asset',lambda:client.request('inspect',{'edge_ids':[seed],'resources':True}))
+        if r['result']['edges'][0].get('resource',{}).get('track_distance')!=5:raise LiveError('unsupported_layout','native template spacing is not5')
+        record['selected_asset']=r['result']['edges'][0]
+        for pair in plan['pairs']:
+            fixtures={};prefix=pair['name']+'_'
+            for f in pair['fixtures']:
+                q={'authorised':True,'length':20,'fixture':{'template_edge':seed,'position':f['position'],'travel_direction':f['travel_direction'],'grade':0,'region':f['region']}}
+                reuse=pair['name']=='up' and f['name'] in retained
+                r=perform(prefix+'prepare_'+f['name'],lambda q=q,f=f,reuse=reuse:({'status':'ok','result':{'game_constructed':True,'edges':[retained[f['name']]]},'reused_prepared':True,'fresh_observation':record['prepared_reacquisition']} if reuse else client.request('test_approach',q)),True)
+                rows=r['result'].get('edges',[])
+                if len(rows)!=1 or rows[0].get('road_type')!='TRACK':raise LiveError('native_verification_failed','fixture exact TRACK identity unavailable')
+                fixtures[f['name']]=rows[0]
+            perform(prefix+'reference',lambda:connect_corridor(client,pair['reference'],execute=True),True)
+            fan=perform(prefix+'fanout',lambda:connect_corridor(client,_switching_fanout(pair,fixtures),execute=True),True)
+            read=perform(prefix+'native_guides',lambda:client.request('inspect',{'edge_ids':fan['edges']}))
+            b=_recipe_throat_brief(pair,fixtures,read['result']['edges'])
+            throat=perform(prefix+'throat',lambda:connect_throat(client,b,execute=True),True)
+            tp=Path(throat['evidence']);record['pair_runtime'][pair['name']]={'throat_record':str(tp.resolve()),'sha256':hashlib.sha256(tp.read_bytes()).hexdigest()};atomic_json(path,record)
+        summary.update(_verify_switching_layout(client,plan,record),status='ok',stage='verified')
+    except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:
+        summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
+        if getattr(exc,'status',None)=='mutation_outcome_unknown':summary['game_constructed']='unknown'
+    finally:atomic_json(path,record);lock.unlink()
+    return summary
+
+
+def inspect_switching_layout(client,invocation):
+    original=json.loads(Path(invocation).read_text(encoding='utf-8-sig'))
+    if not isinstance(original,dict):raise ValueError('switching invocation must be an object')
+    if 'plan' not in original and original.get('evidence'):original=json.loads(Path(original['evidence']).read_text(encoding='utf-8-sig'))
+    if not isinstance(original,dict):raise ValueError('switching evidence must be an object')
+    plan=original['plan']
+    if plan!=plan_switching_layout(plan.get('brief')):raise ValueError('switching invocation differs from deterministic brief')
+    path=client.evidence/(uuid.uuid4().hex+'.switching_inspection.json')
+    summary={'status':'incomplete','operation':'switching-layout-inspect','game_constructed':False,'plan_hash':plan['plan_hash'],
+        'evidence':str(path.resolve()),'routes_verified':0,'train_traversal':'unprobed'}
+    record={'plan':plan,'summary':summary,'original_record':str(Path(invocation).resolve()),'pair_runtime':original.get('pair_runtime',{})}
+    try:summary.update(_verify_switching_layout(client,plan,record),status='ok',stage='verified')
+    except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
+    finally:atomic_json(path,record)
+    return summary
+
+
+def continue_switching_layout(client,invocation):
+    """Only the observed DOWN-fanout prebuild failure; no general stage resume."""
+    original=json.loads(Path(invocation).read_text(encoding='utf-8-sig'))
+    if not isinstance(original,dict):raise ValueError('switching invocation must be an object')
+    if 'plan' not in original and original.get('evidence'):original=json.loads(Path(original['evidence']).read_text(encoding='utf-8-sig'))
+    if not isinstance(original,dict):raise ValueError('switching evidence must be an object')
+    plan=original['plan'];ops=original.get('operations',[])
+    if not isinstance(ops,list) or any(not isinstance(o,dict) or not isinstance(o.get('response'),dict) for o in ops):raise ValueError('switching operations malformed')
+    if plan!=plan_switching_layout(plan.get('brief')):raise ValueError('switching continuation plan differs from brief')
+    last=ops[-1] if ops else {};failed=last.get('response',{})
+    if (original.get('summary',{}).get('stage')!='down_fanout' or original.get('unfinished_step')
+            or last.get('name')!='down_fanout' or failed.get('status')!='no_accepted_candidate' or failed.get('game_constructed') is not False
+            or set(original.get('pair_runtime',{}))!={'up'}):raise ValueError('only completed UP/reference and proven prebuild DOWN-fanout failure may continue')
+    pair=plan['pairs'][1];fixtures={}
+    for f in pair['fixtures']:
+        matches=[o['response'] for o in ops if o['name']=='down_prepare_'+f['name']]
+        if len(matches)!=1 or matches[0].get('status')!='ok' or len(matches[0].get('result',{}).get('edges',[]))!=1:raise ValueError('exact prepared DOWN fixtures unavailable')
+        fixtures[f['name']]=matches[0]['result']['edges'][0]
+    references=[o['response'] for o in ops if o['name']=='down_reference']
+    if len(references)!=1 or references[0].get('status')!='ok' or references[0].get('game_constructed') is not True:raise ValueError('completed DOWN reference required')
+    path=client.evidence/(uuid.uuid4().hex+'.switching_continuation.json');lock=client.evidence/'switching.lock'
+    summary={'status':'incomplete','operation':'switching-layout-continue','stage':'fresh_preconditions','game_constructed':False,
+        'plan_hash':plan['plan_hash'],'evidence':str(path.resolve()),'routes_verified':0,'train_traversal':'unprobed'}
+    record={'plan':plan,'summary':summary,'original_record':str(Path(invocation).resolve()),'operations':[],'pair_runtime':dict(original['pair_runtime'])}
+    try:
+        with lock.open('x'):pass
+    except FileExistsError:raise LiveError('client_busy','one switching layout at a time') from None
+    def perform(name,call,mutation=False):
+        summary['stage']=name;record['unfinished_step']=name;atomic_json(path,record);r=call()
+        record['operations'].append({'name':name,'response':r});record.pop('unfinished_step');atomic_json(path,record)
+        if mutation:
+            effect=r.get('game_constructed',r.get('result',{}).get('game_constructed','unknown'))
+            if effect in (True,'unknown') or summary['game_constructed'] is not True:summary['game_constructed']=effect
+        if r['status']!='ok':raise LiveError(r['status'],r.get('error',r.get('result',{}).get('error','continuation stage failed')))
+        return r
+    try:
+        if client.journal.exists() and json.loads(client.journal.read_text()).get('pending'):raise LiveError('reconciliation_required','unfinished native request; no continuation')
+        old=list(fixtures.values());current=perform('reacquire_down_fixtures',lambda:client.request('inspect',{'edge_ids':[e['id'] for e in old]}))
+        if current['result'].get('edges')!=old:raise LiveError('stale_prepared_layout','prepared DOWN fixtures changed')
+        # Prove the already-built reference on current topology before completing it.
+        ports=[]
+        for end in ('west','east'):
+            p=plan['ports'][plan['brief']['tracks'][2]['id']+':'+end]
+            port,rid=_select_throat_port(client,_recipe_intent(plan,p['position'],p['construction_direction']),tolerance=.5,outward_sign=-1 if end=='west' else 1)
+            ports.append(port)
+        a,z=ports
+        q={'source_edge':a['edge_id'],'source_node':a['node_id'],'target_edge':z['edge_id'],'target_node':z['node_id'],'mode':'TRAIN','max_length':2500,
+            'required_edges':[a['edge_id'],z['edge_id']],'geometry_constraints':{'all_path':True,'edge_ids':[],'radius':160,'max_grade':plan['brief']['max_grade'],'region':plan['brief']['region']}}
+        route=perform('current_down_reference',lambda:client.request('route',q))
+        if route['result'].get('requested_route_verified') is not True:raise LiveError('stale_prepared_layout','current DOWN reference route not established')
+        up=record['pair_runtime']['up'];upraw=Path(up['throat_record']).read_bytes()
+        if hashlib.sha256(upraw).hexdigest()!=up['sha256']:raise ValueError('completed UP receipt changed')
+        fan=perform('down_fanout',lambda:connect_corridor(client,_switching_fanout(pair,fixtures),execute=True),True)
+        read=perform('down_native_guides',lambda:client.request('inspect',{'edge_ids':fan['edges']}))
+        b=_recipe_throat_brief(pair,fixtures,read['result']['edges']);throat=perform('down_throat',lambda:connect_throat(client,b,execute=True),True)
+        tp=Path(throat['evidence']);record['pair_runtime']['down']={'throat_record':str(tp.resolve()),'sha256':hashlib.sha256(tp.read_bytes()).hexdigest()}
+        summary.update(_verify_switching_layout(client,plan,record),status='ok',stage='verified')
     except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:
         summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
         if getattr(exc,'status',None)=='mutation_outcome_unknown':summary['game_constructed']='unknown'
@@ -1812,12 +2072,13 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'switching-layout', 'switching-layout-inspect', 'switching-layout-continue', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--reconciled-crossover', type=Path, help='explicit verified crossover evidence for connect-throat; rechecks read-only, never rebuilds it')
     parser.add_argument('--recipe-plan',type=Path,help='optional reviewed junction-recipe plan; must match current brief exactly')
     parser.add_argument('--prepared-recipe',type=Path,help='explicit matching recipe stopped before reference; fresh stubs checked, never automatically resumed')
     parser.add_argument('--layout-record',type=Path,help='saved parallel-layout invocation for fresh read-only current-state verification')
+    parser.add_argument('--prepared-switching',type=Path,help='explicit matching five-fixture prebuild reference failure; no automatic replay')
     parser.add_argument('--recipe-record',type=Path,help='recipe invocation or compact summary for fresh inspect/explicit checked continuation')
     parser.add_argument('--context', type=Path)
     parser.add_argument('--discovery', type=Path, help='saved full discover response for connect-selected')
@@ -1828,11 +2089,13 @@ def main(argv=None):
     parser.add_argument('--session')
     parser.add_argument('--timeout', type=float, default=30)
     args = parser.parse_args(argv)
-    if args.operation in ('junction-recipe','parallel-layout') and not args.execute:
+    if args.operation in ('junction-recipe','parallel-layout','switching-layout') and not args.execute:
         try:
-            if args.layout_record or args.recipe_record or args.recipe_plan or args.prepared_recipe or args.discovery or args.reconciled_crossover:raise ValueError('planning accepts a brief, not native continuation records')
+            if args.prepared_switching or args.layout_record or args.recipe_record or args.recipe_plan or args.prepared_recipe or args.discovery or args.reconciled_crossover:raise ValueError('planning accepts a brief, not native continuation records')
             brief=json.loads(args.params.read_text(encoding='utf-8-sig'))
-            response=(publish_junction_recipe(plan_junction_recipe(brief),args.evidence or Path('.local_runs/junction_recipes')) if args.operation=='junction-recipe' else publish_parallel_layout(plan_parallel_layout(brief),args.evidence or Path('.local_runs/parallel_layouts')))
+            if args.operation=='junction-recipe':response=publish_junction_recipe(plan_junction_recipe(brief),args.evidence or Path('.local_runs/junction_recipes'))
+            elif args.operation=='parallel-layout':response=publish_parallel_layout(plan_parallel_layout(brief),args.evidence or Path('.local_runs/parallel_layouts'))
+            else:response=publish_switching_layout(plan_switching_layout(brief),args.evidence or Path('.local_runs/switching_layouts'))
         except (OSError,ValueError,LiveError,KeyError,TypeError) as exc:
             response={'status':getattr(exc,'status','invalid_recipe'),'error':str(exc)[:400],'game_constructed':False}
         print(json.dumps(response,separators=(',',':')));return 0 if response['status']=='ok' else 1
@@ -1846,7 +2109,8 @@ def main(argv=None):
                 raise ValueError('provide --context or all explicit transport arguments')
             client = LiveClient(args.mod_directory, args.log, args.evidence, args.session, args.timeout)
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
-        if args.layout_record and args.operation!='parallel-layout-inspect':raise ValueError('--layout-record requires parallel-layout-inspect')
+        if args.prepared_switching and (args.operation!='switching-layout' or not args.execute):raise ValueError('--prepared-switching requires switching-layout --execute')
+        if args.layout_record and args.operation not in ('parallel-layout-inspect','switching-layout-inspect','switching-layout-continue'):raise ValueError('--layout-record requires parallel-layout-inspect')
         if args.recipe_record and args.operation not in ('junction-recipe-inspect','junction-recipe-continue'):raise ValueError('--recipe-record requires recipe inspect/continue')
         if args.operation=='junction-recipe-continue' and not args.execute:raise ValueError('recipe continuation requires --execute')
         if args.recipe_plan and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--recipe-plan requires junction-recipe --execute')
@@ -1855,9 +2119,18 @@ def main(argv=None):
             raise ValueError('--reconciled-crossover requires connect-throat --execute')
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout'):
+        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout', 'switching-layout', 'switching-layout-continue'):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
-        if args.operation=='parallel-layout':
+        if args.operation=='switching-layout':
+            response=execute_switching_layout(client,plan_switching_layout(params),prepared_record=args.prepared_switching)
+        elif args.operation in ('switching-layout-inspect','switching-layout-continue'):
+            if not args.layout_record:raise ValueError('--layout-record is required')
+            saved=json.loads(args.layout_record.read_text(encoding='utf-8-sig'))
+            if 'plan' not in saved and saved.get('evidence'):saved=json.loads(Path(saved['evidence']).read_text(encoding='utf-8-sig'))
+            if saved['plan']!=plan_switching_layout(params):raise ValueError('switching record does not match current brief')
+            if args.operation=='switching-layout-continue' and not args.execute:raise ValueError('switching continuation requires --execute')
+            response=(inspect_switching_layout if args.operation=='switching-layout-inspect' else continue_switching_layout)(client,args.layout_record)
+        elif args.operation=='parallel-layout':
             response=execute_parallel_layout(client,plan_parallel_layout(params))
         elif args.operation=='parallel-layout-inspect':
             if not args.layout_record:raise ValueError('--layout-record is required')

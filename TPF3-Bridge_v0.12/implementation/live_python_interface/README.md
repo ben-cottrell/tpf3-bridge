@@ -840,3 +840,62 @@ The disposable test world was saved and left paused/non-maximised. Physical trai
 traversal, direction enforcement, reservations and signals remain unprobed. Other
 patterns/reversed-UP conventions have planning/test evidence only. No cross-track
 switching or close crossover is supplied; P17's separate five-route receipt is retained.
+
+## Widened four-track switching (P19 demonstrated)
+
+`switching_layout_example.json` declares a level UUDD layout: four through routes,
+the outer UP/DOWN branch functions, UP transfer U2:west->U1:east and DOWN transfer
+D2:east->D1:west. Other transfer matrices/patterns/UP conventions are unsupported.
+The retained four-track approach has5m spacing; outgoing ports and switching zones
+are widened. This is a functional junction, not a constant-spacing close crossover.
+Translation/rotation and explicit radius120/selected max_grade/region remain binding.
+
+```powershell
+python bridge_live.py switching-layout --params implementation/live_python_interface/switching_layout_example.json --evidence .local_runs/switching_plans
+python bridge_live.py switching-layout --context context.json --params implementation/live_python_interface/switching_layout_example.json --execute
+python bridge_live.py switching-layout-inspect --context context.json --params implementation/live_python_interface/switching_layout_example.json --layout-record RECORD.json
+```
+
+Callable interfaces: plan_switching_layout, publish_switching_layout,
+execute_switching_layout, inspect_switching_layout. Planning is offline/default;
+native execution is explicit and leaves partial/unfinished steps visible. The
+workflow reuses native corridor/fanout/interior-junction/crossover primitives;
+Python supplies the existing widened guide pattern, not a replacement curve fitter.
+UP controls face outward; DOWN native construction retains increasing reference
+orientation while required traffic paths run in the opposite direction.
+
+Fresh inspection reacquires10functional ports/six exact three-track junctions and
+requires all eight paths, including both transfer junctions and the exact freshly
+inspected built connector edges. Changed throat receipts or stale connectors fail.
+Current sampled radius/grade/region and17spacing samples across each of three
+retained100-unit approach pairs are checked. Saved receipt integrity is distinct
+from native semantic acceptance. No automatic retry/resume/clearance/rollback,
+signal/reservation/direction enforcement or train-traversal claim. P18 remains
+compatible with its original six-movement brief/hash and receipt format.
+
+126client tests pass, including malformed/stale/partial receipts, unsupported direction
+matrices and intended-connector/junction checks. Build40408 demonstrated all eight
+routes at(3500,6500,33),heading-50, after explicit observed-stage continuations.
+Fresh-process switching-layout-inspect repeated acceptance without construction;
+52TRACK independent17samples each:radius122.278962>=120,grade0 and region pass.
+Three retained100-unit approach pairs/17samples each:spacing4.999844-5.000128.
+Wrong required transfer connector and strict200 radius are natively rejected.
+
+The first attempt built five UP fixtures, then stopped at a reference fit below its
+selected160limit. The final guide was aligned with its fixed12degree endpoint without
+lowering either160reference or120final limits. Explicit --prepared-switching RECORD
+reuses only exact freshly inspected matching fixtures from that prebuild failure.
+A later DOWN-fanout degenerate fit left completed UP/reference work visible.
+Native straight-guide input now uses the actual stored end tangent within the existing
+0.001conversion/heading tolerances. The local rounded-chord alternative was rejected
+before the fan-out query/build; no tolerance was widened. Original failed receipts stay failed.
+
+Callable continue_switching_layout and CLI switching-layout-continue --execute
+--layout-record RECORD --params BRIEF --context CONTEXT accept only that known
+prebuild DOWN-fanout failure with completed UP/reference and exact current fixtures.
+Fresh reference route/readback is mandatory; only missing DOWN stages run. No blind
+replay, general stage resume, crash recovery or automatic continuation is supplied.
+The successful current-state receipt proves this assembled layout, not universal
+unattended success on every placement. Game-world side-effect history is incomplete.
+Geometry is sampled; physical traversal, reservation, signalling and direction
+enforcement remain unprobed. Other patterns/transfers are unsupported; P18 unchanged.
