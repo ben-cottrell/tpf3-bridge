@@ -1,6 +1,9 @@
-# PIF-P13 - integrated multi-track throat - COMPLETE
-Card: .local_runs/live_python_interface/p13/orchestrator/TASK.md
-Two approaches/four destinations, crossover/two ladder branches, seven final directed
-native TRAIN routes and selected sampled geometry pass on build40408.81client tests pass.
-Evidence/checkpoint: .local_runs/live_python_interface/p13/; short record in STATE.md.
-No station construction or remote push. Await coordinator's next adopted outcome.
+# PIF-P14 - PARTIAL / close-crossover proposal blocked
+Card: .local_runs/live_python_interface/p14/orchestrator/TASK.md; P13 base5f3bc6f.
+Curved native normal-offset adjacent approach at actual spacing5 demonstrated on40408;
+independent current identities/spacing/radius120 and both through TRAIN routes pass.
+Two distinct close-crossover proposals rejected; five-movement final matrix NOT accepted.
+87client tests pass. Evidence: .local_runs/live_python_interface/p14/.
+Report concrete native proposal gap to coordinator before further method/geometry work;
+also retain reference fixture native-fit160/realised157.374 conversion diagnostic.
+No claim of P14 completion, stations or remote push.

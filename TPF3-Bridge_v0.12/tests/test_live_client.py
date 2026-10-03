@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import contextlib
 import io
-from bridge_live import reconcile_constructed_crossover, connect_throat, validate_throat_brief, _select_throat_port, is_mutation, LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, connect_junction, connect_junction_at, reconcile_rejected_junction, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, reconcile_constructed_interior, discover_session, client_from_context
+from bridge_live import connect_adjacent, reconcile_constructed_crossover, connect_throat, validate_throat_brief, _select_throat_port, is_mutation, LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, connect_junction, connect_junction_at, reconcile_rejected_junction, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, reconcile_constructed_interior, discover_session, client_from_context
 
 class LiveClientTests(unittest.TestCase):
     def setUp(self):
@@ -1146,6 +1146,80 @@ class LiveClientTests(unittest.TestCase):
         op,p=request.call_args.args;self.assertEqual(op,'verify_crossover');self.assertFalse(p['execute']);self.assertFalse(is_mutation(op,p))
         self.assertEqual(r['result']['status'],'reconciled_verified_crossover');self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
         self.assertEqual(before,original_path.read_bytes());self.assertFalse(r['result']['automatic_replay'])
+
+    def adjacent_brief(self):
+        b=self.throat_brief()
+        return {k:b[k] for k in ('radius','region','vertical','max_fit_attempts','max_route_length')}|{
+            'source':b['steps'][0]['source'],'target':b['steps'][0]['target'],'side':'left','spacing_tolerance':.1}
+
+    def adjacent_port(self,client,intent,**kwargs):
+        source=kwargs.get('outward_sign')==-1
+        return {'edge_id':11 if source else 12,'node_id':101 if source else 103},'discovery'
+
+    def adjacent_worker(self,op,params):
+        self.adjacent_calls.append((op,params))
+        if op=='inspect':
+            self.assertTrue(params['resources'])
+            result={'edges':[{'id':eid,'resource':{'track_distance':self.template_spacing}} for eid in (11,12)]}
+        elif op=='adjacent':
+            self.assertEqual(abs(params['spacing']),5);self.assertEqual(params['tolerance'],.1)
+            result={'game_constructed':params['execute'],'readback':{'connected':True,'ordered_edges':[21,22],'ordered_nodes':[201,202,203]},
+                    'adjacency':{'sampled_verified':True,'independent_native_nodes':True}}
+            if self.adjacent_failure:return self.response('a'+str(len(self.adjacent_calls)),op,result={'game_constructed':'unknown','error':'readback_failed'})|{'status':'mutation_unverified'}
+        else:
+            self.assertEqual(op,'route')
+            if params['source_edge']==21:
+                self.assertEqual(params['required_edges'],[21,22]);self.assertTrue(params['geometry_constraints']['all_path'])
+            result={'requested_route_verified':True,'path':[{'edge':{'entity':eid},'forward':True,'confirmed_TRACK':True} for eid in (11,12)]}
+        return self.response('a'+str(len(self.adjacent_calls)),op,result=result)
+
+    def test_adjacent_native_resource_spacing_then_route_and_compact_summary(self):
+        self.adjacent_calls=[];self.template_spacing=5;self.adjacent_failure=False
+        with patch('bridge_live._select_throat_port',side_effect=self.adjacent_port),patch.object(self.client,'request',side_effect=self.adjacent_worker):
+            r=connect_adjacent(self.client,self.adjacent_brief(),execute=True)
+        self.assertEqual(r['status'],'ok');self.assertEqual(r['native_track_distance'],5);self.assertTrue(r['native_route_verified'])
+        self.assertEqual([x[0] for x in self.adjacent_calls],['route','inspect','adjacent','route'])
+        self.assertLessEqual(len(json.dumps(r).encode()),4096)
+        self.assertEqual(json.loads(Path(r['evidence']).read_text())['summary'],r)
+
+    def test_adjacent_fit_only_right_side_never_constructs(self):
+        self.adjacent_calls=[];self.template_spacing=5;self.adjacent_failure=False
+        b=self.adjacent_brief();b['side']='right'
+        with patch('bridge_live._select_throat_port',side_effect=self.adjacent_port),patch.object(self.client,'request',side_effect=self.adjacent_worker):
+            r=connect_adjacent(self.client,b)
+        self.assertEqual(r['status'],'ok');self.assertFalse(r['game_constructed']);self.assertEqual(len(self.adjacent_calls),3)
+        op,p=self.adjacent_calls[-1];self.assertEqual(p['spacing'],-5);self.assertFalse(is_mutation(op,p))
+
+    def test_adjacent_failed_readback_stops_without_route_or_replay(self):
+        self.adjacent_calls=[];self.template_spacing=5;self.adjacent_failure=True
+        with patch('bridge_live._select_throat_port',side_effect=self.adjacent_port),patch.object(self.client,'request',side_effect=self.adjacent_worker):
+            r=connect_adjacent(self.client,self.adjacent_brief(),execute=True)
+        self.assertEqual(r['status'],'mutation_unverified');self.assertEqual(r['game_constructed'],'unknown');self.assertEqual(len(self.adjacent_calls),3)
+
+    def test_adjacent_unknown_native_spacing_is_not_a_default(self):
+        self.adjacent_calls=[];self.template_spacing=None;self.adjacent_failure=False
+        with patch('bridge_live._select_throat_port',side_effect=self.adjacent_port),patch.object(self.client,'request',side_effect=self.adjacent_worker):
+            r=connect_adjacent(self.client,self.adjacent_brief(),execute=True)
+        self.assertEqual(r['status'],'invalid_result');self.assertFalse(r['game_constructed']);self.assertEqual(len(self.adjacent_calls),2)
+
+    def test_adjacent_invalid_side_or_tolerance_rejected_before_reads(self):
+        for k,v in [('side','nearest'),('spacing_tolerance',1),('spacing_tolerance',float('nan'))]:
+            b=self.adjacent_brief();b[k]=v
+            with patch.object(self.client,'request') as worker:
+                with self.assertRaises(ValueError):connect_adjacent(self.client,b,execute=True)
+                worker.assert_not_called()
+
+    def test_rejected_corridor_and_crossover_reconcile_without_replay(self):
+        from bridge_live import reconcile_rejected_corridor,reconcile_rejected_crossover
+        for op,fn in [('corridor',reconcile_rejected_corridor),('crossover',reconcile_rejected_crossover)]:
+            pending={'operation':op,'request_id':'reject_'+op,'params':{'execute':True}}
+            self.client.journal.write_text(json.dumps({'session':self.client.session,'pending':pending}))
+            original=self.response(pending['request_id'],op,result={'error':'native_construction_rejected','native_command_success':False,'stage':'build','game_constructed':'unknown'})|{'status':'error'}
+            path=self.client.evidence/(pending['request_id']+'.response.json');path.write_text(json.dumps(original));before=path.read_bytes()
+            observed=self.response('observe',op,result={'game_constructed':False,'through_before':[{'requested_route_verified':True}]*2})
+            with patch.object(self.client,'request',return_value=observed) as worker:r=fn(self.client)
+            operation,params=worker.call_args.args;self.assertEqual(operation,op);self.assertFalse(params['execute']);self.assertFalse(is_mutation(operation,params))
+            self.assertEqual(worker.call_count,1);self.assertFalse(r['result']['automatic_replay']);self.assertNotIn('pending',json.loads(self.client.journal.read_text()));self.assertEqual(path.read_bytes(),before)
 
 if __name__ == '__main__':
     unittest.main()

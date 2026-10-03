@@ -606,3 +606,54 @@ radius; its branch was explicitly removed, then a distinct shorter layout passed
 lowering constraints. CLI output799bytes;81affected client tests passed.
 This demonstrates native connectivity/routing, not train traversal, reservations,
 capacity, continuous clearance/curvature proof or unrestricted throat routing.
+
+## Native adjacent-track approach (P14 partial)
+
+`connect_adjacent(client, brief, execute=False)` / CLI:
+
+```powershell
+python bridge_live.py connect-adjacent --context context.json --params adjacent_brief.json
+python bridge_live.py connect-adjacent --context context.json --params adjacent_brief.json --execute
+```
+
+Use the ordinary connection brief plus `side` (`left`/`right` in directed reference
+travel) and explicit `spacing_tolerance` greater than0, maximum0.1 native units. Source
+and target select free ends of an existing ordinary TRACK route. The reference must be
+a level, unowned, object-free chain of at most16edges without node-owned movement
+connectors. `trackDistance` is read from its actual native StreetTemplate; there is no
+assumed real-world conversion/default spacing. Missing resource data is unavailable.
+
+The mod uses native `CUBIC_OFFSET_SPLINE` and `calcPositionAndDirection` to obtain a
+normal-offset curve, then checks a bounded cubic representation with native sampling.
+It does not translate a curve along a map axis or run a Python fitter. One native
+proposal constructs an independent chain. Current TRACK/node identities, resource and
+control readback, directed TRAIN route, selected radius/grade/region, and17samples per
+reference piece establish the result. Native nearest-parameter queries compare geometry;
+they do not establish attachment identity. Sampled adjacency is not continuous clearance
+or vehicle-gauging proof. Fit-only performs no construction. New `inspect` parameter
+`resources:true` exposes relevant trackDistance/minimum-radius metadata read-only.
+
+Build40408 demonstrated a curved, translated/rotated reference and12-edge adjacent
+track at the actual simple-catenary template spacing5. Fresh independent17-sample
+BaseEdge checks found signed spacing4.999835–5.000129 and sampled minimum radius151.616767
+against the pair's selected120. Both tracks' directed TRAIN routes pass with independent
+native node identities. Left-side construction is demonstrated; right-side delivery
+has local tests only. This is native offset sampling/construction, not demonstrated
+player-style parallel snapping or a dedicated native parallel-track tool API.
+
+P14's integrated close crossover/branch outcome remains blocked. Existing P13 crossover
+proposals at spacing5, selected radius120 and two distinct60/90-unit lead layouts were
+natively rejected as Construction Not Possible. Fresh through-edge/preflight checks
+reconciled both rejections without rebuilding; other effects remain unknown. Five
+required throat movements remain declared; only the two independent through movements
+exist. No crossover/branch/final-matrix success is claimed. This does not establish that
+TPF3's player tools cannot build an equivalent.
+
+The initial reference site collided and was relocated; its rejected corridor was also
+reconciled read-only. `reconcile_rejected_corridor` / `reconcile_rejected_crossover` are
+explicit bounded current-state checks, not rollback or automatic resume. The reference
+fixture's native fit input160 produced sampled BaseEdge minimum157.374230: its separate
+160-radius acceptance is false. The final adjacent workflow explicitly checks120 on both
+realised tracks and passes; native fit radius alone is not a realised-radius guarantee.
+Keep that conversion diagnostic for the next adopted repair, without rewriting receipts.
+87client tests pass. No physical traversal/reservations/capacity claim.

@@ -14,10 +14,10 @@ import time
 import uuid
 
 MARKER = 'TPF3_BRIDGE_LIVE_RESPONSE '
-OPERATIONS = {'inspect', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'remove_branch', 'crossover', 'junction', 'interior_junction', 'selected_connection', 'corridor'}
+OPERATIONS = {'inspect', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'remove_branch', 'crossover', 'adjacent', 'verify_adjacency', 'junction', 'interior_junction', 'selected_connection', 'corridor'}
 
 def is_mutation(operation, params):
-    return operation in ('build', 'test_approach', 'remove_branch') or (operation in ('extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover') and params.get('execute') is True)
+    return operation in ('build', 'test_approach', 'remove_branch') or (operation in ('extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover', 'adjacent') and params.get('execute') is True)
 
 def discover_session(log_path):
     """Read transport markers locally; a later request must still prove responsiveness."""
@@ -399,6 +399,57 @@ def _connect_project(client, brief, execute, guides=None, *, junction=False, int
         try:atomic_json(path,record)
         finally:lock.unlink()
 
+def connect_adjacent(client,brief,*,execute=False):
+    """Native normal-offset sampling at actual template spacing; no Python fitter."""
+    if not isinstance(brief,dict) or not {'side','spacing_tolerance'}<=brief.keys():raise ValueError('adjacent side/tolerance required')
+    base={k:v for k,v in brief.items() if k not in ('side','spacing_tolerance')};validate_project_brief(base,corridor=True)
+    if brief['side'] not in ('left','right') or type(execute) is not bool:raise ValueError('invalid adjacent side/execution')
+    tolerance=brief['spacing_tolerance']
+    if type(tolerance) not in (float,int) or not math.isfinite(tolerance) or not 0<tolerance<=.1:raise ValueError('spacing_tolerance outside(0,.1]')
+    path=client.evidence/(uuid.uuid4().hex+'.adjacent.json')
+    summary={'status':'incomplete','operation':'connect-adjacent','game_constructed':False,'execute':execute,'stage':'reference','evidence':str(path.resolve())}
+    record={'brief':brief,'summary':summary,'observations':[]}
+    try:
+        source,rid=_select_throat_port(client,brief['source'],outward_sign=-1);record['observations'].append(rid)
+        target,rid=_select_throat_port(client,brief['target']);record['observations'].append(rid)
+        p={'source_edge':source['edge_id'],'source_node':source['node_id'],'target_edge':target['edge_id'],'target_node':target['node_id'],
+           'mode':'TRAIN','max_length':brief['max_route_length'],'required_edges':[source['edge_id'],target['edge_id']]}
+        reference=client.request('route',p);record['observations'].append(reference['request_id'])
+        if reference['status']!='ok' or reference.get('result',{}).get('requested_route_verified') is not True:raise LiveError('reference_route_unverified','current directed reference route required')
+        chain=[r for r in reference['result']['path'] if r['confirmed_TRACK']]
+        if not 1<=len(chain)<=16 or len(chain)!=len(reference['result']['path']):raise ValueError('ordinary bounded reference TRACK chain required')
+        ids=[r['edge']['entity'] for r in chain]
+        observed=client.request('inspect',{'edge_ids':ids,'resources':True});record['observations'].append(observed['request_id'])
+        if observed['status']!='ok':raise LiveError(observed['status'],'reference inspection failed')
+        rows={e['id']:e for e in observed['result']['edges']};spacing=rows[ids[0]]['resource']['track_distance']
+        if type(spacing) not in (float,int) or not math.isfinite(spacing) or not 0<spacing<=20:raise ValueError('native trackDistance unavailable')
+        spacing*=1 if brief['side']=='left' else -1
+        params={'reference':[{'edge':rows[r['edge']['entity']],'forward':r['forward']} for r in chain],
+                'spacing':spacing,'tolerance':tolerance,'radius':brief['radius'],'region':brief['region'],
+                'max_grade':brief['vertical']['max_grade'],'execute':execute}
+        record['native_params']=params;summary['stage']='native_adjacent';atomic_json(path,record)
+        response=client.request('adjacent',params);record['response']=response;v=response.get('result',{})
+        summary.update(status=response['status'],game_constructed=v.get('game_constructed','unknown'),native_track_distance=abs(spacing),side=brief['side'])
+        if response['status']!='ok':summary['error']=v.get('error','native_adjacent_failed');return summary
+        if not execute:summary.update(stage='preflight',sampled_only=True);return summary
+        rb=v.get('readback',{});adj=v.get('adjacency',{})
+        if rb.get('connected') is not True or adj.get('sampled_verified') is not True or adj.get('independent_native_nodes') is not True:
+            summary.update(status='native_verification_failed',error='adjacent shape/independence unverified');return summary
+        p.update(source_edge=rb['ordered_edges'][0],source_node=rb['ordered_nodes'][0],target_edge=rb['ordered_edges'][-1],target_node=rb['ordered_nodes'][-1],required_edges=rb['ordered_edges'],
+                 geometry_constraints={'all_path':True,'edge_ids':[],'radius':brief['radius'],'max_grade':brief['vertical']['max_grade'],'region':brief['region']})
+        route_result=client.request('route',p);record['adjacent_route']=route_result
+        if route_result['status']!='ok' or route_result.get('result',{}).get('requested_route_verified') is not True:
+            summary.update(status='native_verification_failed',error='adjacent directed route unverified');return summary
+        summary.update(status='ok',stage='verified',edges=rb['ordered_edges'],nodes=rb['ordered_nodes'],
+                       sampled_adjacency=adj,native_route_verified=True,train_traversal='unprobed')
+        return summary
+    except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:
+        summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
+        if execute and summary['stage']=='native_adjacent':summary['game_constructed']='unknown'
+        return summary
+    finally:atomic_json(path,record)
+
+
 def validate_throat_brief(brief):
     keys={'roles','steps','required_routes','radius','region','vertical','placement_tolerance','max_fit_attempts','max_route_length'}
     if not isinstance(brief,dict) or set(brief)!=keys:raise ValueError('throat brief fields mismatch')
@@ -619,6 +670,49 @@ def reconcile_rejected_connection(client, discoveries):
     record={'status':'reconciled_rejected_connection','original_pending':pending,'original_response':str(response_path.resolve()),
             'observation':observed['request_id'],'facts':facts,'completed_connection_constructed':False,
             'other_effects':'unknown','effects_history_complete':False,'automatic_replay':False}
+    path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
+    latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(client.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
+def reconcile_rejected_corridor(client):
+    """Explicit current free-attachment/native preflight check; never rebuild."""
+    state=json.loads(client.journal.read_text());pending=state.get('pending')
+    if not pending or pending['operation']!='corridor' or pending['params'].get('execute') is not True:
+        raise LiveError('reconciliation_required','no pending native-rejected corridor')
+    rid=pending['request_id'];response=json.loads((client.evidence/(rid+'.response.json')).read_text());v=response.get('result',{})
+    if (response.get('session')!=client.session or response.get('request_id')!=rid or response.get('operation')!='corridor'
+            or response.get('status')!='error' or v.get('native_command_success') is not False
+            or v.get('error')!='native_construction_rejected' or v.get('stage')!='build'):
+        raise LiveError('reconciliation_required','no explicit native corridor rejection',rid)
+    observed=client.request('corridor',pending['params']|{'execute':False})
+    if observed['status']!='ok' or observed.get('result',{}).get('game_constructed') is not False:
+        raise LiveError('reconciliation_required','unchanged free attachments/preflight not established',rid)
+    latest=json.loads(client.journal.read_text())
+    if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
+    record={'status':'reconciled_rejected_corridor','original_pending':pending,'observation':observed['request_id'],
+            'completed_corridor_absent':True,'other_effects':'unknown','automatic_replay':False}
+    path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
+    latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(client.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
+def reconcile_rejected_crossover(client):
+    """Read-only original through-edge/preflight check after explicit native rejection."""
+    state=json.loads(client.journal.read_text());pending=state.get('pending')
+    if not pending or pending['operation']!='crossover' or pending['params'].get('execute') is not True:
+        raise LiveError('reconciliation_required','no pending native-rejected crossover')
+    rid=pending['request_id'];response=json.loads((client.evidence/(rid+'.response.json')).read_text());v=response.get('result',{})
+    if (response.get('session')!=client.session or response.get('request_id')!=rid or response.get('operation')!='crossover'
+            or response.get('status')!='error' or v.get('error')!='native_construction_rejected' or v.get('stage')!='build'):
+        raise LiveError('reconciliation_required','no explicit native crossover rejection',rid)
+    observed=client.request('crossover',pending['params']|{'execute':False});r=observed.get('result',{})
+    if observed['status']!='ok' or r.get('game_constructed') is not False or len(r.get('through_before',[]))!=2 or any(x.get('requested_route_verified') is not True for x in r['through_before']):
+        raise LiveError('reconciliation_required','unchanged original through edges/routes not established',rid)
+    latest=json.loads(client.journal.read_text())
+    if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
+    record={'status':'reconciled_rejected_crossover','original_pending':pending,'observation':observed['request_id'],
+            'completed_crossover_absent':True,'other_effects':'unknown','automatic_replay':False}
     path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
     latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
     latest.pop('pending');atomic_json(client.journal,latest)
@@ -926,7 +1020,7 @@ class LiveClient:
         if state['session'] != self.session:
             raise LiveError('session_changed', 'use a new evidence directory for a new runtime session')
         unresolved = state.get('pending')
-        if unresolved and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'remove_branch', 'crossover', 'selected_connection', 'junction', 'interior_junction')):
+        if unresolved and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'verify_adjacency', 'adjacent', 'remove_branch', 'crossover', 'selected_connection', 'corridor', 'junction', 'interior_junction')):
             raise LiveError('reconciliation_required', 'previous request is unfinished; inspect its matching response/current world before any repeat', state['pending']['request_id'])
         if (self.evidence / (request_id + '.request.json')).exists():
             raise LiveError('request_id_reused', 'request ID already recorded', request_id)
@@ -1043,7 +1137,7 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--reconciled-crossover', type=Path, help='explicit verified crossover evidence for connect-throat; rechecks read-only, never rebuilds it')
     parser.add_argument('--context', type=Path)
@@ -1069,7 +1163,7 @@ def main(argv=None):
             raise ValueError('--reconciled-crossover requires connect-throat --execute')
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat'):
+        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent'):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
         if args.operation in ('extend', 'connect'):
             response = (extend if args.operation == 'extend' else connect)(client, params, execute=args.execute)
@@ -1083,6 +1177,8 @@ def main(argv=None):
             response = connect_junction_at(client,params,execute=args.execute)
         elif args.operation == 'connect-throat':
             response = connect_throat(client,params,execute=args.execute,reconciled_crossover=args.reconciled_crossover)
+        elif args.operation == 'connect-adjacent':
+            response = connect_adjacent(client,params,execute=args.execute)
         elif args.operation == 'route':
             response = route(client, params)
         elif args.operation == 'discover':

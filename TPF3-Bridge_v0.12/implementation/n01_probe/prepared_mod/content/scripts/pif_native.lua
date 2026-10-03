@@ -97,8 +97,124 @@ function M.inspect(p)
     radius=g.type==api.type.EdgeGeometry.Type.ARC and g.arc.radius or nil}
   end
   out[#out+1]=e
+  if p.resources==true then
+   local resource=api.res.streetTemplateRep.findAndGet(e.template)
+   e.resource={track_distance=resource.trackDistance,min_curve_radius=resource.minCurveRadius,
+    min_curve_radius_build=resource.minCurveRadiusBuild,road_type=tostring(resource.roadType)}
+  end
  end
  return {edges=out,game_constructed=false,native_save_identity="unknown",load_epoch="unknown"}
+end
+-- Native normal-offset geometry and sampler, not a Python parallel-curve fitter.
+local function offset_geometry(e,spacing)
+ local g=cubic({p0=e.p0,p1=e.p1,t0=e.t0,t1=e.t1,length=distance(e.p0,e.p1)})
+ local offset=api.type.EdgeGeometry.CubicOffsetSpline.new()
+ offset.pos=g.cubicSpline.pos;offset.tangent=g.cubicSpline.tangent;offset.offset=spacing
+ g.type=api.type.EdgeGeometry.Type.CUBIC_OFFSET_SPLINE;g.cubicOffsetSpline=offset
+ return g
+end
+local function directed_rows(refs,fresh)
+ assert(type(refs)=="table" and #refs>=1 and #refs<=16,"adjacent_reference_bound")
+ local rows,seen,last={},{};local nodes={}
+ for _,ref in ipairs(refs) do
+  assert(type(ref.forward)=="boolean","reference_direction_required")
+  local original=fresh and assert_fresh(ref.edge) or edge(ref.edge.id)
+  assert(not seen[original.id],"duplicate_reference_edge");seen[original.id]=true
+  local e=original
+  if not ref.forward then e={id=original.id,node0=original.node1,node1=original.node0,p0=original.p1,p1=original.p0,
+   t0={-original.t1[1],-original.t1[2],-original.t1[3]},t1={-original.t0[1],-original.t0[2],-original.t0[3]},template=original.template,style=original.style} end
+  assert(not last or last==e.node0,"reference_chain_disconnected");last=e.node1
+  nodes[e.node0]=true;nodes[e.node1]=true;rows[#rows+1]=e
+ end
+ return rows,nodes
+end
+function M.verify_adjacency(p)
+ assert(finite(p.spacing) and math.abs(p.spacing)>0 and math.abs(p.spacing)<=20,"invalid_track_spacing")
+ assert(finite(p.tolerance) and p.tolerance>0 and p.tolerance<=.5,"invalid_spacing_tolerance")
+ local refs,refnodes=directed_rows(p.reference,false);local adjacent,adjnodes=directed_rows(p.adjacent,false)
+ for node in pairs(adjnodes) do assert(not refnodes[node],"adjacent_tracks_share_node") end
+ local maximum,minimum,maxdistance,maxheading,observations=0,math.huge,0,0,0
+ for _,a in ipairs(refs) do
+  local original=cubic({p0=a.p0,p1=a.p1,t0=a.t0,t1=a.t1,length=distance(a.p0,a.p1)})
+  local wanted=offset_geometry(a,p.spacing)
+  geometry_bounds(original,p.region,p.radius,p.max_grade)
+  for j=0,16 do
+   local u=j/16;local pos,dir=sample(original,u);local expected,expected_dir=sample(wanted,u)
+   local tangent=norm(dir);local dx,dy=expected[1]-pos[1],expected[2]-pos[2]
+   local signed=-tangent[2]*dx+tangent[1]*dy
+   assert(math.abs(signed-p.spacing)<=p.tolerance and math.abs(tangent[1]*dx+tangent[2]*dy)<=p.tolerance,"native_offset_side_or_normal_mismatch")
+   local best,bestdir=math.huge,nil
+   for _,b in ipairs(adjacent) do
+    assert(a.id~=b.id,"adjacent_tracks_share_edge")
+    local g=cubic({p0=b.p0,p1=b.p1,t0=b.t0,t1=b.t1,length=distance(b.p0,b.p1)})
+    local located=g:locate(v(expected),64,p.tolerance)
+    if located and finite(located[1]) and located[1]>=0 and located[1]<=1 then
+     local q,d=sample(g,located[1]);local error=math.sqrt((q[1]-expected[1])^2+(q[2]-expected[2])^2+(q[3]-expected[3])^2)
+     if error<best then best=error;bestdir=d end
+    end
+   end
+   assert(best<=p.tolerance,"sampled_adjacent_alignment_failed")
+   local heading=angle(expected_dir,bestdir);assert(heading<=1,"sampled_adjacent_heading_failed")
+   maximum=math.max(maximum,best);minimum=math.min(minimum,math.abs(signed)-best);maxdistance=math.max(maxdistance,math.abs(signed)+best)
+   maxheading=math.max(maxheading,heading);observations=observations+1
+  end
+ end
+ for _,b in ipairs(adjacent) do geometry_bounds(cubic({p0=b.p0,p1=b.p1,t0=b.t0,t1=b.t1,length=distance(b.p0,b.p1)}),p.region,p.radius,p.max_grade) end
+ return {sampled_verified=true,independent_native_nodes=true,spacing=p.spacing,tolerance=p.tolerance,samples=observations,
+  max_sampled_offset_error=maximum,min_sampled_separation=minimum,max_sampled_separation=maxdistance,max_heading_error=maxheading,
+  continuous_clearance_proof=false,vehicle_clearance="unprobed",game_constructed=false}
+end
+function M.adjacent(p,s,state,request_id,respond)
+ local stage="inspect";local ok,err=pcall(function()
+  assert(type(p.execute)=="boolean","invalid_execution_option")
+  local refs=directed_rows(p.reference,true);local controls,samples={},{}
+  local template=api.res.streetTemplateRep.findAndGet(refs[1].template)
+  assert(finite(template.trackDistance) and template.trackDistance>0 and template.trackDistance<=20,"native_track_distance_unavailable")
+  assert(math.abs(math.abs(p.spacing)-template.trackDistance)<=.001,"spacing_must_match_native_template")
+  for i,e in ipairs(refs) do
+   local base=api.engine.getComponent(e.id,api.type.ComponentType.BASE_EDGE)
+   assert(base.type==E.BaseEdgeType.NORMAL and #base.objects==0,"unsupported_adjacent_reference")
+   local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForEdge(e.id);assert(not(owner and owner>0),"construction_owned_reference")
+   assert(e.template==refs[1].template and e.style==refs[1].style,"incompatible_reference_resources")
+   assert(math.abs(slope(e.t0))<.000001 and math.abs(slope(e.t1))<.000001 and math.abs(e.p0[3]-e.p1[3])<.001,"adjacent_level_only")
+   local g=offset_geometry(e,p.spacing);local p0,t0=sample(g,0);local p1,t1=sample(g,1)
+   local c={p0=p0,p1=p1,t0=t0,t1=t1,length=g.length};controls[i]=c;samples[i]={}
+   if i>1 then assert(near(p0,controls[i-1].p1,.001) and angle(t0,controls[i-1].t1)<=.1,"native_offset_join_failed") end
+   geometry_bounds(cubic(c),p.region,p.radius,p.max_grade)
+   for _,u in ipairs({0,.25,.5,.75,1}) do local pos,dir=sample(g,u);local q,d=sample(cubic(c),u)
+    assert(distance(pos,q)<=p.tolerance and angle(dir,d)<=1,"native_offset_conversion_failed")
+    samples[i][#samples[i]+1]={u=u,pos=pos,dir=dir,base_pos=q}
+   end
+  end
+  stage="preflight"
+  local value={game_constructed=false,controls=controls,native_track_distance=template.trackDistance,spacing=p.spacing,
+   native_geometry="CUBIC_OFFSET_SPLINE",sampled_only=true}
+  if not p.execute then respond(request_id,"ok",value);return end
+  assert(not s.mutationPending,"unreconciled_mutation");directed_rows(p.reference,true)
+  local proposal=api.type.SimpleProposal.new();local nodes,segments={},{}
+  for i=1,#controls+1 do local node=api.type.NodeAndEntity.new();node.entity=-100-i;node.comp.position=v(i==1 and controls[1].p0 or controls[i-1].p1);nodes[i]=node end
+  for i,c in ipairs(controls) do local seg=api.type.SegmentAndEntity.new();seg.entity=-i;seg.type=1
+   seg.comp=api.engine.getComponent(refs[i].id,api.type.ComponentType.BASE_EDGE):clone()
+   seg.comp.node0=nodes[i].entity;seg.comp.node1=nodes[i+1].entity;seg.comp.position0=v(c.p0);seg.comp.position1=v(c.p1);seg.comp.tangent0=v(c.t0);seg.comp.tangent1=v(c.t1);segments[i]=seg
+  end
+  proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments
+  stage="build";s.mutationPending=request_id;local root=state:get() or {};root.pifLive=s;state:set(root)
+  api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(res,success)
+   local ids={};local checked,result=pcall(function()
+    assert(success==true,"native_adjacent_construction_rejected")
+    for _,item in ipairs(res.proposal.proposal.addedSegments) do ids[#ids+1]=item.entity end
+    local first
+    for _,id in ipairs(ids) do local e=edge(id);if near(e.p0,controls[1].p0,.001) then assert(not first,"ambiguous_adjacent_start");first=e.node0 end end
+    local f={anchor=refs[1],node=first,ids=ids,controls=controls,samples=samples,region=p.region,grade=0,end_grade=0,max_grade=p.max_grade}
+    local rb=M.readback(f);local paired={};for _,id in ipairs(rb.ordered_edges) do paired[#paired+1]={edge={id=id},forward=true} end
+    local checked=M.verify_adjacency({reference=p.reference,adjacent=paired,spacing=p.spacing,tolerance=p.tolerance,region=p.region,radius=p.radius,max_grade=p.max_grade})
+    directed_rows(p.reference,true);s.mutationPending=nil
+    value.game_constructed=true;value.readback=rb;value.adjacency=checked;return value
+   end)
+   respond(request_id,checked and "ok" or "mutation_unverified",checked and result or {error=tostring(result):sub(1,400),stage=stage,returned_edges=ids,game_constructed="unknown",retry=false})
+  end)
+ end)
+ if not ok then respond(request_id,"error",{error=tostring(err):sub(1,400),stage=stage,game_constructed=false,retry=false}) end
 end
 local function region_check(region)
  assert(type(region)=="table","region_required");vector(region.min);vector(region.max)
