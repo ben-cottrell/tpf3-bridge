@@ -556,3 +556,53 @@ failed after construction; final state was verified without rebuilding. Stale so
 misplaced guide, wrong heading, strict grade and excluded region fail honestly.
 Geometry remains sampled. Physical traversal, reservation, all movements and general
 native save identity are unprobed. P11 existing-node/free-end/corridor workflows remain.
+
+## Integrated multi-track throat (P13)
+
+Use `connect_throat(client, brief, execute=False)` or:
+
+```powershell
+python bridge_live.py connect-throat --context context.json --params throat_brief.json
+python bridge_live.py connect-throat --context context.json --params throat_brief.json --execute
+```
+
+The brief declares `roles` (exactly two `approach` roles, at least three `destination`
+roles), ordered `steps`, and directed `required_routes` before construction. Each role
+has `kind` and an existing connection `endpoint` intent: bounded region, guide XYZ,
+travel direction, heading tolerance and discovery budget. Approach travel points into
+the throat; destination travel points out. Each step has `name`, `kind` (`crossover`
+or `branch`), `source` and `target` intents. A crossover joins two ordinary native
+through-edge interiors; a branch joins an interior to a free destination endpoint.
+Each route has `from`, `to`, and `via` step names identifying required branch edges.
+Every role and construction step must be exercised. The brief also supplies `radius`,
+`region`, `vertical.max_grade`, `placement_tolerance`, `max_fit_attempts` and
+`max_route_length`; existing connection limits apply, with route acceptance up to3000.
+Bounds:5–10roles,2–6steps,3–16required movements. No automatic fixture creation.
+
+Native fitting, subdivision and construction are reused. The crossover fitter uses
+1.25 times the selected minimum as a conversion margin; final acceptance still checks
+the selected minimum. All affected roles are reacquired after each mutation. Guide
+proximity selects a role; exact native TRACK/node identities establish attachments.
+After all steps, fresh directed TRAIN paths must contain every requested approach,
+destination and `via` branch, including native node-owned turnout connectors. Sampled
+radius, grade and authorised region are checked over every final path. Fit-only checks
+individual proposals and explicitly does not verify a future assembled network.
+
+Stop on failed or uncertain construction; completed partial effects remain visible.
+Explicit `reconcile_constructed_crossover` checks recorded receipts against fresh native
+state without fitting/building. Optional `--reconciled-crossover <record>` requires
+`--execute`, matching approved first-step constraints and another read-only check;
+it is not automatic resume. This continuation path has local tests, not a successful
+native demonstration. `remove_branch` is a bounded, explicitly authorised native repair
+of an exact observed exclusive branch; it is not rollback.
+
+Build40408 demonstrated two approaches, four destinations, one crossover and two ladder
+branches on translated/rotated open land. Seven declared movements passed on the final
+network: A1→D1/D2/D3/D4 and A2→D2/D3/D4. A2→D1 is not claimed. Fresh inspection of29
+TRACK edges independently gave sampled BaseEdge minimum radius122.816940 (selected120),
+grade0; final native movement geometry also passed. Missing required branch, excluded
+region and stale split attachment fail honestly. The initial crossover failed realised
+radius; its branch was explicitly removed, then a distinct shorter layout passed without
+lowering constraints. CLI output799bytes;81affected client tests passed.
+This demonstrates native connectivity/routing, not train traversal, reservations,
+capacity, continuous clearance/curvature proof or unrestricted throat routing.

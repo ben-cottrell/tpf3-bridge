@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import contextlib
 import io
-from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, connect_junction, connect_junction_at, reconcile_rejected_junction, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, reconcile_constructed_interior, discover_session, client_from_context
+from bridge_live import reconcile_constructed_crossover, connect_throat, validate_throat_brief, _select_throat_port, is_mutation, LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, connect_junction, connect_junction_at, reconcile_rejected_junction, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, reconcile_constructed_interior, discover_session, client_from_context
 
 class LiveClientTests(unittest.TestCase):
     def setUp(self):
@@ -1013,6 +1013,139 @@ class LiveClientTests(unittest.TestCase):
         with self.assertRaises(LiveError):self.client.reconcile_pending()
         self.assertIn('pending',json.loads(self.client.journal.read_text()))
         self.assertEqual(len(list(self.client.mod.rglob('*.lua'))),1)
+
+    def throat_brief(self):
+        def endpoint(x):return {'region':{'min':[x-5,-5,-5],'max':[x+5,5,5]},'guide_xyz':[x,0,0],'travel_direction':[1,0],'max_edges':4,'heading_tolerance_deg':5}
+        roles={n:{'kind':'approach' if n[0]=='A' else 'destination','endpoint':endpoint(i*20)} for i,n in enumerate(['A1','A2','D1','D2','D3'])}
+        return {'roles':roles,'steps':[{'name':'cross','kind':'crossover','source':endpoint(100),'target':endpoint(200)},
+                                      {'name':'ladder','kind':'branch','source':endpoint(300),'target':endpoint(400)}],
+                'required_routes':[{'from':'A1','to':'D1','via':[]},{'from':'A1','to':'D2','via':['cross']},{'from':'A2','to':'D3','via':['ladder']}],
+                'radius':120,'region':{'min':[-50,-50,-10],'max':[500,500,50]},'vertical':{'max_grade':.04},
+                'placement_tolerance':1,'max_fit_attempts':2,'max_route_length':2000}
+
+    def throat_worker(self,operation,params):
+        self.throat_calls.append((operation,params))
+        if operation=='crossover':
+            if params['execute']:self.throat_epoch+=1
+            result={'game_constructed':params['execute']}
+            if params['execute']:result.update(readback={'connected':True,'ordered_edges':[81]},placements=[{'original_removed':True,'subdivision_sampled_verified':True}]*2,
+                through_after=[{'requested_route_verified':True}]*2,crossover_after={'requested_route_verified':True},junction_nodes=[91,92])
+        else:
+            self.assertEqual(operation,'route');self.assertEqual(self.throat_epoch,2)
+            self.assertGreaterEqual(params['source_edge'],2000);self.assertEqual(params['junction_nodes'],[91,92,93])
+            self.assertTrue(params['geometry_constraints']['all_path']);result={'requested_route_verified':not self.throat_fail_route}
+        return self.response('r'+str(len(self.throat_calls)),operation,result=result)
+
+    def throat_port(self,client,intent,**kw):
+        x=intent['guide_xyz'][0];eid=self.throat_epoch*1000+int(x)+1
+        return {'edge_id':eid,'node_id':eid+100,'edge_snapshot':{'id':eid},'parameter':.5},'d'+str(eid)
+
+    def throat_branch(self,client,brief,*,execute,junction_nodes):
+        self.assertEqual(junction_nodes,[91,92] if execute else [])
+        if execute:self.throat_epoch+=1
+        return {'status':'ok','game_constructed':execute,'junction':{'node':93},'edges':[82]}
+
+    def test_throat_composes_then_reacquires_final_roles_and_matrix(self):
+        self.throat_calls=[];self.throat_epoch=0;self.throat_fail_route=False
+        with patch('bridge_live._select_throat_port',side_effect=self.throat_port),patch('bridge_live.connect_junction_at',side_effect=self.throat_branch),patch.object(self.client,'request',side_effect=self.throat_worker):
+            r=connect_throat(self.client,self.throat_brief(),execute=True)
+        self.assertEqual(r['status'],'ok');self.assertTrue(r['final_network_verified']);self.assertEqual(r['routes_verified'],3)
+        self.assertEqual([x[0] for x in self.throat_calls],['crossover','route','route','route'])
+        q=self.throat_calls[2][1];self.assertIn(81,q['required_edges']);self.assertTrue(r['game_constructed'])
+        self.assertLessEqual(len(json.dumps(r).encode()),4096)
+        saved=json.loads(Path(r['evidence']).read_text());self.assertEqual(saved['summary'],r)
+        self.assertEqual(saved['semantic_mapping']['roles']['A1']['edge_id'],2001)
+
+    def test_throat_fit_only_does_not_claim_final_network_or_mutate(self):
+        self.throat_calls=[];self.throat_epoch=0;self.throat_fail_route=False
+        with patch('bridge_live._select_throat_port',side_effect=self.throat_port),patch('bridge_live.connect_junction_at',side_effect=self.throat_branch),patch.object(self.client,'request',side_effect=self.throat_worker):
+            r=connect_throat(self.client,self.throat_brief())
+        self.assertEqual(r['status'],'ok');self.assertFalse(r['final_network_verified']);self.assertFalse(r['game_constructed'])
+        self.assertEqual(len(self.throat_calls),1);self.assertFalse(is_mutation(*self.throat_calls[0]))
+
+    def throat_reconciliation(self,brief):
+        step=brief['steps'][0]
+        params={k:brief[k] for k in ('radius','region','vertical','max_route_length')}
+        params.update(source={},target={},location=step['source']|{'placement_tolerance':brief['placement_tolerance']},
+                      target_location=step['target']|{'placement_tolerance':brief['placement_tolerance']})
+        path=self.client.evidence/'explicit_crossover.json'
+        path.write_text(json.dumps({'status':'reconciled_verified_crossover','verification_params':params}))
+        return path
+
+    def test_throat_explicit_reconciled_step_rechecks_without_rebuilding(self):
+        self.throat_calls=[];self.throat_epoch=1;self.throat_fail_route=False
+        brief=self.throat_brief();path=self.throat_reconciliation(brief)
+        def worker(op,params):
+            if op=='verify_crossover':
+                self.assertFalse(params['execute'])
+                result=self.throat_worker('crossover',{'execute':True})
+                self.throat_epoch=1
+                self.throat_calls[-1]=(op,params)
+                return result|{'operation':op}
+            return self.throat_worker(op,params)
+        with patch('bridge_live._select_throat_port',side_effect=self.throat_port),patch('bridge_live.connect_junction_at',side_effect=self.throat_branch),patch.object(self.client,'request',side_effect=worker):
+            r=connect_throat(self.client,brief,execute=True,reconciled_crossover=path)
+        self.assertEqual(r['status'],'ok');self.assertEqual(self.throat_calls[0][0],'verify_crossover')
+        self.assertNotIn('crossover',[x[0] for x in self.throat_calls])
+
+    def test_throat_reconciled_constraints_cannot_change(self):
+        self.throat_epoch=0;brief=self.throat_brief();path=self.throat_reconciliation(brief)
+        brief['radius']=130
+        with patch('bridge_live._select_throat_port',side_effect=self.throat_port),patch('bridge_live.connect_junction_at') as branch,patch.object(self.client,'request') as worker:
+            r=connect_throat(self.client,brief,execute=True,reconciled_crossover=path)
+        self.assertEqual(r['status'],'invalid_result');self.assertIn('does not match',r['error'])
+        worker.assert_not_called();branch.assert_not_called();self.assertFalse(r['game_constructed'])
+
+    def test_throat_final_route_failure_preserves_built_effects(self):
+        self.throat_calls=[];self.throat_epoch=0;self.throat_fail_route=True
+        with patch('bridge_live._select_throat_port',side_effect=self.throat_port),patch('bridge_live.connect_junction_at',side_effect=self.throat_branch),patch.object(self.client,'request',side_effect=self.throat_worker):
+            r=connect_throat(self.client,self.throat_brief(),execute=True)
+        self.assertEqual(r['status'],'native_verification_failed');self.assertTrue(r['game_constructed']);self.assertEqual(r['routes_verified'],0)
+        self.assertEqual(len(self.throat_calls),2)
+
+    def test_throat_uncertain_crossover_stops_without_branch_or_replay(self):
+        self.throat_epoch=0
+        with patch('bridge_live._select_throat_port',side_effect=self.throat_port),patch('bridge_live.connect_junction_at') as branch,patch.object(self.client,'request',side_effect=LiveError('mutation_outcome_unknown','timeout')) as worker:
+            r=connect_throat(self.client,self.throat_brief(),execute=True)
+        self.assertEqual(r['status'],'mutation_outcome_unknown');self.assertEqual(r['game_constructed'],'unknown');branch.assert_not_called();self.assertEqual(worker.call_count,1)
+
+    def test_throat_invalid_matrix_rejected_before_commands(self):
+        import copy
+        b=self.throat_brief();validate_throat_brief(b)
+        cases=[]
+        for change in ('duplicate','unknown','missing','reverse'):
+            bad=copy.deepcopy(b)
+            if change=='duplicate':bad['required_routes'].append(bad['required_routes'][0])
+            elif change=='unknown':bad['required_routes'][0]['via']=['missing']
+            elif change=='missing':bad['required_routes'][1]['via']=[]
+            else:bad['required_routes'][0].update({'from':'D1','to':'A1'})
+            cases.append(bad)
+        with patch.object(self.client,'request') as worker:
+            for bad in cases:
+                with self.assertRaises(ValueError):connect_throat(self.client,bad,execute=True)
+            worker.assert_not_called()
+
+    def test_throat_role_discovery_rejects_truncated_and_ambiguous_identity(self):
+        intent=self.throat_brief()['roles']['A1']['endpoint']
+        candidate={'edge_id':11,'node_id':12,'eligible':True,'pos':[0,0,0],'outward_direction':[-1,0]}
+        for complete,candidates in [(False,[candidate]),(True,[candidate,candidate|{'edge_id':13}])]:
+            with patch.object(self.client,'request',return_value=self.response(result={'complete':complete,'candidates':candidates})):
+                with self.assertRaises(LiveError):_select_throat_port(self.client,intent,outward_sign=-1)
+
+    def test_crossover_reconciliation_is_read_only_and_keeps_original_failure(self):
+        rid='cross';params={'execute':True,'source':{},'target':{}}
+        pending={'operation':'crossover','request_id':rid,'params':params}
+        self.client.journal.write_text(json.dumps({'session':self.client.session,'pending':pending}))
+        original=self.response(rid,'crossover',result={'game_constructed':True,'returned_edges':[1,2,3,4,5],'fit':{'pieces':1,'controls':[{}]}})
+        original['status']='mutation_unverified'
+        original_path=self.client.evidence/(rid+'.response.json');original_path.write_text(json.dumps(original));before=original_path.read_bytes()
+        verified={'reconciled_current_state':True,'readback':{'connected':True},'crossover_after':{'requested_route_verified':True},
+            'placements':[{'original_removed':True,'subdivision_sampled_verified':True}]*2,'through_after':[{'requested_route_verified':True}]*2}
+        with patch.object(self.client,'request',return_value=self.response('verify','verify_crossover',result=verified)) as request:
+            r=reconcile_constructed_crossover(self.client)
+        op,p=request.call_args.args;self.assertEqual(op,'verify_crossover');self.assertFalse(p['execute']);self.assertFalse(is_mutation(op,p))
+        self.assertEqual(r['result']['status'],'reconciled_verified_crossover');self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+        self.assertEqual(before,original_path.read_bytes());self.assertFalse(r['result']['automatic_replay'])
 
 if __name__ == '__main__':
     unittest.main()

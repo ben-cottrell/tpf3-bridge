@@ -78,7 +78,7 @@ local function geometry_bounds(g,region,minradius,maxgrade)
    assert(speed2>1e-12,"realised_irregular_curve")
    local cross=math.abs(dx*ddy-dy*ddx);if cross>1e-12 then radius=speed2^1.5/cross end
   else assert(g.type==api.type.EdgeGeometry.Type.STRAIGHT,"unsupported_realised_geometry") end
-  assert(radius>=minradius,"realised_sampled_radius_below_limit");minimum=math.min(minimum,radius)
+  assert(radius>=minradius,"realised_sampled_radius_below_limit:"..radius.."<"..minradius);minimum=math.min(minimum,radius)
  end
  return minimum,maximum
 end
@@ -266,7 +266,7 @@ local function node_id(n)
  return {entity=n.entity,index=n.index}
 end
 local function same_node(a,b) return a.entity==b.entity and a.index==b.index end
-local function rail_lane(id,mode,junction_node)
+local function rail_lane(id,mode,junction_node,junction_nodes)
  local base=edge(id);local n=api.engine.getComponent(id,api.type.ComponentType.TRANSPORT_NETWORK)
  assert(n and n.edges,"transport_network_unavailable")
  local found,index=nil,nil
@@ -276,7 +276,9 @@ local function rail_lane(id,mode,junction_node)
  assert(found and #found.conns==2,"rail_transport_lane_unavailable")
  local p0=sample(found.geometry,0);local p1=sample(found.geometry,1)
  -- Geometry verifies the native row's orientation; identities come from conns.
- if junction_node and (base.node0==junction_node or base.node1==junction_node) then
+ local trimmed=junction_node and (base.node0==junction_node or base.node1==junction_node)
+ for _,n in ipairs(junction_nodes or {}) do if base.node0==n or base.node1==n then trimmed=true end end
+ if trimmed then
   -- Turnout movement edges are trimmed. Native connection entities establish
   -- correspondence; their indexes name distinct native junction ports.
   assert(found.conns[1].entity==base.node0 and found.conns[2].entity==base.node1,"junction_transport_identity_mismatch")
@@ -288,7 +290,7 @@ function M.route(p)
  assert(finite(p.max_length) and p.max_length>0 and p.max_length<=4000,"invalid_route_length_bound")
  assert(type(p.required_edges)=="table" and #p.required_edges>=1 and #p.required_edges<=32,"route_required_edge_bound")
  local mode=E.TransportMode[p.mode]
- local a,start,index=rail_lane(p.source_edge,mode,p.junction_node);local b,finish,target_index=rail_lane(p.target_edge,mode,p.junction_node)
+ local a,start,index=rail_lane(p.source_edge,mode,p.junction_node,p.junction_nodes);local b,finish,target_index=rail_lane(p.target_edge,mode,p.junction_node,p.junction_nodes)
  assert((p.source_edge~=p.target_edge or p.single_edge==true) and p.source_node~=p.target_node,"distinct_route_attachments_required")
  assert(p.source_node==a.node0 or p.source_node==a.node1,"source_not_edge_endpoint")
  assert(p.target_node==b.node0 or p.target_node==b.node1,"target_not_edge_endpoint")
@@ -325,7 +327,7 @@ function M.route(p)
   assert(finite(row.geometry.length) and row.geometry.length>=0,"native_path_length_unavailable")
   length=length+row.geometry.length
   if p.geometry_constraints then
-   local q=p.geometry_constraints;local check=id.entity==q.junction_node
+   local q=p.geometry_constraints;local check=q.all_path==true or id.entity==q.junction_node
    for _,eid in ipairs(q.edge_ids) do if id.entity==eid then check=true end end
    if check then
     local radius,grade=geometry_bounds(row.geometry,q.region,q.radius,q.max_grade)
@@ -695,19 +697,20 @@ local function interior_readback(a,c,splits,f,te,ids,p,before)
     assert(left and right and left.node1==right.node0,"split_shared_identity_missing")
     local junction=left.node1;assert(junction~=a.node0 and junction~=a.node1 and near(left.p1,c.pos,.001),"realised_interior_location_mismatch")
     for i,e in ipairs({left,right}) do for _,k in ipairs({"p0","p1","t0","t1"}) do assert(near(e[k],splits[i][k],.001),"realised_through_controls_differ") end;assert(e.template==a.template and e.style==a.style,"through_resources_differ") end
-    local removed=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE);assert(removed==nil,"old_split_edge_still_present")
+    assert(not api.engine.entityExists(a.id) or api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)==nil,"old_split_edge_still_present")
     local incoming,through=c.canonical_forward and left or right,c.canonical_forward and right or left
     f.node=junction;f.junction_node=junction;f.anchor=incoming;f.ids={}
     for _,eid in ipairs(ids) do if eid~=left.id and eid~=right.id then f.ids[#f.ids+1]=eid end end
     local rb=M.readback(f);local incident=incidence(junction)
     assert(#incident==3,"split_junction_incidence_mismatch")
     local expected={[left.id]=true,[right.id]=true,[rb.ordered_edges[1]]=true};for _,eid in ipairs(incident) do assert(expected[eid],"split_junction_incidence_mismatch") end
+    local junctions={junction};for _,n in ipairs(p.junction_nodes or {}) do junctions[#junctions+1]=n end
     local after=M.route({source_edge=incoming.id,source_node=original_start,target_edge=through.id,target_node=original_finish,
-     junction_node=junction,mode="TRAIN",required_edges={incoming.id,through.id},max_length=p.max_route_length,
+     junction_node=junction,junction_nodes=junctions,mode="TRAIN",required_edges={incoming.id,through.id},max_length=p.max_route_length,
      geometry_constraints={edge_ids={incoming.id,through.id},junction_node=junction,region=p.region,radius=p.radius,max_grade=p.vertical.max_grade}})
     local required={incoming.id,te.id};for _,eid in ipairs(rb.ordered_edges) do required[#required+1]=eid end
     local branch=M.route({source_edge=incoming.id,source_node=original_start,target_edge=te.id,target_node=te.node0==target.node_id and te.node1 or te.node0,
-     junction_node=junction,mode="TRAIN",required_edges=required,max_length=p.max_route_length,
+     junction_node=junction,junction_nodes=junctions,mode="TRAIN",required_edges=required,max_length=p.max_route_length,
      geometry_constraints={edge_ids=rb.ordered_edges,junction_node=junction,region=p.region,radius=p.radius,max_grade=p.vertical.max_grade}})
     assert(after.requested_route_verified and branch.requested_route_verified,"realised_split_movements_unverified")
     rb.attachments.source_incident_edges=incident
@@ -731,7 +734,7 @@ function M.interior_junction(p,s,state,request_id,respond)
   local _,tp,td,tg=anchor({anchor_edge=te.id,anchor_node=target.node_id});td={-td[1],-td[2],0};tg=-tg
   local original_start=c.canonical_forward and a.node0 or a.node1;local original_finish=c.canonical_forward and a.node1 or a.node0
   local before=M.route({source_edge=a.id,source_node=original_start,target_edge=a.id,target_node=original_finish,
-   single_edge=true,mode="TRAIN",required_edges={a.id},max_length=p.max_route_length})
+   single_edge=true,junction_nodes=p.junction_nodes,mode="TRAIN",required_edges={a.id},max_length=p.max_route_length})
   assert(before.requested_route_verified,"existing_through_route_unverified")
   local splits=interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade)
   stage="fit"
@@ -776,6 +779,151 @@ function M.interior_junction(p,s,state,request_id,respond)
  end)
  if not ok then local uncertain=s.mutationPending==request_id;reply(uncertain and "mutation_unverified" or "error",{error=tostring(err):sub(1,400),game_constructed=uncertain and "unknown" or false,retry=false}) end
 end
+-- Two interior attachments, one coherent native crossover proposal.
+local function reacquire_split(a,c,splits,ids)
+ local left,right
+ for _,id in ipairs(ids) do local e=edge(id)
+  if e.node0==a.node0 then assert(not left,"ambiguous_split_left");left=e end
+  if e.node1==a.node1 then assert(not right,"ambiguous_split_right");right=e end
+ end
+ assert(left and right and left.node1==right.node0,"split_shared_identity_missing")
+ assert(near(left.p1,c.pos,.001) and left.node1~=a.node0 and left.node1~=a.node1,"split_location_mismatch")
+ for i,e in ipairs({left,right}) do
+  for _,k in ipairs({"p0","p1","t0","t1"}) do assert(near(e[k],splits[i][k],.001),"realised_through_controls_differ") end
+  assert(e.template==a.template and e.style==a.style,"through_resources_differ")
+ end
+ assert(not api.engine.entityExists(a.id) or api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)==nil,"old_split_edge_still_present")
+ return {original_edge=a.id,original_nodes={a.node0,a.node1},parameter=c.parameter,position=c.pos,junction_node=left.node1,
+  original_removed=true,subdivision_sampled_verified=true,replacement_edges={left.id,right.id},
+  incoming=c.canonical_forward and left or right,through=c.canonical_forward and right or left}
+end
+local function crossover_readback(a,b,c,d,splits,f,ids,p,before)
+    assert(#ids==#f.controls+4,"crossover_receipt_incomplete")
+    local placements={reacquire_split(a,c,splits[1],ids),reacquire_split(b,d,splits[2],ids)}
+    local x,y=placements[1],placements[2];local excluded={}
+    for _,t in ipairs(placements) do for _,id in ipairs(t.replacement_edges) do excluded[id]=true end end
+    f.ids={};for _,id in ipairs(ids) do if not excluded[id] then f.ids[#f.ids+1]=id end end
+    f.node=x.junction_node;f.junction_node=x.junction_node;f.anchor=x.incoming
+    f.target={edge=y.through,node=y.junction_node,direction=d.outward_direction,grade=d.grade}
+    local rb=M.readback(f);local junctions={x.junction_node,y.junction_node}
+    for i,t in ipairs(placements) do local all=incidence(t.junction_node);local branchid=i==1 and rb.ordered_edges[1] or rb.ordered_edges[#rb.ordered_edges]
+     assert(#all==3,"crossover_incidence_mismatch");local expected={[t.incoming.id]=true,[t.through.id]=true,[branchid]=true}
+     for _,id in ipairs(all) do assert(expected[id],"crossover_incidence_mismatch") end;t.incident_edges=all
+    end
+    local routes={}
+    local function other(e,n) return e.node0==n and e.node1 or e.node0 end
+    for i,t in ipairs(placements) do routes[i]=M.route({source_edge=t.incoming.id,source_node=other(t.incoming,t.junction_node),target_edge=t.through.id,
+     target_node=other(t.through,t.junction_node),junction_nodes=junctions,mode="TRAIN",required_edges=t.replacement_edges,max_length=p.max_route_length,
+     geometry_constraints={all_path=true,edge_ids={},region=p.region,radius=p.radius,max_grade=p.vertical.max_grade}});assert(routes[i].requested_route_verified,"through_movement_unverified") end
+    local required={x.incoming.id,y.through.id};for _,id in ipairs(rb.ordered_edges) do required[#required+1]=id end
+    local crossing=M.route({source_edge=x.incoming.id,source_node=other(x.incoming,x.junction_node),target_edge=y.through.id,target_node=other(y.through,y.junction_node),
+     junction_nodes=junctions,mode="TRAIN",required_edges=required,max_length=p.max_route_length,
+     geometry_constraints={all_path=true,edge_ids={},region=p.region,radius=p.radius,max_grade=p.vertical.max_grade}})
+    assert(crossing.requested_route_verified,"crossover_movement_unverified")
+    return {game_constructed=true,placements=placements,readback=rb,through_before=before,through_after=routes,crossover_after=crossing,
+     junction_nodes=junctions,native_effect_history_complete=false}
+end
+function M.crossover(p,s,state,request_id,respond)
+ local stage,fit="inspect",nil
+ local function reply(status,value) value.stage=stage;value.fit=fit;respond(request_id,status,value) end
+ local ok,err=pcall(function()
+  assert(type(p.execute)=="boolean","invalid_execution_option")
+  local a,b=assert_fresh(p.source.edge_snapshot),assert_fresh(p.target.edge_snapshot)
+  assert(a.id~=b.id and a.node0~=b.node0 and a.node0~=b.node1 and a.node1~=b.node0 and a.node1~=b.node1,"distinct_through_tracks_required")
+  assert(a.template==b.template and a.style==b.style,"incompatible_track_resources")
+  local c,d=interior_location(a,p.location),interior_location(b,p.target_location)
+  assert(math.abs(c.parameter-p.source.parameter)<=.000001 and math.abs(d.parameter-p.target.parameter)<=.000001,"stale_interior_location")
+  local splits={interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade),interior_splits(b,d.parameter,p.region,p.radius,p.vertical.max_grade)}
+  local before={}
+  for i,x in ipairs({{a,c},{b,d}}) do
+   before[i]=M.route({source_edge=x[1].id,source_node=x[2].canonical_forward and x[1].node0 or x[1].node1,
+    target_edge=x[1].id,target_node=x[2].canonical_forward and x[1].node1 or x[1].node0,single_edge=true,
+    junction_nodes=p.junction_nodes,mode="TRAIN",required_edges={x[1].id},max_length=p.max_route_length})
+   assert(before[i].requested_route_verified,"existing_through_route_unverified")
+  end
+  stage="fit";local fitid=request_id.."_fit"
+  fit=M.fit({end_xy={d.pos[1],d.pos[2]},end_direction=d.outward_direction,radius=p.radius*1.25,region=p.region,vertical=p.vertical},s,fitid,
+   {edge=b,pos=d.pos,direction=d.outward_direction,grade=d.grade},{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
+  fit.requested_min_radius=p.radius;fit.start_node=nil;fit.target_node=nil
+  local f=s.fits[fitid];f.min_radius=p.radius
+  for _,ctrl in ipairs(f.controls) do geometry_bounds(cubic(ctrl),p.region,p.radius,p.vertical.max_grade) end
+  if not p.execute then reply("ok",{game_constructed=false,through_before=before});return end
+  assert(not s.mutationPending,"unreconciled_mutation");assert_fresh(a);assert_fresh(b)
+  stage="build";local proposal=api.type.SimpleProposal.new();local segments,nodes={},{}
+  for i,candidate in ipairs({c,d}) do local n=api.type.NodeAndEntity.new();n.entity=-100*i;n.comp.position=v(candidate.pos);nodes[#nodes+1]=n end
+  local function add(ctrl,n0,n1,base)
+   local e=api.type.SegmentAndEntity.new();e.entity=-#segments-1;e.type=1;e.comp=base:clone()
+   e.comp.node0=n0;e.comp.node1=n1;e.comp.position0=v(ctrl.p0);e.comp.position1=v(ctrl.p1);e.comp.tangent0=v(ctrl.t0);e.comp.tangent1=v(ctrl.t1)
+   segments[#segments+1]=e
+  end
+  for i,x in ipairs({a,b}) do local base=api.engine.getComponent(x.id,api.type.ComponentType.BASE_EDGE)
+   add(splits[i][1],x.node0,-100*i,base);add(splits[i][2],-100*i,x.node1,base)
+  end
+  local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
+  for i,ctrl in ipairs(f.controls) do
+   local finish=-200
+   if i<#f.controls then local n=api.type.NodeAndEntity.new();n.entity=-300-i;n.comp.position=v(ctrl.p1);nodes[#nodes+1]=n;finish=n.entity end
+   add(ctrl,i==1 and -100 or -300-i+1,finish,base)
+  end
+  proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments;proposal.streetProposal.edgesToRemove={a.id,b.id}
+  s.mutationPending=request_id;local root=state:get() or {};root.pifLive=s;state:set(root)
+  api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(res,success)
+   if success~=true then s.mutationPending=nil;reply("error",{error="native_construction_rejected",game_constructed="unknown",retry=false});return end
+   local ids={};for _,e in ipairs(res.proposal.proposal.addedSegments) do ids[#ids+1]=e.entity end
+   local checked,value=pcall(function()
+    local value=crossover_readback(a,b,c,d,splits,f,ids,p,before);s.mutationPending=nil;return value
+   end)
+   reply(checked and "ok" or "mutation_unverified",checked and value or {error=tostring(value):sub(1,400),returned_edges=ids,game_constructed=true,retry=false})
+  end)
+ end)
+ if not ok then reply(s.mutationPending==request_id and "mutation_unverified" or "error",{error=tostring(err):sub(1,400),game_constructed=s.mutationPending==request_id and "unknown" or false,retry=false}) end
+end
+
+-- Bounded explicit removal of an observed failed test branch, not rollback.
+function M.remove_branch(p,s,state,request_id,respond)
+ assert(p.authorised==true and type(p.edges)=="table" and #p.edges>=1 and #p.edges<=8,"invalid_branch_removal")
+ assert(not s.mutationPending,"unreconciled_mutation")
+ local ids,expected={},{};local interior={}
+ for i,snapshot in ipairs(p.edges) do
+  local a=assert_fresh(snapshot);assert(not expected[a.id],"duplicate_removal_edge");expected[a.id]=true;ids[#ids+1]=a.id
+  local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
+  assert(base.type==E.BaseEdgeType.NORMAL and #base.objects==0,"unsupported_removal_edge")
+  local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForEdge(a.id);assert(not (owner and owner>0),"construction_owned_removal")
+  if i>1 then assert(p.edges[i-1].node1==a.node0,"removal_chain_disconnected");interior[#interior+1]=a.node0 end
+ end
+ for _,node in ipairs(interior) do local all,owner=incidence(node);assert(#all==2 and not(owner and owner>0),"removal_node_not_exclusive");for _,id in ipairs(all) do assert(expected[id],"removal_node_not_exclusive") end end
+ local proposal=api.type.SimpleProposal.new();proposal.streetProposal.edgesToRemove=ids;proposal.streetProposal.nodesToRemove=interior
+ s.mutationPending=request_id;local root=state:get() or {};root.pifLive=s;state:set(root)
+ api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(_,success)
+  local ok,value=pcall(function()
+   assert(success==true,"native_removal_rejected")
+   for _,id in ipairs(ids) do assert(not api.engine.entityExists(id) or api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)==nil,"branch_edge_removal_unverified") end
+   local endpoints={p.edges[1].node0,p.edges[#p.edges].node1};local observations={}
+   for _,node in ipairs(endpoints) do local all=incidence(node);assert(#all==2,"remaining_through_incidence_unverified");for _,id in ipairs(all) do edge(id) end;observations[#observations+1]={node=node,incident_edges=all} end
+   s.mutationPending=nil;return {game_constructed=true,removed_edges=ids,remaining_endpoints=observations,native_effect_history_complete=false,rollback=false}
+  end)
+  respond(request_id,ok and "ok" or "mutation_unverified",ok and value or {game_constructed="unknown",error=tostring(value):sub(1,400),retry=false})
+ end)
+end
+
+function M.verify_crossover(p,s)
+ local a,b=p.source.edge_snapshot,p.target.edge_snapshot
+ local c={parameter=p.source.parameter,pos=p.fit.start,canonical_forward=p.source.canonical_forward}
+ local d={parameter=p.target.parameter,pos=p.fit.finish,canonical_forward=p.target.canonical_forward,outward_direction=p.target.outward_direction,grade=p.target.grade}
+ assert(a.id==p.source.edge_id and b.id==p.target.edge_id and a.id~=b.id,"invalid_recorded_crossover")
+ assert(finite(c.parameter) and c.parameter>=.05 and c.parameter<=.95 and finite(d.parameter) and d.parameter>=.05 and d.parameter<=.95,"invalid_recorded_split")
+ assert(type(p.edge_ids)=="table" and #p.edge_ids==p.fit.pieces+4 and #p.edge_ids<=12,"invalid_crossover_receipt")
+ local splits={interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade),interior_splits(b,d.parameter,p.region,p.radius,p.vertical.max_grade)}
+ assert(near(c.pos,splits[1][1].p1,.001) and near(d.pos,splits[2][1].p1,.001),"recorded_crossover_location_mismatch")
+ local f={controls=p.fit.controls,samples={},region=p.region,grade=p.fit.grade,end_grade=p.fit.end_grade,max_grade=p.vertical.max_grade,min_radius=p.radius}
+ assert(#f.controls==p.fit.pieces,"recorded_controls_incomplete")
+ for i,ctrl in ipairs(f.controls) do f.samples[i]={};for _,u in ipairs({0,.25,.5,.75,1}) do local pos,dir=sample(cubic(ctrl),u);f.samples[i][#f.samples[i]+1]={u=u,pos=pos,dir=dir,base_pos=pos} end end
+ local value=crossover_readback(a,b,c,d,splits,f,p.edge_ids,p,p.through_before)
+ value.reconciled_current_state=true;value.automatic_replay=false
+ if s and s.mutationPending==p.original_request then s.mutationPending=nil end
+ return value
+end
+
 -- Read-only reconciliation from recorded controls and exact returned identities.
 -- No fitting, preview or construction is performed; do not reconstruct engine history.
 function M.verify_interior(p)

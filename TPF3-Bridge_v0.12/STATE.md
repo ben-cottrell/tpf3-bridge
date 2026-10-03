@@ -1,6 +1,33 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
 ## Current checkpoint
+P13 complete: connect_throat / CLI connect-throat [--execute] composes two native
+through approaches, crossover and ladder branches from named roles/explicit directed
+route matrix. Fresh role identities after each replacement; final paths include required
+role/branch edges and node-owned turnout connectors, with sampled radius/grade/region.
+Build40408: translated/rotated two approaches/four destinations,3steps,7required TRAIN
+movements A1->D1/D2/D3/D4,A2->D2/D3/D4 pass on assembled network. A2->D1 not claimed.
+Junction nodes136906/133891/128597/137570; crossover133277/137904/137905,
+ladder1 61292/5516/10210,ladder2 58337/137753/137339. Fresh29TRACK inspection,
+independent sampled BaseEdge minimum122.816940>=120,grade0<=0.04; native movement
+geometry also passes. Missing required branch, excluded region and stale source reject.
+First crossover built but failed radius; fresh exact paths established failed effects,
+branch136781-136783 explicitly removed,distinct shorter crossover fitted with margin150
+and unchanged hard minimum120. Original failures/receipts retained; no blind replay,
+rollback or general recovery. Native entityExists fixes removed-entity inspection.
+python tools/quiet_checks.py --suite live_client --label pif-p13-final:81passed;
+.local_checks/pif-p13-final_pgq7ndfo/report.json. All previous72client tests included.
+python .local_runs/live_python_interface/p13/observe_final.py:7fresh routes,29TRACK,
+3negative cases,independent sampled geometry,zero mutations; fresh_acceptance.json.
+CLI799bytes. Full receipts/failed design/removal/new layout/source hashes/HANDOFF and
+local checkpoint in .local_runs/live_python_interface/p13/. P12 basef53c139; no push.
+Geometry sampled,not continuous proof; physical traversal,reservation/capacity,general
+save identity unprobed. Explicit crossover reconciliation/continuation locally tested,
+successful native continuation not demonstrated. Existing connection workflows retained.
+No station/physics/runner changes; usage unavailable.
+Disposable world saved normally after verification and left paused/nonmaximised.
+
+## P12 interior junction accepted
 P12 complete: connect_junction_at / CLI connect-junction-at [--execute] adds native
 interior placement with explicit placement_tolerance; ordinary unowned TRACK/no objects,
 parameter0.05–0.95, either travel direction, free target. Native cubic evaluation and
