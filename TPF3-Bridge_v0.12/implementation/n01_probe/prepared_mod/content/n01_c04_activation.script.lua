@@ -62,6 +62,8 @@ function data()
    elseif request.operation=="connection" then native.extension(p,s,state,request.request_id,respond,true)
    elseif request.operation=="test_approach" then native.test_approach(p,s,state,request.request_id,respond)
    elseif request.operation=="inspect" then respond(request.request_id,"ok",native.inspect(p))
+   elseif request.operation=="discover" then respond(request.request_id,"ok",native.discover(p,request.request_id))
+   elseif request.operation=="selected_connection" then native.connect_selected(p,s,state,request.request_id,respond)
    elseif request.operation=="route" then respond(request.request_id,"ok",native.route(p))
    elseif request.operation=="fit" then respond(request.request_id,"ok",native.fit(p,s,request.request_id))
    elseif request.operation=="build" then

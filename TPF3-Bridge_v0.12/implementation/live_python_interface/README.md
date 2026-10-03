@@ -166,6 +166,76 @@ stays local and stdout≤4096bytes. Read-only queries neither replay nor reconci
 uncertain construction. This is native transport routing evidence, not train traversal,
 signal/reservation availability or a production transport guarantee.
 
+## Discover and select free endpoints
+
+`bridge_live.discover(client, brief)` queries a native-coordinate XYZ box:
+
+```json
+{"region":{"min":[1010,7175,-40],"max":[1286,7445,44]},"max_edges":16}
+```
+
+These example coordinates are task-specific, not a universal map location. Bounds
+must be ordered and span≤400native units per axis; max_edges is1–16. Native octree
+callbacks may continue after the observation cap: all callback hits are counted, but
+at most256candidates receive component inspection. Only confirmed TRACK edges are
+retained. Edge overflow or the component cap sets truncated=true/complete=false;
+there is no pagination or claim of all endpoints in a truncated region.
+
+For each in-box endpoint, native `streetSystem.getNodeSegments` checks **full**
+incidence, including edges outside the spatial sample. Native construction ownership
+is checked too. Eligibility means one incident TRACK edge and no construction owner;
+it is a plain free-endpoint domain, not a guarantee of construction approval or a
+preservation policy. Positions, outward directions, grades and resource identities
+come from fresh native components. At most16incident IDs are printed per endpoint;
+full incident count and output truncation are explicit. No world graph is exported.
+
+```powershell
+python bridge_live.py discover --context context.json --params area.json
+python bridge_live.py connect-selected --context context.json --discovery RESPONSE_FILE --params selection.json
+```
+
+Discovery stdout provides a full-response path and bounded candidate preview when
+necessary. Select the displayed `ref` values rather than copying hidden native IDs.
+`selection.json` contains exactly source_ref, target_ref, radius and region. The
+callable is `connect_selected(client, discovery_response, selection_brief)`.
+For endpoints in different small regions, pass a list of two full discovery
+responses, or save that list as the CLI's `--discovery` JSON file. Both records
+must belong to the current session; duplicate records/ambiguous references fail.
+References belong to that recorded discovery and current adapter session; they are
+not persistent world identities. Selection rechecks exact geometry/resources and
+full incidence inside the engine before using the existing two-ended fitter.
+Changed snapshots, nonfree endpoints and old sessions are rejected. A truncated
+area does not invalidate a retained endpoint's independent full-incidence check.
+
+This command is **fit-only**; `--execute` is rejected. Discovery and fit-only selection
+preserve unresolved mutation journals and do not replay/clear them. Existing native
+fitter limits still apply. P05 demonstrated6TRACK/11candidates in one complete local
+query and3free endpoints in a truncated query. Selected opposing-heading endpoints
+reached native fitting but returned unsupported_reverse_geometry; successful fitting
+of that arrangement is not claimed. P06 selected compatible forward approaches from
+two local records: source130757/node130371 to test approach131245/node131187,
+heading change about4degrees, three native pieces, length110.001569, radius100,
+zero grade and sampled XY error0.000492081. The opposite stub end was explicitly
+rejected as reverse geometry. There is no claim of unrestricted heading support or
+continuous geometry proof. The fitted connection was not constructed.
+
+Explicit failed-fixture reconciliation is available as
+`reconcile_rejected_fixture(client, original_discovery)` or:
+
+```powershell
+python bridge_live.py reconcile-fixture --context context.json --params empty.json --discovery original_discovery.json
+```
+
+`empty.json` contains `{}`. This supports only a pending `test_approach` with a
+recorded native rejection. Fresh native reads must show the original anchor unchanged
+and the complete intended footprint without TRACK; changed, occupied or truncated
+observations retain the block. It records the original pending job/receipt and fresh
+observations durably before closing that Python pending record. Other effects remain
+unknown. It never resends the command or claims rollback; the native session guard
+may still require a separately authorised ordinary load. P06 reconciled the P05
+collision this way before loading again, then built a different20-unit fixture on
+clear land. The old failure and its unknown incidental effects remain in local history.
+
 ## Demonstration and checks
 
 Build40408, disposable world: P01 demonstrated separate calls; P02 demonstrated
@@ -192,7 +262,7 @@ endpoint, absent required edge and wrong entry direction were rejected without b
 The separately declared bounded `findPath` route failed with error300; its constructor
 was unavailable at runtime. That unresolved contract is not used by this operation.
 
-29client/fake-worker tests passed;14unchanged quiet-runner tests reused. Run:
+39client/fake-worker tests passed;14unchanged quiet-runner tests reused. Run:
 
 ```powershell
 python tools/quiet_checks.py --suite live_client --label live-client

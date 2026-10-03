@@ -62,6 +62,68 @@ function M.inspect(p)
  local out={};for _,id in ipairs(p.edge_ids) do out[#out+1]=edge(id) end
  return {edges=out,game_constructed=false,native_save_identity="unknown",load_epoch="unknown"}
 end
+local function region_check(region)
+ assert(type(region)=="table","region_required");vector(region.min);vector(region.max)
+ assert(#region.min==3 and #region.max==3,"region_needs_xyz")
+ for i=1,3 do assert(region.max[i]>region.min[i] and region.max[i]-region.min[i]<=400,"discovery_region_bound") end
+end
+local function inside(pos,r)
+ for i=1,3 do if pos[i]<r.min[i] or pos[i]>r.max[i] then return false end end;return true
+end
+local function incidence(id)
+ local segments=api.engine.system.streetSystem.getNodeSegments(id)
+ assert(type(segments)=="table","native_incidence_unavailable")
+ local ids,seen={},{};for _,eid in ipairs(segments) do assert(not seen[eid],"duplicate_native_incidence");seen[eid]=true;ids[#ids+1]=eid end
+ table.sort(ids)
+ local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForNode(id)
+ assert(owner==nil or type(owner)=="number","construction_owner_unavailable")
+ return ids,owner
+end
+function M.discover(p,request_id)
+ region_check(p.region)
+ assert(type(p.max_edges)=="number" and p.max_edges%1==0 and p.max_edges>=1 and p.max_edges<=16,"discovery_edge_bound")
+ local ids,seen={},{};local queried,processed,truncated=0,0,false
+ api.engine.system.octreeSystem.findIntersectingEntities(api.type.Box3.new(v(p.region.min),v(p.region.max)),function(id,_volume)
+  queried=queried+1
+  if processed>=256 then truncated=true;return end
+  processed=processed+1
+  if seen[id] then return end;seen[id]=true
+  local base=api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)
+  if base and base.roadType==E.RoadType.TRACK then
+   if #ids<p.max_edges then ids[#ids+1]=id else truncated=true end
+  end
+ end)
+ table.sort(ids);local edges,candidates={},{}
+ for _,id in ipairs(ids) do
+  local a=edge(id);edges[#edges+1]=a
+  for _,node in ipairs({a.node0,a.node1}) do
+   local _,pos,direction,grade=anchor({anchor_edge=id,anchor_node=node})
+   if inside(pos,p.region) then
+    local all,owner=incidence(node);local free=#all==1 and all[1]==id and not (owner and owner>0)
+    local retained={};for i=1,math.min(#all,16) do retained[i]=all[i] end
+    candidates[#candidates+1]={ref=request_id..":E"..id..":N"..node,edge_id=id,node_id=node,pos=pos,
+     outward_direction=direction,grade=grade,template=a.template,style=a.style,edge_snapshot=a,
+     eligible=free,eligibility=free and "single_incident_TRACK_unowned" or "not_free_or_construction_owned",
+     incident_count=#all,incident_edges=retained,incidence_complete=true,incident_output_truncated=#all>16,
+     construction_owner=owner or "none"}
+   end
+  end
+ end
+ return {edges=edges,candidates=candidates,region=p.region,queried_candidates=queried,processed_candidates=processed,
+  edge_count=#edges,candidate_count=#candidates,truncated=truncated,complete=not truncated,game_constructed=false,
+  native_save_identity="unknown",load_epoch="unknown",identity_scope="current_adapter_session_only"}
+end
+function M.connect_selected(p,s,state,request_id,respond)
+ assert(type(p.source)=="table" and type(p.target)=="table","selected_candidates_required")
+ for _,c in ipairs({p.source,p.target}) do
+  local current=assert_fresh(c.edge_snapshot)
+  assert(current.id==c.edge_id and (current.node0==c.node_id or current.node1==c.node_id),"selected_endpoint_mismatch")
+  local all,owner=incidence(c.node_id)
+  assert(#all==1 and all[1]==c.edge_id and not (owner and owner>0),"selected_endpoint_not_free")
+ end
+ M.extension({execute=false,brief={anchor_edge=p.source.edge_id,anchor_node=p.source.node_id,
+  target_edge=p.target.edge_id,target_node=p.target.node_id,radius=p.radius,region=p.region}},s,state,request_id,respond,true)
+end
 local function node_id(n)
  assert(n and type(n.entity)=="number" and type(n.index)=="number","transport_node_identity_unavailable")
  return {entity=n.entity,index=n.index}

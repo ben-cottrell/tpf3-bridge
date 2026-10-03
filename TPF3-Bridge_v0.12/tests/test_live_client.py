@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import contextlib
 import io
-from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover_session, client_from_context
+from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, reconcile_rejected_fixture, discover_session, client_from_context
 
 class LiveClientTests(unittest.TestCase):
     def setUp(self):
@@ -128,6 +128,131 @@ class LiveClientTests(unittest.TestCase):
     def route_brief(self):
         return {'source_edge':10,'source_node':11,'target_edge':20,'target_node':21,
                 'mode':'TRAIN','max_length':300,'required_edges':[30,31]}
+
+    def discovery_record(self):
+        def candidate(edge,node,ref):
+            return dict(ref=ref,edge_id=edge,node_id=node,eligible=True,incidence_complete=True,
+                        incident_count=1,incident_edges=[edge],edge_snapshot={'id':edge})
+        return self.response('discovery','discover',result={'candidates':[candidate(10,11,'source'),candidate(20,21,'target')]})
+
+    def selected_brief(self):
+        return {'source_ref':'source','target_ref':'target','radius':100,
+                'region':{'min':[0,0,-10],'max':[300,300,10]}}
+
+    def test_discovery_invalid_bounds_never_query(self):
+        for params in ({'region':{'min':[0,0,0],'max':[401,1,1]},'max_edges':1},
+                       {'region':{'min':[0,0,0],'max':[1,1,1]},'max_edges':True}):
+            with patch.object(self.client,'request') as calls:
+                with self.assertRaises(ValueError):discover(self.client,params)
+                calls.assert_not_called()
+
+    def test_discovery_preserves_truncation_and_exact_candidates(self):
+        response=self.discovery_record();response['result']['truncated']=True
+        brief={'region':self.selected_brief()['region'],'max_edges':1}
+        with patch.object(self.client,'request',return_value=response) as calls:
+            self.assertIs(discover(self.client,brief),response)
+            calls.assert_called_once_with('discover',brief)
+
+    def test_selected_candidates_one_fit_only_native_request(self):
+        record=self.discovery_record();brief=self.selected_brief()
+        with patch.object(self.client,'request',return_value=self.response(operation='selected_connection')) as calls:
+            connect_selected(self.client,record,brief)
+        args=calls.call_args.args
+        self.assertEqual(args[0],'selected_connection');self.assertNotIn('execute',args[1])
+        self.assertEqual(args[1]['source']['node_id'],11);self.assertEqual(args[1]['discovery_request'],'discovery')
+        self.assertEqual(calls.call_count,1)
+
+    def test_ineligible_stale_missing_or_ambiguous_selection_never_sends(self):
+        for defect in ('nonfree','incomplete','stale','missing','ambiguous'):
+            record=self.discovery_record();brief=self.selected_brief()
+            if defect=='nonfree':record['result']['candidates'][0]['incident_count']=2
+            elif defect=='incomplete':record['result']['candidates'][0]['incidence_complete']=False
+            elif defect=='stale':record['session']='old_session'
+            elif defect=='missing':brief['source_ref']='missing'
+            else:record['result']['candidates'].append(record['result']['candidates'][0])
+            with patch.object(self.client,'request') as calls:
+                with self.assertRaises(ValueError):connect_selected(self.client,record,brief)
+                calls.assert_not_called()
+
+    def test_selected_cli_default_fit_only_and_forbids_execute(self):
+        params=self.root/'selection.json';params.write_text(json.dumps(self.selected_brief()))
+        record=self.root/'discovery.json';record.write_text(json.dumps(self.discovery_record()))
+        output=io.StringIO()
+        with patch('bridge_live.client_from_context',return_value=self.client),patch.object(self.client,'request',return_value=self.response(operation='selected_connection')) as calls,contextlib.redirect_stdout(output):
+            self.assertEqual(main(['connect-selected','--context','context.json','--params',str(params),'--discovery',str(record)]),0)
+            self.assertEqual(main(['connect-selected','--context','context.json','--params',str(params),'--discovery',str(record),'--execute']),1)
+        self.assertEqual(calls.call_count,1)
+
+    def test_discovery_cli_compact_preview_keeps_selection_references(self):
+        record=self.discovery_record();record['result']['edges']=['x'*10000]
+        params=self.root/'area.json';params.write_text(json.dumps({'region':self.selected_brief()['region'],'max_edges':16}))
+        output=io.StringIO()
+        with patch('bridge_live.client_from_context',return_value=self.client),patch.object(self.client,'request',return_value=record),contextlib.redirect_stdout(output):
+            self.assertEqual(main(['discover','--context','context.json','--params',str(params)]),0)
+        data=json.loads(output.getvalue())
+        self.assertEqual(data['candidate_preview'][0]['ref'],'source');self.assertIn('response_file',data)
+        self.assertLessEqual(len(output.getvalue().encode()),4096)
+
+    def test_selected_fit_only_does_not_clear_uncertain_build(self):
+        self.client.timeout=.02
+        with self.assertRaises(LiveError):self.client.request('build',{'fit_request':'f'},request_id='unknown')
+        def worker():
+            slot=self.client.mod/'content/scripts/pif_live/test_session/000002.lua'
+            deadline=time.monotonic()+1
+            while not slot.exists() and time.monotonic()<deadline:time.sleep(.005)
+            with self.log.open('a') as f:f.write(MARKER+json.dumps(self.response('selection','selected_connection',result={'game_constructed':False}))+'\n')
+        self.client.timeout=.5;thread=threading.Thread(target=worker);thread.start()
+        self.client.request('selected_connection',{},request_id='selection');thread.join()
+        self.assertEqual(json.loads(self.client.journal.read_text())['pending']['request_id'],'unknown')
+        with self.assertRaises(LiveError):self.client.request('build',{},request_id='repeat')
+
+    def test_selection_combines_two_current_discoveries_without_identity_guessing(self):
+        a=self.discovery_record();b=self.discovery_record();b['request_id']='second'
+        a['result']['candidates']=a['result']['candidates'][:1];b['result']['candidates']=b['result']['candidates'][1:]
+        with patch.object(self.client,'request',return_value=self.response()) as calls:
+            connect_selected(self.client,[a,b],self.selected_brief())
+        self.assertEqual(calls.call_args.args[1]['discovery_requests'],['discovery','second'])
+        for bad in ([a,a],[a,b|{'session':'old'}]):
+            with patch.object(self.client,'request') as calls:
+                with self.assertRaises(ValueError):connect_selected(self.client,bad,self.selected_brief())
+                calls.assert_not_called()
+
+    def fixture_pending(self):
+        brief=self.connection_brief();brief.pop('target_edge');brief.pop('target_node')
+        brief.update(end_xy=[100,100],end_direction=[1,0])
+        pending=dict(request_id='failed_fixture',operation='test_approach',params={'brief':brief,'length':20,'authorised':True})
+        self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending}))
+        response=self.response('failed_fixture','test_approach',result={'error':'source: native_test_approach_rejected','game_constructed':'unknown'})
+        response['status']='mutation_unverified'
+        (self.client.evidence/'failed_fixture.response.json').write_text(json.dumps(response))
+        return pending
+
+    def test_fixture_reconciliation_requires_complete_absence_and_unchanged_anchor(self):
+        for defect in ('none','truncated','track','changed'):
+            pending=self.fixture_pending();record=self.discovery_record()
+            def query(operation,params):
+                if operation=='inspect':return self.response('fresh_anchor',operation,result={'edges':[{'id':10 if defect!='changed' else 99}]})
+                self.assertEqual(operation,'discover')
+                return self.response('footprint',operation,result={'complete':defect!='truncated','edge_count':1 if defect=='track' else 0})
+            with patch.object(self.client,'request',side_effect=query) as calls:
+                if defect=='none':
+                    value=reconcile_rejected_fixture(self.client,record)
+                    self.assertIs(value['result']['automatic_replay'],False)
+                    self.assertEqual(value['result']['other_effects'],'unknown')
+                    final=json.loads(self.client.journal.read_text());self.assertNotIn('pending',final)
+                    evidence=Path(final['reconciled_rejections']['failed_fixture']['evidence'])
+                    self.assertEqual(json.loads(evidence.read_text())['original_pending'],pending)
+                else:
+                    with self.assertRaises(LiveError):reconcile_rejected_fixture(self.client,record)
+                    self.assertEqual(json.loads(self.client.journal.read_text())['pending'],pending)
+            self.assertTrue(all(c.args[0] in ('inspect','discover') for c in calls.call_args_list))
+
+    def test_fixture_reconciliation_rejects_missing_native_failure_evidence(self):
+        self.fixture_pending();record=self.discovery_record()
+        path=self.client.evidence/'failed_fixture.response.json';response=json.loads(path.read_text());response['result']['error']='unknown response';path.write_text(json.dumps(response))
+        with patch.object(self.client,'request') as calls:
+            with self.assertRaises(LiveError):reconcile_rejected_fixture(self.client,record)
+            calls.assert_not_called()
 
     def test_route_invalid_input_never_sends(self):
         for key,value in [('mode','CAR'),('max_length',float('inf')),('max_length',801),

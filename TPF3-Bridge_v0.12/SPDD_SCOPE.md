@@ -1,3 +1,11 @@
+## Automated milestone commits - user instruction, 3 October 2026
+At notable verified milestones, the coordinator should instruct the existing implementation
+agent to clean up Git scope and make a local milestone commit, then continue approved
+development automatically. No user pause or repeated approval is needed. Keep runtime
+artifacts and raw evidence local and ignored; retain useful source, tests and concise docs.
+This supersedes historical no-commit rules for milestone commits. Remote pushes require
+applicable publication authority; no force push or history rewrite. Deliver this policy
+at the next idle handoff without interrupting active implementation.
 ## Disposable-map testing clarification - 3 October 2026
 User observes tests close to a city/existing infrastructure may be failing due to
 obstructions. The entire game map is disposable; all destructive in-game actions

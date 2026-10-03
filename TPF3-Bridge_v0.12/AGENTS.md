@@ -1,3 +1,11 @@
+## Automated milestone commits - user instruction, 3 October 2026
+At notable verified milestones, the coordinator should instruct the existing implementation
+agent to clean up Git scope and make a local milestone commit, then continue approved
+development automatically. No user pause or repeated approval is needed. Keep runtime
+artifacts and raw evidence local and ignored; retain useful source, tests and concise docs.
+This supersedes historical no-commit rules for milestone commits. Remote pushes require
+applicable publication authority; no force push or history rewrite. Deliver this policy
+at the next idle handoff without interrupting active implementation.
 ## Disposable-map testing clarification - 3 October 2026
 User observes tests close to a city/existing infrastructure may be failing due to
 obstructions. The entire game map is disposable; all destructive in-game actions
@@ -16,8 +24,8 @@ research, prototypes and tests may inform implementation but cannot expand it.
 Precedence: current explicit user/orchestrator instruction → SPDD_SCOPE.md →
 NATIVE_FIRST_ARCHITECTURE.md → CURRENT_TASK.md/STATE.md → task evidence → history.
 Read CURRENT_TASK.md and short STATE.md; implement only the approved outcome.
-PIF-P03 connection and PIF-P04 native routing are accepted. GIT-G02 explicitly
-authorises cleanup, commit and normal push of this milestone; no new game work.
+PIF-P03/P04 and GIT-G02 publication are accepted. User approved continued automated
+development: PIF-P05 endpoint discovery, then native grade support and practical connection.
 Routine construction permissions apply only within an approved development task.
 
 ## Efficient development

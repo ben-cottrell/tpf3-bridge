@@ -1,12 +1,63 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
 ## Current checkpoint
-PIF-P03/P04 accepted; GIT-G02 publishes this source/tests/docs checkpoint on
+P05/P06 accepted; GIT-G03 local endpoint-discovery/selection checkpoint. Its SHA,
+reviewed scope and cleanliness are recorded in .local_runs/milestone_git/g03/
+checkpoint.json; no remote push.39client acceptance reused after source/environment
+hash checks; evidence stays ignored. Coordinator continues native grade work next.
+PIF-P03/P04 accepted; GIT-G02 published a9f6e8311c1c08ecdfb0d65b3b110fd5fa262ddf on
 codex/initial-implementation, origin https://github.com/ben-cottrell/tpf3-bridge.git.
 Prior published revision1080dd457b8564faa52a5f4e20d46afed26f4b89. Git history and
 .local_runs/milestone_git/g02/publication.json identify the resulting commit and
 verified remote SHA. Evidence/logs/ledgers stay local and ignored; no deletions.
 29client/14runner acceptance reused after unchanged-file checks; no game operations.
+
+## P06 selected fit accepted
+connect_selected/CLI connect-selected accepts one or two current-session full
+discovery records; native snapshots/full incidence revalidated before fitting.
+Build40408: source130757/node130371 to fixture131245/node131187; about4degree
+forward heading change,3pieces,length110.001569,radius100,grade0,sampledXYerror
+0.000492081,endpoint heading error0. Opposite stub end rejected as reverse geometry.
+Only20-unit independent fixture built on clear land; fitted connection not built.
+P05 rejection f717a2f83000480d8d6bed9c668175fa explicitly reconciled in its original
+session: anchor unchanged, intended footprint complete/empty of TRACK. Original
+pending/receipt and unknown other effects retained; no replay/rollback claim.
+reconcile_rejected_fixture/CLI reconcile-fixture requires that explicit rejection
+and fresh observations; changed/truncated/occupied footprint retains block.
+One normal load followed reconciliation;12native requests total,1verified fixture
+submission,0connection builds/saves/simulation diagnostics. Game paused/non-maximised.
+python tools/quiet_checks.py --suite live_client --label pif-p06-client-fixed:39passed,
+.local_checks/pif-p06-client-fixed_s1gal9hh/report.json. Earlier39-test run had2
+test-helper errors; retained and corrected. Unchanged14quiet-runner tests reused.
+python .local_runs/live_python_interface/p06/check_evidence.py:passed; receipts,
+tested-file/staging hashes, py_compile/task diff reviewed; checks/result/history/HANDOFF
+local in p06. Python/tests/usage/state changed; P05 native source unchanged. No push.
+P06 left AGENTS/SPDD EOF blank lines untouched; G03 removes those blank lines only.
+Limits: session-scoped refs, compatible constant-grade ends, native forward families;
+no unrestricted routing/continuous proof/train traversal. Actual usage unavailable.
+
+## P05 endpoint discovery and fit-only selection
+Native discovery demonstrated, build40408. discover(client,brief)/CLI discover accepts
+bounded XYZ region/max_edges; native octree + complete getNodeSegments + construction
+owner checks. One incident TRACK/unowned node is eligible, not a construction guarantee.
+≤16edges,≤256component inspections; callback/incident counts and truncation explicit.
+Stable recorded refs valid only in current adapter session; no world identity guarantee.
+connect_selected/CLI connect-selected --discovery RESPONSE uses refs, rejects stale/
+nonfree candidates natively, and invokes existing connection fitter with execute=false.
+Complete query:6TRACK,11candidates,173inspections. Truncated western query found3free
+zero-grade ends. Selection reached native fitting but opposing headings returned
+unsupported_reverse_geometry; P06 demonstrates a compatible forward selection above.
+Fixture fit rejected reverse geometry before build; adjusted fixture produced native
+Collision, effects unknown, journal blocked at P05 stop; later P06 reconciliation above.
+python tools/quiet_checks.py --suite live_client --label pif-p05-final:36passed,
+.local_checks/pif-p05-final_4wb6mie7/report.json. Five focused native cases passed:
+one-edge cap still detects two incident edges, native nonfree/stale/invalid rejection,
+empty region; unknown mutation preserved. python .local_runs/live_python_interface/
+p05/check_evidence.py:passed; receipts/source hashes/staging/py_compile/diff checked.
+Detailed checks.json/result.json/workflow_history.json/HANDOFF.md in p05 directory.
+10requests,1build submission(0verified),1normal load,0save/simulation diagnostics.
+P05 stopped uncommitted; G03 checkpoints P05/P06 locally without publication. P06 adds
+compatible selected-fit demonstration and explicit local reconciliation. Usage unavailable.
 
 ## P04 native route verification
 Callable route(client,brief); CLI bridge_live.py route --context CONTEXT --params ROUTE.
