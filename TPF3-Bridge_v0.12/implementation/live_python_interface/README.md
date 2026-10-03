@@ -262,7 +262,7 @@ endpoint, absent required edge and wrong entry direction were rejected without b
 The separately declared bounded `findPath` route failed with error300; its constructor
 was unavailable at runtime. That unresolved contract is not used by this operation.
 
-51client/fake-worker tests passed;14unchanged quiet-runner tests reused. Run:
+56client/fake-worker tests passed;14unchanged quiet-runner tests reused. Run:
 
 ```powershell
 python tools/quiet_checks.py --suite live_client --label live-client
@@ -383,3 +383,61 @@ old400-unit fitting envelope rejected the fixture before any proposal; the finit
 fit envelope is now1000 XY units per axis. Total fit length≤800, at most8pieces and
 five samples/piece remain. Discovery bounds were unchanged. Geometry/grade remain
 sampled; physical train traversal, unrestricted routing and save identity are unprobed.
+
+## Ordered multi-leg corridor (P09)
+
+`connect_corridor(client, brief, execute=False)` reuses the connection brief and adds
+`guides`:1–3 ordered intermediate alignment requirements. Each guide contains native
+XYZ `position`, nonzero XY `travel_direction` and signed `grade`, for example:
+
+```json
+{"position":[1500,5800,16],"travel_direction":[0.5,-0.866],"grade":0.005}
+```
+
+These are deliberately selected alignment anchors, including height/grade; they are
+not native identities, screen coordinates or guessed attachments. The source/target
+search regions and deterministic direction/guide criteria remain as in P08.
+
+```powershell
+python bridge_live.py connect-corridor --context context.json --params corridor.json
+python bridge_live.py connect-corridor --context context.json --params corridor.json --execute
+```
+
+The prepared mod fits every leg with the existing native Dubins/cubic-height mechanics
+before construction. It joins the controls into one native proposal, sharing node
+references across leg boundaries. Fit-only reports each leg and explicitly leaves
+guide-node identity unrealised. Execution must reacquire exact guide nodes, matching
+selected guide positions/directions/grades and final discovered endpoint attachments,
+then verify one native TRAIN route through every new edge and both approach tracks.
+No overall success is returned merely because fitting or native construction succeeded.
+
+Finite scope:2–4legs,≤800native units/8pieces per leg,≤3200units/32pieces overall,
+≤3000XY units per overall-region axis, five geometry samples/piece, and≤4000route
+acceptance length. Native path observation remains≤64entries. Discovery bounds are
+unchanged. The route helper now allows≤4000length/32required edges; single-fit
+`connect-brief` retains its≤800route and1000XY region bounds. Native pathfinder
+execution itself is not length-bounded. There is no replacement Python curve fitter.
+
+Only explicit pre-build fit rejection may try another selected endpoint pair. A partial,
+rejected or uncertain construction result stops and retains the full receipt/journal;
+no automatic replay, rollback or crash continuation. Geometry and grade checks are
+sampled, and physical train traversal remains unprobed.
+
+56client tests passed, including fit-only identity honesty, exact guide verification,
+partial/unknown mutation stops, invalid guides/constraints and CLI/default execution.
+On build40408 the integrated CLI built three500-unit native-fitted legs,1500.004925
+units overall with12-unit rise, endpoint grades0.015 and intermediate grades0.005/0.01.
+Nine TRACK edges131295–131303 attach source131271/node131270 to target131285/node131283;
+guide nodes131289/131292 are exact shared identities. Independent inspection and native
+TRAIN route1540.063845 through all pieces passed. Sampled maximum grade0.015000001,
+zero join-height gap; radius120/max_grade0.04. Wrong-direction and strict-grade briefs
+stopped before construction. Fit-only did not report realised guide-node identity.
+
+The first authored layout and three fit-only variants were rejected because a native
+leg contained reverse geometry. A distinct gradual-bend layout passed; no constraint
+was relaxed and rejected inputs remain rejected. Only forward native pieces are
+supported, not arbitrary guide arrangements or unrestricted routing. Actual node
+identities are acquired from the build receipt/readback, never fit placeholders.
+The initial automatic-review denial was resolved by the user's explicit approval;
+two short disposable target fixtures and one coherent corridor were built. There is
+no transaction/rollback claim. Full failed/successful receipts remain local.

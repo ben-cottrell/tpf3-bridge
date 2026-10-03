@@ -114,7 +114,7 @@ function M.discover(p,request_id)
   edge_count=#edges,candidate_count=#candidates,truncated=truncated,complete=not truncated,game_constructed=false,
   native_save_identity="unknown",load_epoch="unknown",identity_scope="current_adapter_session_only"}
 end
-function M.connect_selected(p,s,state,request_id,respond)
+local function selected_attachments(p)
  assert(type(p.source)=="table" and type(p.target)=="table","selected_candidates_required")
  assert(p.execute==nil or type(p.execute)=="boolean","invalid_selected_execution")
  for _,c in ipairs({p.source,p.target}) do
@@ -123,6 +123,9 @@ function M.connect_selected(p,s,state,request_id,respond)
   local all,owner=incidence(c.node_id)
   assert(#all==1 and all[1]==c.edge_id and not (owner and owner>0),"selected_endpoint_not_free")
  end
+end
+function M.connect_selected(p,s,state,request_id,respond)
+ selected_attachments(p)
  M.extension({execute=p.execute==true,brief={anchor_edge=p.source.edge_id,anchor_node=p.source.node_id,
   target_edge=p.target.edge_id,target_node=p.target.node_id,radius=p.radius,region=p.region,vertical=p.vertical}},s,state,request_id,respond,true)
 end
@@ -146,8 +149,8 @@ local function rail_lane(id,mode)
 end
 function M.route(p)
  assert(p.mode=="TRAIN" or p.mode=="ELECTRIC_TRAIN","unsupported_route_mode")
- assert(finite(p.max_length) and p.max_length>0 and p.max_length<=800,"invalid_route_length_bound")
- assert(type(p.required_edges)=="table" and #p.required_edges>=1 and #p.required_edges<=16,"route_required_edge_bound")
+ assert(finite(p.max_length) and p.max_length>0 and p.max_length<=4000,"invalid_route_length_bound")
+ assert(type(p.required_edges)=="table" and #p.required_edges>=1 and #p.required_edges<=32,"route_required_edge_bound")
  local mode=E.TransportMode[p.mode]
  local a,start,index=rail_lane(p.source_edge,mode);local b,finish,target_index=rail_lane(p.target_edge,mode)
  assert(p.source_edge~=p.target_edge and p.source_node~=p.target_node,"distinct_route_attachments_required")
@@ -201,15 +204,20 @@ function M.route(p)
  if not out.requested_route_verified then out.reason=length>p.max_length+.001 and "native_path_exceeds_requested_length" or "native_path_does_not_establish_requested_route" end
  return out
 end
-function M.fit(p,s,request_id,target)
+function M.fit(p,s,request_id,target,start)
  vector(p.end_xy);vector(p.end_direction)
  assert(finite(p.radius) and p.radius>0,"invalid_radius")
  assert(type(p.region)=="table","region_required");vector(p.region.min);vector(p.region.max)
  assert(#p.region.min==3 and #p.region.max==3,"region_needs_xyz")
  for i=1,3 do assert(p.region.max[i]>p.region.min[i],"invalid_region") end
  -- Longer connection envelope; discovery remains local and total fit length<=800.
- assert(p.region.max[1]-p.region.min[1]<=1000 and p.region.max[2]-p.region.min[2]<=1000,"fit_region_bound")
- local a,pos,t0,grade=anchor(p);in_region(pos,p.region)
+ local region_bound=start and 3000 or 1000
+ assert(p.region.max[1]-p.region.min[1]<=region_bound and p.region.max[2]-p.region.min[2]<=region_bound,"fit_region_bound")
+ -- start is invocation-local corridor intent, never an external/native entity claim.
+ local a,pos,t0,grade
+ if start then a=start.anchor;pos=start.pos;t0=start.direction;grade=start.grade
+ else a,pos,t0,grade=anchor(p) end
+ in_region(pos,p.region)
  local t1=norm(p.end_direction)
  local result=api.engine.util.pathfinding.findDubinsPath(v({pos[1],pos[2],0}),v(t0),v({p.end_xy[1],p.end_xy[2],0}),v(t1),p.radius)
  assert(type(result)=="table" and #result>0 and #result<=8,"no_supported_bounded_fit")
@@ -324,7 +332,16 @@ function M.readback(f)
    source_incident_edges={source.id,ordered[1]},target_incident_edges={ordered[#ordered],target.id},
    exact_native_identity=true,resources_compatible=true}
  end
- return {ordered_edges=ordered,ordered_nodes=nodes,edges=observations,attachments=attachments,connected=true,sampled_XY_error=maxerr,sampled_base_Z_error=maxzerr,max_sampled_grade=maxgrade,max_join_height_gap=maxjoinz,max_join_grade_gap=maxjoingrade,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=true,train_traversal="unprobed",native_effect_history_complete=false}
+ local guides={}
+ for _,g in ipairs(f.guides or {}) do
+  local before,after=observations[g.after_piece],observations[g.after_piece+1]
+  assert(before and after and before.node1==after.node0,"guide_shared_node_missing")
+  assert(near(before.p1,g.pos,.001) and near(after.p0,g.pos,.001),"guide_position_mismatch")
+  assert(angle(before.t1,g.direction)<=.1 and angle(after.t0,g.direction)<=.1,"guide_heading_mismatch")
+  assert(math.abs(slope(before.t1)-g.grade)<=.000001 and math.abs(slope(after.t0)-g.grade)<=.000001,"guide_grade_mismatch")
+  guides[#guides+1]={node=before.node1,after_piece=g.after_piece,position=before.p1,grade=slope(before.t1),verified=true}
+ end
+ return {ordered_edges=ordered,ordered_nodes=nodes,edges=observations,attachments=attachments,connected=true,realised_guides=guides,sampled_XY_error=maxerr,sampled_base_Z_error=maxzerr,max_sampled_grade=maxgrade,max_join_height_gap=maxjoinz,max_join_grade_gap=maxjoingrade,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=true,train_traversal="unprobed",native_effect_history_complete=false}
 end
 function M.build(p,s,state,request_id,respond)
  assert(p.authorised==true,"explicit_build_option_required")
@@ -367,6 +384,67 @@ function M.build(p,s,state,request_id,respond)
  local root=state:get() or {};root.pifLive=s;state:set(root)
  local cmd=api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false)
  api.cmd.sendCommand(cmd,callback)
+end
+-- Pre-fit every ordered leg with native geometry, then submit one joined proposal.
+-- Guide boundaries are intent until the build receipt reacquires actual node IDs.
+function M.corridor(p,s,state,request_id,respond)
+ local stage,fit,fitted="inspect",nil,nil
+ local function reply(status,value) value.stage=stage;value.fit=fit;respond(request_id,status,value) end
+ local ok,err=pcall(function()
+  selected_attachments(p)
+  assert(type(p.guides)=="table" and #p.guides>=1 and #p.guides<=3,"corridor_guide_bound")
+  assert(type(p.vertical)=="table" and finite(p.vertical.max_grade) and p.vertical.max_grade>0,"invalid_vertical_limit")
+  local a,pos,direction,grade=anchor({anchor_edge=p.source.edge_id,anchor_node=p.source.node_id})
+  local t,tp,td,tg=anchor({anchor_edge=p.target.edge_id,anchor_node=p.target.node_id})
+  assert(a.template==t.template and a.style==t.style,"unsupported_attachment_resources")
+  local target={edge=t,node=p.target.node_id,pos=tp,direction={-td[1],-td[2],0},grade=-tg}
+  local goals={}
+  for _,g in ipairs(p.guides) do
+   vector(g.position);assert(#g.position==3,"guide_needs_xyz");vector(g.travel_direction)
+   assert(#g.travel_direction==2 and finite(g.grade) and math.abs(g.grade)<=p.vertical.max_grade,"invalid_guide_grade_direction")
+   in_region(g.position,p.region)
+   goals[#goals+1]={pos=g.position,direction=norm(g.travel_direction),grade=g.grade}
+  end
+  goals[#goals+1]=target
+  local all={anchor=a,node=p.source.node_id,target=target,controls={},samples={},guides={},region=p.region,
+   grade=grade,end_grade=target.grade,max_grade=p.vertical.max_grade,total_length=0,built=false}
+  local start={anchor=a,pos=pos,direction=direction,grade=grade}
+  fit={legs={},pieces=0,total_length=0,radius=p.radius,grade=grade,end_grade=target.grade,max_grade=p.vertical.max_grade,
+   max_sampled_grade=0,sampled_XY_error=0,sampled_Z_error=0,sampled_only=true,guide_nodes_realised=false,game_constructed=false}
+  stage="fit"
+  for i,goal in ipairs(goals) do
+   local id=request_id.."_leg_"..i
+   local leg=M.fit({anchor_edge=a.id,anchor_node=p.source.node_id,end_xy={goal.pos[1],goal.pos[2]},end_direction=goal.direction,
+    radius=p.radius,region=p.region,vertical={max_grade=p.vertical.max_grade}},s,id,goal,start)
+   local f=s.fits[id];local first=#all.controls+1
+   for j,c in ipairs(f.controls) do all.controls[#all.controls+1]=c;all.samples[#all.samples+1]=f.samples[j] end
+   all.total_length=all.total_length+leg.total_length
+   assert(all.total_length<=3200 and #all.controls<=32,"corridor_fit_bound")
+   fit.legs[i]={index=i,first_piece=first,last_piece=#all.controls,length=leg.total_length,start=start.pos,finish=goal.pos,
+    grade=start.grade,end_grade=goal.grade,max_sampled_grade=leg.max_sampled_grade}
+   fit.max_sampled_grade=math.max(fit.max_sampled_grade,leg.max_sampled_grade)
+   fit.sampled_XY_error=math.max(fit.sampled_XY_error,leg.sampled_XY_error)
+   fit.sampled_Z_error=math.max(fit.sampled_Z_error,leg.sampled_Z_error)
+   if i<#goals then all.guides[#all.guides+1]={after_piece=#all.controls,pos=goal.pos,direction=goal.direction,grade=goal.grade} end
+   local last=f.controls[#f.controls];start={anchor=a,pos=last.p1,direction=norm(last.t1),grade=slope(last.t1)}
+  end
+  fit.pieces=#all.controls;fit.total_length=all.total_length;fitted=all
+  local fit_id=request_id.."_corridor_fit";s.fits[fit_id]=all
+  if not p.execute then reply("ok",{game_constructed=false});return end
+  stage="build";assert(not s.mutationPending,"unreconciled_mutation")
+  M.build({fit_request=fit_id,authorised=true},s,state,request_id,function(_id,status,value)
+   if status~="ok" then reply(status,value);return end
+   stage="readback";local verified,result=pcall(M.readback,fitted)
+   if not verified then reply("mutation_unverified",{error=tostring(result):sub(1,400),game_constructed=true,
+    returned_edges=value.ordered_edges,initial_readback=value,effects=value.effects,retry=false});return end
+   s.mutationPending=nil
+   reply("ok",{game_constructed=true,readback=result,effects=value.effects})
+  end)
+ end)
+ if not ok then
+  local uncertain=s.mutationPending==request_id
+  reply(uncertain and "mutation_unverified" or "error",{error=tostring(err):sub(1,400),game_constructed=uncertain and "unknown" or false,retry=false})
+ end
 end
 function M.extension(p,s,state,request_id,respond,connect_mode)
  local stage,stages,fit="inspect",{},nil
@@ -416,8 +494,21 @@ end
 function M.test_approach(p,s,state,request_id,respond)
  assert(p.authorised==true and finite(p.length) and p.length>=5 and p.length<=60,"invalid_test_approach")
  assert(not s.mutationPending,"unreconciled_mutation")
- M.fit(p.brief,s,request_id.."_fixture_fit")
- local f=s.fits[request_id.."_fixture_fit"];local c=f.controls[#f.controls];local direction=norm(c.t1)
+ local f,c,direction
+ if p.fixture then
+  -- Explicit disposable test-stub placement, not production corridor fitting.
+  local q=p.fixture;vector(q.position);vector(q.travel_direction)
+  assert(#q.position==3 and #q.travel_direction==2 and finite(q.grade) and math.abs(q.grade)<=.04,"invalid_test_fixture_seed")
+  local a=edge(q.template_edge);assert(type(q.region)=="table","fixture_region_required")
+  vector(q.region.min);vector(q.region.max)
+  assert(#q.region.min==3 and #q.region.max==3,"fixture_region_needs_xyz")
+  for i=1,3 do assert(q.region.max[i]>q.region.min[i] and q.region.max[i]-q.region.min[i]<=100,"fixture_region_bound") end
+  in_region(q.position,q.region);direction=norm(q.travel_direction)
+  f={anchor=a,region=q.region,end_grade=q.grade};c={p1=q.position}
+ else
+  M.fit(p.brief,s,request_id.."_fixture_fit")
+  f=s.fits[request_id.."_fixture_fit"];c=f.controls[#f.controls];direction=norm(c.t1)
+ end
  local finish={c.p1[1]+direction[1]*p.length,c.p1[2]+direction[2]*p.length,c.p1[3]+f.end_grade*p.length}
  in_region(finish,f.region);assert_fresh(f.anchor)
  local resource=api.res.streetTemplateRep.get(api.res.streetTemplateRep.find(f.anchor.template))

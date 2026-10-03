@@ -1,7 +1,8 @@
-# PIF-P08 - integrated brief-to-connection workflow complete
-connect_brief/CLI connect-brief discovers/selects exact endpoints, fits natively and
-on --execute builds/reads back/verifies a native TRAIN route. Build40408:600-unit
-curved graded connection and623.54-unit route demonstrated.51client tests pass.
-P07 local checkpointd328782; final P08 checkpoint recorded in
-.local_runs/live_python_interface/p08/checkpoint.json, with result/checks/HANDOFF.
-Automatic reviewed handoffs continue; no remote push or new task started here.
+# PIF-P09 — integrated multi-leg native corridor complete
+connect_corridor/CLI connect-corridor: ordered native-fitted height/grade guides,
+one coherent proposal, exact shared guide nodes/attachments and overall TRAIN route.
+Build40408:1500.004925-unit,12-rise corridor;1540.063845native TRAIN route;56client
+tests pass. Source/receipt checks and local milestone checkpoint recorded under
+.local_runs/live_python_interface/p09/ with HANDOFF/result/checks/checkpoint.
+Initial review denial resolved by direct human approval; failed fits preserved.
+No remote push, process restart, physical train-traversal claim or new task started.

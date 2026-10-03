@@ -1,6 +1,30 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
 ## Current checkpoint
+P09 complete: connect_corridor/CLI connect-corridor reuses P08 discovery/selection and
+native fit/build/readback;1–3ordered XYZ/direction/grade guides, all legs pre-fitted,
+one coherent native proposal, exact shared guide nodes/final attachments and TRAIN route.
+Build40408:3legs/9TRACK131295–131303, source131271/node131270→target131285/node131283,
+exact guide nodes131289/131292. Length1500.004925,rise12,grades0.015→0.005→0.01→0.015,
+radius120/max_grade0.04; native TRAIN1540.063845. Fresh independent inspection passes;
+sampledgrade0.015000001,joinheightgap0. Fit-only leaves guide identities unrealised.
+Wrong-direction/strict-grade briefs rejected prebuild. Original layout/3fit-only
+alternates contained unsupported reverse pieces; distinct gradual-bend layout passed,
+no hard constraint relaxed. Forward pieces only; no unrestricted-routing claim.
+Finite limits:800/8pieces per leg,3200/32overall,3000XY region,4000route acceptance;
+discovery unchanged. One proposal is not a transaction/rollback guarantee.
+python tools/quiet_checks.py --suite live_client --label pif-p09-client:56passed;
+.local_checks/pif-p09-client_7puyv84f/report.json; existing tested hashes match.
+python .local_runs/live_python_interface/p09/check_evidence.py checks local receipts,
+staged/source hashes, exact guide positions/directions/grades/identity and TRAIN path.
+Native code executed; standalone Lua checker unavailable.14unchanged runner tests reused.
+Initial automatic review denial preserved/resolved by direct user approval of exact
+experiment and disposable-map ownership. Two fixtures/one corridor built; one normal
+load/save,no restart; paused/non-maximised. Full failures/receipts local in p09/p01.
+P08 baseeae0aca; final reviewed local milestone in p09/checkpoint.json; no push.
+Geometry sampled; physical traversal/native save identity unknown; actual usage unavailable.
+
+## P08 integrated connection accepted
 P08 complete: connect_brief/CLI connect-brief integrates two bounded native discoveries,
 deterministic guide/heading selection and one native compound fit/build/readback plus
 TRAIN route. Default fit-only; exact candidate snapshots/incidence revalidated before

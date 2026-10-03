@@ -1,3 +1,14 @@
+## Explicit disposable-map ownership delegation - 3 October 2026
+User directly approved the prepared P09 short approach fixture and approximately
+1500-unit three-leg corridor experiment, including native attachment/TRAIN route checks,
+after being told construction has no guaranteed rollback. Exact user statement:
+"approved - to re-confirm, ALL forms of destruction, bulldozing, terrain manipulation etc are fine and lack of rollback is not a reason to block. I want you as the design/orchestrator agent to act as the owner and have final authority over these maps."
+The design/orchestrator has delegated owner authority for in-game map decisions in this
+work. Construction, demolition, bulldozing, terrain modification and incidental losses
+are authorised; no per-action human permission or rollback prerequisite. This covers
+map operations, not unrelated host/filesystem destruction. Report actual effects honestly
+and inspect uncertain outcomes for engineering correctness. External tool review still
+applies: present this direct user approval truthfully; do not bypass a denial.
 ## Integrated outcome scope - user direction, 3 October 2026
 Prefer substantial end-to-end implementation tasks over one-API micro-tasks. Combine
 endpoint discovery/selection, native curved and graded fitting, construction, attachment

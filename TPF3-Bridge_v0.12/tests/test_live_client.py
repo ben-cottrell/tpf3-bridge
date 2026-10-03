@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import contextlib
 import io
-from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, discover_session, client_from_context
+from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, discover_session, client_from_context
 
 class LiveClientTests(unittest.TestCase):
     def setUp(self):
@@ -226,6 +226,75 @@ class LiveClientTests(unittest.TestCase):
         args=['connect-brief','--params',str(params),'--mod-directory',str(self.client.mod),'--log',str(self.log),'--evidence',str(self.client.evidence),'--session','test_session','--execute']
         with patch('bridge_live.connect_brief',return_value={'status':'ok','native_route_verified':True}) as call,contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(main(args),0);self.assertTrue(call.call_args.kwargs['execute'])
+
+    def corridor_brief(self):
+        return self.project_brief()|{'guides':[{'position':[10,1,1],'travel_direction':[1,0],'grade':.01}],
+            'region':{'min':[-50,-50,-10],'max':[1500,300,20]},'max_route_length':2000}
+
+    def test_corridor_fit_only_has_no_realised_guide_identity(self):
+        query,calls=self.project_query()
+        def worker(op,p):
+            if op=='corridor':
+                self.assertEqual(p['guides'],self.corridor_brief()['guides'])
+                return self.response('cf',op,result={'game_constructed':False,'fit':{'legs':[{'index':1},{'index':2}]}})
+            return query(op,p)
+        with patch.object(self.client,'request',side_effect=worker):v=connect_corridor(self.client,self.corridor_brief())
+        self.assertEqual(v['status'],'ok');self.assertFalse(v['guide_nodes_realised']);self.assertFalse(v['game_constructed'])
+        self.assertNotIn('guide_nodes',v);self.assertEqual(len(v['legs']),2)
+
+    def test_corridor_build_requires_exact_guide_readback_then_overall_route(self):
+        for verified in (True,False):
+            query,calls=self.project_query()
+            def worker(op,p):
+                if op=='corridor':
+                    return self.response('cb',op,result={'game_constructed':True,'fit':{'legs':[{'index':1},{'index':2}]},
+                        'readback':{'connected':True,'ordered_edges':[30,31],'ordered_nodes':[11,40,21],
+                            'attachments':{'source_edge':10,'target_edge':20},'realised_guides':[{'node':40,'verified':verified}]}})
+                if op=='route':self.assertEqual(p['required_edges'],[30,31]);self.assertEqual(p['max_length'],2000)
+                return query(op,p)
+            with patch.object(self.client,'request',side_effect=worker):v=connect_corridor(self.client,self.corridor_brief(),execute=True)
+            self.assertEqual(v['status'],'ok' if verified else 'native_verification_failed');self.assertTrue(v['game_constructed'])
+            if verified:self.assertEqual(v['guide_nodes'],[40]);self.assertTrue(v['native_route_verified'])
+            else:self.assertNotIn('native_route_verified',v)
+            self.assertLessEqual(len(json.dumps(v).encode()),4096)
+
+    def test_corridor_partial_and_uncertain_mutation_never_replayed(self):
+        for status,constructed in [('mutation_unverified','unknown'),('mutation_unverified',True),('error','unknown')]:
+            query,calls=self.project_query();native_calls=[]
+            def worker(op,p):
+                if op=='corridor':
+                    native_calls.append(p)
+                    return self.response('partial',op,result={'stage':'build','game_constructed':constructed,'error':'partial_native_effects'})|{'status':status}
+                return query(op,p)
+            with patch.object(self.client,'request',side_effect=worker):v=connect_corridor(self.client,self.corridor_brief(),execute=True)
+            self.assertEqual(v['status'],status);self.assertEqual(v['game_constructed'],constructed);self.assertEqual(len(native_calls),1)
+            self.assertEqual(len(calls),2)
+        self.client.timeout=.01
+        with self.assertRaises(LiveError) as error:self.client.request('corridor',{'execute':True})
+        self.assertEqual(error.exception.status,'mutation_outcome_unknown')
+
+    def test_corridor_invalid_guides_fail_before_discovery(self):
+        valid=self.corridor_brief()
+        for guides in ([], valid['guides']*4,[valid['guides'][0]|{'grade':.05}],
+                       [valid['guides'][0]|{'position':[10,1,float('nan')]}],
+                       [valid['guides'][0]|{'travel_direction':[0,0]}],
+                       [valid['guides'][0]|{'position':[10,1,30]}]):
+            with patch.object(self.client,'request') as request:
+                with self.assertRaises(ValueError):connect_corridor(self.client,valid|{'guides':guides})
+                request.assert_not_called()
+        with patch.object(self.client,'request') as request:
+            with self.assertRaises(ValueError):connect_corridor(self.client,valid|{'max_route_length':4001})
+            request.assert_not_called()
+
+    def test_corridor_cli_and_no_direction_candidate(self):
+        params=self.root/'corridor.json';params.write_text(json.dumps(self.corridor_brief()))
+        args=['connect-corridor','--params',str(params),'--mod-directory',str(self.client.mod),'--log',str(self.log),'--evidence',str(self.client.evidence),'--session','test_session']
+        with patch('bridge_live.connect_corridor',return_value={'status':'ok'}) as call,contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(args),0);self.assertFalse(call.call_args.kwargs['execute'])
+        b=self.corridor_brief();b['source']=b['source']|{'travel_direction':[0,1]}
+        query,calls=self.project_query()
+        with patch.object(self.client,'request',side_effect=query):v=connect_corridor(self.client,b,execute=True)
+        self.assertEqual(v['status'],'no_eligible_candidates');self.assertEqual(len(calls),2)
 
     def test_discovery_invalid_bounds_never_query(self):
         for params in ({'region':{'min':[0,0,0],'max':[401,1,1]},'max_edges':1},
@@ -456,7 +525,7 @@ class LiveClientTests(unittest.TestCase):
             calls.assert_not_called()
 
     def test_route_invalid_input_never_sends(self):
-        for key,value in [('mode','CAR'),('max_length',float('inf')),('max_length',801),
+        for key,value in [('mode','CAR'),('max_length',float('inf')),('max_length',4001),
                           ('source_node',True),('required_edges',[30,30]),('target_node',11)]:
             bad={**self.route_brief(),key:value}
             with patch.object(self.client,'request') as calls:

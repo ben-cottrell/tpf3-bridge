@@ -14,10 +14,10 @@ import time
 import uuid
 
 MARKER = 'TPF3_BRIDGE_LIVE_RESPONSE '
-OPERATIONS = {'inspect', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'selected_connection'}
+OPERATIONS = {'inspect', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'selected_connection', 'corridor'}
 
 def is_mutation(operation, params):
-    return operation in ('build', 'test_approach') or (operation in ('extension', 'connection', 'selected_connection') and params.get('execute') is True)
+    return operation in ('build', 'test_approach') or (operation in ('extension', 'connection', 'selected_connection', 'corridor') and params.get('execute') is True)
 
 def discover_session(log_path):
     """Read transport markers locally; a later request must still prove responsiveness."""
@@ -169,18 +169,20 @@ def _selected_parameters(client, discovery, brief):
         'radius':brief['radius'],'region':brief['region'],'discovery_request':request_ids[0],
         'discovery_requests':request_ids,**vertical}
 
-def validate_project_brief(brief):
+def validate_project_brief(brief, *, corridor=False):
     keys={'source','target','radius','region','vertical','max_fit_attempts','max_route_length'}
     if not isinstance(brief,dict) or set(brief)!=keys:
         raise ValueError('connection project requires only '+', '.join(sorted(keys)))
     validate_connection_brief({'anchor_edge':1,'anchor_node':2,'target_edge':3,'target_node':4,
                               'radius':brief['radius'],'region':brief['region'],'vertical':brief['vertical']})
-    if any(brief['region']['max'][i]-brief['region']['min'][i]>1000 for i in range(2)):
-        raise ValueError('connection region spans at most1000 native XY units per axis')
+    bound=3000 if corridor else 1000
+    if any(brief['region']['max'][i]-brief['region']['min'][i]>bound for i in range(2)):
+        raise ValueError(f'connection region spans at most{bound} native XY units per axis')
     if type(brief['max_fit_attempts']) is not int or not 1<=brief['max_fit_attempts']<=16:
         raise ValueError('max_fit_attempts must be within1–16')
-    if type(brief['max_route_length']) not in (int,float) or not math.isfinite(brief['max_route_length']) or not 0<brief['max_route_length']<=800:
-        raise ValueError('max_route_length must be within(0,800] native units')
+    route_bound=4000 if corridor else 800
+    if type(brief['max_route_length']) not in (int,float) or not math.isfinite(brief['max_route_length']) or not 0<brief['max_route_length']<=route_bound:
+        raise ValueError(f'max_route_length must be within(0,{route_bound}] native units')
     for name in ('source','target'):
         value=brief[name]
         if not isinstance(value,dict) or set(value)!={'region','max_edges','guide_xyz','travel_direction','heading_tolerance_deg'}:
@@ -204,12 +206,40 @@ def validate_project_brief(brief):
 def connect_brief(client, brief, *, execute=False):
     """Bounded discovery, deterministic selection, native build and route acceptance."""
     validate_project_brief(brief)
+    return _connect_project(client,brief,execute)
+
+def connect_corridor(client, brief, *, execute=False):
+    """Native-fitted ordered guide legs, one coherent build, exact joins and route."""
+    if not isinstance(brief,dict) or 'guides' not in brief:
+        raise ValueError('corridor requires ordered guides')
+    base={k:v for k,v in brief.items() if k!='guides'}
+    validate_project_brief(base,corridor=True)
+    guides=brief['guides']
+    if not isinstance(guides,list) or not 1<=len(guides)<=3:
+        raise ValueError('corridor requires1–3 ordered intermediate guides')
+    for guide in guides:
+        if not isinstance(guide,dict) or set(guide)!={'position','travel_direction','grade'}:
+            raise ValueError('guide requires position, travel_direction and grade')
+        for key,n in (('position',3),('travel_direction',2)):
+            v=guide[key]
+            if not isinstance(v,list) or len(v)!=n or any(type(x) not in (int,float) or not math.isfinite(x) for x in v):
+                raise ValueError('guide '+key+' must be finite native coordinates')
+        if math.hypot(*guide['travel_direction'])<1e-9:
+            raise ValueError('guide direction must be nonzero')
+        g=guide['grade']
+        if type(g) not in (int,float) or not math.isfinite(g) or abs(g)>brief['vertical']['max_grade']:
+            raise ValueError('guide grade exceeds selected limit')
+        if any(not brief['region']['min'][i]<=guide['position'][i]<=brief['region']['max'][i] for i in range(3)):
+            raise ValueError('guide outside authorised region')
+    return _connect_project(client,base,execute,guides)
+
+def _connect_project(client, brief, execute, guides=None):
     if type(execute) is not bool:raise ValueError('execute must be boolean')
     job=uuid.uuid4().hex;path=client.evidence/(job+'.workflow.json')
-    summary={'status':'incomplete','job_id':job,'session':client.session,'operation':'connect-brief',
+    summary={'status':'incomplete','job_id':job,'session':client.session,'operation':'connect-corridor' if guides else 'connect-brief',
              'execute':execute,'game_constructed':False,'stage':'discover','evidence':str(path.resolve()),
              'attempt_count':0,'train_traversal':'unprobed'}
-    record={'summary':summary,'brief':brief,'discoveries':[],'attempts':[]}
+    record={'summary':summary,'brief':brief|({'guides':guides} if guides else {}),'discoveries':[],'attempts':[]}
     lock=client.evidence/'workflow.lock'
     try:
         with lock.open('x'):pass
@@ -245,7 +275,8 @@ def connect_brief(client, brief, *, execute=False):
             selection={k:brief[k] for k in ('radius','region','vertical')}
             selection.update(source_ref=source['ref'],target_ref=target['ref'])
             params=_selected_parameters(client,records,selection);params['execute']=execute
-            response=client.request('selected_connection',params)
+            if guides:params['guides']=guides
+            response=client.request('corridor' if guides else 'selected_connection',params)
             result=response.get('result',{})
             record['attempts'].append({'request_id':response['request_id'],'source_ref':source['ref'],
                 'target_ref':target['ref'],'status':response['status'],'stage':result.get('stage'),
@@ -261,6 +292,9 @@ def connect_brief(client, brief, *, execute=False):
                                      'target_edge':target['edge_id'],'target_node':target['node_id']},
                            native_request_id=response['request_id'],game_constructed=result.get('game_constructed',False),
                            fit={k:result.get('fit',{}).get(k) for k in ('pieces','total_length','radius','grade','end_grade','max_grade','max_sampled_grade','sampled_XY_error','sampled_Z_error','sampled_only')})
+            if guides:
+                summary['legs']=result.get('fit',{}).get('legs',[])
+                summary['guide_nodes_realised']=False
             if not execute:summary.update(status='ok',stage='fit');return summary
             rb=result.get('readback',{});nodes=rb.get('ordered_nodes',[]);edges=rb.get('ordered_edges',[])
             summary.update(stage='readback',game_constructed=True,edges=edges,nodes=nodes)
@@ -268,6 +302,11 @@ def connect_brief(client, brief, *, execute=False):
                 summary.update(status='native_verification_failed',error='exact attachments not established');return summary
             summary.update(connected=True,max_sampled_grade=rb.get('max_sampled_grade'),
                            max_join_height_gap=rb.get('max_join_height_gap'),max_join_grade_gap=rb.get('max_join_grade_gap'))
+            if guides:
+                realised=rb.get('realised_guides',[])
+                if len(realised)!=len(guides) or any(g.get('verified') is not True for g in realised):
+                    summary.update(status='native_verification_failed',error='guide joins not established');return summary
+                summary.update(guide_nodes_realised=True,guide_nodes=[g['node'] for g in realised])
             def other(c):
                 edge=c['edge_snapshot'];return edge['node0'] if edge['node1']==c['node_id'] else edge['node1']
             summary['stage']='route'
@@ -440,11 +479,11 @@ def route(client, brief):
         raise ValueError('route requires distinct attachments')
     if brief['mode'] not in ('TRAIN', 'ELECTRIC_TRAIN'):
         raise ValueError('route mode must be TRAIN or ELECTRIC_TRAIN')
-    if type(brief['max_length']) not in (int, float) or not math.isfinite(brief['max_length']) or not 0 < brief['max_length'] <= 800:
-        raise ValueError('route max_length must be finite and within (0,800] native units')
+    if type(brief['max_length']) not in (int, float) or not math.isfinite(brief['max_length']) or not 0 < brief['max_length'] <= 4000:
+        raise ValueError('route max_length must be finite and within (0,4000] native units')
     ids = brief['required_edges']
-    if not isinstance(ids, list) or not 1 <= len(ids) <= 16 or any(type(i) is not int or i <= 0 for i in ids) or len(set(ids)) != len(ids):
-        raise ValueError('required_edges must contain 1–16 distinct exact native IDs')
+    if not isinstance(ids, list) or not 1 <= len(ids) <= 32 or any(type(i) is not int or i <= 0 for i in ids) or len(set(ids)) != len(ids):
+        raise ValueError('required_edges must contain 1–32 distinct exact native IDs')
     return client.request('route', brief)
 
 def _workflow(client, brief, execute, operation):
@@ -697,11 +736,11 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--context', type=Path)
     parser.add_argument('--discovery', type=Path, help='saved full discover response for connect-selected')
-    parser.add_argument('--execute', action='store_true', help='authorise native construction for extend/connect/connect-brief')
+    parser.add_argument('--execute', action='store_true', help='authorise native construction for extend/connect/connect-brief/connect-corridor')
     parser.add_argument('--mod-directory', type=Path)
     parser.add_argument('--log', type=Path)
     parser.add_argument('--evidence', type=Path)
@@ -720,12 +759,14 @@ def main(argv=None):
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief'):
-            raise ValueError('--execute is only for extend/connect/connect-brief; low-level build uses explicit authorised parameter')
+        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor'):
+            raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor; low-level build uses explicit authorised parameter')
         if args.operation in ('extend', 'connect'):
             response = (extend if args.operation == 'extend' else connect)(client, params, execute=args.execute)
         elif args.operation == 'connect-brief':
             response = connect_brief(client,params,execute=args.execute)
+        elif args.operation == 'connect-corridor':
+            response = connect_corridor(client,params,execute=args.execute)
         elif args.operation == 'route':
             response = route(client, params)
         elif args.operation == 'discover':
