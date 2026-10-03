@@ -1,6 +1,33 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
 ## Current checkpoint
+P12 complete: connect_junction_at / CLI connect-junction-at [--execute] adds native
+interior placement with explicit placement_tolerance; ordinary unowned TRACK/no objects,
+parameter0.05–0.95, either travel direction, free target. Native cubic evaluation and
+one coherent remove/replace/branch proposal; no Python fitter or relaxed constraint.
+Build40408: original131326 replaced by135522/135548, outer nodes131317/131318 retained,
+interior node135148 at0.50390625; branch135425/8641/131653 to target11085. Native fitted
+length350.125965,rise2.991768,grades0.008900871→0.015,requested radius120/margin126;
+realised sampled minimum124.535004,max_grade0.015<0.04. Exact native through TRAIN
+473.756048 and branch608.866104 pass, including node-owned turnout connectors.
+First read used class instead of instance method; corrected before construction.
+Initial build returned exact edges but failed an overstrict removal-receipt check.
+Fresh final-state readback verified original removal, subdivision controls/resources,
+attachments, bounds and both movements without rebuilding. Separate read-only
+reconcile_constructed_interior records verification; original failure remains intact,
+other transient effects unknown. Old reference, invalid guide/heading, strict grade and
+excluded region fail honestly. Existing P11/free-end/corridor interfaces retained.
+python tools/quiet_checks.py --suite live_client --label pif-p12-checkpoint:72passed;
+.local_checks/pif-p12-checkpoint_fy2mu0id/report.json. Python/test hashes unchanged thereafter.
+python .local_runs/live_python_interface/p12/check_evidence.py: retained evidence checks;
+full reports, receipts, failures, source/staging hashes, HANDOFF/result/checkpoint in p12.
+Disposable map saved normally; fresh load/read verified the same built state. Game left
+paused/nonmaximised,no restart. P11 base56011d3; local milestone only,no push.
+Geometry sampled,not continuous proof; physical traversal/reservation/all movements,
+general native save identity and construction-owned/object-bearing edges unprobed.
+Actual usage unavailable; no station/physics/runner change.
+
+## P11 existing-node junction accepted
 P11 complete: callable connect_junction / CLI connect-junction [--execute], explicit
 junction discovery; exact compatible two-edge through node to free branch target.
 Native fit/build/readback reused; normal free-end/corridor eligibility unchanged.

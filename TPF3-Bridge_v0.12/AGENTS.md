@@ -1,3 +1,14 @@
+## Functional railway equivalents - user clarification, 3 October 2026
+Real-world research layouts are references for useful railway functions, not exact
+replica requirements. User accepts reasonable equivalents within the game's bounds.
+Prioritise intended approach/branch connections and supported native movements over
+matching real-world dimensions, pointwork or specialised arrangements. Use practical
+native alternatives when game limitations make literal reproduction unproductive;
+report material differences or unsupported movements honestly rather than claiming
+equivalence merely from visual similarity. Do not spend time chasing replica fidelity.
+This guides current junction work and the proposed integrated multi-track throat
+demonstrator; it does not add platform/station modelling or physical train-operation
+proof. Convey at the next idle handoff; do not interrupt active P12.
 ## Junction and branching-route scope - user approval, 3 October 2026
 User approved the proposed next capability, "junction construction and connecting
 branching routes", with "I agree with your next step - continue with the same process".

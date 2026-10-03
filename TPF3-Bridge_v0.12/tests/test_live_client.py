@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import contextlib
 import io
-from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, connect_junction, reconcile_rejected_junction, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, discover_session, client_from_context
+from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, connect_junction, connect_junction_at, reconcile_rejected_junction, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, reconcile_constructed_interior, discover_session, client_from_context
 
 class LiveClientTests(unittest.TestCase):
     def setUp(self):
@@ -382,6 +382,90 @@ class LiveClientTests(unittest.TestCase):
         args=['connect-junction','--params',str(params),'--mod-directory',str(self.client.mod),'--log',str(self.log),'--evidence',str(self.client.evidence),'--session','test_session','--execute']
         with patch('bridge_live.connect_junction',return_value={'status':'ok'}) as call,contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(main(args),0);self.assertTrue(call.call_args.kwargs['execute'])
+
+    def interior_query(self, defect=None):
+        base,_=self.project_query();calls=[]
+        def query(op,p):
+            calls.append((op,p))
+            if op=='discover_interior':
+                v=base('discover',p);v['operation']=op;c=v['result']['candidates'][0]
+                c.pop('node_id');c.update(interior_eligible=True,parameter=.5)
+                if defect=='location':c['parameter']=0
+                return v
+            if op=='interior_junction':
+                v=base('selected_connection',p|{'source':p['source']|{'node_id':99}});v['operation']=op
+                incoming={'id':40,'node0':10,'node1':99};through={'id':41,'node0':99,'node1':11}
+                v['result']['readback']['attachments']['source_edge']=40
+                v['result'].update(through_before={'requested_route_verified':True},through_after={'requested_route_verified':defect!='through','total_path_length':20},
+                    branch_after={'requested_route_verified':True},placement={'original_edge':10,'original_nodes':[10,11],'parameter':.5,'position':[0,0,0],
+                    'junction_node':99,'replacement_edges':[40,41],'incoming':incoming,'through':through,'original_removed':defect!='removed','subdivision_sampled_verified':True},
+                    junction={'node':99,'incoming_edge':40,'through_edge':41,'branch_edge':30,'incident_edges':[40,41,30],
+                    'exact_native_identity':True,'branch_geometry_verified':True})
+                if defect=='unknown':v['status']='mutation_unverified';v['result'].update(game_constructed='unknown',stage='build')
+                return v
+            return base(op,p)
+        return query,calls
+
+    def test_interior_fit_only_and_exact_replacement_execution(self):
+        for execute in (False,True):
+            query,calls=self.interior_query()
+            with patch.object(self.client,'request',side_effect=query):v=connect_junction_at(self.client,self.project_brief()|{'placement_tolerance':1},execute=execute)
+            self.assertEqual(v['status'],'ok');self.assertEqual(v['game_constructed'],execute)
+            self.assertEqual([x[0] for x in calls],['discover_interior','discover','interior_junction']+(['route'] if execute else []))
+            if execute:
+                self.assertEqual(v['selected']['original_source_edge'],10);self.assertEqual(v['selected']['source_edge'],40)
+                self.assertEqual(calls[-1][1]['source_edge'],40);self.assertEqual(v['placement']['replacement_edges'],[40,41])
+            else:self.assertNotIn('placement',v);self.assertNotIn('junction',v)
+            self.assertLessEqual(len(json.dumps(v).encode()),4096)
+
+    def test_interior_bad_location_and_replacement_evidence_are_not_success(self):
+        for defect,status in [('location','local_input_or_storage_error'),('removed','native_verification_failed'),('through','native_verification_failed')]:
+            query,calls=self.interior_query(defect)
+            with patch.object(self.client,'request',side_effect=query):v=connect_junction_at(self.client,self.project_brief()|{'placement_tolerance':1},execute=True)
+            self.assertEqual(v['status'],status);self.assertEqual(v['game_constructed'],defect!='location')
+            self.assertNotIn('route',[x[0] for x in calls])
+
+    def test_interior_unknown_mutation_is_not_replayed(self):
+        query,calls=self.interior_query('unknown')
+        with patch.object(self.client,'request',side_effect=query):v=connect_junction_at(self.client,self.project_brief()|{'placement_tolerance':1},execute=True)
+        self.assertEqual(v['status'],'mutation_unverified');self.assertEqual(v['game_constructed'],'unknown');self.assertEqual(len(calls),3)
+
+    def test_interior_invalid_tolerance_stops_before_native_commands(self):
+        for tol in (0,11,True,float('nan')):
+            with patch.object(self.client,'request') as call:
+                with self.assertRaises(ValueError):connect_junction_at(self.client,self.project_brief()|{'placement_tolerance':tol},execute=True)
+                call.assert_not_called()
+
+    def test_interior_cli_defaults_to_fit_only(self):
+        params=self.root/'interior.json';params.write_text(json.dumps(self.project_brief()|{'placement_tolerance':1}))
+        args=['connect-junction-at','--params',str(params),'--mod-directory',str(self.client.mod),'--log',str(self.log),'--evidence',str(self.client.evidence),'--session','test_session']
+        with patch('bridge_live.connect_junction_at',return_value={'status':'ok'}) as call,contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(args),0);self.assertFalse(call.call_args.kwargs['execute'])
+
+    def test_interior_reconciliation_reads_exact_receipt_without_replay(self):
+        for defect in (None,'incomplete','unverified','unknown'):
+            params={'execute':True,'source':{'edge_id':10,'parameter':.5},'target':{}}
+            pending={'operation':'interior_junction','request_id':'built','params':params}
+            self.client.journal.write_text(json.dumps({'pending':pending}))
+            response=self.response('built','interior_junction',result={'game_constructed':True,'returned_edges':[40,41,30],'fit':{'pieces':1,'controls':[{}]}})
+            response['status']='mutation_unverified'
+            if defect=='unknown':response['result']['game_constructed']='unknown'
+            (self.client.evidence/'built.response.json').write_text(json.dumps(response))
+            result={'reconciled_current_state':True,'readback':{'connected':True,'ordered_edges':[30]},
+                'placement':{'original_removed':True,'original_edge':10,'replacement_edges':[40,41]},
+                'junction':{'exact_native_identity':True,'branch_geometry_verified':True},
+                'through_after':{'requested_route_verified':True},'branch_after':{'requested_route_verified':True}}
+            if defect=='incomplete':result['placement']['replacement_edges']=[40]
+            if defect=='unverified':result['branch_after']['requested_route_verified']=False
+            with patch.object(self.client,'request',return_value={'status':'ok','request_id':'verify','result':result}) as call:
+                if defect:
+                    with self.assertRaises(LiveError):reconcile_constructed_interior(self.client)
+                    self.assertIn('pending',json.loads(self.client.journal.read_text()))
+                    if defect=='unknown':call.assert_not_called()
+                else:
+                    v=reconcile_constructed_interior(self.client);self.assertEqual(v['status'],'ok')
+                    self.assertNotIn('pending',json.loads(self.client.journal.read_text()));self.assertFalse(v['result']['automatic_replay'])
+                if defect!='unknown':self.assertEqual(call.call_count,1);self.assertEqual(call.call_args.args[0],'verify_interior');self.assertFalse(call.call_args.args[1]['execute'])
 
     def test_discovery_invalid_bounds_never_query(self):
         for params in ({'region':{'min':[0,0,0],'max':[401,1,1]},'max_edges':1},

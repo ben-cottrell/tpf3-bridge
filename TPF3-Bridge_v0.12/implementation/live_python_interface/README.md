@@ -513,3 +513,46 @@ TRAIN372.902615 passed; sampled realised minimum radius124.509571 exceeds reques
 maximum grade0.015 is below0.04. An initial branch failed geometry verification and
 remains failed evidence; a distinct near-parallel proposal was natively rejected and
 reconciled before the diverging layout passed. No rollback or automatic replay occurred.
+
+
+## Interior junction placement (P12)
+
+Use `connect_junction_at(client, brief, execute=False)` or:
+
+```powershell
+python bridge_live.py connect-junction-at --context context.json --params interior_brief.json
+python bridge_live.py connect-junction-at --context context.json --params interior_brief.json --execute
+```
+
+Use the P11 brief plus explicit `placement_tolerance` (greater than zero, maximum10
+native coordinate units). Source guide XYZ and travel direction select a native point
+near the interior of an ordinary unowned TRACK edge. Native `EdgeGeometry:locate`
+returns parameter0.05–0.95; stated spatial/heading tolerances remain binding. Either
+canonical direction is supported without reversing the supplied railway direction.
+Target remains an exact free end. Edges with objects/construction owners are unsupported.
+Include the entire replacement through edge and branch in the authorised XYZ region.
+
+Native evaluation supplies both through subdivisions; sampled position, direction,
+radius, grade and region checks precede construction. One proposal removes the original
+edge, clones its properties into two replacements and attaches the native-fitted branch.
+Fresh exact identities, controls/resources, three-way incidence and through/branch TRAIN
+paths establish the result. Final-state absence establishes removal; receipt counters
+alone do not establish the railway. No Python spline fitter or rollback guarantee.
+
+Uncertain construction stops. `reconcile_constructed_interior(client, original_client=None)`
+reads the explicitly returned IDs against recorded native controls and fresh native paths;
+only successful verification clears its pending journal. Original failure evidence remains.
+After an authorised normal save/load, use the original client as an evidence reference and
+the current client for fresh native reads. This is explicit reconciliation, not automatic
+crash recovery or general save-identity mapping. No fitting/build is repeated; transient
+engine effects remain incomplete. Full observations stay local; CLI summaries remain compact.
+
+Build40408 demonstrated node135148 at parameter0.50390625 on original131326. Through
+TRACK135522/135548 retain outer nodes131317/131318; branch135425/8641/131653 reaches
+node11085. Native fitted length350.125965, rise2.991768, grade0.008900871 to0.015,
+requested radius120/native fitting margin126, realised sampled minimum124.535004.
+Through TRAIN473.756048 and branch TRAIN608.866104 passed. An initial receipt check
+failed after construction; final state was verified without rebuilding. Stale source,
+misplaced guide, wrong heading, strict grade and excluded region fail honestly.
+Geometry remains sampled. Physical traversal, reservation, all movements and general
+native save identity are unprobed. P11 existing-node/free-end/corridor workflows remain.

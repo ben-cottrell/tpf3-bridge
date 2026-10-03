@@ -1,5 +1,7 @@
-# PIF-P11 - complete
-Native junction/branch workflow passed on build40408: exact through-node attachment,
-curved/graded branch, both native TRAIN movements, sampled constraints and negatives.
-Evidence/reports/checkpoint: .local_runs/live_python_interface/p11/.
-Await coordinator review; no unsolicited next task or remote push.
+# PIF-P12 — complete
+
+Interior-track junction placement and branch connection implemented and natively verified.
+Card: .local_runs/live_python_interface/p12/orchestrator/TASK.md
+Evidence: .local_runs/live_python_interface/p12/{HANDOFF.md,checks.json,result.json,checkpoint.json}
+Native receipt failure preserved; current state reconciled read-only without rebuilding.
+72 affected tests passed. Local milestone commit only; no push or unsolicited next task.

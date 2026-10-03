@@ -14,10 +14,10 @@ import time
 import uuid
 
 MARKER = 'TPF3_BRIDGE_LIVE_RESPONSE '
-OPERATIONS = {'inspect', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'discover_junction', 'junction', 'selected_connection', 'corridor'}
+OPERATIONS = {'inspect', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'junction', 'interior_junction', 'selected_connection', 'corridor'}
 
 def is_mutation(operation, params):
-    return operation in ('build', 'test_approach') or (operation in ('extension', 'connection', 'selected_connection', 'corridor', 'junction') and params.get('execute') is True)
+    return operation in ('build', 'test_approach') or (operation in ('extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction') and params.get('execute') is True)
 
 def discover_session(log_path):
     """Read transport markers locally; a later request must still prove responsiveness."""
@@ -219,6 +219,16 @@ def connect_junction(client, brief, *, execute=False):
     validate_project_brief(brief)
     return _connect_project(client,brief,execute,junction=True)
 
+def connect_junction_at(client, brief, *, execute=False):
+    """Native interior placement and coherent through replacement/branch construction."""
+    if not isinstance(brief,dict) or 'placement_tolerance' not in brief:
+        raise ValueError('interior placement requires explicit placement_tolerance')
+    tolerance=brief['placement_tolerance']
+    if type(tolerance) not in (int,float) or not math.isfinite(tolerance) or not 0<tolerance<=10:
+        raise ValueError('placement_tolerance must be within(0,10] native units')
+    validate_project_brief({k:v for k,v in brief.items() if k!='placement_tolerance'})
+    return _connect_project(client,brief,execute,junction=True,interior=True)
+
 def connect_corridor(client, brief, *, execute=False):
     """Native-fitted ordered guide legs, one coherent build, exact joins and route."""
     if not isinstance(brief,dict) or 'guides' not in brief:
@@ -244,10 +254,10 @@ def connect_corridor(client, brief, *, execute=False):
             raise ValueError('guide outside authorised region')
     return _connect_project(client,base,execute,guides)
 
-def _connect_project(client, brief, execute, guides=None, *, junction=False):
+def _connect_project(client, brief, execute, guides=None, *, junction=False, interior=False):
     if type(execute) is not bool:raise ValueError('execute must be boolean')
     job=uuid.uuid4().hex;path=client.evidence/(job+'.workflow.json')
-    summary={'status':'incomplete','job_id':job,'session':client.session,'operation':'connect-junction' if junction else ('connect-corridor' if guides else 'connect-brief'),
+    summary={'status':'incomplete','job_id':job,'session':client.session,'operation':'connect-junction-at' if interior else ('connect-junction' if junction else ('connect-corridor' if guides else 'connect-brief')),
              'execute':execute,'game_constructed':False,'stage':'discover','evidence':str(path.resolve()),
              'attempt_count':0,'train_traversal':'unprobed'}
     record={'summary':summary,'brief':brief|({'guides':guides} if guides else {}),'discoveries':[],'attempts':[]}
@@ -261,14 +271,17 @@ def _connect_project(client, brief, execute, guides=None, *, junction=False):
         atomic_json(path,record)
         records=[];choices=[]
         for name in ('source','target'):
-            intent=brief[name];found=discover(client,{k:intent[k] for k in ('region','max_edges')},junction=junction and name=='source')
+            intent=brief[name]
+            if interior and name=='source':
+                found=client.request('discover_interior',intent|{'placement_tolerance':brief['placement_tolerance']})
+            else:found=discover(client,{k:intent[k] for k in ('region','max_edges')},junction=junction and name=='source')
             record['discoveries'].append(found['request_id']);records.append(found)
             if found['status']!='ok':
                 summary.update(status=found['status'],error=found.get('result',{}).get('error','discovery_failed'));return summary
             ranked=[];direction=intent['travel_direction'];size=math.hypot(*direction)
             for c in found['result']['candidates']:
-                eligible=c.get('junction_eligible') if junction and name=='source' else c.get('eligible')
-                if eligible is not True or c.get('incidence_complete') is not True:continue
+                eligible=c.get('interior_eligible') if interior and name=='source' else (c.get('junction_eligible') if junction and name=='source' else c.get('eligible'))
+                if eligible is not True or (not (interior and name=='source') and c.get('incidence_complete') is not True):continue
                 actual=c['outward_direction'];sign=1 if name=='source' else -1
                 dot=sign*(actual[0]*direction[0]+actual[1]*direction[1])/size
                 heading=math.degrees(math.acos(max(-1,min(1,dot))))
@@ -279,18 +292,29 @@ def _connect_project(client, brief, execute, guides=None, *, junction=False):
         summary['discovery_complete']=all(r['result'].get('complete') is True for r in records)
         summary['eligible_counts']=[len(x) for x in choices]
         pairs=[(a[0]+b[0],a[1]+b[1],a[2],b[2]) for a in choices[0] for b in choices[1]
-               if a[2]['edge_id']!=b[2]['edge_id'] and a[2]['node_id']!=b[2]['node_id']]
-        pairs.sort(key=lambda p:(p[0],p[1],p[2]['edge_id'],p[2]['node_id'],p[3]['edge_id'],p[3]['node_id']))
+               if a[2]['edge_id']!=b[2]['edge_id'] and a[2].get('node_id')!=b[2]['node_id']]
+        pairs.sort(key=lambda p:(p[0],p[1],p[2]['edge_id'],p[2].get('node_id',-1),p[3]['edge_id'],p[3]['node_id']))
         if not pairs:summary.update(status='no_eligible_candidates');return summary
         summary['stage']='select'
         for _,_,source,target in pairs[:brief['max_fit_attempts']]:
             selection={k:brief[k] for k in ('radius','region','vertical')}
             selection.update(source_ref=source['ref'],target_ref=target['ref'])
-            params=_selected_parameters(client,records,selection,junction=junction);params['execute']=execute
+            if interior:
+                if records[0].get('operation')!='discover_interior' or records[0].get('session')!=client.session:
+                    raise ValueError('interior selection requires current-session native discovery')
+                if source.get('interior_eligible') is not True or not .05<=source.get('parameter',-1)<=.95 or not isinstance(source.get('edge_snapshot'),dict) or source['edge_snapshot'].get('id')!=source['edge_id']:
+                    raise ValueError('invalid recorded interior attachment')
+                # Keep the target free-end contract; native execution reacquires both.
+                if target.get('eligible') is not True or target.get('incidence_complete') is not True or target.get('incident_count')!=1 or target.get('incident_edges')!=[target['edge_id']] or not isinstance(target.get('edge_snapshot'),dict):
+                    raise ValueError('candidate is not a fully verified free endpoint')
+                params={k:brief[k] for k in ('radius','region','vertical')}
+                params.update(source=source,target=target,location=brief['source']|{'placement_tolerance':brief['placement_tolerance']},execute=execute)
+            else:
+                params=_selected_parameters(client,records,selection,junction=junction);params['execute']=execute
             if junction:params['max_route_length']=brief['max_route_length']
             if guides:params['guides']=guides
             summary['stage']='native_connection'
-            response=client.request('junction' if junction else ('corridor' if guides else 'selected_connection'),params)
+            response=client.request('interior_junction' if interior else ('junction' if junction else ('corridor' if guides else 'selected_connection')),params)
             result=response.get('result',{})
             record['attempts'].append({'request_id':response['request_id'],'source_ref':source['ref'],
                 'target_ref':target['ref'],'status':response['status'],'stage':result.get('stage'),
@@ -302,7 +326,7 @@ def _connect_project(client, brief, execute, guides=None, *, junction=False):
                     continue
                 summary.update(status=response['status'],error=result.get('error','native_operation_failed'),
                                game_constructed=result.get('game_constructed','unknown' if execute else False));return summary
-            summary.update(selected={'source_edge':source['edge_id'],'source_node':source['node_id'],
+            summary.update(selected={'source_edge':source['edge_id'],'source_node':source.get('node_id'),
                                      'target_edge':target['edge_id'],'target_node':target['node_id']},
                            native_request_id=response['request_id'],game_constructed=result.get('game_constructed',False),
                            fit={k:result.get('fit',{}).get(k) for k in ('pieces','total_length','radius','grade','end_grade','max_grade','max_sampled_grade','sampled_XY_error','sampled_Z_error','sampled_only','native_orientation')})
@@ -314,7 +338,22 @@ def _connect_project(client, brief, execute, guides=None, *, junction=False):
                 if result.get('through_before',{}).get('requested_route_verified') is not True:
                     summary.update(status='native_verification_failed',error='existing through movement not established');return summary
                 summary['through_before_verified']=True
+            if interior and not execute:
+                summary['proposed_placement']={k:result.get('placement',{}).get(k) for k in ('original_edge','parameter','position','subdivision_sampled_verified')}
             if not execute:summary.update(status='ok',stage='fit');return summary
+            if interior:
+                placement=result.get('placement',{});incoming=placement.get('incoming',{});through=placement.get('through',{})
+                if (placement.get('original_edge')!=source['edge_id'] or placement.get('original_removed') is not True
+                        or placement.get('subdivision_sampled_verified') is not True or len(set(placement.get('replacement_edges',[])))!=2
+                        or {incoming.get('id'),through.get('id')}!=set(placement['replacement_edges'])
+                        or incoming.get('id')==source['edge_id'] or through.get('id')==source['edge_id']
+                        or placement.get('original_nodes')!=[source['edge_snapshot']['node0'],source['edge_snapshot']['node1']]
+                        or placement.get('junction_node') in placement['original_nodes']):
+                    summary.update(status='native_verification_failed',error='native split identity/through geometry not established',game_constructed=True);return summary
+                summary['placement']={k:placement.get(k) for k in ('original_edge','original_nodes','parameter','position','junction_node','replacement_edges','original_removed','subdivision_sampled_verified')}
+                summary['selected']['original_source_edge']=source['edge_id']
+                source=source|{'edge_id':incoming['id'],'edge_snapshot':incoming,'node_id':placement['junction_node'],'through_edge':through['id']}
+                summary['selected'].update(source_edge=source['edge_id'],source_node=source['node_id'])
             rb=result.get('readback',{});nodes=rb.get('ordered_nodes',[]);edges=rb.get('ordered_edges',[])
             summary.update(stage='readback',game_constructed=True,edges=edges,nodes=nodes)
             if rb.get('connected') is not True or not nodes or nodes[0]!=source['node_id'] or nodes[-1]!=target['node_id'] or rb.get('attachments',{}).get('source_edge')!=source['edge_id'] or rb.get('attachments',{}).get('target_edge')!=target['edge_id']:
@@ -462,6 +501,46 @@ def reconcile_rejected_junction(client):
     path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
     latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
     latest.pop('pending');atomic_json(client.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
+
+def reconcile_constructed_interior(client, original_client=None):
+    """Read back exact reported split/branch identities, even after a normal load.
+
+    An old client is only an evidence/journal reference; all native reads use the
+    current client. This is not automatic crash recovery or construction replay.
+    """
+    old=original_client or client
+    state=json.loads(old.journal.read_text());pending=state.get('pending')
+    if not pending or pending['operation']!='interior_junction' or pending['params'].get('execute') is not True:
+        raise LiveError('reconciliation_required','no pending constructed interior junction')
+    rid=pending['request_id'];original=json.loads((old.evidence/(rid+'.response.json')).read_text());v=original.get('result',{})
+    ids=v.get('returned_edges');fit=v.get('fit',{});params=pending['params']
+    if (original.get('session')!=old.session or original.get('request_id')!=rid or original.get('operation')!='interior_junction'
+            or original.get('status')!='mutation_unverified' or v.get('game_constructed') is not True
+            or not isinstance(ids,list) or len(ids)!=fit.get('pieces',-2)+2 or len(set(ids))!=len(ids)
+            or any(type(i) is not int or i<=0 for i in ids) or not isinstance(fit.get('controls'),list)):
+        raise LiveError('reconciliation_required','no exact reported split construction',rid)
+    observed=client.request('verify_interior',params|{'execute':False,'fit':fit,'edge_ids':ids,
+        'parameter':params['source']['parameter'],'through_before':None})
+    result=observed.get('result',{})
+    rb=result.get('readback',{});placement=result.get('placement',{});j=result.get('junction',{})
+    if (observed['status']!='ok' or result.get('reconciled_current_state') is not True
+            or rb.get('connected') is not True or placement.get('original_removed') is not True
+            or placement.get('original_edge')!=params['source']['edge_id']
+            or set(placement.get('replacement_edges',[])+rb.get('ordered_edges',[]))!=set(ids)
+            or j.get('exact_native_identity') is not True or j.get('branch_geometry_verified') is not True
+            or result.get('through_after',{}).get('requested_route_verified') is not True
+            or result.get('branch_after',{}).get('requested_route_verified') is not True):
+        raise LiveError('reconciliation_required',result.get('error','realised junction not verified'),rid)
+    latest=json.loads(old.journal.read_text())
+    if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
+    record={'status':'reconciled_verified_interior','original_pending':pending,'original_response':str((old.evidence/(rid+'.response.json')).resolve()),
+            'observation':observed['request_id'],'current_session':client.session,'verified':result,
+            'native_effect_history_complete':False,'automatic_replay':False,'train_traversal':'unprobed'}
+    path=old.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
+    latest.setdefault('reconciled_constructions',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(old.journal,latest)
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
 
 
@@ -674,7 +753,7 @@ class LiveClient:
         if state['session'] != self.session:
             raise LiveError('session_changed', 'use a new evidence directory for a new runtime session')
         unresolved = state.get('pending')
-        if unresolved and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'discover_junction', 'selected_connection', 'junction')):
+        if unresolved and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'selected_connection', 'junction', 'interior_junction')):
             raise LiveError('reconciliation_required', 'previous request is unfinished; inspect its matching response/current world before any repeat', state['pending']['request_id'])
         if (self.evidence / (request_id + '.request.json')).exists():
             raise LiveError('request_id_reused', 'request ID already recorded', request_id)
@@ -791,7 +870,7 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--context', type=Path)
     parser.add_argument('--discovery', type=Path, help='saved full discover response for connect-selected')
@@ -814,8 +893,8 @@ def main(argv=None):
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction'):
-            raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction; low-level build uses explicit authorised parameter')
+        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at'):
+            raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
         if args.operation in ('extend', 'connect'):
             response = (extend if args.operation == 'extend' else connect)(client, params, execute=args.execute)
         elif args.operation == 'connect-brief':
@@ -824,6 +903,8 @@ def main(argv=None):
             response = connect_corridor(client,params,execute=args.execute)
         elif args.operation == 'connect-junction':
             response = connect_junction(client,params,execute=args.execute)
+        elif args.operation == 'connect-junction-at':
+            response = connect_junction_at(client,params,execute=args.execute)
         elif args.operation == 'route':
             response = route(client, params)
         elif args.operation == 'discover':
