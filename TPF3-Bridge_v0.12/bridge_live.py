@@ -5,6 +5,7 @@ The mod must already be active in a healthy test world.
 """
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -503,6 +504,174 @@ def validate_throat_brief(brief):
     if set(n for r in matrix for n in r['via'])!=set(names):raise ValueError('matrix must exercise each construction step')
 
 
+JUNCTION_RECIPE = 'widened_two_approach_three_exit_v1'
+
+def plan_junction_recipe(brief):
+    """Fixed P15 intent in a chosen map frame; no native calls or Python curve fitting."""
+    keys={'recipe','origin','heading_deg','radius','max_grade','spacing','region','asset_region'}
+    if not isinstance(brief,dict) or set(brief)!=keys:raise ValueError('junction recipe brief fields mismatch')
+    if brief['recipe']!=JUNCTION_RECIPE:raise LiveError('unsupported_recipe','only '+JUNCTION_RECIPE+' is supported')
+    if brief['radius']!=120 or brief['spacing']!=5:
+        raise LiveError('unsupported_recipe','v1 requires hard radius120 and native template spacing5; no scaling or mirroring')
+    p=brief['origin']
+    if not isinstance(p,list) or len(p)!=3 or any(type(x) not in (int,float) or not math.isfinite(x) for x in p):raise ValueError('origin requires finite native XYZ')
+    h=brief['heading_deg'];grade=brief['max_grade']
+    if type(h) not in (int,float) or not math.isfinite(h) or not -180<=h<=180:raise ValueError('heading_deg must be within [-180,180]')
+    if type(grade) not in (int,float) or not math.isfinite(grade) or not 0<grade<=.04:raise ValueError('level recipe max_grade must be within (0,.04]')
+    for name in ('region','asset_region'):
+        r=brief[name]
+        if (not isinstance(r,dict) or set(r)!={'min','max'} or any(not isinstance(r[k],list) or len(r[k])!=3
+                or any(type(x) not in (int,float) or not math.isfinite(x) for x in r[k]) for k in ('min','max'))
+                or any(r['min'][i]>=r['max'][i] for i in range(3))):raise ValueError(name+' requires ordered finite native XYZ bounds')
+    if any(brief['asset_region']['max'][i]-brief['asset_region']['min'][i]>400 for i in range(3)):raise ValueError('asset_region must fit the bounded400-unit native query')
+    def position(x,y=0):
+        a=math.radians(h);return [p[0]+x*math.cos(a)-y*math.sin(a),p[1]+x*math.sin(a)+y*math.cos(a),p[2]]
+    def direction(a=0):a=math.radians(h+a);return [math.cos(a),math.sin(a)]
+    def intent(q,a=0):return {'region':{'min':[q[0]-1,q[1]-1,p[2]-1],'max':[q[0]+1,q[1]+1,p[2]+1]},'guide_xyz':q,'travel_direction':direction(a),'max_edges':8,'heading_tolerance_deg':2}
+    fixtures=[{'name':name,'position':position(x,y),'travel_direction':direction(a),'length':20} for name,x,y,a in
+              [('A1',-20,0,0),('A2',-20,5,0),('D1',1600,180,12),('D2',600,105,0),('D3',1100,460,0)]]
+    corners=[position(x,y) for x,y in [(-60,-40),(1660,-40),(1660,500),(-60,500)]]
+    footprint={'min':[min(q[i] for q in corners) for i in range(2)]+[p[2]-1],
+               'max':[max(q[i] for q in corners) for i in range(2)]+[p[2]+1]}
+    if any(footprint['min'][i]<brief['region']['min'][i] or footprint['max'][i]>brief['region']['max'][i] for i in range(3)):
+        raise LiveError('unsupported_recipe','authorised region does not contain the widened recipe footprint')
+    for f in fixtures:
+        f['region']={'min':[max(f['position'][i]-40,brief['region']['min'][i]) for i in range(3)],
+                     'max':[min(f['position'][i]+40,brief['region']['max'][i]) for i in range(3)]}
+    common={'radius':120,'region':brief['region'],'vertical':{'max_grade':grade},'max_fit_attempts':1,'max_route_length':2500}
+    reference=common|{'radius':160,'source':intent(position(0)),'target':intent(position(1600,180),12),
+                    'guides':[{'position':position(x,y),'travel_direction':direction(a),'grade':0} for x,y,a in [(400,0,0),(800,30,8),(1200,100,12)]]}
+    fanout=common|{'source':intent(position(0,5)),'target':intent(position(600,105)),
+                  'guides':[{'position':position(100,5),'travel_direction':direction(),'grade':0}]}
+    matrix=[{'from':'A1','to':dest,'via':via} for dest,via in [('D1',[]),('D2',['cross']),('D3',['cross','branch'])]]
+    matrix += [{'from':'A2','to':'D2','via':[]},{'from':'A2','to':'D3','via':['branch']}]
+    plan={'version':1,'recipe':JUNCTION_RECIPE,'brief':brief,'epoch':'DESIGN','game_constructed':False,'native_fit_verified':False,
+          'footprint':footprint,'fixtures':fixtures,'reference':reference,'fanout':fanout,
+          'reference_design_min_radius':160,'selected_final_min_radius':120,'level_only':True,
+          'retained_close_approach':{'length':100,'spacing':5},'direct5m_crossover':False,
+          'cross_source':intent(position(250)),
+          'native_fanout_guide_rule':{'source':'long native straight between fan-out arcs','cross_fraction':.70,'branch_fraction':.88},
+          'required_routes':matrix,'limitations':['no scaling/mirroring','no direct5m crossover','no physical traversal or continuous geometry proof'],
+          'operations':['discover_asset','inspect_asset','prepare_A1','prepare_A2','prepare_D1','prepare_D2','prepare_D3','reference','fanout','native_guides','throat','fresh_approach_spacing']}
+    plan['plan_hash']=hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+    return plan
+
+
+def publish_junction_recipe(plan,evidence):
+    if plan!=plan_junction_recipe(plan.get('brief')):raise ValueError('recipe plan differs from its deterministic brief')
+    path=Path(evidence)/(uuid.uuid4().hex+'.recipe_plan.json');path.parent.mkdir(parents=True,exist_ok=True);atomic_json(path,plan)
+    return {'status':'ok','operation':'junction-recipe','stage':'plan','game_constructed':False,'native_fit_verified':False,
+            'recipe':plan['recipe'],'plan_hash':plan['plan_hash'],'footprint':plan['footprint'],'required_routes':plan['required_routes'],
+            'retained_close_approach':plan['retained_close_approach'],'direct5m_crossover':False,'evidence':str(path.resolve())}
+
+
+def execute_junction_recipe(client,plan,*,prepared_record=None):
+    """One explicit execution, durable step receipts and no automatic resume/replay."""
+    if plan!=plan_junction_recipe(plan.get('brief')):raise ValueError('recipe plan differs from its deterministic brief')
+    prepared=None
+    if prepared_record:
+        prepared=json.loads(Path(prepared_record).read_text(encoding='utf-8-sig'))
+        if (not isinstance(prepared,dict) or not isinstance(prepared.get('operations'),list) or not prepared['operations']
+                or any(not isinstance(o,dict) or not isinstance(o.get('response'),dict) for o in prepared['operations'])):
+            raise ValueError('prepared recipe operations are missing or malformed')
+        s=prepared.get('summary',{});names=[o.get('name') for o in prepared.get('operations',[])]
+        if not isinstance(s,dict):raise ValueError('prepared recipe summary is malformed')
+        last=prepared.get('operations',[{}])[-1].get('response',{})
+        safe_fit_failure=last.get('status')=='no_accepted_candidate' and last.get('game_constructed') is False
+        reconciled_rejection=False
+        if last.get('status')=='error' and last.get('error')=='native_construction_rejected' and last.get('evidence'):
+            workflow=json.loads(Path(last['evidence']).read_text(encoding='utf-8-sig'))
+            attempts=workflow.get('attempts',[])
+            if len(attempts)==1:
+                rp=Path(last['evidence']).parent/(attempts[0]['request_id']+'.reconciliation.json')
+                if rp.exists():
+                    rr=json.loads(rp.read_text(encoding='utf-8-sig'))
+                    reconciled_rejection=(rr.get('status')=='reconciled_rejected_corridor' and rr.get('completed_corridor_absent') is True
+                        and rr.get('automatic_replay') is False and rr.get('original_pending',{}).get('request_id')==attempts[0]['request_id'])
+        if (prepared.get('plan')!=plan or s.get('status') not in ('no_accepted_candidate','error') or s.get('stage')!='reference'
+                or names!=plan['operations'][:8] or any(o.get('response',{}).get('status')!='ok' for o in prepared['operations'][:7])
+                or not (safe_fit_failure or reconciled_rejection)):
+            raise ValueError('prepared recipe must be this exact plan stopped before reference build')
+    path=client.evidence/(uuid.uuid4().hex+'.recipe.json');lock=client.evidence/'recipe.lock'
+    summary={'status':'incomplete','operation':'junction-recipe','stage':'start','game_constructed':False,
+             'plan_hash':plan['plan_hash'],'completed_operations':0,'routes_verified':0,'evidence':str(path.resolve()),'train_traversal':'unprobed'}
+    record={'plan':plan,'summary':summary,'operations':[]}
+    try:
+        with lock.open('x'):pass
+    except FileExistsError:raise LiveError('client_busy','one recipe execution at a time') from None
+    def perform(name,call):
+        summary['stage']=name;atomic_json(path,record);r=call();record['operations'].append({'name':name,'response':r});atomic_json(path,record)
+        constructed=r.get('game_constructed',r.get('result',{}).get('game_constructed'))
+        if constructed in (True,'unknown'):summary['game_constructed']=constructed
+        if r['status']!='ok':
+            raise LiveError(r['status'],r.get('error',r.get('result',{}).get('error',name+' failed')))
+        summary['completed_operations']+=1;atomic_json(path,record);return r
+    try:
+        atomic_json(path,record)
+        observed=perform('discover_asset',lambda:discover(client,{'region':plan['brief']['asset_region'],'max_edges':16}))
+        if observed['result'].get('complete') is not True:raise LiveError('discovery_incomplete','asset query was truncated')
+        assets={c['edge_id']:c['edge_snapshot'] for c in observed['result']['candidates']}
+        if not assets:raise LiveError('asset_unavailable','no actual native TRACK in asset_region')
+        if len({(e['template'],e['style']) for e in assets.values()})!=1:raise LiveError('asset_choice_ambiguous','asset_region contains different track resource families')
+        seed=min(assets);r=perform('inspect_asset',lambda:client.request('inspect',{'edge_ids':[seed],'resources':True}))
+        if r['result']['edges'][0].get('resource',{}).get('track_distance')!=5:raise LiveError('unsupported_recipe','actual native template trackDistance is not5')
+        record['selected_asset']=r['result']['edges'][0];fixtures={}
+        retained={}
+        if prepared:
+            old=[o['response']['result']['edges'][0] for o in prepared['operations'][2:7]]
+            r=client.request('inspect',{'edge_ids':[e['id'] for e in old]})
+            record['prepared_reacquisition']={'request_id':r['request_id'],'original_record':str(Path(prepared_record).resolve())}
+            if r['status']!='ok' or r['result'].get('edges')!=old:raise LiveError('stale_prepared_recipe','prepared stubs differ from fresh exact native state')
+            retained=dict(zip([f['name'] for f in plan['fixtures']],old))
+        for f in plan['fixtures']:
+            q={'authorised':True,'length':f['length'],'fixture':{'template_edge':seed,'position':f['position'],'travel_direction':f['travel_direction'],'grade':0,'region':f['region']}}
+            r=perform('prepare_'+f['name'],lambda q=q,f=f:({'status':'ok','result':{'edges':[retained[f['name']]],'game_constructed':True},'reused_prepared':True,'fresh_observation':record['prepared_reacquisition']['request_id']} if f['name'] in retained else client.request('test_approach',q)))
+            rows=r['result'].get('edges',[])
+            if len(rows)!=1 or rows[0].get('road_type')!='TRACK':raise LiveError('native_verification_failed','fixture TRACK identity unavailable')
+            fixtures[f['name']]=rows[0]
+        perform('reference',lambda:connect_corridor(client,plan['reference'],execute=True))
+        fanout=perform('fanout',lambda:connect_corridor(client,plan['fanout'],execute=True))
+        observed=perform('native_guides',lambda:client.request('inspect',{'edge_ids':fanout['edges']}))
+        straight=[e for e in observed['result']['edges'] if all(abs(e[k][i]-(e['p1'][i]-e['p0'][i]))<.001 for k in ('t0','t1') for i in range(3))]
+        if not straight:raise LiveError('unsupported_native_result','native fan-out has no straight guide segment')
+        e=max(straight,key=lambda e:math.dist(e['p0'],e['p1']))
+        if math.dist(e['p0'],e['p1'])<400:raise LiveError('unsupported_native_result','native fan-out guide segment is too short')
+        direction=[e['t0'][i]/math.hypot(*e['t0'][:2]) for i in range(2)];z=plan['brief']['origin'][2]
+        def intent(q,d):return {'region':{'min':[q[0]-1,q[1]-1,z-1],'max':[q[0]+1,q[1]+1,z+1]},'guide_xyz':q,'travel_direction':d,'max_edges':8,'heading_tolerance_deg':2}
+        def guide(f):return intent([e['p0'][i]+f*(e['p1'][i]-e['p0'][i]) for i in range(3)],direction)
+        roles={}
+        for name,f in fixtures.items():
+            d=next(x['travel_direction'] for x in plan['fixtures'] if x['name']==name)
+            roles[name]={'kind':'approach' if name.startswith('A') else 'destination','endpoint':intent(f['p0'] if name.startswith('A') else f['p1'],d)}
+        b={k:plan['fanout'][k] for k in ('radius','region','vertical','max_fit_attempts','max_route_length')}
+        b.update(roles=roles,placement_tolerance=.5,steps=[{'name':'cross','kind':'crossover','source':plan['cross_source'],'target':guide(.70)},
+                  {'name':'branch','kind':'branch','source':guide(.88),'target':intent(fixtures['D3']['p0'],roles['D3']['endpoint']['travel_direction'])}],required_routes=plan['required_routes'])
+        record['throat_brief']=b;result=perform('throat',lambda:connect_throat(client,b,execute=True))
+        summary['routes_verified']=result['routes_verified']
+        if result.get('final_network_verified') is not True or result['routes_verified']!=5:raise LiveError('native_verification_failed','five final movements not verified')
+        summary['stage']='fresh_approach_spacing';atomic_json(path,record)
+        # Fresh exact route/edge identities after every native split; no remembered entity mapping.
+        a,_=_select_throat_port(client,roles['A1']['endpoint'],outward_sign=-1)
+        a2,_=_select_throat_port(client,roles['A2']['endpoint'],outward_sign=-1)
+        points=[plan['reference']['source']['guide_xyz'],plan['fanout']['source']['guide_xyz']]
+        h=math.radians(plan['brief']['heading_deg']);n=[-math.sin(h),math.cos(h)];d=[math.cos(h),math.sin(h)]
+        def close(q):return {'region':{'min':[q[0]-1,q[1]-1,z-1],'max':[q[0]+1,q[1]+1,z+1]},'guide_xyz':q,'travel_direction':d,'max_edges':8,'heading_tolerance_deg':2}
+        q=[points[0][i]+50*(d[i] if i<2 else 0) for i in range(3)];q2=[points[1][i]+50*(d[i] if i<2 else 0) for i in range(3)]
+        ref,rid=_select_throat_port(client,close(q),interior=True,tolerance=.5);adj,rid2=_select_throat_port(client,close(q2),interior=True,tolerance=.5)
+        spacing=sum((adj['pos'][i]-ref['pos'][i])*n[i] for i in range(2))
+        if abs(spacing-5)>.1 or ref['edge_id']==adj['edge_id'] or a['node_id']==a2['node_id']:raise LiveError('native_verification_failed','retained independent5m approach not established')
+        record['approach_observations']=[rid,rid2];record['retained_approach']={'sampled_signed_spacing':spacing,'source_nodes':[a['node_id'],a2['node_id']],'continuous_proof':False}
+        record['operations'].append({'name':'fresh_approach_spacing','response':{'status':'ok','observations':[rid,rid2],'spacing':spacing}});summary['completed_operations']+=1
+        summary.update(status='ok',stage='verified',final_network_verified=True,route_matrix=result['route_matrix'],
+                       retained_approach_spacing=spacing,direct5m_crossover=False,geometry_sampled_only=True,native_effect_history_complete=False)
+    except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:
+        summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
+        if getattr(exc,'status',None)=='mutation_outcome_unknown':summary['game_constructed']='unknown'
+    finally:
+        atomic_json(path,record);lock.unlink()
+    return summary
+
+
 def _select_throat_port(client,intent,*,interior=False,tolerance=None,outward_sign=1):
     found=client.request('discover_interior',intent|{'placement_tolerance':tolerance}) if interior else discover(client,{k:intent[k] for k in ('region','max_edges')})
     if found['status']!='ok':raise LiveError(found['status'],found.get('result',{}).get('error','port_discovery_failed'),found['request_id'])
@@ -623,8 +792,17 @@ def reconcile_rejected_fixture(client, discovery):
     if (not isinstance(discovery,dict) or discovery.get('operation')!='discover'
             or discovery.get('session')!=client.session or discovery.get('status')!='ok'):
         raise ValueError('reconciliation requires original current-session discovery')
-    p=pending['params'];b=p['brief'];validate_brief(b)
-    matches=[c for c in discovery['result']['candidates'] if c['edge_id']==b['anchor_edge'] and c['node_id']==b['anchor_node']]
+    p=pending['params']
+    if 'fixture' in p:
+        q=p['fixture'];pos=q['position'];direction=q['travel_direction']
+        if (len(pos)!=3 or len(direction)!=2 or any(type(x) not in (int,float) or not math.isfinite(x) for x in pos+direction)
+                or math.hypot(*direction)==0):raise ValueError('recorded native fixture seed is malformed')
+        b={'anchor_edge':q['template_edge'],'end_xy':pos[:2],'end_direction':direction,'region':q['region']}
+        matches=[c for c in discovery['result']['candidates'] if c['edge_id']==b['anchor_edge']]
+        if matches and all(c['edge_snapshot']==matches[0]['edge_snapshot'] for c in matches):matches=matches[:1]
+    else:
+        b=p['brief'];validate_brief(b)
+        matches=[c for c in discovery['result']['candidates'] if c['edge_id']==b['anchor_edge'] and c['node_id']==b['anchor_node']]
     if len(matches)!=1:raise ValueError('original fixture anchor snapshot missing')
     current=client.request('inspect',{'edge_ids':[b['anchor_edge']]})
     if current['status']!='ok' or current['result']['edges']!=[matches[0]['edge_snapshot']]:
@@ -1171,9 +1349,11 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--reconciled-crossover', type=Path, help='explicit verified crossover evidence for connect-throat; rechecks read-only, never rebuilds it')
+    parser.add_argument('--recipe-plan',type=Path,help='optional reviewed junction-recipe plan; must match current brief exactly')
+    parser.add_argument('--prepared-recipe',type=Path,help='explicit matching recipe stopped before reference; fresh stubs checked, never automatically resumed')
     parser.add_argument('--context', type=Path)
     parser.add_argument('--discovery', type=Path, help='saved full discover response for connect-selected')
     parser.add_argument('--execute', action='store_true', help='authorise native construction for extend/connect/connect-brief/connect-corridor')
@@ -1183,6 +1363,13 @@ def main(argv=None):
     parser.add_argument('--session')
     parser.add_argument('--timeout', type=float, default=30)
     args = parser.parse_args(argv)
+    if args.operation=='junction-recipe' and not args.execute:
+        try:
+            if args.recipe_plan or args.prepared_recipe or args.discovery or args.reconciled_crossover:raise ValueError('planning accepts a brief, not native continuation records')
+            response=publish_junction_recipe(plan_junction_recipe(json.loads(args.params.read_text(encoding='utf-8-sig'))),args.evidence or Path('.local_runs/junction_recipes'))
+        except (OSError,ValueError,LiveError,KeyError,TypeError) as exc:
+            response={'status':getattr(exc,'status','invalid_recipe'),'error':str(exc)[:400],'game_constructed':False}
+        print(json.dumps(response,separators=(',',':')));return 0 if response['status']=='ok' else 1
     try:
         if args.context:
             if any((args.mod_directory, args.log, args.evidence, args.session)):
@@ -1193,13 +1380,19 @@ def main(argv=None):
                 raise ValueError('provide --context or all explicit transport arguments')
             client = LiveClient(args.mod_directory, args.log, args.evidence, args.session, args.timeout)
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
+        if args.recipe_plan and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--recipe-plan requires junction-recipe --execute')
+        if args.prepared_recipe and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--prepared-recipe requires junction-recipe --execute')
         if args.reconciled_crossover and (args.operation!='connect-throat' or not args.execute):
             raise ValueError('--reconciled-crossover requires connect-throat --execute')
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent'):
+        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe'):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
-        if args.operation in ('extend', 'connect'):
+        if args.operation=='junction-recipe':
+            plan=plan_junction_recipe(params)
+            if args.recipe_plan and json.loads(args.recipe_plan.read_text(encoding='utf-8-sig'))!=plan:raise ValueError('reviewed recipe plan does not match current brief')
+            response=execute_junction_recipe(client,plan,prepared_record=args.prepared_recipe)
+        elif args.operation in ('extend', 'connect'):
             response = (extend if args.operation == 'extend' else connect)(client, params, execute=args.execute)
         elif args.operation == 'connect-brief':
             response = connect_brief(client,params,execute=args.execute)

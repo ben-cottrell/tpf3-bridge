@@ -623,6 +623,20 @@ class LiveClientTests(unittest.TestCase):
             with self.assertRaises(LiveError):reconcile_rejected_fixture(self.client,record)
             calls.assert_not_called()
 
+    def test_seeded_fixture_reconciliation_is_read_only_and_requires_exact_absence(self):
+        for defect in ('none','truncated','track','changed'):
+            pending=self.fixture_pending();pending['params']={'authorised':True,'length':20,'fixture':{'template_edge':10,'position':[100,100,0],'travel_direction':[1,0],'grade':0,'region':{'min':[60,60,-10],'max':[140,140,10]}}}
+            self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending}));record=self.discovery_record()
+            record['result']['candidates'].append(dict(record['result']['candidates'][0],node_id=99))
+            def query(op,p):
+                if op=='inspect':return self.response('fresh',op,result={'edges':[{'id':99 if defect=='changed' else 10}]})
+                self.assertEqual(op,'discover');return self.response('region',op,result={'complete':defect!='truncated','edge_count':1 if defect=='track' else 0})
+            with patch.object(self.client,'request',side_effect=query):
+                if defect=='none':self.assertEqual(reconcile_rejected_fixture(self.client,record)['status'],'ok')
+                else:
+                    with self.assertRaises(LiveError):reconcile_rejected_fixture(self.client,record)
+                    self.assertEqual(json.loads(self.client.journal.read_text())['pending'],pending)
+
     def rejected_connection_pending(self):
         pending={'request_id':'rejected_connection','operation':'connection',
                  'params':{'execute':True,'brief':self.connection_brief()}}
@@ -1244,6 +1258,145 @@ class LiveClientTests(unittest.TestCase):
                        {'min_sampled_radius':float('nan')},{'max_sampled_grade':.5}]:
             with self.assertRaises(LiveError):_require_engineering_readback(good|defect,b)
         _require_engineering_readback(good|{'min_sampled_radius':None,'straight_only':True},b)
+
+    def recipe_brief(self):
+        from bridge_live import JUNCTION_RECIPE
+        return {'recipe':JUNCTION_RECIPE,'origin':[0,0,33],'heading_deg':0,'radius':120,'max_grade':.04,'spacing':5,
+                'region':{'min':[-100,-100,0],'max':[1700,550,80]},'asset_region':{'min':[0,0,0],'max':[10,10,80]}}
+
+    def recipe_worker(self,*,failure=None,spacing=5):
+        calls=[];count=0
+        def query(op,p):
+            nonlocal count
+            calls.append((op,p));count+=1
+            if op=='discover':v={'complete':True,'candidates':[{'edge_id':900,'edge_snapshot':{'id':900,'template':'template','style':'style'}}]}
+            elif op=='test_approach':
+                if failure=='fixture':return self.response('failed',op,result={'game_constructed':True,'error':'readback_failed'})|{'status':'mutation_unverified'}
+                q=p['fixture'];self.assertTrue(all(0<q['region']['max'][i]-q['region']['min'][i]<=100 for i in range(3)))
+                pos=q['position'];d=q['travel_direction'];end=[pos[i]+p['length']*(d[i] if i<2 else 0) for i in range(3)]
+                v={'game_constructed':True,'edges':[{'id':count,'node0':100+count,'node1':200+count,'p0':pos,'p1':end,'road_type':'TRACK'}]}
+            elif op=='inspect' and p.get('resources'):
+                v={'edges':[{'id':900,'resource':{'track_distance':spacing}}]}
+            elif op=='inspect':v={'edges':[{'id':80,'p0':[126,8,33],'p1':[574,102,33],'t0':[448,94,0],'t1':[448,94,0]}]}
+            else:raise AssertionError(op)
+            return self.response('r'+str(count),op,result=v)
+        ports=[({'edge_id':1,'node_id':11},'a'),({'edge_id':2,'node_id':12},'b'),
+               ({'edge_id':3,'pos':[50,0,33]},'c'),({'edge_id':4,'pos':[50,5,33]},'d')]
+        return query,calls,ports
+
+    def test_recipe_plan_offline_and_frame_transform(self):
+        from bridge_live import plan_junction_recipe
+        b=self.recipe_brief();p=plan_junction_recipe(b)
+        self.assertFalse(p['game_constructed']);self.assertFalse(p['native_fit_verified']);self.assertEqual(len(p['required_routes']),5)
+        self.assertEqual([f['name'] for f in p['fixtures']],['A1','A2','D1','D2','D3'])
+        self.assertEqual(p,plan_junction_recipe(b));self.assertEqual(p['selected_final_min_radius'],120);self.assertEqual(p['reference_design_min_radius'],160)
+        rotated=plan_junction_recipe(b|{'heading_deg':90,'region':{'min':[-600,-100,0],'max':[100,1700,80]}})
+        for x,y in zip(rotated['fixtures'][1]['position'],[-5,-20,33]):self.assertAlmostEqual(x,y)
+        self.assertNotEqual(p['plan_hash'],rotated['plan_hash']);self.assertNotIn('template_edge',json.dumps(p))
+
+    def test_recipe_invalid_or_unsupported_intent_never_executes(self):
+        from bridge_live import plan_junction_recipe,execute_junction_recipe
+        b=self.recipe_brief()
+        for patch_value in ({'radius':160},{'spacing':7},{'recipe':'general_router'},{'origin':[0,0,float('nan')]},
+                            {'heading_deg':181},{'max_grade':.05},{'region':{'min':[0,0,0],'max':[1,1,1]}},
+                            {'asset_region':{'min':[0,0,0],'max':[401,10,80]}}):
+            with patch.object(self.client,'request') as worker:
+                with self.assertRaises((ValueError,LiveError)):plan_junction_recipe(b|patch_value)
+                worker.assert_not_called()
+        p=plan_junction_recipe(b);p['fixtures'][0]['position'][0]+=1
+        with patch.object(self.client,'request') as worker:
+            with self.assertRaises(ValueError):execute_junction_recipe(self.client,p)
+            worker.assert_not_called()
+
+    def test_recipe_cli_planning_needs_no_game_or_context_and_rejects_changed_plan(self):
+        from bridge_live import plan_junction_recipe
+        brief=self.root/'brief.json';brief.write_text(json.dumps(self.recipe_brief()));out=io.StringIO()
+        with patch('bridge_live.client_from_context') as native,contextlib.redirect_stdout(out):
+            code=main(['junction-recipe','--params',str(brief),'--evidence',str(self.root/'plans')])
+            native.assert_not_called()
+        result=json.loads(out.getvalue());self.assertEqual(code,0);self.assertLess(len(out.getvalue().encode()),4096)
+        saved=Path(result['evidence']);p=json.loads(saved.read_text());self.assertEqual(p,plan_junction_recipe(self.recipe_brief()))
+        p['required_routes'].pop();saved.write_text(json.dumps(p));out=io.StringIO()
+        with patch('bridge_live.client_from_context',return_value=self.client),patch.object(self.client,'request') as native,contextlib.redirect_stdout(out):
+            code=main(['junction-recipe','--context','context.json','--params',str(brief),'--recipe-plan',str(saved),'--execute'])
+            native.assert_not_called()
+        self.assertEqual(code,1);self.assertIn('does not match',out.getvalue())
+
+    def test_recipe_sequences_preparation_native_geometry_and_final_matrix(self):
+        from bridge_live import plan_junction_recipe,execute_junction_recipe
+        query,calls,ports=self.recipe_worker();corridors=[]
+        def corridor(c,b,execute):
+            self.assertTrue(execute);corridors.append(b)
+            return {'status':'ok','game_constructed':True,'edges':[80]}
+        def throat(c,b,execute):
+            self.assertTrue(execute);self.assertEqual(b['required_routes'],plan_junction_recipe(self.recipe_brief())['required_routes'])
+            self.assertEqual(set(b['roles']),{'A1','A2','D1','D2','D3'});self.assertEqual(b['radius'],120)
+            self.assertEqual(b['steps'][1]['target']['guide_xyz'],[1100,460,33])
+            return {'status':'ok','game_constructed':True,'routes_verified':5,'final_network_verified':True,'route_matrix':b['required_routes']}
+        with patch.object(self.client,'request',side_effect=query),patch('bridge_live.connect_corridor',side_effect=corridor),patch('bridge_live.connect_throat',side_effect=throat),patch('bridge_live._select_throat_port',side_effect=ports):
+            result=execute_junction_recipe(self.client,plan_junction_recipe(self.recipe_brief()))
+        self.assertEqual(result['status'],'ok');self.assertEqual(result['routes_verified'],5);self.assertEqual(result['retained_approach_spacing'],5)
+        self.assertEqual([op for op,p in calls],['discover','inspect']+['test_approach']*5+['inspect'])
+        self.assertEqual([b['radius'] for b in corridors],[160,120]);self.assertFalse((self.client.evidence/'recipe.lock').exists())
+        r=json.loads(Path(result['evidence']).read_text());self.assertEqual([o['name'] for o in r['operations']],r['plan']['operations'])
+
+    def test_recipe_stops_on_partial_or_uncertain_effects_without_replay(self):
+        from bridge_live import plan_junction_recipe,execute_junction_recipe
+        for failure in ('fixture','corridor','throat'):
+            query,calls,ports=self.recipe_worker(failure=failure)
+            def corridor(c,b,execute):return {'status':'mutation_unverified','game_constructed':'unknown','error':'construction uncertain'} if failure=='corridor' else {'status':'ok','game_constructed':True,'edges':[80]}
+            with patch.object(self.client,'request',side_effect=query),patch('bridge_live.connect_corridor',side_effect=corridor) as native,patch('bridge_live.connect_throat',return_value={'status':'native_verification_failed','game_constructed':True,'error':'missing route'}) as throat:
+                result=execute_junction_recipe(self.client,plan_junction_recipe(self.recipe_brief()))
+            self.assertNotEqual(result['status'],'ok');self.assertEqual(result['routes_verified'],0)
+            self.assertEqual(result['game_constructed'],'unknown' if failure=='corridor' else True)
+            self.assertEqual(sum(op=='test_approach' for op,p in calls),1 if failure=='fixture' else 5)
+            self.assertEqual(native.call_count,0 if failure=='fixture' else 1 if failure=='corridor' else 2)
+            self.assertEqual(throat.call_count,1 if failure=='throat' else 0);self.assertFalse((self.client.evidence/'recipe.lock').exists())
+
+    def test_recipe_resource_gap_and_busy_execution_stop_before_mutation(self):
+        from bridge_live import plan_junction_recipe,execute_junction_recipe
+        query,calls,ports=self.recipe_worker(spacing=7)
+        with patch.object(self.client,'request',side_effect=query):result=execute_junction_recipe(self.client,plan_junction_recipe(self.recipe_brief()))
+        self.assertEqual(result['status'],'unsupported_recipe');self.assertFalse(result['game_constructed']);self.assertEqual(len(calls),2)
+        lock=self.client.evidence/'recipe.lock';lock.write_text('busy')
+        with patch.object(self.client,'request') as worker:
+            with self.assertRaises(LiveError):execute_junction_recipe(self.client,plan_junction_recipe(self.recipe_brief()))
+            worker.assert_not_called()
+
+    def test_recipe_explicit_prepared_continuation_reacquires_stubs_without_rebuilding(self):
+        from bridge_live import plan_junction_recipe,execute_junction_recipe
+        plan=plan_junction_recipe(self.recipe_brief());worker,calls,ports=self.recipe_worker()
+        with patch.object(self.client,'request',side_effect=worker),patch('bridge_live.connect_corridor',return_value={'status':'no_accepted_candidate','game_constructed':False}):
+            stopped=execute_junction_recipe(self.client,plan)
+        source=Path(stopped['evidence']);old=json.loads(source.read_text());rows=[o['response']['result']['edges'][0] for o in old['operations'][2:7]]
+        for malformed in ({},{'operations':[]},{'operations':[None]}):
+            source.write_text(json.dumps(malformed))
+            with patch.object(self.client,'request') as native:
+                with self.assertRaises(ValueError):execute_junction_recipe(self.client,plan,prepared_record=source)
+                native.assert_not_called()
+        for defect in ('none','stale','reconciled','unreconciled'):
+            candidate=json.loads(json.dumps(old))
+            if defect in ('reconciled','unreconciled'):
+                workflow=self.client.evidence/'rejected_recipe.workflow.json'
+                workflow.write_text(json.dumps({'attempts':[{'request_id':'rejected_recipe'}]}))
+                candidate['summary']['status']='error'
+                candidate['operations'][-1]['response']={'status':'error','error':'native_construction_rejected','game_constructed':'unknown','evidence':str(workflow)}
+                rp=self.client.evidence/'rejected_recipe.reconciliation.json'
+                if defect=='reconciled':rp.write_text(json.dumps({'status':'reconciled_rejected_corridor','completed_corridor_absent':True,'automatic_replay':False,'original_pending':{'request_id':'rejected_recipe'}}))
+                elif rp.exists():rp.unlink()
+            source.write_text(json.dumps(candidate))
+            query,calls,ports=self.recipe_worker()
+            def observe(op,p):
+                if op=='inspect' and len(p['edge_ids'])==5:
+                    return self.response('fresh_stubs',op,result={'edges':[] if defect=='stale' else rows})
+                return query(op,p)
+            with patch.object(self.client,'request',side_effect=observe),patch('bridge_live.connect_corridor',return_value={'status':'ok','game_constructed':True,'edges':[80]}) as fit,patch('bridge_live.connect_throat',return_value={'status':'ok','game_constructed':True,'routes_verified':5,'final_network_verified':True,'route_matrix':plan['required_routes']}),patch('bridge_live._select_throat_port',side_effect=ports):
+                if defect=='unreconciled':
+                    with self.assertRaises(ValueError):execute_junction_recipe(self.client,plan,prepared_record=source)
+                    self.assertEqual(calls,[]);continue
+                result=execute_junction_recipe(self.client,plan,prepared_record=source)
+            self.assertEqual(result['status'],'stale_prepared_recipe' if defect=='stale' else 'ok')
+            self.assertFalse(any(op=='test_approach' for op,p in calls));self.assertEqual(fit.call_count,0 if defect=='stale' else 2)
 
     def test_rejected_corridor_and_crossover_reconcile_without_replay(self):
         from bridge_live import reconcile_rejected_corridor,reconcile_rejected_crossover

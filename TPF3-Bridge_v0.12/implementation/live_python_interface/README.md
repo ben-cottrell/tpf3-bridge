@@ -695,3 +695,46 @@ of at most16ordinary edges between two-edge attachments, leaving verified free s
 the ordinary removal bound remains8. These are authorised local operations, not rollback
 or automatic resume.89client tests pass. Geometry is sampled, not a continuous proof;
 physical train traversal, reservations/capacity and general save identity remain unprobed.
+
+## Compact junction recipe
+
+`junction_recipe_example.json` supplies placement, heading, native asset-selection
+region and engineering limits for `widened_two_approach_three_exit_v1`. No native IDs
+or per-step construction proposals are required. Use an unused suitable land site;
+the example coordinates describe the demonstrated disposable map, not a universal site.
+
+```powershell
+python bridge_live.py junction-recipe --params implementation/live_python_interface/junction_recipe_example.json --evidence .local_runs/recipe_plans
+python bridge_live.py junction-recipe --context context.json --params implementation/live_python_interface/junction_recipe_example.json --recipe-plan PLAN.json --execute
+```
+
+The first command is offline and publishes a hashed DESIGN plan, footprint, operation
+sequence and five required movements. `PLAN.json` is its returned evidence path.
+Execution discovers an actual native asset family, prepares five short interfaces,
+builds native reference/fanout corridors, derives junction guides from current native
+geometry, constructs crossover/branch and verifies all five directed TRAIN paths.
+It uses the existing transport/journal and retains durable per-step receipts.
+
+Supported intent is fixed level geometry, radius120, native spacing5, max_grade in
+(0,0.04], arbitrary finite map translation and heading within[-180,180]. The reference
+uses a stronger design radius160; final hard radius remains120. No scaling, mirroring,
+arbitrary topology or direct5m crossover is supported. The widened footprint is about
+1720×540 native units before rotation. Only the first100-unit straight approach claims
+5m spacing; the fanout is not a constant normal offset.
+
+Failure stops execution with completed steps and unknown/partial effects preserved.
+There is no automatic resume or clearance. An explicit `--prepared-recipe RECORD.json`
+may reuse five exact freshly reacquired stubs only when the matching plan stopped
+before reference construction, or that reference rejection was explicitly reconciled
+as absent. It never retries later completed stages. Lower-level interfaces remain
+available for an explicitly inspected continuation.
+
+Build40408 demonstration at(1700,5200,33),heading−50 completed with explicit site
+clearance and lower-level throat continuation after native Collision; failed recipe
+receipts remain failed. Fresh checks found all five paths,28TRACK edges, sampled
+radius122.279890≥120,grade0 and approach spacing4.999938–4.999943. No rollback, continuous
+geometry proof, arbitrary-site success or physical train traversal is claimed.
+The removal primitive additionally permits one explicitly isolated, unowned ordinary
+test fixture (`isolated_fixture:true`), verifying its edge and both nodes are removed.
+Tiny native ARC parts may be omitted only within a collective0.001 length/position
+and0.001° heading bound; hard radius/join/endpoint checks still apply.

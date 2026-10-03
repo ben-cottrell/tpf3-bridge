@@ -1,6 +1,27 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
-## Current checkpoint — P15 complete
+## Current checkpoint — P16 implementation and native acceptance complete
+Reusable plan_junction_recipe/publish_junction_recipe/execute_junction_recipe and CLI
+junction-recipe (offline plan default;--execute explicit), compact brief/example with
+no native IDs. Fixed level radius120/spacing5 recipe, translation/rotation, widened
+two-approach/three-exit/five-movement layout; no scaling/mirroring/direct5m crossover.
+Build40408 new placement(1700,5200,33),heading-50: five stubs/reference/fanout prepared
+from recipe; native Collision required explicit old-track clearance and lower-level
+throat continuation. Failed receipts remain failed, not retroactively successful.
+Fresh5TRAIN/28TRACK/17samples:radius122.279890>=120,grade0,spacing4.999938-4.999943;
+missing movement/outside region/strict200 radius rejected. No continuous/traversal proof.
+Explicit matching prepared-stub continuation requires fresh exact identities and a
+prebuild failure or reconciled absent reference; no automatic resume/clearance.
+Tiny native ARC quantisation fix retains hard constraints; isolated fixture removal
+checks exact unowned isolation and verifies both nodes/edge absent. Earlier failures,
+partial stubs, rejected proposals and reconciliations preserved locally in p16.
+python tools/quiet_checks.py --suite live_client --label pif-p16-final:97passed;
+.local_checks/pif-p16-final_u52t9gii/report.json. Native fresh acceptance:
+.local_runs/live_python_interface/p16/fresh_acceptance.json; checks/HANDOFF/checkpoint
+in that directory. Milestone revision recorded in checkpoint.json after local commit;
+no push. Physical traversal/reservations/save identity unknown; actual usage unavailable.
+
+## P15 baseline complete — cde5755
 Native widened connection through connect_throat / CLI connect-throat [--execute]:
 all5declared TRAIN movements A1->D1/D2/D3,A2->D2/D3 pass on build40408.
 Disclosed local fan-out:100-unit5m approach retained;D2 ends near local(620,105),D3 near

@@ -493,6 +493,25 @@ function M.fit(p,s,request_id,target,start)
  local t1=norm(p.end_direction)
  local result=api.engine.util.pathfinding.findDubinsPath(v({pos[1],pos[2],0}),v(t0),v({p.end_xy[1],p.end_xy[2],0}),v(t1),fitradius)
  assert(type(result)=="table" and #result>0 and #result<=8,"no_supported_bounded_fit")
+ -- Native float precision can emit sub-millimetre ARC parts on a straight leg.
+ -- Remove only collectively <=the existing0.001 endpoint tolerance, with equally
+ -- tiny heading changes. All remaining joins/endpoints and hard bounds still apply.
+ local filtered,discarded,discardedlength={},{},0
+ for _,row in ipairs(result) do
+  local g=row[1];assert(g and finite(g.length) and g.length>0,"invalid_fit_length")
+  local skip=false
+  if g.type==api.type.EdgeGeometry.Type.ARC and g.length<=.001 then
+   assert(finite(g.arc.radius) and math.abs(g.arc.radius)>=fitradius-.001,"fit_radius_below_selected_constraint")
+   local p0,d0=sample(g,0,row[2]);local p1,d1=sample(g,1,row[2])
+   if distance(p0,p1)<=.001 and angle(d0,d1)<=.001 then
+    skip=true;discardedlength=discardedlength+g.length
+    discarded[#discarded+1]={length=g.length,start=p0,finish=p1,heading_change=angle(d0,d1)}
+   end
+  end
+  if not skip then filtered[#filtered+1]=row end
+ end
+ assert(discardedlength<=.001 and #filtered>0,"unsupported_degenerate_native_fit")
+ result=filtered
  local controls,samples,total,maxerr,maxheading={}, {},0,0,0
  local orientation={forward_parts=0,backward_parametrised_parts=0};local orientation_evidence={}
  for i,row in ipairs(result) do
@@ -577,6 +596,7 @@ function M.fit(p,s,request_id,target,start)
  assert(math.abs(slope(controls[1].t0)-grade)<=.000001 and math.abs(slope(last.t1)-endgrade)<=.000001,"endpoint_grade_mismatch")
  s.fits[request_id]={anchor=a,node=p.anchor_node,target=target,controls=controls,samples=samples,region=p.region,total_length=total,grade=grade,end_grade=endgrade,max_grade=maxgrade,min_radius=p.radius,built=false}
  return {fit_request=request_id,pieces=#controls,total_length=total,start_node=p.anchor_node,target_node=target and target.node or nil,start=pos,finish=last.p1,radius=p.radius,grade=grade,end_grade=endgrade,
+  discarded_native_tiny_parts=discarded,discarded_native_total_length=discardedlength,
   vertical_domain=profile and "native_cubic_endpoint_height_grade" or "constant_grade_compatible_endpoints",max_grade=maxgrade,max_sampled_grade=maxsampledgrade,sampled_Z_error=maxzerr,
   vertical_samples=profile and vertical_samples or nil,controls=profile and controls or nil,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,
   native_fit_radius=fitradius,requested_min_radius=p.radius,min_sampled_converted_radius=minsampledradius~=math.huge and minsampledradius or nil,
@@ -1024,7 +1044,11 @@ function M.remove_branch(p,s,state,request_id,respond)
   if i>1 then assert(p.edges[i-1].node1==a.node0,"removal_chain_disconnected");interior[#interior+1]=a.node0 end
  end
  for _,node in ipairs(interior) do local all,owner=incidence(node);assert(#all==2 and not(owner and owner>0),"removal_node_not_exclusive");for _,id in ipairs(all) do assert(expected[id],"removal_node_not_exclusive") end end
- if p.free_ends then
+ local isolated=p.isolated_fixture==true
+ if isolated then
+  assert(#p.edges==1 and not p.free_ends,"isolated_fixture_needs_one_edge")
+  for _,node in ipairs({p.edges[1].node0,p.edges[1].node1}) do local all,owner=incidence(node);assert(#all==1 and all[1]==ids[1] and not(owner and owner>0),"fixture_not_isolated");interior[#interior+1]=node end
+ elseif p.free_ends then
   for _,node in ipairs({p.edges[1].node0,p.edges[#p.edges].node1}) do
    local all,owner=incidence(node);assert(#all==2 and not(owner and owner>0),"removal_endpoint_not_two_edge_attachment")
    local removed=0;for _,id in ipairs(all) do if expected[id] then removed=removed+1 else edge(id) end end
@@ -1037,6 +1061,10 @@ function M.remove_branch(p,s,state,request_id,respond)
   local ok,value=pcall(function()
    assert(success==true,"native_removal_rejected")
    for _,id in ipairs(ids) do assert(not api.engine.entityExists(id) or api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)==nil,"branch_edge_removal_unverified") end
+   if isolated then
+    for _,node in ipairs(interior) do assert(not api.engine.entityExists(node),"isolated_fixture_node_removal_unverified") end
+    s.mutationPending=nil;return {game_constructed=true,removed_edges=ids,removed_nodes=interior,isolated_fixture=true,native_effect_history_complete=false,rollback=false}
+   end
    local endpoints={p.edges[1].node0,p.edges[#p.edges].node1};local observations={}
    for _,node in ipairs(endpoints) do local all=incidence(node);assert(#all==(p.free_ends==true and 1 or 2),"remaining_through_incidence_unverified");for _,id in ipairs(all) do edge(id) end;observations[#observations+1]={node=node,incident_edges=all} end
    s.mutationPending=nil;return {game_constructed=true,removed_edges=ids,remaining_endpoints=observations,native_effect_history_complete=false,rollback=false}
