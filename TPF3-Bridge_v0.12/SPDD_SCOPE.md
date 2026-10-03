@@ -1,3 +1,13 @@
+## Disposable-map testing clarification - 3 October 2026
+User observes tests close to a city/existing infrastructure may be failing due to
+obstructions. The entire game map is disposable; all destructive in-game actions
+needed for these tests are permitted. Prefer ample clear land, relocate experiments
+or clear obstructing city/track/road/other map objects rather than repeatedly diagnose
+site-induced collisions as API defects. Distinguish an actual interface/geometry bug
+from unsuitable test placement using practical evidence. This permission concerns
+the game map, not unrelated host/filesystem destruction. No new approval needed for
+relevant in-game clearance. Avoid spending time preserving incidental map objects.
+
 ## Live Python interface development - user resumption, 3 October 2026
 User reports the last disposable save reloaded and authorises resumed development
 and automated handoffs, with coordinator discretion over continuation, intervention,

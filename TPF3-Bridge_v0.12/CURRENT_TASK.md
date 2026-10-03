@@ -1,8 +1,8 @@
-# GIT-G01 — milestone cleanup, commit and push
+# GIT-G02 - connection/routing milestone publication
 
-User authorises this publication; historical no-commit/push wording is superseded.
-PIF-P02 accepted. Reusable source/tests/docs retained; research/coordination/generated
-evidence ignored locally. No new game task or implementation batch. Review staged
-diff, reuse valid acceptance, validate packaging/docs, commit and normal push to the
-verified existing branch/remote. Final local receipt:
-.local_runs/milestone_git/g01/publication.json. Stop after verified push.
+User explicitly authorises cleanup, commit and normal push after P03/P04 acceptance.
+Task: .local_runs/milestone_git/g02/orchestrator/TASK.md
+Keep runtime evidence ignored; no new railway development or game actions.
+Source/tests/docs reviewed; valid29client/14runner acceptance reused. Git history
+and .local_runs/milestone_git/g02/publication.json record the publication checkpoint.
+Stop after verified normal push; no new development task authorised by closeout.

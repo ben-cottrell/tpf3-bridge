@@ -24,6 +24,14 @@ local function anchor(p)
  if p.anchor_node==a.node1 then pos=a.p1;tangent=a.t1 else pos=a.p0;tangent={-a.t0[1],-a.t0[2],-a.t0[3]} end
  return a,pos,norm(tangent),tangent[3]/math.sqrt(tangent[1]^2+tangent[2]^2)
 end
+local function assert_fresh(original)
+ local current=edge(original.id)
+ assert(current.node0==original.node0 and current.node1==original.node1 and
+  near(current.p0,original.p0,.001) and near(current.p1,original.p1,.001) and
+  near(current.t0,original.t0,.001) and near(current.t1,original.t1,.001) and
+  current.template==original.template and current.style==original.style,"stale_attachment")
+ return current
+end
 local function in_region(p,region)
  assert(p[1]>=region.min[1] and p[1]<=region.max[1] and p[2]>=region.min[2] and p[2]<=region.max[2] and p[3]>=region.min[3] and p[3]<=region.max[3],"outside_authorised_region")
 end
@@ -54,7 +62,82 @@ function M.inspect(p)
  local out={};for _,id in ipairs(p.edge_ids) do out[#out+1]=edge(id) end
  return {edges=out,game_constructed=false,native_save_identity="unknown",load_epoch="unknown"}
 end
-function M.fit(p,s,request_id)
+local function node_id(n)
+ assert(n and type(n.entity)=="number" and type(n.index)=="number","transport_node_identity_unavailable")
+ return {entity=n.entity,index=n.index}
+end
+local function same_node(a,b) return a.entity==b.entity and a.index==b.index end
+local function rail_lane(id,mode)
+ local base=edge(id);local n=api.engine.getComponent(id,api.type.ComponentType.TRANSPORT_NETWORK)
+ assert(n and n.edges,"transport_network_unavailable")
+ local found,index=nil,nil
+ for i,row in ipairs(n.edges) do
+  if row.transportModes[mode]==true then assert(not found,"ambiguous_rail_transport_lane");found=row;index=i-1 end
+ end
+ assert(found and #found.conns==2,"rail_transport_lane_unavailable")
+ local p0=sample(found.geometry,0);local p1=sample(found.geometry,1)
+ -- Geometry verifies the native row's orientation; identities come from conns.
+ assert(distance(p0,base.p0)<=.001 and distance(p1,base.p1)<=.001,"transport_orientation_unestablished")
+ return base,found,index
+end
+function M.route(p)
+ assert(p.mode=="TRAIN" or p.mode=="ELECTRIC_TRAIN","unsupported_route_mode")
+ assert(finite(p.max_length) and p.max_length>0 and p.max_length<=800,"invalid_route_length_bound")
+ assert(type(p.required_edges)=="table" and #p.required_edges>=1 and #p.required_edges<=16,"route_required_edge_bound")
+ local mode=E.TransportMode[p.mode]
+ local a,start,index=rail_lane(p.source_edge,mode);local b,finish,target_index=rail_lane(p.target_edge,mode)
+ assert(p.source_edge~=p.target_edge and p.source_node~=p.target_node,"distinct_route_attachments_required")
+ assert(p.source_node==a.node0 or p.source_node==a.node1,"source_not_edge_endpoint")
+ assert(p.target_node==b.node0 or p.target_node==b.node1,"target_not_edge_endpoint")
+ local dir=p.source_node==a.node0
+ local origin=node_id(start.conns[dir and 1 or 2])
+ local destination=node_id(finish.conns[p.target_node==b.node0 and 1 or 2])
+ local expected,seen={},{}
+ for _,id in ipairs(p.required_edges) do edge(id);assert(not expected[id],"duplicate_required_edge");expected[id]=true end
+ local native_origin=start.conns[dir and 1 or 2]
+ local native_destination=finish.conns[p.target_node==b.node0 and 1 or 2]
+ local path=api.engine.util.pathfinding.findPathNodeToNode({native_origin},{native_destination},{mode})
+ assert(type(path)=="table","native_path_result_contract")
+ local out={native_path_found=#path>0,requested_route_verified=false,path={},path_count=#path,truncated=#path>64,
+  source={base_edge=p.source_edge,base_node=p.source_node,transport_edge={entity=p.source_edge,index=index},forward=dir,transport_origin=origin},
+  target={base_edge=p.target_edge,base_node=p.target_node,transport_destination=destination},
+  mode=p.mode,max_length=p.max_length,query="api.engine.util.pathfinding.findPathNodeToNode",game_constructed=false,
+  native_search_length_bound=false,length_bound_is_acceptance_only=true,
+  train_traversal="unprobed",reservation_availability="unprobed",native_save_identity="unknown",load_epoch="unknown"}
+ if #path==0 then out.reason="no_native_path_returned";return out end
+ if out.truncated then out.reason="native_path_observation_bound";return out end
+ local previous,length,continuous=nil,0,true
+ for i,item in ipairs(path) do
+  local id,forward=item[1],item[2]
+  assert(id and type(forward)=="boolean","native_path_entry_contract")
+  local network=api.engine.getComponent(id.entity,api.type.ComponentType.TRANSPORT_NETWORK)
+  local row=network and network.edges and network.edges[id.index+1]
+  assert(row and #row.conns==2 and row.transportModes[mode]==true,"returned_transport_edge_unavailable")
+  local from=node_id(row.conns[forward and 1 or 2]);local to=node_id(row.conns[forward and 2 or 1])
+  if previous and not same_node(previous,from) then continuous=false end
+  if row.forwardOnly and not forward then continuous=false end
+  local base=api.engine.getComponent(id.entity,api.type.ComponentType.BASE_EDGE)
+  local track=base and base.roadType==E.RoadType.TRACK or false
+  if track then seen[id.entity]=true end
+  assert(finite(row.geometry.length) and row.geometry.length>=0,"native_path_length_unavailable")
+  length=length+row.geometry.length
+  out.path[i]={edge={entity=id.entity,index=id.index},forward=forward,from=from,to=to,
+   confirmed_TRACK=track,forward_only=row.forwardOnly,length=row.geometry.length}
+  previous=to
+ end
+ local missing={};for _,id in ipairs(p.required_edges) do if not seen[id] then missing[#missing+1]=id end end
+ out.missing_required_edges=missing;out.total_path_length=length;out.transport_continuous=continuous
+ out.origin_matches=same_node(out.path[1].from,origin);out.destination_matches=same_node(previous,destination)
+ out.source_approach_in_path=seen[p.source_edge]==true;out.target_approach_in_path=seen[p.target_edge]==true
+ local first,last=out.path[1],out.path[#out.path]
+ out.source_direction_matches=first.edge.entity==p.source_edge and first.edge.index==index and first.forward==dir
+ out.target_direction_matches=last.edge.entity==p.target_edge and last.edge.index==target_index and last.forward==(p.target_node==b.node1)
+ out.requested_route_verified=continuous and out.origin_matches and out.destination_matches and #missing==0 and
+  out.source_direction_matches and out.target_direction_matches and length<=p.max_length+.001
+ if not out.requested_route_verified then out.reason=length>p.max_length+.001 and "native_path_exceeds_requested_length" or "native_path_does_not_establish_requested_route" end
+ return out
+end
+function M.fit(p,s,request_id,target)
  vector(p.end_xy);vector(p.end_direction)
  assert(finite(p.radius) and p.radius>0,"invalid_radius")
  assert(type(p.region)=="table","region_required");vector(p.region.min);vector(p.region.max)
@@ -89,8 +172,15 @@ function M.fit(p,s,request_id)
  assert(total<=800,"fit_length_bound")
  local last=controls[#controls];assert(distance(last.p1,p.end_xy)<=.001 and angle(last.t1,t1)<=.1,"fit_end_mismatch")
  assert(maxerr<=.1 and maxheading<=.1,"sampled_conversion_outside_tolerance")
- s.fits[request_id]={anchor=a,node=p.anchor_node,controls=controls,samples=samples,region=p.region,total_length=total,grade=grade,built=false}
- return {fit_request=request_id,pieces=#controls,total_length=total,start_node=p.anchor_node,start=pos,finish=last.p1,radius=p.radius,grade=grade,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=false}
+ if target then
+  assert(math.abs(grade-target.grade)<=.000001,"unsupported_endpoint_grades")
+  assert(math.abs(last.p1[3]-target.pos[3])<=.001,"unsupported_endpoint_height")
+  -- Numerical compatibility only: exact native endpoint position and slope.
+  last.p1={target.pos[1],target.pos[2],target.pos[3]};last.t1[3]=target.grade*last.length
+  in_region(last.p1,p.region)
+ end
+ s.fits[request_id]={anchor=a,node=p.anchor_node,target=target,controls=controls,samples=samples,region=p.region,total_length=total,grade=grade,built=false}
+ return {fit_request=request_id,pieces=#controls,total_length=total,start_node=p.anchor_node,target_node=target and target.node or nil,start=pos,finish=last.p1,radius=p.radius,grade=grade,vertical_domain="constant_grade_compatible_endpoints",sampled_XY_error=maxerr,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=false}
 end
 function M.readback(f)
  assert(f.ids and #f.ids==#f.controls,"construction_receipt_incomplete")
@@ -113,20 +203,35 @@ function M.readback(f)
  end
  for _ in pairs(remaining) do error("unreconciled_returned_edge") end
  assert(maxerr<=.1 and maxheading<=.1,"realised_sampled_shape_failed")
- return {ordered_edges=ordered,ordered_nodes=nodes,edges=observations,connected=true,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=true,train_traversal="unprobed",native_effect_history_complete=false}
+ local attachments=nil
+ if f.target then
+  assert(current==f.target.node,"actual_target_attachment_missing")
+  local source,target=assert_fresh(f.anchor),assert_fresh(f.target.edge)
+  assert(source.node0==f.node or source.node1==f.node,"source_incidence_missing")
+  assert(target.node0==current or target.node1==current,"target_incidence_missing")
+  assert(angle(observations[#observations].t1,f.target.direction)<=.1,"target_travel_direction_mismatch")
+  attachments={source_edge=source.id,source_node=f.node,target_edge=target.id,target_node=current,
+   source_incident_edges={source.id,ordered[1]},target_incident_edges={ordered[#ordered],target.id},
+   exact_native_identity=true,resources_compatible=true}
+ end
+ return {ordered_edges=ordered,ordered_nodes=nodes,edges=observations,attachments=attachments,connected=true,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,sampled_only=true,game_constructed=true,train_traversal="unprobed",native_effect_history_complete=false}
 end
 function M.build(p,s,state,request_id,respond)
  assert(p.authorised==true,"explicit_build_option_required")
  local f=s.fits[p.fit_request];assert(f and not f.built,"fit_missing_or_already_consumed")
- local fresh=edge(f.anchor.id)
- assert(fresh.node0==f.anchor.node0 and fresh.node1==f.anchor.node1 and near(fresh.p0,f.anchor.p0,.001) and near(fresh.p1,f.anchor.p1,.001) and near(fresh.t0,f.anchor.t0,.001) and near(fresh.t1,f.anchor.t1,.001) and fresh.template==f.anchor.template and fresh.style==f.anchor.style,"stale_anchor")
+ assert_fresh(f.anchor)
+ if f.target then assert_fresh(f.target.edge) end
  local h=api.res.streetTemplateRep.find(f.anchor.template);local resource=api.res.streetTemplateRep.get(h)
  assert(resource and resource.laneConfigs and #resource.laneConfigs>0,"track_template_unavailable")
  local proposal=api.type.SimpleProposal.new();local segments,newnodes={},{};local count=#f.controls
  for i,c in ipairs(f.controls) do
-  local n=api.type.NodeAndEntity.new();n.entity=-count-i;n.comp.position=v(c.p1);newnodes[i]=n
+  local node1
+  if f.target and i==count then node1=f.target.node
+  else
+   local n=api.type.NodeAndEntity.new();n.entity=-count-i;n.comp.position=v(c.p1);newnodes[#newnodes+1]=n;node1=n.entity
+  end
   local e=api.type.SegmentAndEntity.new();e.entity=-i;e.type=1
-  e.comp.node0=i==1 and f.node or (-count-i+1);e.comp.node1=n.entity
+  e.comp.node0=i==1 and f.node or (-count-i+1);e.comp.node1=node1
   e.comp.position0=v(c.p0);e.comp.position1=v(c.p1);e.comp.tangent0=v(c.t0);e.comp.tangent1=v(c.t1)
   e.comp.type=E.BaseEdgeType.NORMAL;e.comp.typeIndex=1;e.comp.laneConfigs=resource.laneConfigs
   e.comp.roadTemplate=f.anchor.template;e.comp.roadStyle=f.anchor.style;e.comp.roadType=E.RoadType.TRACK
@@ -153,7 +258,7 @@ function M.build(p,s,state,request_id,respond)
  local cmd=api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false)
  api.cmd.sendCommand(cmd,callback)
 end
-function M.extension(p,s,state,request_id,respond)
+function M.extension(p,s,state,request_id,respond,connect_mode)
  local stage,stages,fit="inspect",{},nil
  local function reply(status,value)
   value.stage=stage;value.stages=stages;value.fit=fit
@@ -161,10 +266,19 @@ function M.extension(p,s,state,request_id,respond)
  end
  local ok,err=pcall(function()
   assert(type(p.brief)=="table" and type(p.execute)=="boolean","invalid_extension_brief")
-  local b=p.brief;local inspection=M.inspect({edge_ids={b.anchor_edge}})
+  local b=p.brief;local inspection=M.inspect({edge_ids=connect_mode and {b.anchor_edge,b.target_edge} or {b.anchor_edge}})
   local a=inspection.edges[1];assert(b.anchor_node==a.node0 or b.anchor_node==a.node1,"anchor_not_edge_endpoint")
+  local target=nil
+  if connect_mode then
+   assert(b.anchor_node~=b.target_node and b.anchor_edge~=b.target_edge,"distinct_attachments_required")
+   assert(b.target_node==inspection.edges[2].node0 or b.target_node==inspection.edges[2].node1,"target_not_edge_endpoint")
+   local t,pos,outward,grade=anchor({anchor_edge=b.target_edge,anchor_node=b.target_node})
+   assert(a.template==t.template and a.style==t.style,"unsupported_attachment_resources")
+   target={edge=t,node=b.target_node,pos=pos,direction={-outward[1],-outward[2],0},grade=-grade}
+   b={anchor_edge=b.anchor_edge,anchor_node=b.anchor_node,end_xy={pos[1],pos[2]},end_direction=target.direction,radius=b.radius,region=b.region}
+  end
   stages[#stages+1]={stage="inspect",status="ok"}
-  stage="fit";local fit_id=request_id.."_fit";fit=M.fit(b,s,fit_id)
+  stage="fit";local fit_id=request_id.."_fit";fit=M.fit(b,s,fit_id,target)
   stages[#stages+1]={stage="fit",status="ok"}
   if not p.execute then reply("ok",{game_constructed=false});return end
   stage="build";assert(not s.mutationPending,"unreconciled_mutation")
@@ -183,7 +297,40 @@ function M.extension(p,s,state,request_id,respond)
  if not ok then
   stages[#stages+1]={stage=stage,status="error"}
   local uncertain=s.mutationPending==request_id
-  reply(uncertain and "mutation_unverified" or "error",{error=tostring(err):sub(1,400),game_constructed=uncertain and "unknown" or false,retry=false})
+  reply(uncertain and "mutation_unverified" or "error",{error=tostring(err):sub(1,400),reason_class=tostring(err):find("unsupported_",1,true) and "unsupported_input" or "failed_check",game_constructed=uncertain and "unknown" or false,retry=false})
  end
+end
+-- Disposable-world test fixture, not a planner: place one short independent
+-- approach at a native-fitted finish, with the same template, tangent and grade.
+function M.test_approach(p,s,state,request_id,respond)
+ assert(p.authorised==true and finite(p.length) and p.length>=5 and p.length<=60,"invalid_test_approach")
+ assert(not s.mutationPending,"unreconciled_mutation")
+ M.fit(p.brief,s,request_id.."_fixture_fit")
+ local f=s.fits[request_id.."_fixture_fit"];local c=f.controls[#f.controls];local direction=norm(c.t1)
+ local finish={c.p1[1]+direction[1]*p.length,c.p1[2]+direction[2]*p.length,c.p1[3]+f.grade*p.length}
+ in_region(finish,f.region);assert_fresh(f.anchor)
+ local resource=api.res.streetTemplateRep.get(api.res.streetTemplateRep.find(f.anchor.template))
+ assert(resource and resource.laneConfigs,"track_template_unavailable")
+ local proposal=api.type.SimpleProposal.new();local nodes={}
+ for i,pos in ipairs({c.p1,finish}) do local n=api.type.NodeAndEntity.new();n.entity=-i-1;n.comp.position=v(pos);nodes[i]=n end
+ local e=api.type.SegmentAndEntity.new();e.entity=-1;e.type=1;e.comp.node0=-2;e.comp.node1=-3
+ e.comp.position0=v(c.p1);e.comp.position1=v(finish)
+ e.comp.tangent0=v({direction[1]*p.length,direction[2]*p.length,f.grade*p.length});e.comp.tangent1=e.comp.tangent0
+ e.comp.type=E.BaseEdgeType.NORMAL;e.comp.typeIndex=1;e.comp.laneConfigs=resource.laneConfigs
+ e.comp.roadTemplate=f.anchor.template;e.comp.roadStyle=f.anchor.style;e.comp.roadType=E.RoadType.TRACK
+ proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd={e}
+ s.mutationPending=request_id
+ local root=state:get() or {};root.pifLive=s;state:set(root)
+ api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(res,success)
+  local ok,result=pcall(function()
+   assert(success==true,"native_test_approach_rejected")
+   local receipt=res.proposal.proposal;assert(#receipt.addedSegments==1,"approach_receipt_incomplete")
+   local actual=M.inspect({edge_ids={receipt.addedSegments[1].entity}})
+   assert(near(actual.edges[1].p0,c.p1,.001) and near(actual.edges[1].p1,finish,.001),"approach_realisation_mismatch")
+   actual.game_constructed=true;actual.test_fixture=true;return actual
+  end)
+  if ok then s.mutationPending=nil end
+  respond(request_id,ok and "ok" or "mutation_unverified",ok and result or {error=tostring(result):sub(1,400),game_constructed="unknown",retry=false})
+ end)
 end
 return M

@@ -1,3 +1,13 @@
+## Disposable-map testing clarification - 3 October 2026
+User observes tests close to a city/existing infrastructure may be failing due to
+obstructions. The entire game map is disposable; all destructive in-game actions
+needed for these tests are permitted. Prefer ample clear land, relocate experiments
+or clear obstructing city/track/road/other map objects rather than repeatedly diagnose
+site-induced collisions as API defects. Distinguish an actual interface/geometry bug
+from unsuitable test placement using practical evidence. This permission concerns
+the game map, not unrelated host/filesystem destruction. No new approval needed for
+relevant in-game clearance. Avoid spending time preserving incidental map objects.
+
 # TPF3-Bridge working rules
 
 ## Authority and current work
@@ -6,8 +16,9 @@ research, prototypes and tests may inform implementation but cannot expand it.
 Precedence: current explicit user/orchestrator instruction → SPDD_SCOPE.md →
 NATIVE_FIRST_ARCHITECTURE.md → CURRENT_TASK.md/STATE.md → task evidence → history.
 Read CURRENT_TASK.md and short STATE.md; implement only the approved outcome.
-Current GIT-G01 explicitly authorises cleanup, commit and normal push. Earlier
-no-commit/push wording is historical. No new game development is requested here.
+PIF-P03 connection and PIF-P04 native routing are accepted. GIT-G02 explicitly
+authorises cleanup, commit and normal push of this milestone; no new game work.
+Routine construction permissions apply only within an approved development task.
 
 ## Efficient development
 GPT usage efficiency is a first-class requirement. Use exact source/test pointers,

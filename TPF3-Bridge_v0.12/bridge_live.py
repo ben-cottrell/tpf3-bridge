@@ -14,7 +14,10 @@ import time
 import uuid
 
 MARKER = 'TPF3_BRIDGE_LIVE_RESPONSE '
-OPERATIONS = {'inspect', 'fit', 'build', 'readback', 'extension'}
+OPERATIONS = {'inspect', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route'}
+
+def is_mutation(operation, params):
+    return operation in ('build', 'test_approach') or (operation in ('extension', 'connection') and params.get('execute') is True)
 
 def discover_session(log_path):
     """Read transport markers locally; a later request must still prove responsiveness."""
@@ -82,6 +85,46 @@ def validate_brief(brief):
 def extend(client, brief, *, execute=False):
     """One inspect/fit/(explicit build)/fresh-readback job; never retry a mutation."""
     validate_brief(brief)
+    return _workflow(client, brief, execute, 'extension')
+
+def validate_connection_brief(brief):
+    keys = {'anchor_edge', 'anchor_node', 'target_edge', 'target_node', 'radius', 'region'}
+    if not isinstance(brief, dict) or set(brief) != keys:
+        raise ValueError('connection brief requires only ' + ', '.join(sorted(keys)))
+    for key in ('target_edge', 'target_node'):
+        if type(brief[key]) is not int or brief[key] <= 0:
+            raise ValueError(key + ' must be an exact positive native ID')
+    validate_brief({k:brief[k] for k in ('anchor_edge', 'anchor_node', 'radius', 'region')} |
+                   {'end_xy':[0, 0], 'end_direction':[1, 0]})
+    if brief['anchor_node'] == brief['target_node'] or brief['anchor_edge'] == brief['target_edge']:
+        raise ValueError('connection requires distinct source and target attachments')
+    return brief
+
+def connect(client, brief, *, execute=False):
+    """Connect two existing exact TRACK endpoint nodes; native geometry owns fitting."""
+    validate_connection_brief(brief)
+    return _workflow(client, brief, execute, 'connection')
+
+def route(client, brief):
+    """Query native transport routing; does not build or establish train traversal."""
+    keys = {'source_edge', 'source_node', 'target_edge', 'target_node', 'mode', 'max_length', 'required_edges'}
+    if not isinstance(brief, dict) or set(brief) != keys:
+        raise ValueError('route brief requires only ' + ', '.join(sorted(keys)))
+    for key in ('source_edge', 'source_node', 'target_edge', 'target_node'):
+        if type(brief[key]) is not int or brief[key] <= 0:
+            raise ValueError(key + ' must be an exact positive native ID')
+    if brief['source_node'] == brief['target_node'] or brief['source_edge'] == brief['target_edge']:
+        raise ValueError('route requires distinct attachments')
+    if brief['mode'] not in ('TRAIN', 'ELECTRIC_TRAIN'):
+        raise ValueError('route mode must be TRAIN or ELECTRIC_TRAIN')
+    if type(brief['max_length']) not in (int, float) or not math.isfinite(brief['max_length']) or not 0 < brief['max_length'] <= 800:
+        raise ValueError('route max_length must be finite and within (0,800] native units')
+    ids = brief['required_edges']
+    if not isinstance(ids, list) or not 1 <= len(ids) <= 16 or any(type(i) is not int or i <= 0 for i in ids) or len(set(ids)) != len(ids):
+        raise ValueError('required_edges must contain 1–16 distinct exact native IDs')
+    return client.request('route', brief)
+
+def _workflow(client, brief, execute, operation):
     if type(execute) is not bool:
         raise ValueError('execute must be boolean')
     job_id = uuid.uuid4().hex
@@ -94,28 +137,36 @@ def extend(client, brief, *, execute=False):
         with lock.open('x'):
             pass
     except FileExistsError:
-        raise LiveError('client_busy', 'one extension workflow at a time') from None
+        raise LiveError('client_busy', 'one railway workflow at a time') from None
     try:
         atomic_json(record_path, {'summary': summary, 'brief': brief})
-        summary['stage'] = 'native_extension'
-        response = client.request('extension', {'brief': brief, 'execute': execute}, request_id=job_id)
+        summary['stage'] = 'native_' + operation
+        response = client.request(operation, {'brief': brief, 'execute': execute}, request_id=job_id)
         result = response.get('result', {})
-        summary.update(status=response['status'], stage=result.get('stage', 'native_extension'),
+        summary.update(status=response['status'], stage=result.get('stage', 'native_' + operation),
                        stages=result.get('stages', []), game_constructed=result.get('game_constructed', 'unknown' if execute else False))
         if result.get('fit'):
             summary['fit'] = result['fit']
         if response['status'] != 'ok':
             summary['error'] = result.get('error', 'native_stage_failed')
+            if result.get('reason_class'):
+                summary['reason_class'] = result['reason_class']
         elif execute:
             read = result.get('readback', {})
-            if read.get('connected') is not True or not read.get('ordered_edges') or not read.get('ordered_nodes') or read['ordered_nodes'][0] != brief['anchor_node']:
-                raise LiveError('native_verification_failed', 'fresh readback did not establish the requested connected extension')
+            if (read.get('connected') is not True or not read.get('ordered_edges') or not read.get('ordered_nodes')
+                    or read['ordered_nodes'][0] != brief['anchor_node']
+                    or (operation == 'connection' and (read['ordered_nodes'][-1] != brief['target_node']
+                        or read.get('attachments', {}).get('target_edge') != brief['target_edge']
+                        or read.get('attachments', {}).get('source_edge') != brief['anchor_edge']))):
+                raise LiveError('native_verification_failed', 'fresh readback did not establish the requested exact attachments')
             summary.update(connected=True, edges=read['ordered_edges'], nodes=read['ordered_nodes'],
                            sampled_XY_error=read.get('sampled_XY_error'), train_traversal=read.get('train_traversal'))
+            if operation == 'connection':
+                summary['attachments'] = read['attachments']
     except (LiveError, OSError, ValueError, KeyError, TypeError) as exc:
         summary['status'] = getattr(exc, 'status', 'local_input_or_storage_error')
         summary['error'] = str(exc)[:400]
-        if summary['stage'] == 'native_extension' and execute:
+        if summary['stage'] == 'native_' + operation and execute:
             summary['game_constructed'] = 'unknown'
     finally:
         try:
@@ -206,7 +257,7 @@ class LiveClient:
         if state['session'] != self.session:
             raise LiveError('session_changed', 'use a new evidence directory for a new runtime session')
         unresolved = state.get('pending')
-        if unresolved and operation not in ('readback', 'inspect'):
+        if unresolved and operation not in ('readback', 'inspect', 'route'):
             raise LiveError('reconciliation_required', 'previous request is unfinished; inspect its matching response/current world before any repeat', state['pending']['request_id'])
         if (self.evidence / (request_id + '.request.json')).exists():
             raise LiveError('request_id_reused', 'request ID already recorded', request_id)
@@ -274,7 +325,7 @@ class LiveClient:
                         if unresolved and not verified_pending:
                             state['pending'] = unresolved
                         elif response['status'] == 'mutation_unverified' or (
-                                (operation == 'build' or (operation == 'extension' and params.get('execute') is True))
+                                is_mutation(operation, params)
                                 and response.get('result', {}).get('game_constructed') == 'unknown'):
                             state['pending']['outcome'] = 'mutation_unverified'
                         else:
@@ -284,7 +335,7 @@ class LiveClient:
                 if len(partial) > 65536:
                     raise LiveError('protocol_error', 'unterminated oversized log line', request_id)
                 time.sleep(.1)
-        status = 'mutation_outcome_unknown' if operation == 'build' or (operation == 'extension' and params.get('execute') is True) else 'request_timeout'
+        status = 'mutation_outcome_unknown' if is_mutation(operation, params) else 'request_timeout'
         raise LiveError(status, 'no matching response; request retained for reconciliation, never resubmitted automatically', request_id)
 
     def reconcile_pending(self):
@@ -313,17 +364,20 @@ class LiveClient:
             response = parse_response(line, pending['request_id'], self.session, pending['operation'])
             if response:
                 atomic_json(self.evidence / (pending['request_id'] + '.response.json'), response)
-                if response['status'] != 'mutation_unverified':
+                uncertain = response['status'] == 'mutation_unverified' or (
+                    is_mutation(pending['operation'], pending['params'])
+                    and response.get('result', {}).get('game_constructed') == 'unknown')
+                if not uncertain:
                     state.pop('pending');atomic_json(self.journal, state)
                 return response
         raise LiveError('reconciliation_required', 'no matching late response; fresh readback may be requested, no automatic mutation replay', pending['request_id'])
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--context', type=Path)
-    parser.add_argument('--execute', action='store_true', help='authorise native construction for extend')
+    parser.add_argument('--execute', action='store_true', help='authorise native construction for extend/connect')
     parser.add_argument('--mod-directory', type=Path)
     parser.add_argument('--log', type=Path)
     parser.add_argument('--evidence', type=Path)
@@ -340,22 +394,34 @@ def main(argv=None):
                 raise ValueError('provide --context or all explicit transport arguments')
             client = LiveClient(args.mod_directory, args.log, args.evidence, args.session, args.timeout)
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
-        if args.execute and args.operation != 'extend':
-            raise ValueError('--execute is only for extend; low-level build uses explicit authorised parameter')
-        response = extend(client, params, execute=args.execute) if args.operation == 'extend' else client.request(args.operation, params)
+        if args.execute and args.operation not in ('extend', 'connect'):
+            raise ValueError('--execute is only for extend/connect; low-level build uses explicit authorised parameter')
+        if args.operation in ('extend', 'connect'):
+            response = (extend if args.operation == 'extend' else connect)(client, params, execute=args.execute)
+        elif args.operation == 'route':
+            response = route(client, params)
+        else:
+            response = client.request(args.operation, params)
     except (OSError, ValueError, LiveError, KeyError, TypeError) as exc:
         response = {'status': getattr(exc, 'status', 'local_input_or_storage_error'),
                     'error': str(exc)[:400], 'request_id': getattr(exc, 'request_id', None)}
     output = json.dumps(response, separators=(',', ':'))
     if len(output.encode('utf-8')) > 4095:
-        output = json.dumps({
+        compact = {
             'status': response['status'], 'operation': args.operation,
             'session': client.session, 'request_id': response.get('request_id'),
             'response_file': response.get('evidence') or str((client.evidence / (response['request_id'] + '.response.json')).resolve()),
             'detail': 'full response retained locally',
-        }, separators=(',', ':'))
+        }
+        if args.operation == 'route':
+            result = response.get('result', {})
+            compact.update({key:result.get(key) for key in ('native_path_found', 'requested_route_verified', 'path_count', 'truncated', 'reason', 'train_traversal')})
+        output = json.dumps(compact, separators=(',', ':'))
     print(output)
-    return 0 if response['status'] == 'ok' else 1
+    accepted = response['status'] == 'ok'
+    if args.operation == 'route':
+        accepted = accepted and response.get('result', {}).get('requested_route_verified') is True
+    return 0 if accepted else 1
 
 if __name__ == '__main__':
     raise SystemExit(main())

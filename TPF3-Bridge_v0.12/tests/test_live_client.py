@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import contextlib
 import io
-from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, discover_session, client_from_context
+from bridge_live import LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover_session, client_from_context
 
 class LiveClientTests(unittest.TestCase):
     def setUp(self):
@@ -69,6 +69,21 @@ class LiveClientTests(unittest.TestCase):
         self.assertEqual(ctx.exception.status, 'reconciliation_required')
         self.assertEqual(len(list(self.client.mod.rglob('*.lua'))), 1)
 
+    def test_late_rejection_with_unknown_effects_still_blocks_mutation(self):
+        self.client.timeout = .02
+        with self.assertRaises(LiveError):
+            self.client.request('connection', {'execute': True, 'brief': {}}, request_id='late')
+        response = self.response('late', 'connection', result={'game_constructed': 'unknown'})
+        response['status'] = 'error'
+        with self.log.open('a') as stream:
+            stream.write(MARKER + json.dumps(response) + '\n')
+        self.assertEqual(self.client.reconcile_pending()['status'], 'error')
+        self.assertIn('pending', json.loads(self.client.journal.read_text()))
+        with self.assertRaises(LiveError) as ctx:
+            self.client.request('connection', {'execute': True, 'brief': {}}, request_id='again')
+        self.assertEqual(ctx.exception.status, 'reconciliation_required')
+        self.assertEqual(len(list(self.client.mod.rglob('*.lua'))), 1)
+
     def test_finite_timeout_and_single_worker(self):
         with self.assertRaises(ValueError):
             LiveClient(self.client.mod, self.log, self.client.evidence, 'test_session', float('inf'))
@@ -109,6 +124,127 @@ class LiveClientTests(unittest.TestCase):
         with self.assertRaises(LiveError):
             self.client.request('extension', {'execute': True}, request_id='repeat')
         self.assertEqual(len(list(self.client.mod.rglob('*.lua'))), 2)
+
+    def route_brief(self):
+        return {'source_edge':10,'source_node':11,'target_edge':20,'target_node':21,
+                'mode':'TRAIN','max_length':300,'required_edges':[30,31]}
+
+    def test_route_invalid_input_never_sends(self):
+        for key,value in [('mode','CAR'),('max_length',float('inf')),('max_length',801),
+                          ('source_node',True),('required_edges',[30,30]),('target_node',11)]:
+            bad={**self.route_brief(),key:value}
+            with patch.object(self.client,'request') as calls:
+                with self.assertRaises(ValueError):route(self.client,bad)
+                calls.assert_not_called()
+
+    def test_route_uses_one_native_query_and_preserves_negative_result(self):
+        for verified in (True,False):
+            response=self.response(operation='route',result={'native_path_found':verified,
+                'requested_route_verified':verified,'game_constructed':False,'train_traversal':'unprobed'})
+            with patch.object(self.client,'request',return_value=response) as calls:
+                result=route(self.client,self.route_brief())
+            self.assertIs(result['result']['requested_route_verified'],verified)
+            self.assertEqual(result['result']['train_traversal'],'unprobed')
+            calls.assert_called_once_with('route',self.route_brief())
+
+    def test_route_inspection_preserves_unresolved_mutation(self):
+        self.client.timeout=.02
+        with self.assertRaises(LiveError):self.client.request('build',{'fit_request':'f'},request_id='unknown')
+        def worker():
+            slot=self.client.mod/'content/scripts/pif_live/test_session/000002.lua'
+            deadline=time.monotonic()+1
+            while not slot.exists() and time.monotonic()<deadline:time.sleep(.005)
+            with self.log.open('a') as f:f.write(MARKER+json.dumps(self.response('query','route',result={'game_constructed':False}))+'\n')
+        self.client.timeout=.5
+        thread=threading.Thread(target=worker);thread.start()
+        self.client.request('route',self.route_brief(),request_id='query');thread.join()
+        self.assertEqual(json.loads(self.client.journal.read_text())['pending']['request_id'],'unknown')
+        with self.assertRaises(LiveError):self.client.request('build',{'fit_request':'f'},request_id='replay')
+        self.assertEqual(len(list(self.client.mod.rglob('*.lua'))),2)
+
+    def test_route_cli_keeps_large_native_path_local(self):
+        params=self.root/'route.json';params.write_text(json.dumps(self.route_brief()))
+        response=self.response(operation='route',result={'requested_route_verified':True,'path':['x'*10000]})
+        output=io.StringIO()
+        with patch('bridge_live.client_from_context',return_value=self.client),patch.object(self.client,'request',return_value=response),contextlib.redirect_stdout(output):
+            code=main(['route','--context','context.json','--params',str(params)])
+        self.assertEqual(code,0);self.assertIn('response_file',json.loads(output.getvalue()))
+        self.assertIs(json.loads(output.getvalue())['requested_route_verified'],True)
+        self.assertLessEqual(len(output.getvalue().encode()),4096)
+
+    def test_route_cli_negative_is_not_a_success_exit(self):
+        params=self.root/'route.json';params.write_text(json.dumps(self.route_brief()))
+        response=self.response(operation='route',result={'native_path_found':False,'requested_route_verified':False,'game_constructed':False})
+        output=io.StringIO()
+        with patch('bridge_live.client_from_context',return_value=self.client),patch.object(self.client,'request',return_value=response),contextlib.redirect_stdout(output):
+            code=main(['route','--context','context.json','--params',str(params)])
+        self.assertEqual(code,1);self.assertIs(json.loads(output.getvalue())['result']['requested_route_verified'],False)
+
+    def connection_brief(self):
+        return {'anchor_edge':10,'anchor_node':11,'target_edge':20,'target_node':21,
+                'radius':100,'region':{'min':[0,0,-10],'max':[300,300,10]}}
+
+    def connection_worker(self, operation, params, *, request_id):
+        self.assertEqual(operation, 'connection')
+        self.assertEqual(params['brief'], self.connection_brief())
+        result={'stage':'fit','stages':[{'stage':'inspect','status':'ok'},{'stage':'fit','status':'ok'}],
+                'fit':{'target_node':21},'game_constructed':False}
+        if params['execute']:
+            result.update(stage='readback',game_constructed=True,
+                readback={'connected':True,'ordered_edges':[30,31],'ordered_nodes':[11,40,21],
+                          'attachments':{'source_edge':10,'source_node':11,'target_edge':20,'target_node':21}})
+        return self.response(request_id, operation, result=result)
+
+    def test_two_ended_fit_only_and_execute_preserve_both_identities(self):
+        with patch.object(self.client,'request',side_effect=self.connection_worker) as calls:
+            fit=connect(self.client,self.connection_brief())
+            built=connect(self.client,self.connection_brief(),execute=True)
+        self.assertIs(fit['game_constructed'],False)
+        self.assertTrue(built['connected']);self.assertEqual(built['nodes'],[11,40,21])
+        self.assertEqual(built['attachments']['target_edge'],20)
+        self.assertEqual(len(calls.call_args_list),2)
+
+    def test_wrong_target_node_or_edge_never_claims_connection(self):
+        for changed in ('node','edge'):
+            def worker(operation,params,*,request_id):
+                response=self.connection_worker(operation,params,request_id=request_id)
+                if changed=='node':response['result']['readback']['ordered_nodes'][-1]=999
+                else:response['result']['readback']['attachments']['target_edge']=999
+                return response
+            with patch.object(self.client,'request',side_effect=worker) as calls:
+                result=connect(self.client,self.connection_brief(),execute=True)
+            self.assertEqual(result['status'],'native_verification_failed')
+            self.assertIs(result['game_constructed'],True);self.assertEqual(len(calls.call_args_list),1)
+
+    def test_two_ended_invalid_brief_or_native_grade_failure_never_builds(self):
+        bad=self.connection_brief();bad['target_node']=11
+        with patch.object(self.client,'request') as calls:
+            with self.assertRaises(ValueError):connect(self.client,bad,execute=True)
+            calls.assert_not_called()
+        def worker(operation,params,*,request_id):
+            return dict(version=1,session='test_session',request_id=request_id,operation=operation,status='error',
+                        result={'stage':'fit','error':'unsupported_endpoint_grades','game_constructed':False})
+        with patch.object(self.client,'request',side_effect=worker) as calls:
+            result=connect(self.client,self.connection_brief(),execute=True)
+        self.assertEqual(result['status'],'error');self.assertIs(result['game_constructed'],False)
+        self.assertEqual(len(calls.call_args_list),1)
+
+    def test_two_ended_timeout_keeps_pending_and_cannot_replay(self):
+        self.client.timeout=.02
+        with self.assertRaises(LiveError) as ctx:
+            self.client.request('connection',{'brief':self.connection_brief(),'execute':True},request_id='connect1')
+        self.assertEqual(ctx.exception.status,'mutation_outcome_unknown')
+        with self.assertRaises(LiveError):
+            self.client.request('connection',{'brief':self.connection_brief(),'execute':True},request_id='connect2')
+        self.assertEqual(len(list(self.client.mod.rglob('*.lua'))),1)
+
+    def test_connect_cli_routes_one_bounded_workflow(self):
+        params=self.root/'connection.json';params.write_text(json.dumps(self.connection_brief()))
+        output=io.StringIO()
+        with patch('bridge_live.client_from_context',return_value=self.client),patch.object(self.client,'request',side_effect=self.connection_worker) as calls,contextlib.redirect_stdout(output):
+            code=main(['connect','--context','context.json','--params',str(params),'--execute'])
+        self.assertEqual(code,0);self.assertTrue(json.loads(output.getvalue())['connected'])
+        self.assertEqual(len(calls.call_args_list),1);self.assertLessEqual(len(output.getvalue().encode()),4096)
 
     def test_late_response_reconciles_without_new_module(self):
         self.client.timeout = .02

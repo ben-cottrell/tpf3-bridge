@@ -1,11 +1,59 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
 ## Current checkpoint
-PIF-P02 accepted; GIT-G01 closes repository hygiene and publication. No new railway
-task/batch authorised by this closeout. Working branch codex/initial-implementation,
-remote origin https://github.com/ben-cottrell/tpf3-bridge.git. Pre-publication HEAD:
-f416b232844c07e76bce256fa93e55966ad8a7b8. Final commit/push receipt remains local
-at .local_runs/milestone_git/g01/publication.json; Git history supplies the checkpoint.
+PIF-P03/P04 accepted; GIT-G02 publishes this source/tests/docs checkpoint on
+codex/initial-implementation, origin https://github.com/ben-cottrell/tpf3-bridge.git.
+Prior published revision1080dd457b8564faa52a5f4e20d46afed26f4b89. Git history and
+.local_runs/milestone_git/g02/publication.json identify the resulting commit and
+verified remote SHA. Evidence/logs/ledgers stay local and ignored; no deletions.
+29client/14runner acceptance reused after unchanged-file checks; no game operations.
+
+## P04 native route verification
+Callable route(client,brief); CLI bridge_live.py route --context CONTEXT --params ROUTE.
+Fresh exact BaseEdge/transport NodeIds feed native findPathNodeToNode; no Python graph.
+Build40408 TRAIN path131229→131239→131240→131241→131235, nodes/index0
+131225→131226→131237→131238→131215→131234, length88.659898native units.
+Exact continuity, selected mode, approach lanes/directions and required edges pass.
+Native excessive-length, invalid-endpoint, missing-required-edge and wrong-entry-direction
+cases rejected without build; CLI exit1 even when query status is ok but unverified.
+max_length is acceptance-only; API exposes no engine search bound or initial direction
+parameter. ≤64observations; truncation fails. No traversal/reservation availability claim.
+python tools/quiet_checks.py --suite live_client --label pif-p04-client:29passed,
+.local_checks/pif-p04-client_6av4bjeg/report.json; reused after tested-file hash checks.
+python .local_runs/live_python_interface/p04/run_acceptance.py:5expected native outcomes.
+python .local_runs/live_python_interface/p04/check_evidence.py:passed; receipts/hashes,
+py_compile and git diff --check. Checks/result/HANDOFF local in p04 directory.
+8read-only requests total;4normal loads;0build/save/simulation diagnostics. Paused,
+non-maximised disposable world. Earlier constructor nil/findPath error300 retained;
+no broad survey/unknown mutation replay. Historical P03 code snapshot preserved at
+p04/before; prior acceptance not rerun against changed source. Usage unavailable.
+Accepted by coordinator; no automatic next engineering task.
+
+## P03 two-ended native connection
+Live callable connect(client,brief,execute=False), CLI bridge_live.py connect
+--context CONTEXT --params CONNECTION [--execute]. Exact source/target edge/node
+IDs; native fit with outward-source/incoming-target orientation, matching assets,
+constant grade compatible at both ends (grade1e-6,height0.001 numerical tolerance).
+No general vertical solver; unsupported native families/directions are explicit.
+Final proposal reuses both existing positive node IDs; fresh readback checks both
+known incident edges/resources. Unknown late mutation responses remain blocked.
+Build40408: edges131239/131240/131241, nodes131226→131237→131238→131215,
+source131229/target131235; length60.001331,radius100,sampledXYerror0.000503309.
+Independent later inspection confirmed both attachments, tangents, Z and assets.
+Nearby test approach131235 supplied the target. Fit-only, invalid target and reversed
+target ran without build. Two earlier stub collisions retain unknown effects/blocked
+journals; a straight candidate returned unsupported reverse geometry before mutation.
+P03:12requests,4world submissions(2successful,2collision rejections),3normal loads,
+1normal save,0simulation diagnostics. Disposable world saved; paused/non-maximised.
+python tools/quiet_checks.py --suite live_client --label pif-p03-accepted:24passed,
+.local_checks/pif-p03-accepted__v7dp768/report.json. py_compile/diff checks passed.
+python .local_runs/live_python_interface/p03/check_evidence.py:passed; checks.json,
+result.json,workflow_history.json,HANDOFF.md in that directory;12native receipts
+validated,8prepared/staged hashes match. Unchanged14quiet-runner tests reused below.
+P03 alone proves no pathfinder/traversal; P04 adds native route evidence above.
+No continuous proof, saveGUID, rollback or transport guarantees; no L01–L14/runner changes.
+Latest human steering: whole test map disposable; prefer open land or clear incidental
+obstructions. Earlier collisions do not prove an API defect; accepted work not repeated.
 
 ## Implemented interface
 Offline commands: bridge_cli.py design [--mock-execute], connect, connect-pair
@@ -15,7 +63,7 @@ claims arise from offline/mock evidence. Supported offline connection domain is
 level/zero-cant, bounded existing relative-heading/curve families; paired tracks use
 explicit directed endpoint IDs, compatible parallel pairs/equal end spacing.
 
-Live: bridge_live.py inspect/fit/build/readback and extend --context CONTEXT
+Live: bridge_live.py inspect/fit/build/readback, extend/connect/route --context CONTEXT
 --params BRIEF [--execute]; callable client_from_context and extend. Fit-only default;
 explicit construction performs fresh inspect→native fit→build→fresh readback in one
 compound native invocation. Current session handshake and one shared durable journal;

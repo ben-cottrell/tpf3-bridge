@@ -59,7 +59,10 @@ function data()
    s.sequence=request.sequence+1;s.requests[request.request_id]={pending=true};store(state,s)
    local p=request.params
    if request.operation=="extension" then native.extension(p,s,state,request.request_id,respond)
+   elseif request.operation=="connection" then native.extension(p,s,state,request.request_id,respond,true)
+   elseif request.operation=="test_approach" then native.test_approach(p,s,state,request.request_id,respond)
    elseif request.operation=="inspect" then respond(request.request_id,"ok",native.inspect(p))
+   elseif request.operation=="route" then respond(request.request_id,"ok",native.route(p))
    elseif request.operation=="fit" then respond(request.request_id,"ok",native.fit(p,s,request.request_id))
    elseif request.operation=="build" then
     assert(not s.mutationPending,"unreconciled_mutation")
