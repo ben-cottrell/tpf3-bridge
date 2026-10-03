@@ -1,6 +1,23 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
-## Current checkpoint - P17 recipe-level checked continuation complete
+## Current task - P18 prepared; native execution blocked by approval review
+Added ordered UP/DOWN intent relative to explicit route reference, separate native
+construction direction; patterns UD/UDUD/UUDD validate, explicit named movements.
+Prepared parallel-layout plan/execute and parallel-layout-inspect plus callable APIs.
+Four-track UUDD increasing-UP execution domain, outer diverging UP/merging DOWN branches;
+no cross-track switching/close crossover, direction enforcement/signals/traversal claim.
+Fresh route/attachment/junction and retained100-unit spacing checks reuse native primitives.
+Fake-native and planning tests pass; exact latest report/checkpoint in p18/checks.json.
+Native command rejected BEFORE execution: automatic approval review could not establish
+trusted approval for this concrete live-map mutation. No retry/workaround, P18 native
+queries/builds/save edits or mod-source changes. Existing game running/nonmaximised/paused
+was observed; no UI input was needed. Native acceptance NOT passed, not task complete.
+Approval needed for example origin(1700,6500,33),heading-50,region[1300,5000,0]..
+[3350,7200,80], four through tracks/two outer branches/six directed movements, including
+necessary in-game clearance/terrain effects on disposable map. No OS repair/restart/push.
+Prepared source/local evidence retained; actual usage unavailable. P17 accepted1ecee4f.
+
+## P17 baseline - 1ecee4f
 Callable inspect_junction_recipe/continue_junction_recipe; CLI junction-recipe-inspect
 and junction-recipe-continue --execute accept invocation/compact summary/inspection
 or continuation receipt plus original brief. Fresh roles, straight fixtures/assets,

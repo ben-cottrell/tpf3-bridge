@@ -782,3 +782,54 @@ cover changed/reused identities, changed geometry/assets, wrong joins, partial/u
 state, durable interrupted steps, missing-stage continuation and duplicate suppression.
 This establishes checked continuation on the demonstrated network, not arbitrary-site
 success, continuous geometry proof, signalling permission or physical train traversal.
+
+
+## Ordered running-direction layout (P18 prepared)
+
+`parallel_layout_example.json` declares UP-UP-DOWN-DOWN, the ordered track IDs, an
+explicit route reference and six required functional movements. UP means increasing
+that reference in this example; DOWN means decreasing. Track order increases along
+the reference's left normal, independent of map rotation. UP/DOWN does not label the
+native edge's stored p0/p1 or its construction direction.
+
+```powershell
+python bridge_live.py parallel-layout --params implementation/live_python_interface/parallel_layout_example.json --evidence .local_runs/layout_plans
+python bridge_live.py parallel-layout --context context.json --params implementation/live_python_interface/parallel_layout_example.json --execute
+python bridge_live.py parallel-layout-inspect --context context.json --params implementation/live_python_interface/parallel_layout_example.json --layout-record RECORD.json
+```
+
+The first command is offline and publishes a reviewable hashed plan. Callable
+interfaces: plan_parallel_layout, publish_parallel_layout, execute_parallel_layout
+and inspect_parallel_layout. `native_execution_supported` identifies the prepared
+execution domain; `native_runtime_demonstrated:false` on a DESIGN plan makes no game
+capability claim. The execution command has not yet passed native acceptance.
+
+Planning validates UP-DOWN, UP-DOWN-UP-DOWN and UP-UP-DOWN-DOWN, including reversed
+UP/reference convention and rotation. Native execution is narrowly prepared for
+four-track UUDD with increasing-reference UP, level radius120/spacing5. It creates
+four straight through tracks, a diverging UP branch from the low outer track, and a
+DOWN branch merging into the high outer track. Outward branches avoid a close
+crossover; no switching among the four tracks is supplied. Other patterns can be
+planned but native execution stops as unsupported until separately demonstrated.
+
+Every declared through/outer-branch movement must appear once. Opposing-direction,
+unknown-port, cross-track switching or omitted movements fail before native requests.
+Native construction uses the increasing geometric reference; DOWN traffic is checked
+with reversed source/target attachment roles. This does not reverse supplied native
+construction tangents or claim that TPF3 enforces traffic direction. An unsignalled
+native reverse path does not authorise a movement contrary to the design brief.
+
+Prepared execution uses existing native fixtures, corridor fitting and interior
+junction construction. Fresh verification reacquires all functional ports and exact
+junction incidence, checks directed TRAIN paths with selected radius/grade/region,
+and17spacing samples for each of three retained100-unit adjacent approach pairs.
+Partial effects/unfinished steps stay in durable evidence. No automatic retry,
+clearance, crash resume, rollback or operational/signal enforcement is provided.
+
+P18 currently has117passing client tests, including deterministic pattern/direction
+transforms and fake-native execution/readback. The attempted native experiment was
+rejected by automatic approval review before process execution; no P18 construction
+occurred. P17's five-route evidence remains valid for P17, not a four-track proof.
+Concrete native approval is pending for the supplied disposable-map example at
+(1700,6500,33),heading-50 within[1300,5000,0]..[3350,7200,80], including necessary map
+clearance/terrain effects. Physical traversal, reservations and signals remain unprobed.

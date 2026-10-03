@@ -506,13 +506,9 @@ def validate_throat_brief(brief):
 
 JUNCTION_RECIPE = 'widened_two_approach_three_exit_v1'
 
-def plan_junction_recipe(brief):
-    """Fixed P15 intent in a chosen map frame; no native calls or Python curve fitting."""
-    keys={'recipe','origin','heading_deg','radius','max_grade','spacing','region','asset_region'}
-    if not isinstance(brief,dict) or set(brief)!=keys:raise ValueError('junction recipe brief fields mismatch')
-    if brief['recipe']!=JUNCTION_RECIPE:raise LiveError('unsupported_recipe','only '+JUNCTION_RECIPE+' is supported')
+def _validate_native_frame(brief,unsupported="unsupported_recipe"):
     if brief['radius']!=120 or brief['spacing']!=5:
-        raise LiveError('unsupported_recipe','v1 requires hard radius120 and native template spacing5; no scaling or mirroring')
+        raise LiveError(unsupported,'v1 requires hard radius120 and native template spacing5; no scaling or mirroring')
     p=brief['origin']
     if not isinstance(p,list) or len(p)!=3 or any(type(x) not in (int,float) or not math.isfinite(x) for x in p):raise ValueError('origin requires finite native XYZ')
     h=brief['heading_deg'];grade=brief['max_grade']
@@ -524,6 +520,15 @@ def plan_junction_recipe(brief):
                 or any(type(x) not in (int,float) or not math.isfinite(x) for x in r[k]) for k in ('min','max'))
                 or any(r['min'][i]>=r['max'][i] for i in range(3))):raise ValueError(name+' requires ordered finite native XYZ bounds')
     if any(brief['asset_region']['max'][i]-brief['asset_region']['min'][i]>400 for i in range(3)):raise ValueError('asset_region must fit the bounded400-unit native query')
+    return p,h,grade
+
+
+def plan_junction_recipe(brief):
+    """Fixed P15 intent in a chosen map frame; no native calls or Python curve fitting."""
+    keys={'recipe','origin','heading_deg','radius','max_grade','spacing','region','asset_region'}
+    if not isinstance(brief,dict) or set(brief)!=keys:raise ValueError('junction recipe brief fields mismatch')
+    if brief['recipe']!=JUNCTION_RECIPE:raise LiveError('unsupported_recipe','only '+JUNCTION_RECIPE+' is supported')
+    p,h,grade=_validate_native_frame(brief)
     def position(x,y=0):
         a=math.radians(h);return [p[0]+x*math.cos(a)-y*math.sin(a),p[1]+x*math.sin(a)+y*math.cos(a),p[2]]
     def direction(a=0):a=math.radians(h+a);return [math.cos(a),math.sin(a)]
@@ -940,6 +945,189 @@ def continue_junction_recipe(client,invocation):
         summary.update(status='ok',stage='verified',routes_verified=5,final_network_verified=True,
                        retained_approach_spacing=assessed['retained_approach_spacing'],existing_network_verified=True,
                        geometry_sampled_only=True,native_effect_history_complete=False)
+    except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:
+        summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
+        if getattr(exc,'status',None)=='mutation_outcome_unknown':summary['game_constructed']='unknown'
+    finally:atomic_json(path,record);lock.unlink()
+    return summary
+
+
+PARALLEL_LAYOUT = 'ordered_parallel_branches_v1'
+
+
+def plan_parallel_layout(brief):
+    """Ordered traffic intent; UP/DOWN never describe native parameter orientation."""
+    keys={'layout','route_reference','tracks','movements','spacing','radius','max_grade','region','asset_region'}
+    if not isinstance(brief,dict) or set(brief)!=keys:raise ValueError('parallel layout brief fields mismatch')
+    if brief['layout']!=PARALLEL_LAYOUT:raise LiveError('unsupported_layout','only '+PARALLEL_LAYOUT+' is supported')
+    ref=brief['route_reference']
+    if not isinstance(ref,dict) or set(ref)!={'origin','heading_deg','up'} or ref['up'] not in ('increasing','decreasing'):
+        raise ValueError('route_reference requires origin, heading_deg and explicit UP increasing/decreasing')
+    # Reuse current frame/region/engineering validation; no new world/scale model.
+    frame={'origin':ref['origin'],'heading_deg':ref['heading_deg'],'spacing':brief['spacing'],'radius':brief['radius'],
+           'max_grade':brief['max_grade'],'region':brief['region'],'asset_region':brief['asset_region']}
+    _validate_native_frame(frame,unsupported='unsupported_layout')
+    tracks=brief['tracks']
+    if not isinstance(tracks,list) or len(tracks) not in (2,4) or any(not isinstance(t,dict) or set(t)!={'id','direction'}
+            or not isinstance(t['id'],str) or re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,15}',t['id']) is None
+            or t['direction'] not in ('UP','DOWN') for t in tracks):raise ValueError('tracks require2or4ordered unique IDs and UP/DOWN intent')
+    if len({t['id'] for t in tracks})!=len(tracks):raise ValueError('track IDs must be unique')
+    pattern='-'.join(t['direction'] for t in tracks)
+    if pattern not in ('UP-DOWN','UP-DOWN-UP-DOWN','UP-UP-DOWN-DOWN'):raise LiveError('unsupported_pattern','approved ordered patterns are UP-DOWN, UP-DOWN-UP-DOWN, UP-UP-DOWN-DOWN')
+    h=math.radians(ref['heading_deg']);d=[math.cos(h),math.sin(h)];o=ref['origin']
+    def pos(x,y):return [o[0]+x*d[0]-y*d[1],o[1]+x*d[1]+y*d[0],o[2]]
+    ports={};fixtures=[];corridors=[];expected=[]
+    for i,t in enumerate(tracks):
+        y=5*i;sign=(1 if t['direction']=='UP' else -1)*(1 if ref['up']=='increasing' else -1)
+        for end,x in [('west',-20),('east',1220)]:
+            name=t['id']+':'+end;q=pos(x,y);ports[name]={'track':t['id'],'end':end,'position':q,
+                'running_direction':t['direction'],'travel_direction':[sign*z for z in d],
+                'function':'entry' if (end=='west')==(sign==1) else 'exit'}
+        for end,x in [('west',-20),('east',1200)]:
+            q=pos(x,y);fixtures.append({'name':t['id']+':'+end,'position':q,'travel_direction':d,'length':20,
+                'region':{'min':[max(q[k]-40,brief['region']['min'][k]) for k in range(3)],'max':[min(q[k]+40,brief['region']['max'][k]) for k in range(3)]}})
+        a,b=(t['id']+':west',t['id']+':east') if sign==1 else (t['id']+':east',t['id']+':west');expected.append({'from':a,'to':b})
+        corridors.append({'name':t['id'],'source':_recipe_intent(frame,pos(0,y),d),'target':_recipe_intent(frame,pos(1200,y),d),
+                          'guides':[{'position':pos(600,y),'travel_direction':d,'grade':0}]})
+    branches=[]
+    for name,t,y,by in [('branch_up',tracks[0],0,-250),('branch_down',tracks[-1],5*(len(tracks)-1),5*(len(tracks)-1)+250)]:
+        q=pos(1000,by);sign=(1 if t['direction']=='UP' else -1)*(1 if ref['up']=='increasing' else -1)
+        ports[name]={'track':t['id'],'end':'branch','position':pos(1020,by),'running_direction':t['direction'],
+                     'travel_direction':[sign*z for z in d],'function':'exit' if sign==1 else 'entry'}
+        fixtures.append({'name':name,'position':q,'travel_direction':d,'length':20,
+                         'region':{'min':[max(q[k]-40,brief['region']['min'][k]) for k in range(3)],'max':[min(q[k]+40,brief['region']['max'][k]) for k in range(3)]}})
+        expected.append({'from':t['id']+':west','to':name} if sign==1 else {'from':name,'to':t['id']+':west'})
+        branches.append({'name':name,'source':_recipe_intent(frame,pos(400,y),d),'target':_recipe_intent(frame,q,d)})
+    movements=brief['movements']
+    if not isinstance(movements,list) or not movements or any(not isinstance(row,dict) or set(row)!={'from','to'} for row in movements):raise ValueError('explicit directed movement matrix required')
+    for row in movements:
+        if row['from'] not in ports or row['to'] not in ports:raise ValueError('movement references unknown functional port')
+        a,b=ports[row['from']],ports[row['to']]
+        if a['function']!='entry' or b['function']!='exit' or a['running_direction']!=b['running_direction']:
+            raise LiveError('against_running_direction','movement conflicts with declared running direction')
+        if row not in expected:raise LiveError('unsupported_movement','v1 provides same-track through and outer branches; no cross-track switch/crossing')
+    if len(movements)!=len(expected) or {tuple(sorted(r.items())) for r in movements}!={tuple(sorted(r.items())) for r in expected}:
+        raise ValueError('matrix must explicitly include every through track and both outer branch functions once')
+    corners=[pos(x,y) for x,y in [(-60,-300),(1260,-300),(1260,5*(len(tracks)-1)+300),(-60,5*(len(tracks)-1)+300)]]
+    footprint={'min':[min(q[i] for q in corners) for i in range(2)]+[o[2]-1],'max':[max(q[i] for q in corners) for i in range(2)]+[o[2]+1]}
+    if any(footprint['min'][i]<brief['region']['min'][i] or footprint['max'][i]>brief['region']['max'][i] for i in range(3)):raise LiveError('unsupported_layout','authorised region excludes outward branch footprint')
+    plan={'version':1,'layout':PARALLEL_LAYOUT,'brief':brief,'epoch':'DESIGN','pattern':pattern,
+          'order_convention':'increasing left-normal offset when looking along increasing route reference',
+          'ports':ports,'fixtures':fixtures,'corridors':corridors,'branches':branches,'movements':movements,'footprint':footprint,
+          'native_execution_supported':pattern=='UP-UP-DOWN-DOWN' and ref['up']=='increasing','native_runtime_demonstrated':False,
+          'native_construction_direction':d,'direction_enforcement':'not_provided','train_traversal':'unprobed',
+          'game_constructed':False,'limitations':['fixed level geometry/radius120/spacing5','outer branches only; no cross-track switching','native execution initially UUDD with increasing UP only']}
+    plan['plan_hash']=hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+    return plan
+
+
+def publish_parallel_layout(plan,evidence):
+    if plan!=plan_parallel_layout(plan.get('brief')):raise ValueError('parallel plan differs from deterministic brief')
+    path=Path(evidence)/(uuid.uuid4().hex+'.parallel_plan.json');path.parent.mkdir(parents=True,exist_ok=True);atomic_json(path,plan)
+    return {'status':'ok','operation':'parallel-layout','stage':'plan','pattern':plan['pattern'],'plan_hash':plan['plan_hash'],
+            'native_execution_supported':plan['native_execution_supported'],'native_runtime_demonstrated':False,'game_constructed':False,
+            'movements':plan['movements'],'direction_enforcement':'not_provided','evidence':str(path.resolve())}
+
+
+def _verify_parallel_layout(client,plan,record):
+    ports={};observations=[];d=plan['native_construction_direction'];ref=plan['brief']['route_reference']
+    for name,p in plan['ports'].items():
+        c,rid=_select_throat_port(client,_recipe_intent(plan,p['position'],d),tolerance=.5,
+                                  outward_sign=-1 if p['end']=='west' else 1)
+        ports[name]=c;observations.append(rid)
+    if len({c['node_id'] for c in ports.values()})!=len(ports):raise LiveError('native_verification_failed','functional ports share current native attachment')
+    nodes={}
+    for b in plan['branches']:
+        node,rids=_recipe_junction(client,b['source']);nodes[b['name']]=node;observations+=rids
+    routes=[]
+    for row in plan['movements']:
+        a,b=(ports[row[k]] for k in ('from','to'))
+        q={'source_edge':a['edge_id'],'source_node':a['node_id'],'target_edge':b['edge_id'],'target_node':b['node_id'],
+           'mode':'TRAIN','required_edges':[a['edge_id'],b['edge_id']],'max_length':2500,
+           'geometry_constraints':{'all_path':True,'edge_ids':[],'radius':120,'region':plan['brief']['region'],'max_grade':plan['brief']['max_grade']}}
+        r=client.request('route',q);v=r.get('result',{});accepted=r['status']=='ok' and v.get('requested_route_verified') is True
+        current_nodes={x[k]['entity'] for x in v.get('path',[]) for k in ('from','to')}
+        via=next((name for name in nodes if name in (row['from'],row['to'])),None)
+        if via and nodes[via] not in current_nodes:accepted=False
+        routes.append(row|{'verified':accepted,'request_id':r['request_id'],'response':r})
+        record['routes']=routes;atomic_json(Path(record['summary']['evidence']),record)
+        if not accepted:raise LiveError('native_verification_failed','required intended movement not verified: '+row['from']+'->'+row['to'])
+    spacing=[];normal=[-d[1],d[0]];lines=[]
+    for i,t in enumerate(plan['brief']['tracks']):
+        o=ref['origin'];q=[o[0]+50*d[0]+5*i*normal[0],o[1]+50*d[1]+5*i*normal[1],o[2]]
+        c,rid=_select_throat_port(client,_recipe_intent(plan,q,d),interior=True,tolerance=.5);observations.append(rid);e=c['edge_snapshot']
+        chord=[e['p1'][k]-e['p0'][k] for k in range(3)]
+        if any(abs(e[k][j]-chord[j])>.001 for k in ('t0','t1') for j in range(3)):raise LiveError('native_verification_failed','retained parallel approach is not straight')
+        origin=[o[0]+5*i*normal[0],o[1]+5*i*normal[1],o[2]]
+        x=[sum((e[k][j]-origin[j])*d[j] for j in range(2)) for k in ('p0','p1')]
+        if min(x)>.001 or max(x)<99.999:raise LiveError('native_verification_failed','retained100-unit approach incomplete')
+        lines.append((e,x))
+    if len({e['id'] for e,x in lines})!=len(lines):raise LiveError('native_verification_failed','ordered tracks share an approach edge')
+    for i in range(len(lines)-1):
+        values=[]
+        for j in range(17):
+            points=[]
+            for e,x in lines[i:i+2]:
+                u=(j*100/16-x[0])/(x[1]-x[0]);points.append([e['p0'][k]+u*(e['p1'][k]-e['p0'][k]) for k in range(3)])
+            values.append(sum((points[1][k]-points[0][k])*normal[k] for k in range(2)))
+        if any(abs(x-5)>.1 for x in values):raise LiveError('native_verification_failed','ordered native spacing differs from5')
+        spacing.append({'tracks':[plan['brief']['tracks'][i]['id'],plan['brief']['tracks'][i+1]['id']],'min':min(values),'max':max(values),'samples':17})
+    record.update(current_ports=ports,current_junction_nodes=nodes,observations=observations,retained_spacing=spacing)
+    return {'routes_verified':len(routes),'final_network_verified':True,'retained_spacing':spacing,
+            'direction_intent_compatible':True,'direction_enforcement':'not_provided','geometry_sampled_only':True,'native_runtime_demonstrated':True}
+
+
+def inspect_parallel_layout(client,invocation):
+    original=json.loads(Path(invocation).read_text(encoding='utf-8-sig'))
+    if 'plan' not in original and original.get('evidence'):original=json.loads(Path(original['evidence']).read_text(encoding='utf-8-sig'))
+    plan=original['plan']
+    if plan!=plan_parallel_layout(plan.get('brief')):raise ValueError('parallel invocation plan differs from brief')
+    path=client.evidence/(uuid.uuid4().hex+'.parallel_inspection.json')
+    summary={'status':'incomplete','operation':'parallel-layout-inspect','game_constructed':False,'evidence':str(path.resolve()),'plan_hash':plan['plan_hash'],'routes_verified':0,'train_traversal':'unprobed'}
+    record={'plan':plan,'summary':summary,'original_record':str(Path(invocation).resolve()),'routes':[]}
+    try:summary.update(_verify_parallel_layout(client,plan,record),status='ok',stage='verified')
+    except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
+    finally:atomic_json(path,record)
+    return summary
+
+
+def execute_parallel_layout(client,plan):
+    if plan!=plan_parallel_layout(plan.get('brief')):raise ValueError('parallel plan differs from deterministic brief')
+    if not plan['native_execution_supported']:raise LiveError('unsupported_native_pattern','native execution is currently UUDD with increasing-reference UP; other patterns are planning evidence only')
+    path=client.evidence/(uuid.uuid4().hex+'.parallel.json');lock=client.evidence/'parallel.lock'
+    summary={'status':'incomplete','operation':'parallel-layout','stage':'asset','pattern':plan['pattern'],'game_constructed':False,'plan_hash':plan['plan_hash'],
+             'evidence':str(path.resolve()),'routes_verified':0,'train_traversal':'unprobed','direction_enforcement':'not_provided'}
+    record={'plan':plan,'summary':summary,'operations':[]}
+    try:
+        with lock.open('x'):pass
+    except FileExistsError:raise LiveError('client_busy','one parallel layout at a time') from None
+    def perform(name,call,mutation=False):
+        summary['stage']=name;record['unfinished_step']=name;atomic_json(path,record);r=call()
+        record['operations'].append({'name':name,'response':r});record.pop('unfinished_step');atomic_json(path,record)
+        if mutation:
+            effect=r.get('game_constructed',r.get('result',{}).get('game_constructed','unknown'))
+            if effect in (True,'unknown') or summary['game_constructed'] is not True:summary['game_constructed']=effect
+        if r['status']!='ok':raise LiveError(r['status'],r.get('error',r.get('result',{}).get('error','parallel stage failed')))
+        return r
+    try:
+        if client.journal.exists() and json.loads(client.journal.read_text()).get('pending'):raise LiveError('reconciliation_required','unfinished native request; no layout construction')
+        found=perform('discover_asset',lambda:discover(client,{'region':plan['brief']['asset_region'],'max_edges':16}))
+        v=found['result'];assets={c['edge_id']:c['edge_snapshot'] for c in v['candidates']}
+        if v.get('complete') is not True or not assets:raise LiveError('asset_unavailable','complete native asset observation required')
+        if len({(e['template'],e['style']) for e in assets.values()})!=1:raise LiveError('asset_choice_ambiguous','mixed native track families')
+        seed=min(assets);r=perform('inspect_asset',lambda:client.request('inspect',{'edge_ids':[seed],'resources':True}))
+        if r['result']['edges'][0].get('resource',{}).get('track_distance')!=5:raise LiveError('unsupported_layout','native template spacing is not5')
+        record['selected_asset']=r['result']['edges'][0]
+        for f in plan['fixtures']:
+            q={'authorised':True,'length':20,'fixture':{'template_edge':seed,'position':f['position'],'travel_direction':f['travel_direction'],'grade':0,'region':f['region']}}
+            perform('prepare_'+f['name'],lambda q=q:client.request('test_approach',q),True)
+        common={'radius':120,'region':plan['brief']['region'],'vertical':{'max_grade':plan['brief']['max_grade']},'max_fit_attempts':1,'max_route_length':2500}
+        for b in plan['corridors']:perform('through_'+b['name'],lambda b=b:connect_corridor(client,common|{k:b[k] for k in ('source','target','guides')},execute=True),True)
+        junctions=[]
+        for b in plan['branches']:
+            r=perform(b['name'],lambda b=b:connect_junction_at(client,common|{'placement_tolerance':.5,'source':b['source'],'target':b['target']},execute=True,junction_nodes=junctions),True)
+            junctions.append(r['junction']['node'])
+        summary['stage']='fresh_intended_movements';summary.update(_verify_parallel_layout(client,plan,record),status='ok',stage='verified')
     except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:
         summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
         if getattr(exc,'status',None)=='mutation_outcome_unknown':summary['game_constructed']='unknown'
@@ -1624,11 +1812,12 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--reconciled-crossover', type=Path, help='explicit verified crossover evidence for connect-throat; rechecks read-only, never rebuilds it')
     parser.add_argument('--recipe-plan',type=Path,help='optional reviewed junction-recipe plan; must match current brief exactly')
     parser.add_argument('--prepared-recipe',type=Path,help='explicit matching recipe stopped before reference; fresh stubs checked, never automatically resumed')
+    parser.add_argument('--layout-record',type=Path,help='saved parallel-layout invocation for fresh read-only current-state verification')
     parser.add_argument('--recipe-record',type=Path,help='recipe invocation or compact summary for fresh inspect/explicit checked continuation')
     parser.add_argument('--context', type=Path)
     parser.add_argument('--discovery', type=Path, help='saved full discover response for connect-selected')
@@ -1639,10 +1828,11 @@ def main(argv=None):
     parser.add_argument('--session')
     parser.add_argument('--timeout', type=float, default=30)
     args = parser.parse_args(argv)
-    if args.operation=='junction-recipe' and not args.execute:
+    if args.operation in ('junction-recipe','parallel-layout') and not args.execute:
         try:
-            if args.recipe_record or args.recipe_plan or args.prepared_recipe or args.discovery or args.reconciled_crossover:raise ValueError('planning accepts a brief, not native continuation records')
-            response=publish_junction_recipe(plan_junction_recipe(json.loads(args.params.read_text(encoding='utf-8-sig'))),args.evidence or Path('.local_runs/junction_recipes'))
+            if args.layout_record or args.recipe_record or args.recipe_plan or args.prepared_recipe or args.discovery or args.reconciled_crossover:raise ValueError('planning accepts a brief, not native continuation records')
+            brief=json.loads(args.params.read_text(encoding='utf-8-sig'))
+            response=(publish_junction_recipe(plan_junction_recipe(brief),args.evidence or Path('.local_runs/junction_recipes')) if args.operation=='junction-recipe' else publish_parallel_layout(plan_parallel_layout(brief),args.evidence or Path('.local_runs/parallel_layouts')))
         except (OSError,ValueError,LiveError,KeyError,TypeError) as exc:
             response={'status':getattr(exc,'status','invalid_recipe'),'error':str(exc)[:400],'game_constructed':False}
         print(json.dumps(response,separators=(',',':')));return 0 if response['status']=='ok' else 1
@@ -1656,6 +1846,7 @@ def main(argv=None):
                 raise ValueError('provide --context or all explicit transport arguments')
             client = LiveClient(args.mod_directory, args.log, args.evidence, args.session, args.timeout)
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
+        if args.layout_record and args.operation!='parallel-layout-inspect':raise ValueError('--layout-record requires parallel-layout-inspect')
         if args.recipe_record and args.operation not in ('junction-recipe-inspect','junction-recipe-continue'):raise ValueError('--recipe-record requires recipe inspect/continue')
         if args.operation=='junction-recipe-continue' and not args.execute:raise ValueError('recipe continuation requires --execute')
         if args.recipe_plan and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--recipe-plan requires junction-recipe --execute')
@@ -1664,9 +1855,17 @@ def main(argv=None):
             raise ValueError('--reconciled-crossover requires connect-throat --execute')
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue'):
+        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout'):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
-        if args.operation in ('junction-recipe-inspect','junction-recipe-continue'):
+        if args.operation=='parallel-layout':
+            response=execute_parallel_layout(client,plan_parallel_layout(params))
+        elif args.operation=='parallel-layout-inspect':
+            if not args.layout_record:raise ValueError('--layout-record is required')
+            saved=json.loads(args.layout_record.read_text(encoding='utf-8-sig'))
+            if 'plan' not in saved and saved.get('evidence'):saved=json.loads(Path(saved['evidence']).read_text(encoding='utf-8-sig'))
+            if saved['plan']!=plan_parallel_layout(params):raise ValueError('layout record does not match current brief')
+            response=inspect_parallel_layout(client,args.layout_record)
+        elif args.operation in ('junction-recipe-inspect','junction-recipe-continue'):
             if not args.recipe_record:raise ValueError('--recipe-record is required')
             original,_,_=_load_recipe_record(args.recipe_record)
             if original['plan']!=plan_junction_recipe(params):raise ValueError('recipe record does not match current brief')
