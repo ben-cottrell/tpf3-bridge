@@ -1,6 +1,28 @@
 # TPF3-Bridge milestone state — 3 October 2026
 
-## Current checkpoint — P16 implementation and native acceptance complete
+## Current checkpoint - P17 recipe-level checked continuation complete
+Callable inspect_junction_recipe/continue_junction_recipe; CLI junction-recipe-inspect
+and junction-recipe-continue --execute accept invocation/compact summary/inspection
+or continuation receipt plus original brief. Fresh roles, straight fixtures/assets,
+exact current junction incidence/path visits, all5TRAIN and full100-unit spacing;
+completed/absent/failed/unknown stages. New successful receipt, original failures intact.
+Continue only proven missing reference/fanout/throat/branch with5current interfaces;
+unknown effects/unfinished steps require reconciliation, including changed sessions.
+No blind replay, automatic fixture recreation/clearance, host recovery or new planner.
+Build40408 existing P16 map: fresh-process inspect/continue/repeat and final checked
+receipt,5paths,17spacing samples4.999938-4.999975,18read-only queries,zero native mutations.
+No extra build/reload/UI action. P16 sampled engineering evidence reused; hard120/grade/
+region remain checked on current native paths. Physical traversal/reservations unprobed.
+python tools/quiet_checks.py --suite live_client --label pif-p17-final-acceptance:110passed;
+.local_checks/pif-p17-final-acceptance_ittipj77/report.json.
+python .local_runs/live_python_interface/p17/final_native_check.py:passed;
+.local_runs/live_python_interface/p17/final_native_acceptance.json.
+Full failures, earlier checks and P16 evidence retained. Local HANDOFF/checks/result/
+checkpoint in p17; milestone revision recorded after local commit, no push.
+No denied coordinator-message retry; coordinator retrieves local/final handoff.
+Actual usage unavailable; no station/physics/runner/native-source change.
+
+## P16 baseline - 1cdaf51
 Reusable plan_junction_recipe/publish_junction_recipe/execute_junction_recipe and CLI
 junction-recipe (offline plan default;--execute explicit), compact brief/example with
 no native IDs. Fixed level radius120/spacing5 recipe, translation/rotation, widened

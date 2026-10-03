@@ -1398,6 +1398,186 @@ class LiveClientTests(unittest.TestCase):
             self.assertEqual(result['status'],'stale_prepared_recipe' if defect=='stale' else 'ok')
             self.assertFalse(any(op=='test_approach' for op,p in calls));self.assertEqual(fit.call_count,0 if defect=='stale' else 2)
 
+    def recipe_current_world(self,*,defect=None,missing_branch=False,missing_cross=False):
+        from bridge_live import plan_junction_recipe,_recipe_throat_brief,_recipe_intent
+        plan=plan_junction_recipe(self.recipe_brief());calls=[];built={'branch':not missing_branch,'cross':not missing_cross};fixtures={};roles={}
+        for i,f in enumerate(plan['fixtures']):
+            end=[f['position'][k]+20*(f['travel_direction'][k] if k<2 else 0) for k in range(3)]
+            fixtures[f['name']]={'id':i+1,'node0':10+i,'node1':20+i,'p0':f['position'],'p1':end,'road_type':'TRACK','template':'t','style':'s','t0':[end[k]-f['position'][k] for k in range(3)],'t1':[end[k]-f['position'][k] for k in range(3)]}
+            q=f['position'] if i<2 else end
+            roles[tuple(q)]=(f['name'],{'edge_id':i+101,'node_id':i+201,'edge_snapshot':fixtures[f['name']]|{'id':i+101}})
+        guide={'id':80,'p0':[126,8,33],'p1':[574,102,33],'t0':[448,94,0],'t1':[448,94,0]}
+        b=_recipe_throat_brief(plan,fixtures,[guide]);nodes={tuple(b['steps'][0]['source']['guide_xyz']):501,tuple(b['steps'][0]['target']['guide_xyz']):502,tuple(b['steps'][1]['source']['guide_xyz']):503}
+        record={'plan':plan,'operations':[{'name':'prepare_'+n,'response':{'status':'ok','result':{'edges':[e]}}} for n,e in fixtures.items()]+[{'name':'native_guides','response':{'status':'ok','result':{'edges':[guide]}}}],
+                'throat_brief':b,'summary':{'status':'error','stage':'throat','game_constructed':'unknown'}}
+        source=self.root/'recipe_failed.json';source.write_text(json.dumps(record))
+        def select(client,intent,**options):
+            calls.append(('select',intent))
+            if tuple(intent['guide_xyz']) in roles:
+                name,c=roles[tuple(intent['guide_xyz'])];c=json.loads(json.dumps(c))
+                if defect=='geometry':c['edge_snapshot']['p0'][0]+=1
+                if defect=='asset':c['edge_snapshot']['template']='changed'
+                return c,'selected_'+name
+            q=intent['guide_xyz'];e={'p0':[q[0]-50,q[1],q[2]],'p1':[q[0]+50,q[1],q[2]],'t0':[100,0,0],'t1':[100,0,0]}
+            return {'edge_id':700 if q[1]<3 else 701,'node_id':800,'pos':q,'edge_snapshot':e},'interior'
+        def request(op,p):
+            calls.append((op,p))
+            if op=='route':
+                target=next(n for n,c in roles.values() if c['node_id']==p['target_node']);source_name=next(n for n,c in roles.values() if c['node_id']==p['source_node']);ok=(built['branch'] or target!='D3') and (built['cross'] or source_name!='A1' or target=='D1')
+                path=[{'from':{'entity':n},'to':{'entity':n}} for n in (501,502,503)]
+                if defect=='bypass':path=[]
+                r=self.response('route'+str(len(calls)),op,result={'requested_route_verified':ok,'path':path,'game_constructed':False})
+                if defect=='route_error':r['status']='error';r['result']['error']='radius_below_limit'
+                return r
+            if op=='discover':
+                q=[sum(p['region'][k][i] for k in ('min','max'))/2 for i in range(3)];node=nodes[tuple(q)]
+                return self.response('junction',op,result={'complete':defect!='truncated','candidates':[{'node_id':node,'pos':q,'incident_count':3,'incidence_complete':True,'incident_edges':[900,901,902]}]})
+            if op=='inspect':
+                node=nodes[tuple([sum(calls[-2][1]['region'][k][i] for k in ('min','max'))/2 for i in range(3)])]
+                return self.response('incident',op,result={'edges':[{'id':eid,'node0':node,'node1':1000+eid,'road_type':'TRACK'} for eid in p['edge_ids']]})
+            raise AssertionError('unexpected native operation '+op)
+        return source,plan,select,request,built,calls
+
+    def test_recipe_inspect_and_continue_completed_network_reacquire_changed_ids_no_build(self):
+        from bridge_live import inspect_junction_recipe,continue_junction_recipe
+        source,plan,select,request,built,calls=self.recipe_current_world();before=source.read_bytes()
+        with patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_corridor') as corridor,patch('bridge_live.connect_throat') as throat,patch('bridge_live.connect_junction_at') as branch:
+            inspected=inspect_junction_recipe(self.client,source);result=continue_junction_recipe(self.client,source)
+            self.assertEqual(inspected['status'],'ok');self.assertEqual(result['status'],'ok');self.assertEqual(result['new_mutations'],0)
+            self.assertFalse(result['game_constructed']);self.assertEqual(result['routes_verified'],5)
+            # The new successful receipt can itself be inspected/continued without duplication.
+            again=continue_junction_recipe(self.client,result['evidence']);self.assertEqual(again['status'],'ok');self.assertEqual(again['new_mutations'],0)
+            corridor.assert_not_called();throat.assert_not_called();branch.assert_not_called()
+        self.assertEqual(source.read_bytes(),before);self.assertLess(len(json.dumps(result).encode()),4096)
+        rows=json.loads(Path(inspected['evidence']).read_text())['assessment']['roles'];self.assertEqual(rows['A1']['edge_id'],101)
+        self.assertFalse(any(is_mutation(op,p) for op,p in calls if op!='select'))
+
+    def test_recipe_current_state_geometry_assets_junctions_and_route_errors_block_replay(self):
+        from bridge_live import inspect_junction_recipe,continue_junction_recipe
+        for defect in ('geometry','asset','bypass','truncated','route_error'):
+            source,plan,select,request,built,calls=self.recipe_current_world(defect=defect)
+            with patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_corridor') as corridor,patch('bridge_live.connect_throat') as throat,patch('bridge_live.connect_junction_at') as branch:
+                inspected=inspect_junction_recipe(self.client,source);result=continue_junction_recipe(self.client,source)
+                self.assertNotEqual(inspected['status'],'ok',defect);self.assertNotEqual(result['status'],'ok',defect)
+                self.assertEqual(result['new_mutations'],0);corridor.assert_not_called();throat.assert_not_called();branch.assert_not_called()
+            self.assertFalse((self.client.evidence/'recipe.lock').exists())
+
+    def test_recipe_continue_only_missing_branch_after_current_exact_crossover(self):
+        from bridge_live import continue_junction_recipe
+        source,plan,select,request,built,calls=self.recipe_current_world(missing_branch=True);before=source.read_bytes()
+        def build(client,brief,**kwargs):
+            self.assertTrue(kwargs['execute']);self.assertEqual(kwargs['junction_nodes'],[501,502]);built['branch']=True
+            return {'status':'ok','game_constructed':True}
+        with patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_corridor') as corridor,patch('bridge_live.connect_throat') as throat,patch('bridge_live.connect_junction_at',side_effect=build) as branch:
+            r=continue_junction_recipe(self.client,source);self.assertEqual(r['status'],'ok');self.assertEqual(r['new_mutations'],1)
+            self.assertTrue(r['game_constructed']);branch.assert_called_once();corridor.assert_not_called();throat.assert_not_called()
+        self.assertEqual(source.read_bytes(),before)
+
+    def test_recipe_unknown_pending_state_stops_continuation_and_keeps_failed_receipt(self):
+        from bridge_live import continue_junction_recipe
+        source,plan,select,request,built,calls=self.recipe_current_world(missing_branch=True)
+        self.client.journal.write_text(json.dumps({'pending':{'operation':'interior_junction','request_id':'uncertain'}}))
+        with patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_junction_at') as build:
+            r=continue_junction_recipe(self.client,source);self.assertEqual(r['status'],'reconciliation_required');build.assert_not_called()
+        self.assertEqual(json.loads(self.client.journal.read_text())['pending']['request_id'],'uncertain')
+        self.assertEqual(json.loads(source.read_text())['summary']['status'],'error')
+
+    def test_recipe_cli_inspect_is_read_only_continue_requires_explicit_authority_and_matching_brief(self):
+        from bridge_live import inspect_junction_recipe
+        source,plan,select,request,built,calls=self.recipe_current_world();brief=self.root/'recipe_brief.json';brief.write_text(json.dumps(plan['brief']))
+        with patch('bridge_live.client_from_context',return_value=self.client),patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request),contextlib.redirect_stdout(io.StringIO()) as out:
+            code=main(['junction-recipe-inspect','--params',str(brief),'--context','unused','--recipe-record',str(source)])
+        self.assertEqual(code,0);self.assertEqual(json.loads(out.getvalue())['mutations'],0)
+        with patch('bridge_live.client_from_context',return_value=self.client),patch.object(self.client,'request') as native,contextlib.redirect_stdout(io.StringIO()) as out:
+            code=main(['junction-recipe-continue','--params',str(brief),'--context','unused','--recipe-record',str(source)])
+            self.assertEqual(code,1);native.assert_not_called()
+            brief.write_text(json.dumps(plan['brief']|{'heading_deg':1}))
+            code=main(['junction-recipe-continue','--params',str(brief),'--context','unused','--recipe-record',str(source),'--execute'])
+            self.assertEqual(code,1);native.assert_not_called()
+
+    def test_recipe_cross_session_uncertain_effects_still_require_reconciliation(self):
+        from bridge_live import continue_junction_recipe
+        source,plan,select,request,built,calls=self.recipe_current_world(missing_branch=True)
+        record=json.loads(source.read_text());record['operations'].append({'name':'throat','response':{'status':'mutation_unverified','game_constructed':'unknown'}});source.write_text(json.dumps(record))
+        with patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_junction_at') as build:
+            r=continue_junction_recipe(self.client,source);self.assertEqual(r['status'],'reconciliation_required');build.assert_not_called()
+        self.assertEqual(r['new_mutations'],0)
+
+    def test_recipe_inspection_receipt_can_be_used_but_changed_original_is_rejected(self):
+        from bridge_live import inspect_junction_recipe,continue_junction_recipe
+        source,plan,select,request,built,calls=self.recipe_current_world()
+        with patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request):
+            inspected=inspect_junction_recipe(self.client,source);r=continue_junction_recipe(self.client,inspected['evidence']);self.assertEqual(r['status'],'ok')
+        source.write_text(source.read_text()+' ')
+        with patch.object(self.client,'request') as native:
+            with self.assertRaises(ValueError):continue_junction_recipe(self.client,inspected['evidence'])
+            native.assert_not_called()
+
+    def test_recipe_changed_interface_tangent_and_edited_native_guide_fail_without_writes(self):
+        from bridge_live import inspect_junction_recipe,continue_junction_recipe
+        source,plan,select,request,built,calls=self.recipe_current_world()
+        def changed(client,intent,**options):
+            c,rid=select(client,intent,**options)
+            if c.get('edge_snapshot'):c['edge_snapshot']['t0'][2]=1
+            return c,rid
+        with patch('bridge_live._select_throat_port',side_effect=changed),patch.object(self.client,'request',side_effect=request):
+            r=inspect_junction_recipe(self.client,source);self.assertEqual(r['status'],'recipe_state_changed')
+        record=json.loads(source.read_text());record['throat_brief']['steps'][1]['source']['guide_xyz'][0]+=10;source.write_text(json.dumps(record))
+        with patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_junction_at') as build:
+            r=continue_junction_recipe(self.client,source);self.assertEqual(r['status'],'recipe_state_unknown');build.assert_not_called()
+
+    def test_recipe_failed_missing_branch_stops_once_and_keeps_unknown_effects(self):
+        from bridge_live import continue_junction_recipe
+        source,plan,select,request,built,calls=self.recipe_current_world(missing_branch=True)
+        with patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_junction_at',return_value={'status':'mutation_unverified','game_constructed':'unknown','error':'lost acknowledgement'}) as build:
+            r=continue_junction_recipe(self.client,source);self.assertEqual(r['status'],'mutation_unverified');build.assert_called_once()
+        self.assertEqual(r['game_constructed'],'unknown');self.assertEqual(r['new_mutations'],1);self.assertEqual(r['routes_verified'],0)
+        self.assertEqual(json.loads(source.read_text())['summary']['status'],'error')
+
+    def test_recipe_checked_throat_continuation_needs_no_extracted_brief(self):
+        from bridge_live import continue_junction_recipe
+        source,plan,select,request,built,calls=self.recipe_current_world(missing_branch=True,missing_cross=True)
+        def build(client,brief,**kwargs):
+            self.assertTrue(kwargs['execute']);self.assertEqual(brief['required_routes'],plan['required_routes']);built.update(cross=True,branch=True)
+            return {'status':'ok','game_constructed':True}
+        with patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_corridor') as corridor,patch('bridge_live.connect_throat',side_effect=build) as throat:
+            r=continue_junction_recipe(self.client,source);self.assertEqual(r['status'],'ok');self.assertEqual(r['new_mutations'],1);throat.assert_called_once();corridor.assert_not_called()
+            again=continue_junction_recipe(self.client,r['evidence']);self.assertEqual(again['status'],'ok');self.assertEqual(again['new_mutations'],0);throat.assert_called_once()
+
+    def test_recipe_absent_interface_is_reported_without_automatic_fixture_recreation(self):
+        from bridge_live import inspect_junction_recipe,continue_junction_recipe
+        source,plan,select,request,built,calls=self.recipe_current_world()
+        def missing(client,intent,**options):
+            if intent['guide_xyz']==plan['fixtures'][0]['position']:raise LiveError('no_eligible_candidates','attachment absent')
+            return select(client,intent,**options)
+        def query(op,p):
+            self.assertEqual(op,'discover');return self.response('empty',op,result={'complete':True,'edge_count':0,'candidates':[]})
+        with patch('bridge_live._select_throat_port',side_effect=missing),patch.object(self.client,'request',side_effect=query),patch('bridge_live.connect_corridor') as construction:
+            r=inspect_junction_recipe(self.client,source);self.assertEqual(r['status'],'recipe_incomplete');self.assertEqual(r['current_steps']['prepare_A1'],'absent')
+            r=continue_junction_recipe(self.client,source);self.assertEqual(r['status'],'recipe_state_unknown');self.assertEqual(r['new_mutations'],0);construction.assert_not_called()
+
+    def test_recipe_interrupted_step_is_durable_and_not_repeated_in_a_new_session(self):
+        from bridge_live import continue_junction_recipe
+        source,plan,select,request,built,calls=self.recipe_current_world(missing_branch=True)
+        with patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_junction_at',side_effect=LiveError('mutation_outcome_unknown','no acknowledgement')) as build:
+            r=continue_junction_recipe(self.client,source);self.assertEqual(r['status'],'mutation_outcome_unknown');self.assertEqual(r['new_mutations'],1);self.assertEqual(r['game_constructed'],'unknown');build.assert_called_once()
+        saved=Path(r['evidence']);self.assertEqual(json.loads(saved.read_text())['pending_recipe_step'],'branch')
+        with patch('bridge_live._select_throat_port',side_effect=select),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_junction_at') as build:
+            r=continue_junction_recipe(self.client,saved);self.assertEqual(r['status'],'reconciliation_required');self.assertEqual(r['new_mutations'],0);build.assert_not_called()
+
+    def test_recipe_spacing_requires_full_length_and_samples_beyond_midpoint(self):
+        from bridge_live import inspect_junction_recipe
+        for defect in ('short','diverging'):
+            source,plan,select,request,built,calls=self.recipe_current_world()
+            def altered(client,intent,**options):
+                c,rid=select(client,intent,**options)
+                if options.get('interior') and intent['guide_xyz']==[50,5,33]:
+                    e=c['edge_snapshot'];e['p1']=[60,5,33] if defect=='short' else [100,6,33]
+                    e['t0']=e['t1']=[e['p1'][i]-e['p0'][i] for i in range(3)]
+                return c,rid
+            with patch('bridge_live._select_throat_port',side_effect=altered),patch.object(self.client,'request',side_effect=request):
+                r=inspect_junction_recipe(self.client,source);self.assertEqual(r['status'],'native_verification_failed',defect)
+
     def test_rejected_corridor_and_crossover_reconcile_without_replay(self):
         from bridge_live import reconcile_rejected_corridor,reconcile_rejected_crossover
         for op,fn in [('corridor',reconcile_rejected_corridor),('crossover',reconcile_rejected_crossover)]:

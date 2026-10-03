@@ -565,6 +565,24 @@ def publish_junction_recipe(plan,evidence):
             'retained_close_approach':plan['retained_close_approach'],'direct5m_crossover':False,'evidence':str(path.resolve())}
 
 
+def _recipe_throat_brief(plan,fixtures,edges):
+    straight=[e for e in edges if all(abs(e[k][i]-(e['p1'][i]-e['p0'][i]))<.001 for k in ('t0','t1') for i in range(3))]
+    if not straight:raise LiveError('unsupported_native_result','native fan-out has no straight guide segment')
+    e=max(straight,key=lambda e:math.dist(e['p0'],e['p1']))
+    if math.dist(e['p0'],e['p1'])<400:raise LiveError('unsupported_native_result','native fan-out guide segment is too short')
+    direction=[e['t0'][i]/math.hypot(*e['t0'][:2]) for i in range(2)];z=plan['brief']['origin'][2]
+    def intent(q,d):return {'region':{'min':[q[0]-1,q[1]-1,z-1],'max':[q[0]+1,q[1]+1,z+1]},'guide_xyz':q,'travel_direction':d,'max_edges':8,'heading_tolerance_deg':2}
+    def guide(f):return intent([e['p0'][i]+f*(e['p1'][i]-e['p0'][i]) for i in range(3)],direction)
+    roles={}
+    for name,f in fixtures.items():
+        d=next(x['travel_direction'] for x in plan['fixtures'] if x['name']==name)
+        roles[name]={'kind':'approach' if name.startswith('A') else 'destination','endpoint':intent(f['p0'] if name.startswith('A') else f['p1'],d)}
+    b={k:plan['fanout'][k] for k in ('radius','region','vertical','max_fit_attempts','max_route_length')}
+    b.update(roles=roles,placement_tolerance=.5,steps=[{'name':'cross','kind':'crossover','source':plan['cross_source'],'target':guide(.70)},
+              {'name':'branch','kind':'branch','source':guide(.88),'target':intent(fixtures['D3']['p0'],roles['D3']['endpoint']['travel_direction'])}],required_routes=plan['required_routes'])
+    return b
+
+
 def execute_junction_recipe(client,plan,*,prepared_record=None):
     """One explicit execution, durable step receipts and no automatic resume/replay."""
     if plan!=plan_junction_recipe(plan.get('brief')):raise ValueError('recipe plan differs from its deterministic brief')
@@ -632,20 +650,8 @@ def execute_junction_recipe(client,plan,*,prepared_record=None):
         perform('reference',lambda:connect_corridor(client,plan['reference'],execute=True))
         fanout=perform('fanout',lambda:connect_corridor(client,plan['fanout'],execute=True))
         observed=perform('native_guides',lambda:client.request('inspect',{'edge_ids':fanout['edges']}))
-        straight=[e for e in observed['result']['edges'] if all(abs(e[k][i]-(e['p1'][i]-e['p0'][i]))<.001 for k in ('t0','t1') for i in range(3))]
-        if not straight:raise LiveError('unsupported_native_result','native fan-out has no straight guide segment')
-        e=max(straight,key=lambda e:math.dist(e['p0'],e['p1']))
-        if math.dist(e['p0'],e['p1'])<400:raise LiveError('unsupported_native_result','native fan-out guide segment is too short')
-        direction=[e['t0'][i]/math.hypot(*e['t0'][:2]) for i in range(2)];z=plan['brief']['origin'][2]
-        def intent(q,d):return {'region':{'min':[q[0]-1,q[1]-1,z-1],'max':[q[0]+1,q[1]+1,z+1]},'guide_xyz':q,'travel_direction':d,'max_edges':8,'heading_tolerance_deg':2}
-        def guide(f):return intent([e['p0'][i]+f*(e['p1'][i]-e['p0'][i]) for i in range(3)],direction)
-        roles={}
-        for name,f in fixtures.items():
-            d=next(x['travel_direction'] for x in plan['fixtures'] if x['name']==name)
-            roles[name]={'kind':'approach' if name.startswith('A') else 'destination','endpoint':intent(f['p0'] if name.startswith('A') else f['p1'],d)}
-        b={k:plan['fanout'][k] for k in ('radius','region','vertical','max_fit_attempts','max_route_length')}
-        b.update(roles=roles,placement_tolerance=.5,steps=[{'name':'cross','kind':'crossover','source':plan['cross_source'],'target':guide(.70)},
-                  {'name':'branch','kind':'branch','source':guide(.88),'target':intent(fixtures['D3']['p0'],roles['D3']['endpoint']['travel_direction'])}],required_routes=plan['required_routes'])
+        b=_recipe_throat_brief(plan,fixtures,observed['result']['edges'])
+        roles=b['roles'];z=plan['brief']['origin'][2]
         record['throat_brief']=b;result=perform('throat',lambda:connect_throat(client,b,execute=True))
         summary['routes_verified']=result['routes_verified']
         if result.get('final_network_verified') is not True or result['routes_verified']!=5:raise LiveError('native_verification_failed','five final movements not verified')
@@ -669,6 +675,275 @@ def execute_junction_recipe(client,plan,*,prepared_record=None):
         if getattr(exc,'status',None)=='mutation_outcome_unknown':summary['game_constructed']='unknown'
     finally:
         atomic_json(path,record);lock.unlink()
+    return summary
+
+
+def _load_recipe_record(invocation):
+    source=Path(invocation).resolve()
+    raw=source.read_bytes();record=json.loads(raw.decode('utf-8-sig'))
+    if not isinstance(record,dict):raise ValueError('recipe invocation must be an object')
+    # CLI summaries point at the full record; callers need not extract nested briefs.
+    if 'plan' not in record and record.get('operation')=='junction-recipe' and record.get('evidence'):
+        source=Path(record['evidence']).resolve();raw=source.read_bytes();record=json.loads(raw.decode('utf-8-sig'))
+    if not isinstance(record,dict) or not isinstance(record.get('summary',{}),dict):raise ValueError('recipe invocation/summary must be objects')
+    if record.get('summary',{}).get('operation')=='junction-recipe-inspect':
+        expected=record['original_sha256'];source=Path(record['original_record']).resolve();raw=source.read_bytes()
+        if hashlib.sha256(raw).hexdigest()!=expected:raise ValueError('original recipe changed since inspection')
+        record=json.loads(raw.decode('utf-8-sig'))
+    if not isinstance(record,dict) or not isinstance(record.get('plan'),dict):raise ValueError('recipe invocation has no plan')
+    plan=record['plan']
+    if plan!=plan_junction_recipe(plan.get('brief')):raise ValueError('recipe invocation plan differs from deterministic brief')
+    if not isinstance(record.get('operations'),list) or any(not isinstance(o,dict) or not isinstance(o.get('response'),dict) for o in record['operations']):raise ValueError('recipe invocation operations missing or malformed')
+    return record,source,hashlib.sha256(raw).hexdigest()
+
+
+def _recipe_intent(plan,position,direction):
+    return {'region':{'min':[q-1 for q in position],'max':[q+1 for q in position]},
+            'guide_xyz':position,'travel_direction':direction,'max_edges':8,'heading_tolerance_deg':2}
+
+
+def _recipe_spacing(client,plan,roles):
+    h=math.radians(plan['brief']['heading_deg']);d=[math.cos(h),math.sin(h)];normal=[-d[1],d[0]]
+    ports=[];observations=[]
+    for name in ('reference','fanout'):
+        p=plan[name]['source']['guide_xyz'];q=[p[0]+50*d[0],p[1]+50*d[1],p[2]]
+        c,rid=_select_throat_port(client,_recipe_intent(plan,q,d),interior=True,tolerance=.5)
+        ports.append(c);observations.append(rid)
+    origins=[plan[name]['source']['guide_xyz'] for name in ('reference','fanout')]
+    lines=[]
+    for port,origin in zip(ports,origins):
+        e=port['edge_snapshot'];chord=[e['p1'][i]-e['p0'][i] for i in range(3)]
+        if any(abs(e[k][i]-chord[i])>.001 for k in ('t0','t1') for i in range(3)):
+            raise LiveError('native_verification_failed','retained approach is not straight')
+        x=[sum((e[k][i]-origin[i])*d[i] for i in range(2)) for k in ('p0','p1')]
+        if min(x)>.001 or max(x)<99.999 or abs(x[1]-x[0])<99.999:
+            raise LiveError('native_verification_failed','complete100-unit retained approach not established')
+        lines.append((e,x))
+    spacing=[]
+    for j in range(17):
+        points=[]
+        for e,x in lines:
+            u=(100*j/16-x[0])/(x[1]-x[0]);points.append([e['p0'][i]+u*(e['p1'][i]-e['p0'][i]) for i in range(3)])
+        spacing.append(sum((points[1][i]-points[0][i])*normal[i] for i in range(2)))
+    if any(abs(x-5)>.1 for x in spacing) or ports[0]['edge_id']==ports[1]['edge_id'] or roles['A1']['node_id']==roles['A2']['node_id']:
+        raise LiveError('native_verification_failed','retained independent5m approach not established')
+    return {'sampled_signed_spacing':spacing[8],'spacing_min':min(spacing),'spacing_max':max(spacing),'samples':17,
+            'source_nodes':[roles['A1']['node_id'],roles['A2']['node_id']],
+            'observations':observations,'continuous_proof':False}
+
+
+
+def _recipe_junction(client,intent):
+    """Position chooses an observation; exact incidence establishes current identity."""
+    r=discover(client,{k:intent[k] for k in ('region','max_edges')})
+    if r['status']!='ok' or r['result'].get('complete') is not True:
+        raise LiveError('discovery_incomplete','junction observation failed or truncated')
+    nodes={c['node_id']:c for c in r['result']['candidates'] if c.get('incident_count')==3
+           and c.get('incidence_complete') is True and not c.get('incident_output_truncated')
+           and math.dist(c['pos'],intent['guide_xyz'])<=.5}
+    if len(nodes)!=1:raise LiveError('recipe_state_unknown','one current exact three-edge junction not established')
+    c=next(iter(nodes.values()))
+    current=client.request('inspect',{'edge_ids':c['incident_edges']})
+    if current['status']!='ok' or len(current['result'].get('edges',[]))!=3 or any(
+            e.get('road_type')!='TRACK' or c['node_id'] not in (e['node0'],e['node1']) for e in current['result']['edges']):
+        raise LiveError('recipe_state_unknown','current junction TRACK incidence not established')
+    return c['node_id'],[r['request_id'],current['request_id']]
+
+
+def _assess_recipe(client,original):
+    plan=original['plan'];state={'roles':{},'routes':[],'steps':{},'observations':[],'blockers':[]}
+    # Reacquire all named interfaces from the fixed brief. Old numeric IDs are not authority.
+    for f in plan['fixtures']:
+        approach=f['name'].startswith('A');q=list(f['position']) if approach else [
+            f['position'][i]+f['length']*(f['travel_direction'][i] if i<2 else 0) for i in range(3)]
+        intent=_recipe_intent(plan,q,f['travel_direction'])
+        try:
+            c,rid=_select_throat_port(client,intent,tolerance=.5,outward_sign=-1 if approach else 1)
+            state['roles'][f['name']]=c;state['observations'].append(rid)
+        except LiveError as exc:
+            current='unknown'
+            if exc.status=='no_eligible_candidates':
+                observed=discover(client,{'region':f['region'],'max_edges':16});state['observations'].append(observed['request_id'])
+                if observed['status']=='ok' and observed['result'].get('complete') is True and observed['result'].get('edge_count')==0:current='absent'
+            state['steps']['prepare_'+f['name']]={'state':current,'blocker':exc.status}
+            state['blockers'].append('prepare_'+f['name']+':'+current+':'+exc.status)
+    if len(state['roles'])!=5:return state
+    if len({c['node_id'] for c in state['roles'].values()})!=5:raise LiveError('recipe_state_unknown','recipe roles share an attachment')
+    # Whole current fixture geometry/resources must still match the authored interfaces,
+    # even if native IDs were replaced or reused since the original invocation.
+    for f in plan['fixtures']:
+        c=state['roles'][f['name']];e=c['edge_snapshot'];end=[f['position'][i]+f['length']*(f['travel_direction'][i] if i<2 else 0) for i in range(3)]
+        pairs=((e['p0'],e['p1']),(e['p1'],e['p0']))
+        if e.get('road_type')!='TRACK' or not any(math.dist(a,f['position'])<=.001 and math.dist(b,end)<=.001 for a,b in pairs):
+            raise LiveError('recipe_state_changed','current interface geometry differs from recipe')
+        old=next((o['response']['result']['edges'][0] for o in original['operations'] if o.get('name')=='prepare_'+f['name'] and o.get('response',{}).get('status')=='ok'),None)
+        if old and any(e.get(k)!=old.get(k) for k in ('template','style')):
+            raise LiveError('recipe_state_changed','current interface native assets differ from recorded recipe')
+        chord=[e['p1'][i]-e['p0'][i] for i in range(3)]
+        if any(abs(e[k][i]-chord[i])>.001 for k in ('t0','t1') for i in range(3)):
+            raise LiveError('recipe_state_changed','current interface is not the authored straight level fixture')
+        state['steps']['prepare_'+f['name']]={'state':'completed','current_edge':e['id'],'current_node':c['node_id']}
+    constraints={'all_path':True,'edge_ids':[],'region':plan['brief']['region'],'radius':120,'max_grade':plan['brief']['max_grade']}
+    for row in plan['required_routes']:
+        a,b=(state['roles'][row[k]] for k in ('from','to'))
+        q={'source_edge':a['edge_id'],'source_node':a['node_id'],'target_edge':b['edge_id'],'target_node':b['node_id'],
+           'mode':'TRAIN','required_edges':[a['edge_id'],b['edge_id']],'max_length':2500,'geometry_constraints':constraints}
+        r=client.request('route',q);v=r.get('result',{});accepted=r['status']=='ok' and v.get('requested_route_verified') is True
+        state['routes'].append(row|{'request_id':r['request_id'],'verified':accepted,'response':r})
+        if r['status']!='ok':state['blockers'].append(row['from']+'->'+row['to']+':'+v.get('error',r['status']))
+    movements={(r['from'],r['to']):r['verified'] for r in state['routes']}
+    for name,pair in [('reference',('A1','D1')),('fanout',('A2','D2')),('cross',('A1','D2')),('branch',('A2','D3'))]:
+        row=next(r for r in state['routes'] if (r['from'],r['to'])==pair)
+        state['steps'][name]={'state':'completed' if movements[pair] else ('failed' if row['response']['status']!='ok' else 'unknown')}
+    # Use only the original native-produced guide geometry, never its old identities.
+    b=original.get('throat_brief')
+    if b:
+        fixtures={o['name'][8:]:o['response']['result']['edges'][0] for o in original['operations']
+                  if o.get('name','').startswith('prepare_') and o.get('response',{}).get('status')=='ok'}
+        guide=next((o['response']['result']['edges'] for o in original['operations'] if o.get('name')=='native_guides' and o['response'].get('status')=='ok'),None)
+        if len(fixtures)!=5 or guide is None or b!=_recipe_throat_brief(plan,fixtures,guide):raise ValueError('recorded throat intent differs from native guide receipt')
+        state['throat_brief']=b
+        # Completed steps must exist at intended joins with exact current incidence.
+        nodes={}
+        for step in b['steps']:
+            if state['steps'][step['name']]['state']=='completed':
+                intents=[step['source']]+([step['target']] if step['kind']=='crossover' else [])
+                nodes[step['name']]=[]
+                for intent in intents:
+                    node,ids=_recipe_junction(client,intent);nodes[step['name']].append(node);state['observations']+=ids
+        for row in state['routes']:
+            if row['verified']:
+                path=row['response']['result']['path'];actual={x[k]['entity'] for x in path for k in ('from','to')}
+                if any(n not in actual for via in row['via'] for n in nodes.get(via,[])):
+                    raise LiveError('recipe_state_changed','native route bypasses required intended junction')
+    if not state['blockers']:
+        for name in ('reference','fanout'):
+            if state['steps'][name]['state']=='unknown':
+                try:
+                    for key,sign in [('source',1),('target',-1)]:
+                        c,rid=_select_throat_port(client,plan[name][key],tolerance=.5,outward_sign=sign);state['observations'].append(rid)
+                    state['steps'][name]={'state':'absent','basis':'fresh exact free inner attachments'}
+                except LiveError as exc:state['steps'][name]['blocker']=exc.status
+        if b and all(state['steps'][n]['state']=='completed' for n in ('reference','fanout')):
+            for step in b['steps']:
+                if state['steps'][step['name']]['state']=='unknown':
+                    try:
+                        c,rid=_select_throat_port(client,step['source'],interior=True,tolerance=.5);state['observations'].append(rid)
+                        c,rid=_select_throat_port(client,step['target'],interior=step['kind']=='crossover',tolerance=.5);state['observations'].append(rid)
+                        state['steps'][step['name']]={'state':'absent','basis':'fresh unsplit through and exact available target'}
+                    except LiveError as exc:state['steps'][step['name']]['blocker']=exc.status
+    if all(r['verified'] for r in state['routes']) and not b:state['blockers'].append('native throat guide receipt missing')
+    if all(r['verified'] for r in state['routes']):state['retained_approach']=_recipe_spacing(client,plan,state['roles'])
+    return state
+
+
+def inspect_junction_recipe(client,invocation):
+    """Fresh read-only recipe assessment; writes a new evidence receipt only."""
+    original,source,digest=_load_recipe_record(invocation);path=client.evidence/(uuid.uuid4().hex+'.recipe_inspection.json')
+    summary={'status':'incomplete','operation':'junction-recipe-inspect','game_constructed':False,'mutations':0,
+             'plan_hash':original['plan']['plan_hash'],'evidence':str(path.resolve()),'routes_verified':0,'train_traversal':'unprobed'}
+    record={'plan':original['plan'],'original_record':str(source),'original_sha256':digest,'summary':summary}
+    try:
+        state=_assess_recipe(client,original);record['assessment']=state
+        summary['routes_verified']=sum(r['verified'] for r in state['routes'])
+        complete=len(state['routes'])==5 and summary['routes_verified']==5 and not state['blockers']
+        summary.update(status='ok' if complete else 'recipe_incomplete',final_network_verified=complete,
+                       current_steps={k:v['state'] for k,v in state['steps'].items()},blockers=state['blockers'],geometry_sampled_only=True)
+        if complete:summary['retained_approach_spacing']=state['retained_approach']['sampled_signed_spacing']
+    except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:
+        summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
+    finally:atomic_json(path,record)
+    return summary
+
+
+def _recipe_uncertain_operations(original):
+    uncertain=['unfinished_'+original['pending_recipe_step']] if original.get('pending_recipe_step') else []
+    for o in original['operations']:
+        r=o['response'];v=r.get('result',{})
+        if r.get('game_constructed',v.get('game_constructed'))!='unknown' and r.get('status')!='mutation_unverified':continue
+        evidence=r.get('evidence');requests=[]
+        if evidence:
+            full=json.loads(Path(evidence).read_text(encoding='utf-8-sig'))
+            requests=[a.get('request_id') for a in full.get('attempts',[])]
+            requests += [a.get('request_id') for a in full.get('steps',[]) if a.get('response',{}).get('result',{}).get('game_constructed')=='unknown']
+        reconciled=bool(requests)
+        for rid in requests:
+            rp=Path(evidence).parent/(str(rid)+'.reconciliation.json')
+            rr=json.loads(rp.read_text()) if rp.exists() else {}
+            reconciled=reconciled and rr.get('original_pending',{}).get('request_id')==rid and rr.get('automatic_replay') is False and (
+                rr.get('completed_corridor_absent') is True or rr.get('completed_crossover_absent') is True)
+        if not reconciled:uncertain.append(o.get('name','unnamed'))
+    return uncertain
+
+
+def continue_junction_recipe(client,invocation):
+    """Explicit checked continuation, never trust old IDs or replay uncertain work."""
+    original,source,digest=_load_recipe_record(invocation);plan=original['plan']
+    path=client.evidence/(uuid.uuid4().hex+'.recipe.json');lock=client.evidence/'recipe.lock'
+    record={'plan':plan,'original_record':str(source),'original_sha256':digest,'operations':list(original['operations'])}
+    if original.get('throat_brief'):record['throat_brief']=original['throat_brief']
+    summary={'status':'incomplete','operation':'junction-recipe','stage':'assessment','game_constructed':False,
+             'plan_hash':plan['plan_hash'],'evidence':str(path.resolve()),'routes_verified':0,'new_mutations':0,
+             'train_traversal':'unprobed','automatic_replay':False}
+    record['summary']=summary
+    try:
+        with lock.open('x'):pass
+    except FileExistsError:raise LiveError('client_busy','one recipe execution at a time') from None
+    def perform(name,call):
+        summary['stage']=name;summary['new_mutations']+=1;record['pending_recipe_step']=name;atomic_json(path,record)
+        r=call();record['operations'].append({'name':name,'response':r});record.pop('pending_recipe_step');atomic_json(path,record)
+        if r.get('game_constructed',r.get('result',{}).get('game_constructed')) in (True,'unknown'):summary['game_constructed']=r.get('game_constructed',r.get('result',{}).get('game_constructed'))
+        if r['status']!='ok':raise LiveError(r['status'],r.get('error',r.get('result',{}).get('error','recipe step failed')))
+        return r
+    try:
+        atomic_json(path,record)
+        assessed=inspect_junction_recipe(client,source);record['inspection']=assessed
+        state=json.loads(Path(assessed['evidence']).read_text()).get('assessment',{})
+        if assessed['status']!='ok':
+            if assessed['status']!='recipe_incomplete' or state.get('blockers') or len(state.get('roles',{}))!=5:
+                raise LiveError('recipe_state_unknown',assessed.get('error','complete current interfaces/observations required'))
+            if client.journal.exists() and json.loads(client.journal.read_text()).get('pending'):
+                raise LiveError('reconciliation_required','unfinished native operation; explicit reconciliation required before continuation')
+            uncertain=_recipe_uncertain_operations(original)
+            if uncertain:raise LiveError('reconciliation_required','unresolved recipe effects: '+','.join(uncertain))
+            for name in ('reference','fanout'):
+                current=state['steps'][name]['state']
+                if current=='absent':perform(name,lambda name=name:connect_corridor(client,plan[name],execute=True))
+                elif current!='completed':raise LiveError('recipe_state_unknown',name+' not proven completed or absent')
+            b=state.get('throat_brief')
+            if not b:
+                # Current fanout route IDs provide native geometry for the guides.
+                fresh=_assess_recipe(client,record)
+                row=next(r for r in fresh['routes'] if r['from']=='A2' and r['to']=='D2')
+                if not row['verified']:raise LiveError('native_verification_failed','current fanout not verified')
+                ids=list(dict.fromkeys(x['edge']['entity'] for x in row['response']['result']['path'] if x['confirmed_TRACK']))
+                if len(ids)>16:raise LiveError('recipe_state_unknown','fanout guide observation exceeds16edges')
+                r=client.request('inspect',{'edge_ids':ids});record['operations'].append({'name':'native_guides','response':r})
+                if r['status']!='ok':raise LiveError('recipe_state_unknown','native fanout guide unavailable')
+                fixtures={f['name']:fresh['roles'][f['name']]['edge_snapshot'] for f in plan['fixtures']}
+                b=_recipe_throat_brief(plan,fixtures,r['result']['edges']);record['throat_brief']=b
+                fresh=_assess_recipe(client,record);state=fresh
+            else:record['throat_brief']=b
+            if state['steps']['cross']['state']=='absent' and state['steps']['branch']['state']=='absent':
+                perform('throat',lambda:connect_throat(client,b,execute=True))
+            elif state['steps']['cross']['state']=='completed' and state['steps']['branch']['state']=='absent':
+                # Reacquired exact current junctions are needed for trimmed native route rows.
+                junctions=[_recipe_junction(client,x)[0] for x in (b['steps'][0]['source'],b['steps'][0]['target'])]
+                q={k:b[k] for k in ('radius','region','vertical','max_fit_attempts','max_route_length','placement_tolerance')}
+                q.update(source=b['steps'][1]['source'],target=b['steps'][1]['target'])
+                perform('branch',lambda:connect_junction_at(client,q,execute=True,junction_nodes=junctions))
+            elif not all(state['steps'][n]['state']=='completed' for n in ('cross','branch')):
+                raise LiveError('recipe_state_unknown','throat step is not safely absent; no resubmission')
+            atomic_json(path,record)
+            assessed=inspect_junction_recipe(client,path);record['final_inspection']=assessed
+            if assessed['status']!='ok':raise LiveError('native_verification_failed',assessed.get('error','current recipe requirements not met'))
+        summary.update(status='ok',stage='verified',routes_verified=5,final_network_verified=True,
+                       retained_approach_spacing=assessed['retained_approach_spacing'],existing_network_verified=True,
+                       geometry_sampled_only=True,native_effect_history_complete=False)
+    except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:
+        summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
+        if getattr(exc,'status',None)=='mutation_outcome_unknown':summary['game_constructed']='unknown'
+    finally:atomic_json(path,record);lock.unlink()
     return summary
 
 
@@ -1349,11 +1624,12 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--reconciled-crossover', type=Path, help='explicit verified crossover evidence for connect-throat; rechecks read-only, never rebuilds it')
     parser.add_argument('--recipe-plan',type=Path,help='optional reviewed junction-recipe plan; must match current brief exactly')
     parser.add_argument('--prepared-recipe',type=Path,help='explicit matching recipe stopped before reference; fresh stubs checked, never automatically resumed')
+    parser.add_argument('--recipe-record',type=Path,help='recipe invocation or compact summary for fresh inspect/explicit checked continuation')
     parser.add_argument('--context', type=Path)
     parser.add_argument('--discovery', type=Path, help='saved full discover response for connect-selected')
     parser.add_argument('--execute', action='store_true', help='authorise native construction for extend/connect/connect-brief/connect-corridor')
@@ -1365,7 +1641,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.operation=='junction-recipe' and not args.execute:
         try:
-            if args.recipe_plan or args.prepared_recipe or args.discovery or args.reconciled_crossover:raise ValueError('planning accepts a brief, not native continuation records')
+            if args.recipe_record or args.recipe_plan or args.prepared_recipe or args.discovery or args.reconciled_crossover:raise ValueError('planning accepts a brief, not native continuation records')
             response=publish_junction_recipe(plan_junction_recipe(json.loads(args.params.read_text(encoding='utf-8-sig'))),args.evidence or Path('.local_runs/junction_recipes'))
         except (OSError,ValueError,LiveError,KeyError,TypeError) as exc:
             response={'status':getattr(exc,'status','invalid_recipe'),'error':str(exc)[:400],'game_constructed':False}
@@ -1380,15 +1656,22 @@ def main(argv=None):
                 raise ValueError('provide --context or all explicit transport arguments')
             client = LiveClient(args.mod_directory, args.log, args.evidence, args.session, args.timeout)
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
+        if args.recipe_record and args.operation not in ('junction-recipe-inspect','junction-recipe-continue'):raise ValueError('--recipe-record requires recipe inspect/continue')
+        if args.operation=='junction-recipe-continue' and not args.execute:raise ValueError('recipe continuation requires --execute')
         if args.recipe_plan and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--recipe-plan requires junction-recipe --execute')
         if args.prepared_recipe and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--prepared-recipe requires junction-recipe --execute')
         if args.reconciled_crossover and (args.operation!='connect-throat' or not args.execute):
             raise ValueError('--reconciled-crossover requires connect-throat --execute')
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe'):
+        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue'):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
-        if args.operation=='junction-recipe':
+        if args.operation in ('junction-recipe-inspect','junction-recipe-continue'):
+            if not args.recipe_record:raise ValueError('--recipe-record is required')
+            original,_,_=_load_recipe_record(args.recipe_record)
+            if original['plan']!=plan_junction_recipe(params):raise ValueError('recipe record does not match current brief')
+            response=(inspect_junction_recipe if args.operation=='junction-recipe-inspect' else continue_junction_recipe)(client,args.recipe_record)
+        elif args.operation=='junction-recipe':
             plan=plan_junction_recipe(params)
             if args.recipe_plan and json.loads(args.recipe_plan.read_text(encoding='utf-8-sig'))!=plan:raise ValueError('reviewed recipe plan does not match current brief')
             response=execute_junction_recipe(client,plan,prepared_record=args.prepared_recipe)

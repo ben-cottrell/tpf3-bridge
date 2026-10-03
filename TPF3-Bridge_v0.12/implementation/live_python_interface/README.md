@@ -726,8 +726,8 @@ Failure stops execution with completed steps and unknown/partial effects preserv
 There is no automatic resume or clearance. An explicit `--prepared-recipe RECORD.json`
 may reuse five exact freshly reacquired stubs only when the matching plan stopped
 before reference construction, or that reference rejection was explicitly reconciled
-as absent. It never retries later completed stages. Lower-level interfaces remain
-available for an explicitly inspected continuation.
+as absent. That legacy option does not retry later completed stages. Use the recipe-level
+inspection/checked continuation below for current-state completion.
 
 Build40408 demonstration at(1700,5200,33),heading−50 completed with explicit site
 clearance and lower-level throat continuation after native Collision; failed recipe
@@ -738,3 +738,47 @@ The removal primitive additionally permits one explicitly isolated, unowned ordi
 test fixture (`isolated_fixture:true`), verifying its edge and both nodes are removed.
 Tiny native ARC parts may be omitted only within a collective0.001 length/position
 and0.001° heading bound; hard radius/join/endpoint checks still apply.
+
+
+### Inspect or continue a recipe
+
+```powershell
+python bridge_live.py junction-recipe-inspect --context context.json --params implementation/live_python_interface/junction_recipe_example.json --recipe-record RECORD.json
+python bridge_live.py junction-recipe-continue --context context.json --params implementation/live_python_interface/junction_recipe_example.json --recipe-record RECORD.json --execute
+```
+
+`RECORD.json` may be the invocation's full record, its compact CLI summary, a full
+inspection receipt, or a successful continuation receipt. Use the same original
+brief; no nested step brief or native IDs need to be extracted. The callable equivalents
+are `inspect_junction_recipe(client, record_path)` and
+`continue_junction_recipe(client, record_path)`.
+
+Inspection performs bounded native reads and writes a new local receipt. It reacquires
+five semantic interfaces, checks their actual geometry/assets, evaluates current TRAIN
+paths, confirms exact current three-edge junction incidence and required path visits,
+and samples spacing across the complete retained100-unit straight approach. It reports
+completed/absent/failed/unknown stages. Native IDs in historical receipts are not reused
+as current authority; guide geometry is checked against the original native guide receipt.
+
+Explicit continuation assesses first. An already complete network receives a new
+successful recipe receipt without construction. Otherwise it may build absent reference/
+fanout stages, a wholly absent throat, or an absent branch after a verified crossover.
+Fresh available attachments/unsplit through geometry must establish absence. Missing
+interfaces, changed geometry/assets, truncated observations and ambiguous or failed checks
+stop; missing fixtures are reported, not automatically recreated. Unfinished steps and
+unknown historical effects require explicit matching reconciliation even across sessions.
+No automatic replay, site clearance, crash recovery or rewritten failure is provided.
+
+`game_constructed:false` on a successful no-build continuation means that invocation
+made no construction; `final_network_verified:true` records the existing realised railway.
+`new_mutations` counts attempted mutating recipe steps (a compound throat step can include
+multiple native commands), not individual engine writes. Individual receipts retain effects.
+
+P17 build40408 acceptance used the P16 network, without another build: five fresh native
+TRAIN paths, exact current joins, retained100-unit spacing4.999938-4.999975,18read-only
+queries and603-byte successful continuation summary. Repeated fresh-process continuation
+also made no builds. P16 collision receipts remain failed and unchanged.110client tests
+cover changed/reused identities, changed geometry/assets, wrong joins, partial/unknown
+state, durable interrupted steps, missing-stage continuation and duplicate suppression.
+This establishes checked continuation on the demonstrated network, not arbitrary-site
+success, continuous geometry proof, signalling permission or physical train traversal.
