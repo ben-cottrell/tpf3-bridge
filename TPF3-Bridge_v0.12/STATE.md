@@ -1,3 +1,23 @@
+## P35 qualification stopped - plain crossing contract unestablished
+Relevant installed build40408 native proposal/type/component bindings and bounded
+bundled helpers/menu metadata plus current official documentation inspected.
+Generic SimpleProposal TRACK/node insertion exists; no source-backed plain straight-
+only rail diamond formation/identity contract established. BaseEdgeType has only
+NORMAL/BRIDGE/TUNNEL; absence alone is not impossibility proof. Documented slip
+conversion false means single slip, not plain crossing. RailroadCrossing types are
+road-rail resources, not proof of rail-rail support; lane configs expose road/tram.
+No invented enum/API, fake crossing, alternate topology, native calls/mod edits,
+construction or save/load. Specified orthogonal experiment remains unperformed.
+Minimal missing capability: supported native plain rail crossing producer/formation
+contract with exact crossing identity and straight-through transport representation.
+No claim of global game/UI impossibility. P34 graph separation still leaves physical
+crossing/interlocking/clearance unknown; no capacity/signalling inference.
+implementation/live_python_interface/plain_crossing_capability.md; exact ranges/hashes
+and result/checks/handoff under .local_runs/live_python_interface/p35/.
+P34 261passed evidence reused: implementation/test source hashes unchanged; no rerun.
+No station/physics/runner changes or push. Actual usage unavailable. Coordinator decides
+next bounded action; no new topology selected. Documentation checkpoint in p35/checkpoint.json.
+
 ## P34 complete - general read-only movement-set topology inspection
 bridge_route_set.inspect_route_set / bridge_live.py route-set-inspect accepts named
 bounded endpoint hints, explicit directed movements and optional ordered via junctions;
