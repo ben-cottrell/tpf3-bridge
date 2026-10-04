@@ -1,4 +1,4 @@
-"""Portable UUDD layout with locally level outward forks: authored attachments, native main and outward forks."""
+"""Portable ordered tracks with native main geometry and locally level outward forks."""
 import hashlib
 import json
 import math
@@ -31,7 +31,7 @@ def _move(p,d,length):return [p[0]+length*d[0],p[1]+length*d[1],p[2]]
 
 def plan_complete_layout(brief):
     keys={'layout','seed_edge','reference','tracks','branches','side','spacing','spacing_tolerance','radius','max_grade','region','max_route_length','min_curved_length','site_policy'}
-    if not isinstance(brief,dict) or set(brief)-{'vertical_mode','vertical_tolerance'}!=keys or brief['layout']!=LAYOUT:raise ValueError('explicit portable complete-layout brief required')
+    if not isinstance(brief,dict) or set(brief)-{'vertical_mode','vertical_tolerance','reference_up'}!=keys or brief['layout']!=LAYOUT:raise ValueError('explicit portable complete-layout brief required')
     if type(brief['seed_edge']) is not int or brief['seed_edge']<=0:raise ValueError('exact current native asset seed edge required')
     if brief['site_policy'] not in ('observe','clear_roads'):raise ValueError('explicit observe/clear_roads site policy required')
     ref=brief['reference']
@@ -43,14 +43,16 @@ def plan_complete_layout(brief):
         if 'grade' in row and (type(row['grade']) not in (int,float) or not math.isfinite(row['grade']) or row['grade']!=0):raise live.LiveError('unsupported_layout','complete-layout requires zero endpoint grades for level pointwork')
         ends.append((_position(row['position']),_unit(row['travel_direction'])))
     tracks=brief['tracks']
-    if not isinstance(tracks,list) or len(tracks)!=4 or any(not isinstance(t,dict) or set(t)!={'id','direction'} or not isinstance(t['id'],str) or not t['id'] for t in tracks) or [t['direction'] for t in tracks]!=['UP','UP','DOWN','DOWN'] or len({t['id'] for t in tracks})!=4:raise live.LiveError('unsupported_layout','four unique ordered UUDD roles only; UP follows reference')
+    if not isinstance(tracks,list) or len(tracks) not in (2,4) or any(not isinstance(t,dict) or set(t)!={'id','direction'} or not isinstance(t['id'],str) or not t['id'] for t in tracks) or '-'.join(t['direction'] for t in tracks) not in ('UP-DOWN','UP-UP-DOWN-DOWN','UP-DOWN-UP-DOWN') or len({t['id'] for t in tracks})!=len(tracks):raise live.LiveError('unsupported_layout','unique ordered UD/UUDD/UDUD roles required')
+    reference_up=brief.get('reference_up','increasing')
+    if reference_up not in ('increasing','decreasing'):raise ValueError('explicit increasing/decreasing UP reference required')
     main={k:brief[k] for k in ('side','spacing','spacing_tolerance','radius','max_grade','region','max_route_length','min_curved_length')}
     main.update(parallel._vertical_options(brief))
-    main.update(layout=parallel.MULTITRACK,reference_up='increasing',guides=ref['guides'],tracks=[])
+    main.update(layout=parallel.MULTITRACK,reference_up=reference_up,guides=ref['guides'],tracks=[])
     signed=brief['spacing']*(1 if brief['side']=='left' else -1);fixtures=[]
     for i,t in enumerate(tracks):
         row=t|{}
-        forward=t['direction']=='UP'
+        forward=(t['direction']=='UP')==(reference_up=='increasing')
         for end,(base,d) in zip(('start','end'),ends):
             pos=[base[0]-i*signed*d[1],base[1]+i*signed*d[0],base[2]]
             role=('source' if end=='start' else 'target') if forward else ('target' if end=='start' else 'source')
@@ -72,7 +74,7 @@ def plan_complete_layout(brief):
         if not isinstance(target,dict) or set(target)!={'position','travel_direction'}:raise ValueError('explicit native branch target required')
         q=_position(target['position']);td=_unit(target['travel_direction'])
         sign=1 if brief['side']=='left' else -1
-        lateral=(-d[1]*(q[0]-source[0])+d[0]*(q[1]-source[1]))*sign*(1 if i==3 else -1)
+        lateral=(-d[1]*(q[0]-source[0])+d[0]*(q[1]-source[1]))*sign*(1 if i==len(tracks)-1 else -1)
         if lateral<=20 or abs(q[2]-source[2])>.001:raise live.LiveError('unsupported_branch','level outward branch target required')
         intent={'id':b['id'],'track':b['track'],'lead_length':length,'source':branching._intent(source,out),'target':branching._intent(q,td)}
         live.validate_project_brief({'source':intent['source'],'target':intent['target'],'radius':brief['radius'],'region':brief['region'],'vertical':{'max_grade':brief['max_grade']},'max_fit_attempts':1,'max_route_length':brief['max_route_length']},corridor=True)
@@ -89,7 +91,7 @@ def plan_complete_layout(brief):
 def publish_complete_layout(plan,directory):
     if plan!=plan_complete_layout(plan['brief']):raise ValueError('portable plan changed')
     Path(directory).mkdir(parents=True,exist_ok=True);path=Path(directory)/(uuid.uuid4().hex+'.complete_plan.json');live.atomic_json(path,{'plan':plan})
-    return {'status':'ok','operation':'complete-layout','stage':'plan','movements':6,'game_constructed':False,'plan_hash':plan['plan_hash'],'evidence':str(path.resolve())}
+    return {'status':'ok','operation':'complete-layout','stage':'plan','movements':len(plan['movements']),'game_constructed':False,'plan_hash':plan['plan_hash'],'evidence':str(path.resolve())}
 
 
 def _fixture_params(plan,f):
@@ -190,7 +192,7 @@ def _inspect(client,plan,record):
 
 
 def _finish(record,exc=None):
-    s=record['summary']
+    s=record['summary'];s.update(pattern=record['plan']['main_plan']['pattern'],reference_up=record['plan']['main_plan']['brief']['reference_up'])
     if exc:s.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400],final_network_verified=False)
     s.update(fixtures_acknowledged=sum(r.get('status')=='ok' for r in record.get('fixtures',{}).values()),completed_stages=[k for k,v in record.get('stages',{}).items() if v.get('status')=='ok'],native_effect_history_complete=False,continuous_clearance_proof=False,train_traversal='unprobed',direction_enforcement='not_provided',next_action='none' if s['status']=='ok' else 'inspect_and_explicitly_reconcile_no_replay')
     live.atomic_json(Path(s['evidence']),record);return s
@@ -238,7 +240,7 @@ def execute_complete_layout(client,plan,*,continuation_record=None):
         if 'main' not in record['stages']:
             footprints=[[f['position'],_move(f['position'],f['travel_direction'],20)] for f in plan['fixtures']]
             _site(client,plan,record,'approaches_and_branch_targets',footprints,mutate=True)
-            for f in plan['fixtures'][:8]:
+            for f in plan['fixtures'][:len(plan['main_plan']['ports'])]:
                 if f['name'] in record['fixtures']:continue
                 intent=plan['main_plan']['ports'][f['name']]
                 try:live._select_throat_port(client,intent['endpoint'],outward_sign=intent['sign'],tolerance=.001)
@@ -250,7 +252,7 @@ def execute_complete_layout(client,plan,*,continuation_record=None):
             previous=record['stages'].get('main');adopt=None
             if previous:
                 old=live._load_layout_record(previous['evidence']);current={k:old[k] for k in ('plan','ports','chains')};parallel._verify_multitrack(client,plan['main_plan'],current)
-                if not current['chains'] or len(current['chains'])==4:raise live.LiveError('reconciliation_required','main prefix cannot be continued')
+                if not current['chains'] or len(current['chains'])==len(plan['main_plan']['tracks']):raise live.LiveError('reconciliation_required','main prefix cannot be continued')
                 current['summary']={'status':'incomplete','game_constructed':True,'recorded_prior_game_constructed':old['summary'].get('game_constructed','unknown'),'native_effect_history_complete':False};adopt=client.evidence/(uuid.uuid4().hex+'.main_adopted_prefix.json');live.atomic_json(adopt,current)
             else:
                 preview=live.connect_corridor(client,plan['main_plan']['reference'],execute=False);record['main_fit_screening']=preview

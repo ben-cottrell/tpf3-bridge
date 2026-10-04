@@ -3074,5 +3074,80 @@ class GradedCompleteLayoutTests(unittest.TestCase):
         next(iter(parent['ports'].values()))['edge_snapshot']['t0'][2]=.01
         with patch('bridge_branching._parent',return_value=(parent,'hash')),self.assertRaises(LiveError):plan_branching_corridor(BranchingCorridorTests.brief(self))
 
+class DirectionalCompleteLayoutTests(unittest.TestCase):
+    setUp=LiveClientTests.setUp
+    response=LiveClientTests.response
+    def brief(self,key='ud'):return json.loads((Path(__file__).resolve().parents[1]/f'implementation/live_python_interface/{key}_complete_layout_example.json').read_text())
+    def plan(self):
+        from bridge_complete import plan_complete_layout
+        return plan_complete_layout(self.brief())
+    def variants(self):
+        import math
+        for directions in (('UP','DOWN'),('UP','UP','DOWN','DOWN'),('UP','DOWN','UP','DOWN')):
+            for up in ('increasing','decreasing'):
+                for side in ('left','right'):
+                    b=CompleteLayoutTests.brief(self);b['tracks']=[{'id':f'T{i+1}','direction':d} for i,d in enumerate(directions)];b['reference_up']=up;b['side']=side
+                    branches=[];sign=1 if side=='left' else -1
+                    for i in (0,len(directions)-1):
+                        forward=(directions[i]=='UP')==(up=='increasing');end=b['reference']['finish' if forward else 'start'];d=end['travel_direction'];n=math.hypot(*d);d=[x/n for x in d];normal=[-d[1],d[0]];pos=[end['position'][k]+i*5*sign*normal[k] for k in range(2)]+[33];out=d if forward else [-v for v in d];lead=400 if forward else 200;long=450 if forward else 700;lateral=(100 if forward else 80)*sign*(1 if i==len(directions)-1 else -1)
+                        q=[pos[k]+(20+lead/2+long)*out[k]+lateral*normal[k] for k in range(2)]+[33]
+                        branches.append({'id':'branch_'+str(i),'track':b['tracks'][i]['id'],'lead_length':lead,'split_fraction':.5,'target':{'position':q,'travel_direction':out}})
+                    b['branches']=branches;b['region']={'min':[-4400,-3300,-20],'max':[-1400,-1600,80]}
+                    yield b
+                    graded=json.loads(json.dumps(b));graded.update(vertical_mode='native_shared_height_v1',vertical_tolerance=.05);graded['reference']['finish']['position'][2]=39;graded['reference']['guides'][0]['position'][2]=36;graded['reference']['guides'][0]['grade']=.012
+                    for branch in graded['branches']:
+                        t=next(t for t in graded['tracks'] if t['id']==branch['track']);forward=(t['direction']=='UP')==(up=='increasing');branch['target']['position'][2]=39 if forward else 33
+                    yield graded
+    def parent(self,p):
+        fixtures={f['name']:f for f in p['fixtures']};ports={};chains={};main=p['main_plan']
+        for i,t in enumerate(main['tracks']):
+            chains[t['id']]={'edges':[100+i],'nodes':[200+i*2,201+i*2]}
+            for j,key in enumerate((t['start'],t['end'])):
+                f=fixtures[key];a=f['position'];d=f['travel_direction'];z=[a[0]+20*d[0],a[1]+20*d[1],a[2]];node=200+2*i+j
+                ports[key]={'edge_id':10+2*i+j,'node_id':node,'grade':0,'edge_snapshot':{'id':10+2*i+j,'node0':node if j else 500+i*2,'node1':501+i*2 if j else node,'p0':a,'p1':z,'t0':[20*d[0],20*d[1],0],'t1':[20*d[0],20*d[1],0],'template':3,'style':0}}
+        return {'plan':main,'ports':ports,'chains':chains,'summary':{'status':'ok','game_constructed':True}}
+    def test_full_pattern_orientation_and_side_matrix_has_exact_outgoing_roles(self):
+        import bridge_complete as complete
+        import bridge_branching as branching
+        for b in self.variants():
+            with self.subTest(pattern=[t['direction'] for t in b['tracks']],up=b['reference_up'],side=b['side']):
+                p=complete.plan_complete_layout(b);n=len(b['tracks']);parent=self.parent(p)
+                with patch('bridge_branching._parent',return_value=(parent,'hash')):q=complete._branch_plan(p,'current')
+                self.assertEqual(len(q['roles']),2*n+2);self.assertEqual(len(q['movements']),n+2)
+                self.assertEqual(len(p['fixtures']),2*n+4)
+                self.assertEqual([t['forward'] for t in p['main_plan']['tracks']],[(t['direction']=='UP')==(b['reference_up']=='increasing') for t in b['tracks']])
+                for row in q['movements']:self.assertEqual(q['roles'][row['from']]['function'],'entry');self.assertEqual(q['roles'][row['to']]['function'],'exit')
+    def test_ud_partial_fixture_continuation_and_movement_count_are_dynamic(self):
+        import bridge_complete as complete
+        p=self.plan();path=self.root/'ud_partial.json';first=p['fixtures'][0]['name'];path.write_text(json.dumps({'plan':p,'fixtures':{first:self.response(result={'game_constructed':True})},'stages':{},'summary':{'game_constructed':True}}));built=[]
+        def request(op,q):
+            if op=='inspect':return self.response(result={'edges':[{'resource':{'track_distance':5}}]})
+            built.append(q);return self.response(result={'game_constructed':True})
+        def proof(c,p,r):return {'status':'ok','routes_verified':4,'junctions_verified':2,'final_network_verified':True,'retained_spacing_verified':True} if 'branches' in r['stages'] else {'status':'complete_layout_incomplete'}
+        with patch('bridge_complete._inspect',side_effect=proof),patch('bridge_complete._site'),patch('bridge_complete._controls',return_value=[]),patch('bridge_live._select_throat_port',side_effect=LiveError('no_eligible_candidates','empty')),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_corridor',return_value={'status':'ok'}),patch('bridge_parallel.execute_multitrack_connection',return_value={'status':'ok','evidence':'main','game_constructed':True}),patch('bridge_complete._branch_plan',return_value={}),patch('bridge_branching.execute_branching_corridor',return_value={'status':'ok','evidence':'branches','game_constructed':True}):
+            result=complete.execute_complete_layout(self.client,p,continuation_record=path)
+        self.assertEqual(result['routes_verified'],4);self.assertEqual(result['fixtures_acknowledged'],4);self.assertEqual(len(built),3)
+    def test_ud_branch_continuation_proves_two_through_routes_not_four(self):
+        import bridge_branching as branching
+        p=self.plan();parent=self.parent(p)
+        with patch('bridge_branching._parent',return_value=(parent,'hash')):q=__import__('bridge_complete')._branch_plan(p,'current')
+        path=self.root/'partial_branch.json';path.write_text(json.dumps({'plan':q,'completed_branches':[q['brief']['branches'][0]['id']],'operations':[]}))
+        def assess(c,p,r,**kw):
+            r.update(routes=[{'kind':'through','verified':True},{'kind':'through','verified':True},{'kind':'branch','verified':True,'to':q['brief']['branches'][0]['id']}],current_junctions={q['brief']['branches'][0]['id']:5},current_roles={});return {'routes_verified':3}
+        with patch('bridge_branching._parent',return_value=(parent,'hash')),patch('bridge_branching._assess',side_effect=assess):ports,junctions,done=branching._continuation(self.client,q,{},path)
+        self.assertEqual(len(done),1);self.assertEqual(junctions,[5])
+    def test_invalid_reference_order_branch_target_and_direction_reject_without_native_calls(self):
+        from bridge_complete import plan_complete_layout
+        for key in ('reference','order','branch'):
+            b=self.brief()
+            if key=='reference':b['reference_up']='nearest'
+            elif key=='order':b['tracks'][1]['direction']='UP'
+            else:b['branches'][0]['track']=b['tracks'][1]['id']
+            with self.subTest(key=key),patch('bridge_live.client_from_context') as native,self.assertRaises((LiveError,ValueError)):plan_complete_layout(b)
+            native.assert_not_called()
+    def test_reversed_ud_record_reexecution_and_interruption_do_not_rebuild(self):
+        CompleteLayoutTests.test_complete_reexecution_only_checks_current_state_and_changed_brief_stops(self)
+        CompleteLayoutTests.test_interrupted_and_pending_work_never_replays(self)
+
 if __name__ == '__main__':
     unittest.main()

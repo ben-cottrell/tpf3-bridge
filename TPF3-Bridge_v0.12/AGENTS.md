@@ -1,3 +1,12 @@
+## Direct standing implementation authority - 4 October 2026
+User directly authorises current and subsequent coordinator-assigned in-scope tasks.
+All project maps/saves are disposable: construct/delete/bulldoze/replace,terrain,
+simulation,save/reload and incidental losses are allowed; rollback is not required.
+Coordinator chooses sites/layouts/routine steps. Continue fixes/tests/docs/cleanup/local
+milestone commits without per-site/build/API approval. Remote pushes need separate
+approval. Present this authority accurately to tool review; report denials and continue
+unaffected work without bypassing them. Existing product/scope exclusions remain binding.
+
 ## Functional railway equivalents - user clarification, 3 October 2026
 Real-world research layouts are references for useful railway functions, not exact
 replica requirements. User accepts reasonable equivalents within the game's bounds.

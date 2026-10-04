@@ -1322,3 +1322,38 @@ python bridge_live.py complete-layout --context CONTEXT.json --params BRIEF.json
 Use actual current seed_edge/native coordinates in the brief. Native construction
 and explicitly selected clear_roads may alter the authorised disposable map; receipts
 retain known/partial effects and do not promise rollback or complete incidental history.
+
+
+## Portable UD, UUDD and UDUD orders (P30)
+
+The same complete-layout application/CLI accepts ordered UP-DOWN,
+UP-UP-DOWN-DOWN and UP-DOWN-UP-DOWN roles. Optional reference_up is increasing
+(default, preserving old briefs/hashes) or decreasing. Physical order follows the
+selected normal side along the construction reference; UP/DOWN specifies intended
+route traversal, not native one-way enforcement. Every track retains explicit
+source/target identity. One outward branch follows each outer track's traffic;
+no branch crosses an opposing track or changes the shared core order.
+
+Two tracks have two through plus two branch movements; four tracks have four through
+plus two branch movements. Fixtures, roles, receipt continuation, shared-spacing and
+current fork/path acceptance use the declared count. Increasing/decreasing UP and
+left/right are validated before construction. Local junction grades remain zero;
+P29's explicitly bounded graded core may connect differing endpoint heights.
+
+Examples: ud_complete_layout_example.json (reversed-UP, level UD) and
+udud_complete_layout_example.json (increasing-UP, graded UDUD). All examples use the
+existing complete-layout/complete-layout-inspect commands and explicit current native
+seed/coordinates. Adapt the brief to the actual authorised site. No new native
+pointwork, crossings, signalling or operational direction enforcement is added.
+
+```
+python bridge_live.py complete-layout --params implementation/live_python_interface/ud_complete_layout_example.json --evidence .local_runs/ud_plans
+python bridge_live.py complete-layout --params implementation/live_python_interface/udud_complete_layout_example.json --evidence .local_runs/udud_plans
+```
+
+Use --context CONTEXT.json --execute for construction. Explicit --layout-record
+RESULT.json rechecks a completed record without rebuilding or adopts a proven partial
+prefix under the existing no-replay rules. Fresh complete-layout-inspect is read-only.
+Existing UUDD commands/briefs and receipts remain compatible; unchanged engineering
+acceptance evidence is reused. Physical train traversal and continuous clearance are
+not established by native route or sampled geometry checks.

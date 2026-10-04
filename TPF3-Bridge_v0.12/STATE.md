@@ -1,3 +1,27 @@
+## P30 complete - portable UD/UUDD/UDUD with explicit UP reference
+Existing complete-layout/complete-layout-inspect and branching workflow now use
+actual track/role/movement counts and increasing(default)/decreasing reference_up.
+Both normal sides, level local outward forks and optional P28 graded core retained.
+UUDD level/graded canonical plans/hashes unchanged; reuse P27/P29 native evidence.
+Build40408: reversed-UP level UD4routes/2forks; graded33->39 UDUD6routes/2forks.
+Fresh inspection, exact attachments/paths/fork incidence and independent33samples
+passed: UD30TRACK radius416.877269,grade0; UDUD46TRACK radius416.879796,
+maxgrade.012143724,heightdifference.005221565<.05. Checked-existing operations=[];
+no rebuilding. Current session pif_1791096942_96491105 after normal partial save/load.
+First coastal UDUD fixture rejected; failed receipt preserved, fresh intended-absence
+reconciliation,old successful stub95428 retained,other effectsunknown. Revised land
+brief built successfully; no blind replay/native guard bypass or process restart.
+python tools/quiet_checks.py --suite live_client --label pif-p30-final-acceptance:
+219passed,0fail/error/skip; .local_checks/pif-p30-final-acceptance_8n_r8h99/report.json.
+py_compile/diff checks passed. Exact commands/receipts/source hashes/failure evidence:
+.local_runs/live_python_interface/p30/checks.json; ud/udud fresh_inspection.json,
+independent_complete_result.json,fresh_complete_geometry.json,checked_existing.json.
+Local milestone revision in p30/checkpoint.json; HANDOFF.md/result.json; no push.
+Normal final save TPF3_Bridge_P30_Complete_20261004;paused/non-maximised2099x1284.
+No Lua/runner changes. No blockers. No continuous clearance,physical train traversal,
+signals/direction enforcement,cross-opposing-track junctions or complete effects history.
+Usage unavailable. Stop P30; subsequent work remains coordinator-assigned in scope.
+
 ## P29 complete - portable graded UUDD main with level endpoint branches
 Existing complete-layout/complete-layout-inspect compose P28 native_shared_height_v1
 and explicit height tolerance with P27 fixture/site/stage/continuation workflow.

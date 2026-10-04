@@ -1,10 +1,10 @@
-# PIF-P29 - complete; acceptance boundary reached
+# PIF-P30 complete - portable directional track-order variants
 
-Portable complete-layout now composes a graded curved UUDD core with locally level
-endpoint junctions at different heights. Zero authored/actual endpoint grades required.
-Build40408:6native paths,2exact forks,independent46TRACK geometry/spacing/height checks.
-Fresh-process inspection and completed-record execution verified without rebuilding.
-214application tests passed. Original level plans/hashes and P28 lower-level support retained.
-Evidence: .local_runs/live_python_interface/p29/HANDOFF.md,checks.json,checkpoint.json.
-Card retained: .local_runs/live_python_interface/p29/orchestrator/TASK.md.
-No follow-on launched. Local milestone commit authorised; no push. Await coordinator.
+Accepted implementation/evidence at .local_runs/live_python_interface/p30/HANDOFF.md,
+checks.json,result.json,checkpoint.json. UD/UUDD/UDUD; explicit increasing/decreasing
+UP reference; both sides; level outward forks; optional bounded graded core.
+Native reversed UD4routes/2forks and graded UDUD6routes/2forks independently checked;
+fresh inspection/no-rebuild passed. 219 affected tests pass; local milestone committed.
+No new task started. Await coordinator-assigned in-scope work; standing direct user
+map/fix/test/local-commit authority applies. No remote push,stations/signals/traversal,
+host recovery or extra chats. Completed L01-L14 and runner preserved.

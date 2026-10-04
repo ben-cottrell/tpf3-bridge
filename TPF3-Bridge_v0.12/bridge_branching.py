@@ -52,7 +52,7 @@ def plan_branching_corridor(brief):
     keys={'layout','main_record','branches','movements','radius','max_grade','region','max_route_length'}
     if not isinstance(brief,dict) or set(brief)!=keys or brief['layout']!=LAYOUT:raise ValueError('explicit curved main/branch brief required')
     parent,digest=_parent(brief['main_record']);main=parent['plan'];tracks=main['tracks']
-    if main['pattern']!='UP-UP-DOWN-DOWN' or len(tracks)!=4:raise live.LiveError('unsupported_layout','initial branching corridor requires UUDD')
+    if main['pattern'] not in ('UP-DOWN','UP-UP-DOWN-DOWN','UP-DOWN-UP-DOWN') or len(tracks) not in (2,4):raise live.LiveError('unsupported_layout','branching corridor requires UD/UUDD/UDUD')
     if type(brief['radius']) not in (int,float) or not math.isfinite(brief['radius']) or brief['radius']<main['brief']['radius'] or type(brief['max_grade']) not in (int,float) or not math.isfinite(brief['max_grade']) or not 0<brief['max_grade']<=main['brief']['max_grade']:raise ValueError('main engineering limits cannot be lowered')
     if type(brief['max_route_length']) not in (int,float) or not math.isfinite(brief['max_route_length']) or not 0<brief['max_route_length']<=8000:raise ValueError('finite route bound <=8000 required')
     if main['brief'].get('vertical_mode')==parallel.VERTICAL_MODE:
@@ -100,10 +100,10 @@ def plan_branching_corridor(brief):
         roles[b['id']]={'track':t['id'],'endpoint':_intent(outer,d),'sign':1,'function':'exit'}
         entry=next(x['from'] for x in expected if x['track']==t['id'] and x['kind']=='through')
         expected.append({'from':entry,'to':b['id'],'track':t['id'],'kind':'branch'})
-    if len(roles)!=10:raise ValueError('distinct ten project endpoint roles required')
+    if len(roles)!=2*len(tracks)+2:raise ValueError('distinct track/branch endpoint roles required')
     movements=brief['movements']
-    if not isinstance(movements,list) or len(movements)!=6 or any(not isinstance(x,dict) or set(x)!={'from','to','track','kind'} for x in movements):raise ValueError('six explicit directed movements required')
-    if {tuple(sorted(x.items())) for x in movements}!={tuple(sorted(x.items())) for x in expected}:raise ValueError('matrix must contain four through and two outgoing branch movements exactly')
+    if not isinstance(movements,list) or len(movements)!=len(tracks)+2 or any(not isinstance(x,dict) or set(x)!={'from','to','track','kind'} for x in movements):raise ValueError('explicit through plus two outgoing branch movements required')
+    if {tuple(sorted(x.items())) for x in movements}!={tuple(sorted(x.items())) for x in expected}:raise ValueError('matrix must contain one through per track and two outgoing branch movements exactly')
     for p in list(roles.values()):
         if any(not brief['region']['min'][k]<=p['endpoint']['guide_xyz'][k]<=brief['region']['max'][k] for k in range(3)):raise ValueError('authorised region excludes a role')
     plan={'version':1,'layout':LAYOUT,'brief':brief,'main':main,'main_record':str(Path(brief['main_record']).resolve()),'main_sha256':digest,
@@ -118,7 +118,7 @@ def plan_branching_corridor(brief):
 def publish_branching_corridor(plan,directory):
     if plan!=plan_branching_corridor(plan['brief']):raise ValueError('branching plan changed')
     Path(directory).mkdir(parents=True,exist_ok=True);path=Path(directory)/(uuid.uuid4().hex+'.branching_plan.json');live.atomic_json(path,{'plan':plan})
-    return {'status':'ok','operation':'branching-corridor','stage':'plan','game_constructed':False,'plan_hash':plan['plan_hash'],'movements':6,'evidence':str(path.resolve())}
+    return {'status':'ok','operation':'branching-corridor','stage':'plan','game_constructed':False,'plan_hash':plan['plan_hash'],'movements':len(plan['movements']),'evidence':str(path.resolve())}
 
 
 def _roles(client,plan,record,partial):
@@ -147,7 +147,7 @@ def _assess(client,plan,record,*,partial=False):
         parallel._vertical_readback(plan['main'],refs[t['id']],parent['ports'][t['start']],parent['ports'][t['end']])
     record['current_shared_chains']=core['current_chains'];record['retained_spacing']=[]
     tracks=plan['main']['tracks']
-    for a,z,m in [(i-1,i,1) for i in range(1,4)]+[(0,i,i) for i in range(2,4)]:
+    for a,z,m in [(i-1,i,1) for i in range(1,len(tracks))]+[(0,i,i) for i in range(2,len(tracks))]:
         r=client.request('verify_adjacency',{'reference':refs[tracks[a]['id']],'adjacent':refs[tracks[z]['id']],
             'spacing':m*plan['main']['signed_spacing'],'tolerance':plan['main']['brief']['spacing_tolerance'],**parallel._vertical_options(plan['main']['brief']),**{k:plan['main']['brief'][k] for k in ('radius','max_grade','region')}})
         v=r.get('result',{});good=r['status']=='ok' and v.get('sampled_verified') is True and bool(v.get('correspondence')) and v.get('curved_reference_chord_length',0)>=plan['main']['brief']['min_curved_length']
@@ -195,7 +195,7 @@ def _assess(client,plan,record,*,partial=False):
         if b['id'] in junctions and 'branch' in used:
             a,z=(set(used[k]) for k in ('through','branch'))
             if len(a&z)!=1 or a|z!=incidences[b['id']]:raise live.LiveError('native_verification_failed','through/branch do not establish actual fork')
-    count=sum(x['verified'] for x in record['routes']);full=count==6 and len(junctions)==2
+    count=sum(x['verified'] for x in record['routes']);full=count==len(plan['movements']) and len(junctions)==2
     old={k:v['edge_id'] for k,v in parent['ports'].items()};replaced={k:{'previous':old[k],'current':ports[k]['edge_id']} for k in old if k in ports and old[k]!=ports[k]['edge_id']}
     record['semantic_attachment_reconciliation']={'current_exact_role_ids':{k:{x:v[x] for x in ('edge_id','node_id')} for k,v in ports.items()},'changed_main_approach_handles':replaced,'original_stage_receipt_fresh':False,'basis':'bounded role observation plus exact current TRACK incidence and complete native paths'}
     vertical=parallel._vertical_summary(plan['main'],{'current_chains':record['current_shared_chains'],'spacing_checks':record['retained_spacing']})
@@ -236,7 +236,7 @@ def _continuation(client,plan,record,path):
     proof={'plan':plan};s=_assess(client,plan,proof,partial=True)
     through=[r for r in proof['routes'] if r['kind']=='through']
     verified={r['to'] for r in proof['routes'] if r['kind']=='branch' and r['verified']}
-    if len(through)!=4 or not all(r['verified'] for r in through) or verified!=set(completed) or set(proof['current_junctions'])!=set(completed):raise live.LiveError('reconciliation_required','prior branches/current through routes not independently proven')
+    if len(through)!=len(plan['main']['tracks']) or not all(r['verified'] for r in through) or verified!=set(completed) or set(proof['current_junctions'])!=set(completed):raise live.LiveError('reconciliation_required','prior branches/current through routes not independently proven')
     record['continuation']={'record':str(Path(path).resolve()),'sha256':hashlib.sha256(json.dumps(old,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest(),'fresh_proof':proof,'fresh_summary':s,'automatic_replay':False,'prior_effect_history_complete':False}
     record['completed_branches']=completed[:]
     operations={x['name']:x['response'] for x in old.get('operations',[])}
