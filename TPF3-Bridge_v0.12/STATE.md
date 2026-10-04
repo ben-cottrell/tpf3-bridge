@@ -1,3 +1,33 @@
+## P32 complete - compact endpoint-derived native ladder
+plan_compact_ladder and existing ladder-layout/ladder-layout-inspect accept compact
+named positions/headings/groups/12explicit movements/selected limits, derive guides,
+outward arms and successive pointwork deterministically; native fitting owns curves.
+Original explicit P31 input remains compatible. Input/derivation retained in canonical
+plan. Level aligned banks200..800units apart, outward grouped fans, supplied rotation/
+translation; no global optimum/unrestricted-routing claim or400radius default.
+Build40408/session pif_1791096942_96491105: four5-centre approaches, six fixed
+destinations at bank offsets0,5,15,20,30,35;12nativeTRAIN paths/6exact turnouts.
+Fresh-process inspection/checked-existing passed with operations=[]; independent
+44TRACK/33samples, minimum sampled radius62.620096>=hard60,grade0,joins/ports/region/
+ordered turns passed. Selected merge100/outer200/inner60. No hard limit relaxed.
+Native cubic footprint490x55 inclstubs, bank35; P31 was2240x400/bank400. Equal-scale
+observed_ladder.svg/route_matrix.json/.csv and footprint_comparison.json under p32.
+Two outer native Construction Not Possible rejections preserved; exact absence and
+three-stage prefix freshly proved before changing only unbuilt fan placement/radii.
+Short transition intents derive from actual offsets/radii; no replacement curve fitter.
+python tools/quiet_checks.py --suite live_client --label pif-p32-final-acceptance:
+235passed,0fail/error/skip; .local_checks/pif-p32-final-acceptance_o4hzmp4q/report.json.
+Offline CLI/static/diff checks passed; exact commands/source hashes/native receipts:
+.local_runs/live_python_interface/p32/checks.json,verification_commands.json,build.json,
+fresh_inspection.json,checked_existing.json,independent_ladder_result.json.
+Final save TPF3_Bridge_P32_Compact_Complete_20261004;8exact obsolete P31
+save/thumbnail files removed,local evidence/unrelated saves untouched.
+p32/game_checkpoint.json/save_cleanup_result.json; local milestone revision in checkpoint.json; no push.
+No Lua/runner/station/signals/train changes or blockers. Native path/sample proof is
+not physical train operation,continuous clearance or full incidental-effect history.
+Fixture levelZ33/native terrain treatment, not terrain-optimal design; no save-load
+identity guarantee. Usage unavailable. HANDOFF.md/result.json; stop P32.
+
 ## P31 complete - fixed-interface native two-ladder throat
 bridge_ladder.py callable plan/build/fresh-inspect; bridge_live.py ladder-layout and
 ladder-layout-inspect reuse native fitting/extension/interior turnouts and transport.

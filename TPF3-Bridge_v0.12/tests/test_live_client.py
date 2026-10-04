@@ -3265,5 +3265,53 @@ class LadderRecoveryTests(unittest.TestCase):
             else:b['region']['max'][0]=300
             with self.subTest(key=key),self.assertRaises((ValueError,LiveError)):ladder.plan_ladder(b)
 
+class CompactLadderTests(unittest.TestCase):
+    setUp=LiveClientTests.setUp
+    def brief(self):return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/compact_ladder_example.json').read_text())
+    def test_endpoint_matrix_derives_controls_without_native_calls_or_large_spreading(self):
+        import bridge_ladder as ladder
+        b=self.brief()
+        with patch('bridge_live.client_from_context') as native:p=ladder.plan_compact_ladder(b);summary=ladder.publish_ladder(p,self.root)
+        native.assert_not_called();self.assertEqual(summary['movements'],12);self.assertFalse(summary['game_constructed'])
+        self.assertEqual(p,ladder._canonical(p));self.assertEqual(p['brief']['turnout_radius'],100)
+        ys=sorted(r['position'][1] for r in b['roles'].values() if r['kind']=='destination');self.assertEqual([y-ys[0] for y in ys],[0,5,15,20,30,35])
+        self.assertEqual([r['endpoint']['guide_xyz'] for r in p['brief']['roles'].values()],[r['position'] for r in b['roles'].values()])
+        self.assertTrue(all(len(g['spine_guides'])==1 for g in p['brief']['groups']))
+        points=[g['arm_end']['guide_xyz'][1] for g in p['brief']['groups']];self.assertEqual(max(points)-min(points),55)
+    def test_fan_placement_depends_on_actual_offsets_radii_not_fixed_fractions(self):
+        import bridge_ladder as ladder
+        b=self.brief();p=ladder.plan_compact_ladder(b);before=p['brief']['groups'][0]['junctions'][1]['guide_xyz'][0]
+        for r in b['roles'].values():
+            if r['kind']=='destination':r['position'][0]+=100
+        b['region']['max'][0]+=100;q=ladder.plan_compact_ladder(b);after=q['brief']['groups'][0]['junctions'][1]['guide_xyz'][0]
+        self.assertAlmostEqual(after-before,100);self.assertEqual(q['brief']['roles']['S3']['endpoint']['guide_xyz'],b['roles']['S3']['position'])
+        b['turnout_radii']['outer_fan']=150;z=ladder.plan_compact_ladder(b)
+        self.assertGreater(z['brief']['groups'][0]['junctions'][1]['guide_xyz'][0],after)
+        self.assertEqual(z['steps'][3]['brief']['radius'],150)
+    def test_pairing_bank_order_lengths_and_hard_limits_reject(self):
+        import bridge_ladder as ladder
+        for kind in ('movement','order','length','radius','unapproved'):
+            b=self.brief()
+            if kind=='movement':b['movements'][0]['from']='A4'
+            elif kind=='order':b['groups'][0]['destinations'].reverse()
+            elif kind=='length':
+                for r in b['roles'].values():
+                    if r['kind']=='destination':r['position'][0]=100
+            elif kind=='radius':b['turnout_radii']['outer_fan']=59
+            else:b['groups'][0]['arm_end']=[1,2,3]
+            with self.subTest(kind=kind),self.assertRaises((ValueError,LiveError)):ladder.plan_compact_ladder(b)
+    def test_rotation_translation_keep_actual_ports_and_deterministic_plan(self):
+        import bridge_ladder as ladder,math
+        b=self.brief();a=math.radians(17);c,z=math.cos(a),math.sin(a)
+        def point(p):return [c*p[0]-z*p[1]+80,z*p[0]+c*p[1]-40,p[2]]
+        for r in b['roles'].values():r['position']=point(r['position']);r['travel_direction']=[c,z]
+        corners=[point([x,y,33]) for x in (-1850,-1290) for y in (-4550,-4420)];b['region']={'min':[min(q[k] for q in corners) for k in range(2)]+[30],'max':[max(q[k] for q in corners) for k in range(2)]+[36]}
+        p=ladder.plan_compact_ladder(b);self.assertEqual(p,ladder.plan_compact_ladder(b));self.assertEqual(p,ladder._canonical(p));self.assertEqual(len(p['steps']),10)
+    def test_derived_input_tampering_rejects_before_builder(self):
+        import bridge_ladder as ladder
+        p=ladder.plan_compact_ladder(self.brief());p['derivation']['input']['radius']=61
+        with patch('bridge_live.connect_corridor') as native,self.assertRaises(ValueError):ladder.execute_ladder(self.client,p)
+        native.assert_not_called()
+
 if __name__ == '__main__':
     unittest.main()

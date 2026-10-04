@@ -2484,8 +2484,8 @@ def main(argv=None):
             if args.base_layout_record or args.prepared_switching or args.layout_record or args.recipe_record or args.recipe_plan or args.prepared_recipe or args.discovery or args.reconciled_crossover:raise ValueError('planning accepts a brief, not native continuation records')
             brief=json.loads(args.params.read_text(encoding='utf-8-sig'))
             if args.operation=='ladder-layout':
-                from bridge_ladder import plan_ladder,publish_ladder
-                response=publish_ladder(plan_ladder(brief),args.evidence or Path('.local_runs/ladder_plans'))
+                from bridge_ladder import plan_ladder_input,publish_ladder
+                response=publish_ladder(plan_ladder_input(brief),args.evidence or Path('.local_runs/ladder_plans'))
             elif args.operation=='complete-layout':
                 from bridge_complete import plan_complete_layout,publish_complete_layout
                 response=publish_complete_layout(plan_complete_layout(brief),args.evidence or Path('.local_runs/complete_plans'))
@@ -2532,12 +2532,12 @@ def main(argv=None):
         if args.execute and args.operation not in ('ladder-layout', 'complete-layout', 'branching-corridor', 'multitrack-connection', 'paired-connection', 'layout-network', 'extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout', 'switching-layout', 'switching-layout-continue', 'reciprocal-layout'):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
         if args.operation=='ladder-layout':
-            from bridge_ladder import plan_ladder,execute_ladder
-            response=execute_ladder(client,plan_ladder(params),layout_record=args.layout_record)
+            from bridge_ladder import plan_ladder_input,execute_ladder
+            response=execute_ladder(client,plan_ladder_input(params),layout_record=args.layout_record)
         elif args.operation=='ladder-layout-inspect':
-            from bridge_ladder import plan_ladder,inspect_ladder
+            from bridge_ladder import plan_ladder_input,inspect_ladder
             if not args.layout_record:raise ValueError('--layout-record is required')
-            if _load_layout_record(args.layout_record)['plan']!=plan_ladder(params):raise ValueError('ladder record differs from brief')
+            if _load_layout_record(args.layout_record)['plan']!=plan_ladder_input(params):raise ValueError('ladder record differs from brief')
             response=inspect_ladder(client,args.layout_record)
         elif args.operation=='complete-layout':
             from bridge_complete import plan_complete_layout,execute_complete_layout

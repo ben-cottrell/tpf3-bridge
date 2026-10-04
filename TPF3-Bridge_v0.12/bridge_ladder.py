@@ -21,7 +21,7 @@ def plan_ladder(brief):
     common={k:brief[k] for k in ('radius','region','vertical','max_route_length')}|{'max_fit_attempts':1}
     expected=[];used=[];steps=[]
     for g in groups:
-        if not isinstance(g,dict) or set(g)-{'spine_radius'}!={'id','inbound','outbound','destinations','spine_guides','arm_end','junctions'}:raise ValueError('explicit spine/arm/three-turnout group required')
+        if not isinstance(g,dict) or set(g)-{'spine_radius','junction_radii'}!={'id','inbound','outbound','destinations','spine_guides','arm_end','junctions'}:raise ValueError('explicit spine/arm/three-turnout group required')
         if not isinstance(g['id'],str) or not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]{0,30}',g['id']):raise ValueError('invalid group ID')
         ds=g['destinations']
         if not isinstance(ds,list) or len(ds)!=3:raise ValueError('three destinations per ladder required')
@@ -44,10 +44,12 @@ def plan_ladder(brief):
         live.validate_project_brief(common|{'source':g['arm_end'],'target':g['arm_end']},corridor=True)
         steps.append({'name':g['id']+'_spine','kind':'spine','brief':spine})
         steps.append({'name':g['id']+'_arm','kind':'arm','source':g['outbound'],'target':g['arm_end']})
+        radii=g.get('junction_radii',[brief['turnout_radius']]*3)
+        if not isinstance(radii,list) or len(radii)!=3 or any(type(v) not in (int,float) or not math.isfinite(v) or v<brief['radius'] for v in radii):raise ValueError('three selected junction radii cannot lower the hard minimum')
         for i,q in enumerate(g['junctions']):
             target=g['arm_end'] if i==0 else roles[ds[3-i]]['endpoint']
             if i==0:target=target|{'travel_direction':[-v for v in target['travel_direction']]}
-            b=common|{'source':q,'target':target,'radius':brief['turnout_radius'],'placement_tolerance':brief['placement_tolerance']}
+            b=common|{'source':q,'target':target,'radius':radii[i],'placement_tolerance':brief['placement_tolerance']}
             live.validate_project_brief({k:v for k,v in b.items() if k!='placement_tolerance'},corridor=True)
             steps.append({'name':g['id']+'_junction_'+str(i),'kind':'junction','brief':b})
         for i,n in enumerate(ds):
@@ -79,11 +81,61 @@ def plan_ladder(brief):
     plan['plan_hash']=hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
     return plan
 
+COMPACT_LAYOUT='native_compact_two_ladder_v1'
+
+def plan_compact_ladder(brief):
+    """Derive bounded semantic controls from fixed banks, never native control curves."""
+    keys={'layout','roles','groups','movements','radius','turnout_radii','region','vertical','max_route_length','placement_tolerance','spacing'}
+    if not isinstance(brief,dict) or set(brief)!=keys or brief['layout']!=COMPACT_LAYOUT:raise ValueError('explicit compact ladder brief required')
+    roles=brief['roles'];groups=brief['groups'];selected=brief['turnout_radii']
+    if not isinstance(selected,dict) or set(selected)!={'merge','outer_fan','inner_fan'}:raise ValueError('explicit merge/outer_fan/inner_fan radii required')
+    if not isinstance(roles,dict) or len(roles)!=10 or not isinstance(groups,list) or len(groups)!=2:raise ValueError('four approaches/six destinations and two explicit groups required')
+    low={k:v for k,v in brief.items() if k not in ('layout','roles','groups','movements','turnout_radii')};low.update(layout=LAYOUT,roles={},groups=[],movements=[],turnout_radius=selected['merge'])
+    for n,r in roles.items():
+        if not isinstance(r,dict) or set(r)!={'kind','position','travel_direction'}:raise ValueError('named fixed position/direction/kind required')
+        low['roles'][n]={'kind':r['kind'],'endpoint':intent(r['position'],r['travel_direction'])}
+    for g in groups:
+        if not isinstance(g,dict) or set(g)!={'id','inbound','outbound','destinations'} or not isinstance(g['destinations'],list) or len(g['destinations'])!=3:raise ValueError('explicit ordered group pairing required')
+        try:a,z=roles[g['inbound']],roles[g['destinations'][0]];out=roles[g['outbound']]
+        except KeyError:raise ValueError('unknown role in group') from None
+        d=a['travel_direction'];norm=math.hypot(*d)
+        if norm<=0:raise ValueError('nonzero heading required')
+        d=[x/norm for x in d];normal=[-d[1],d[0]];origin=a['position']
+        def xy(p):return [sum((p[k]-origin[k])*v[k] for k in range(2)) for v in (d,normal)]
+        L,y=xy(z['position']);out_y=xy(out['position'])[1];ds=[xy(roles[n]['position'])[1] for n in g['destinations']]
+        if type(brief['spacing']) not in (int,float) or not math.isfinite(brief['spacing']) or brief['spacing']<=0:raise ValueError('positive native spacing required')
+        if not 200<=L<=800:raise live.LiveError('unsupported_compact_ladder','compact planner supports aligned banks separated by200..800 native units')
+        side=1 if out_y>0 else -1
+        if side*out_y<brief['spacing']-.001 or not all(side*(ds[i+1]-ds[i])>=brief['spacing']-.001 for i in range(2)):raise live.LiveError('unsupported_compact_ladder','outbound approach and explicitly ordered fan must lie outward of inbound/inner track')
+        def point(x,y):return [origin[k]+d[k]*x+normal[k]*y for k in range(2)]+[origin[2]]
+        arm_y=ds[-1]+side*2*brief['spacing']
+        # Short local S-transitions give native pointwork a usable angle; this is
+        # a two-arc screening envelope with margin, not a replacement curve fitter.
+        remaining=[1.1*math.sqrt(4*1.05*selected[k]*abs(ds[i]-ds[0])) for k,i in [('outer_fan',2),('inner_fan',1)]]
+        fractions=(.42,1-remaining[0]/L,1-remaining[1]/L)
+        q={'id':g['id'],'inbound':g['inbound'],'outbound':g['outbound'],'destinations':g['destinations'],'spine_guides':[{'position':point(.35*L,y),'travel_direction':d,'grade':0}],'arm_end':intent(point(.20*L,arm_y),d),'junctions':[intent(point(f*L,y),[-v for v in d] if i==0 else d) for i,f in enumerate(fractions)]}
+        q['junction_radii']=[selected[k] for k in ('merge','outer_fan','inner_fan')]
+        low['groups'].append(q)
+        for i,n in enumerate(g['destinations']):
+            via=[g['id']+'_junction_'+str(j) for j in range(3 if i!=2 else 2)]
+            low['movements'] += [{'from':g['inbound'],'to':n,'via':via},{'from':n,'to':g['outbound'],'via':list(reversed(via))}]
+    expected=[{k:r[k] for k in ('from','to')} for r in low['movements']]
+    if brief['movements']!=expected:raise ValueError('compact brief must explicitly approve every directed group movement')
+    plan=plan_ladder(low);plan['derivation']={'planner':COMPACT_LAYOUT,'input':brief,'controls':'one alignment guide; outward arm and three longitudinal turnout intents; native fitting owns curves','optimality':'not globally minimal','native_fit_required':True}
+    plan['plan_hash']=hashlib.sha256(json.dumps({k:v for k,v in plan.items() if k!='plan_hash'},sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+    return plan
+
+def plan_ladder_input(brief):
+    return plan_compact_ladder(brief) if isinstance(brief,dict) and brief.get('layout')==COMPACT_LAYOUT else plan_ladder(brief)
+
+def _canonical(plan):
+    return plan_compact_ladder(plan['derivation']['input']) if plan.get('derivation') else plan_ladder(plan['brief'])
+
 def intent(position,direction):
     return {'guide_xyz':position,'travel_direction':direction,'heading_tolerance_deg':.1,'max_edges':16,'region':{'min':[v-2 for v in position],'max':[v+2 for v in position]}}
 
 def publish_ladder(plan,directory):
-    if plan!=plan_ladder(plan['brief']):raise ValueError('plan changed')
+    if plan!=_canonical(plan):raise ValueError('plan changed')
     path=Path(directory)/(uuid.uuid4().hex+'.ladder_plan.json');path.parent.mkdir(parents=True,exist_ok=True);live.atomic_json(path,{'plan':plan})
     return {'status':'ok','operation':'ladder-layout','stage':'plan','game_constructed':False,'movements':len(plan['movements']),'plan_hash':plan['plan_hash'],'evidence':str(path.resolve())}
 
@@ -134,7 +186,7 @@ def _finish(record,path,exc=None):
     live.atomic_json(path,record);return s
 
 def execute_ladder(client,plan,*,layout_record=None):
-    if plan!=plan_ladder(plan['brief']):raise ValueError('ladder plan differs from brief')
+    if plan!=_canonical(plan):raise ValueError('ladder plan differs from brief')
     prefix=None
     if layout_record:
         old=live._load_layout_record(layout_record)
@@ -207,7 +259,7 @@ def execute_ladder(client,plan,*,layout_record=None):
 
 def inspect_ladder(client,layout_record,*,checked=False):
     old=live._load_layout_record(layout_record);plan=old['plan']
-    if plan!=plan_ladder(plan['brief']):raise ValueError('saved plan changed')
+    if plan!=_canonical(plan):raise ValueError('saved plan changed')
     if set(old.get('initial_ports',{}))!=set(plan['brief']['roles']):raise ValueError('saved native interface binding unavailable')
     path=client.evidence/(uuid.uuid4().hex+'.ladder_inspection.json');record={'plan':plan,'initial_ports':old.get('initial_ports',{}),'operations':[],'observations':[],'prior_record':str(Path(layout_record).resolve()),'summary':{'operation':'ladder-layout-inspect','status':'incomplete','game_constructed':False,'recorded_prior_game_constructed':old.get('summary',{}).get('game_constructed','unknown'),'checked_existing':checked,'prior_unfinished_step':old.get('unfinished_step')}}
     try:record['summary'].update(_assess(client,plan,record));return _finish(record,path)

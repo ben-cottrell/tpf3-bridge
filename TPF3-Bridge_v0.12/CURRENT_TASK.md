@@ -1,26 +1,28 @@
-# PIF-P31 - COMPLETE: reusable native throat and ladder
+# PIF-P32 - COMPLETE: compact endpoint-derived native throat
 
-Delivered callable bridge_ladder.py and bridge_live.py ladder-layout / ladder-layout-inspect.
-Fixed actual TRACK interfaces: four parallel approaches feed six aligned destinations
-through two native shared-neck ladders. Explicit twelve directed movements traverse
-six exact turnouts; nearest/inner routes use three, outer routes use two in order.
-Level pointwork; existing native fitting, endpoint identity, bounded regions and hard
-engineering limits reused. Shared-neck functional alternative, not all-to-all/slips.
+Reusable plan_compact_ladder over existing ladder primitives; same ladder-layout /
+ladder-layout-inspect CLI, concise compact_ladder_example.json. Input explicit fixed
+roles/positions/headings, group pairing, twelve directed movements and selected limits.
+Planner derives native guide/arm/turnout intents from actual banks/lateral offsets/radii;
+TPF3 fits curves. Canonical plan preserves input/derivation; old explicit P31 compatible.
 
-Build40408 native demo and fresh-process read-only inspection passed12paths/6forks.
-Independent49TRACK geometry/attachments/joins:33samples/edge, radius124.310881>=120,
-grade0. Checked-existing execution records zero construction. Quiet live_client230passed;
-exact report/commands/source hashes in .local_runs/live_python_interface/p31/checks.json.
-Full native/failure/reconciliation evidence retained locally; observed_ladder.svg and
-route_matrix.json/.csv make layout/movements reviewable. Explicit prefix proof prevents
-blind replay; rejected outcomes retain unknown incidental effects.
+Build40408 demonstration: four5-unit approach centres and destination offsets
+0,5,15,20,30,35. Twelve directed native TRAIN routes, six exact successive turnouts,
+44TRACK; fresh-process inspection and completed-record execution passed, no rebuilding.
+Independent33samples/edge radius62.620096>=hard60,grade0,ports/joins/region/order.
+Selected merge100/outer200/inner60. Actual cubic footprint490x55 includingstubs,
+destination span35 vs P31 2240x400/span400. Equal-scale native overview and route matrix
+in .local_runs/live_python_interface/p32/. No globally minimal layout claim.
 
-Normal save TPF3_Bridge_P31_Ladder_Complete_20261004 retained;40identified obsolete
-project saves/thumbnails removed. No unrelated files or historic local evidence removed.
-No station assets, signals/train operations, continuous clearance/effects-history or
-save-load identity guarantee. No Lua/runner changes. No remote push. Local milestone
-commit recorded in p31/checkpoint.json. Stop here; next task remains coordinator-assigned.
+235affected quiet tests pass; exact report/commands/source hashes in p32/checks.json.
+Two rejected outer turnouts retained and independently reconciled as absent; matching
+three-stage prefix freshly proved before unbuilt-stage revisions. Unknown incidental
+effects remain. One useful compact native success; unchanged P31/engineering evidence
+reused, no broad historical tests. Final game checkpoint/cleanup in p32 records.
 
-Direct human authority permits one compact completion handoff to coordinator chat
-01a0f987-8917-7f31-84c3-838acacc9e04; local/final handoffs retained. External review remains
-binding; a denial must be reported precisely, never bypassed or retried unchanged.
+Local milestone commit recorded in p32/checkpoint.json; no remote push. Level aligned
+bank domain200..800units, outward grouped fans. No station assets,signals,train operation,
+continuous clearance,full effects/save-load identity guarantee or new fitter. No Lua,
+runner,dependencies,host recovery or blockers. Stop here; next task coordinator-assigned.
+One compact completion message to01a0f987-8917-7f31-84c3-838acacc9e04 directly authorized;
+local/final handoffs preserved; external review binding.

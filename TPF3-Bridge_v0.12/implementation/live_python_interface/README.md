@@ -1407,3 +1407,43 @@ original failed receipts remain visible. Fresh full TRAIN paths prove connection
 turnout transitions, not physical train operation, capacity or signalling.
 Observed geometry/route overview is development evidence; sampled acceptance does not
 constitute continuous clearance proof or complete native incidental-effect history.
+
+
+## Compact endpoint-derived planning (P32)
+
+The same ladder-layout/ladder-layout-inspect commands accept
+native_compact_two_ladder_v1 briefs. Callable plan_compact_ladder takes ten named
+fixed position/travel_direction/kind roles, two explicitly paired groups with ordered
+destinations, twelve explicitly approved from/to movements and selected limits.
+It derives one native alignment guide, a short outward arm and three ordered turnout
+intents per group. Fan locations use selected radii/actual lateral offsets and a
+cheap two-arc screening envelope with margin; native fitting/acceptance remains
+authoritative. Users supply interfaces and traffic, not hand-authored pointwork.
+The saved canonical plan retains the input and deterministic derivation provenance.
+
+Supported domain: level aligned parallel banks 200..800 native units apart; the
+outbound approach and explicitly ordered fan lie outward of the inbound/inner track.
+Native fitting still determines every curve; derived controls are intents, not a
+guaranteed feasible proposal or globally minimal layout. Unsupported arrangements
+or native rejections stop honestly. Low-level explicit P31 briefs remain supported.
+
+compact_ladder_example.json selects a low-speed game throat minimum radius60 and
+merge100, outer fan200 and inner fan60 fitting radii explicitly, not P31's400. Four approaches
+are at5-unit centres. Six station-free destinations have centre offsets0,5,15,20,30,35
+(the 10-unit gaps model a requested5-unit platform strip; no platform assets/clearance
+are constructed or certified). This bank is centred on the approaches: inner spine
+attachments align, the arms widen outward locally and routes return to fixed ports.
+The example uses450-unit bank separation; source/output stub lengths belong to the
+authored fixture demonstration, not the production planner. Adapt positions/limits
+to actual native observations. No arbitrary native entity IDs or local logs required.
+
+```
+python bridge_live.py ladder-layout --params implementation/live_python_interface/compact_ladder_example.json --evidence .local_runs/compact_plans
+python bridge_live.py ladder-layout --context CONTEXT.json --params BRIEF.json --execute
+python bridge_live.py ladder-layout-inspect --context CONTEXT.json --params BRIEF.json --layout-record RESULT.json
+```
+
+Explicit partial-receipt adoption and completed-record read-only checking use the
+existing guarded ladder mechanism. Report realised longitudinal/transverse footprint
+and bank span from native readback; an equal-scale diagram must not conceal spreading.
+Native paths prove selected connectivity/turnout traversal, not trains or signalling.
