@@ -1,34 +1,14 @@
-# P48 CLOSED — USEFUL PARTIAL
+# PIF-P49 COMPLETE — rejected extension reconciliation
 
-Astra directed closure after the second adjusted native crossover rejection.
-Retain six entrance tracks to500, four curved lead connections and first crossover104785.
-22 directional routes verified; full access matrix incomplete. Save/commit evidence in
-.local_runs/live_python_interface/p48/. No further crossover attempts, extensions or
-radius investigation. Return to Astra for an integrated throat design; original card below.
+Authority: .local_runs/live_python_interface/p49/orchestrator/TASK.md, direct standing
+human authority and coordinator assignment. Narrow Python recovery gap resolved.
 
-# PIF-P48 — compact entrance-first outer-pair layout, with ordinary chain cleanup
+Added fresh-observation reconciliation for explicit native-rejected extensions.
+Request652b52b39bb249ca92dfa89a2f8ac07e/sessionpif_1791139669_139218306 reconciled:
+exact unchanged free TRACK95451/node95449, completed extension absent, other effects
+unknown, pending none. No replay/construction/reload/save or geometry investigation.
 
-User explicitly authorises shorter/tighter station curves, multiple practical attempts and removal of prior layouts. Latest instructions: focus on proven functional problems, not validation discrepancies alone; establish entrance first as design anchor. Astra has now selected and native-prefitted the concrete replacement. No layout design delegated to Sol.
-
-## Current state
-Same worker/local project. Current sessionpif_1791137893_137442549, build40408; original user16-track save reloaded, so ALL P47world bindings obsolete. Current clean-save station mouth in .local_runs/design/terminal_16_8_12_8/operation07/mouth.json:16 userleads, height1.25,110m span. Astra built outer routes0/15, then curved replacements, companion1/14, six-track entrance600..660 extended to800. No crossovers built. First curved crossover rejected, explicit rejection successfully reconciled in operation09/rejected_curved_reconciliation.json; journal clear. No re-investigation required. All changes currently unsaved.
-
-## Exact shorter design — approved Astra decision
-Plan .local_runs/design/terminal_16_8_12_8/operation10/plan.json and fit_0/1/14/15.json. Local coordinates from origin/direction/right in plan. Six approach rails transverse[-12.5,-7.5,-2.5,2.5,7.5,12.5], longitudinal300..480, levelZ1.25. They are UP_A,DOWN_A,UP_B,DOWN_B,UP_C,DOWN_C in this order, labels expressing intended later routing, not signal enforcement. Build entrance FIRST, then native curved station-lead0->entrance0,1->1,14->4,15->5. Native fitting radius525 produces about126.7m ARC/50.5m STRAIGHT/126.7m ARC, same source/target headings. Existing connect radius500 yields default native525; this is the selected visible curve shape, not a universal operational minimum. Fit_radius override optional where already supported. Native prefits in plan used70 check/525fit and passed. Keep design broad curves, actual height and endpoint identities; reverse construction direction allowed if the native fit needs it, as operation09 companions did. No long diagonal substitute.
-
-Staggered single crossovers on STRAIGHT entrance: entrance0@310 ->1@380;1@400 ->0@470;4@310 ->5@380;5@400 ->4@470. Fit187.5 with nominal radius70, level, single_cubic_level supported. This is the proven70longitudinal/5transverse family, now on straight tracks; do not retry curved-location attempt or use scissors. Firsttwo station tracks on each outer side should each have arrival/departure access to their pair. The other12 station tracks and middle approach pair remain for Astra's next fan design; do not claim16-platform completion. Do not change topology or add a shared bank neck.
-
-## Remove the superseded800m layout first
-Preserve the original16 userlead connections and station, remove only constructed operation08/09 outer/companion/entrance chains. Enumerate from these exact local outcomes, then freshly inspect/connect the actual chains before removal:
-operation08/curved_boundary_0.json and curved_boundary_15.json; operation09/companion_reverse_1.json and companion_reverse_14.json; operation08/entrance_0..5.json; operation09/entrance_extend_0..5.json. Fixture responses have result.edges snapshots; workflows have top-level edges IDs. operation08/entrance_anchors.json gives bindings. Native old companion orientation is entrance->station, not all chains ordered outward. Fresh actual controls/incidence establish orientation; no guessed deletion by region.
-
-Concrete bridge gap: M.remove_branch currently handles chains between attached endpoints (free_ends requires degree2 at BOTH ends) or a single isolated edge. It cannot remove multi-edge isolated entrance chains or a chain attached at one end/free at the other. Add a small explicit native/Python operation option for exact observed chain removal with degree1 or2 endpoints, no branches/objects/construction-owned edges. Remove exclusive internal nodes and free endpoint nodes; retain attached endpoint node and its nonremoved track. Verify requested edges gone and retained attachments intact. Preserve unknown outcomes for reconciliation, no manual journal clearing or replay. Existing removal modes/defaults unchanged. Use this reusable cleanup to remove obsolete geometry, rather than adding sacrificial track or reloading a save to circumvent the unsupported operation. Destruction authorised; no rollback requirement.
-
-## Practical completion
-Build specified600->480 footprint replacement as above (300fan+180entrance), entrance first, existing template/native mechanics. Existing fixture primitive length<=60 can create a60m entrance seed then extend120m with normalextension; no service/dependency. Verify requested new station-to-entrance connections and access routes for the four connected physicalleads to their outer pair, proportionately. Native connection/identity errors that block an actual requested build are actionable; an isolated validation discrepancy alone is not an investigation assignment. Record measurements honestly and apply current AGENTS/SPDD_SCOPE proven-problems-first principle. No exhaustive unchangedstation audit or unrelated regression campaign. Run affected cleanup tests, concise docs/STATE, save useful compact checkpoint normally, local milestone commit; no push. Include the currently unstaged AGENTS/SPDD_SCOPE governance edits in an explicitly reviewed local governance commit or this milestone if appropriate, preserving exact userprinciple. No host/ACL/process repair or new dependencies.
-
-Evidence p48/HANDOFF.md/checks/checkpoint and compact completion message to coordinator01a0f987-8917-7f31-84c3-838acacc9e04 under permanent human handoff authority. Return to Astra for remaining fan topology. This task is an actualcompact rebuild with a demonstrated cleanup gap, not a new validation exercise.
-
-
-## Astra continuation after first native crossover rejection
-The original0@310->1@380 proposal was reconciled as absent with original through functions intact. Generic native Construction Not Possible does not establish cause. Astra chooses a practical clearance adjustment, not a bridge investigation: extend all six entrance tracks from480 to500 (20m), preserving300 entrance start/four curved connections. Shift first crossovers to0@330->1@400 and4@330->5@400; second to1@420->0@490 and5@420->4@490. Same70m longitudinal/5m lateral, same nativefit187.5, single_cubic_level and level bound; do not replay310->380. These provide30m buffer from curve join for first turnout instead of10m. Hypothesis is junction proximity; not a proven explanation. Fresh binds and normal native preview/build; observe any actual rejection before proceeding. If first adjusted proposal is rejected, reconcile and return exact result without further variations. If it succeeds, complete remaining specified crossovers, relevant route checks/save/commit in this same P48 task. Overall footprint500m; no new task or topology change. User explicitly permits practical alternate attempts and removal.
+345 application tests passed through quiet runner; compile/diff passed. Exact records
+and local milestone revision: .local_runs/live_python_interface/p49/{HANDOFF.md,
+checks.json,checkpoint.json,final_result.json}. Return to Astra for design; no more
+track builds under this task. Remote push requires separate authorisation.

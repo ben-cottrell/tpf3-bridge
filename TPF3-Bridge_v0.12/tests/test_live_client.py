@@ -4447,6 +4447,112 @@ class NativeAggregateTinyEvidenceTests(unittest.TestCase):
         self.assertLess(fit.index('assert(discardedlength<=.001'),fit.index('#controls>1 and straight_count==1 and arc_turn<=.1'))
         self.assertIn('geometry_bounds(cg,p.region,p.radius,maxgrade or math.abs(grade))',fit)
 
+class RejectedExtensionTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        root=Path(self.tmp.name)
+        self.client=LiveClient(root/'mod',root/'log',root/'evidence','current',.02)
+        self.pending={'session':'current','request_id':'rejected','operation':'extension',
+                      'params':{'execute':True,'brief':{'anchor_edge':10,'anchor_node':11,
+                       'end_xy':[100,0],'end_direction':[1,0],'radius':70,
+                       'region':{'min':[-20,-20,-2],'max':[120,20,5]}}}}
+        self.response={'session':'current','request_id':'rejected','operation':'extension','status':'error',
+                       'result':{'native_command_success':False,'error':'native_construction_rejected',
+                                 'stage':'build','game_constructed':'unknown','fit':{'start_node':11,'start':[0,0,1]}}}
+        edge={'id':10,'node0':12,'node1':11,'p0':[-10,0,1],'p1':[0,0,1],
+              't0':[10,0,0],'t1':[10,0,0],'road_type':'TRACK','template':'track','style':'style'}
+        self.original={'session':'current','request_id':'baseline','operation':'discover','status':'ok',
+                       'result':{'complete':True,'truncated':False,'game_constructed':False,'candidates':[
+                           {'edge_id':10,'node_id':11,'edge_snapshot':edge,'pos':[0,0,1],
+                            'eligible':True,'incidence_complete':True,'incident_output_truncated':False,
+                            'incident_count':1,'incident_edges':[10],'construction_owner':-1}]}}
+        self.fresh=json.loads(json.dumps(self.original));self.fresh['request_id']='fresh'
+        self.save_pending()
+
+    def save_pending(self):
+        self.client.journal.write_text(json.dumps({'session':'current','pending':self.pending}))
+        (self.client.evidence/'rejected.response.json').write_text(json.dumps(self.response))
+
+    def reconcile(self):
+        from bridge_live import reconcile_rejected_extension
+        return reconcile_rejected_extension(self.client,self.original)
+
+    def test_fresh_exact_free_anchor_closes_only_rejected_extension(self):
+        original_bytes=(self.client.evidence/'rejected.response.json').read_bytes()
+        with patch.object(self.client,'request',return_value=self.fresh) as calls:
+            value=self.reconcile()
+        calls.assert_called_once_with('discover',{'region':{'min':[-1,-1,0],'max':[1,1,2]},'max_edges':16})
+        self.assertFalse(is_mutation(*calls.call_args.args))
+        self.assertTrue(value['result']['completed_extension_absent'])
+        self.assertEqual(value['result']['other_effects'],'unknown')
+        self.assertFalse(value['result']['automatic_replay'])
+        self.assertFalse(value['result']['effects_history_complete'])
+        self.assertNotIn('game_constructed',value['result'])
+        self.assertEqual((self.client.evidence/'rejected.response.json').read_bytes(),original_bytes)
+        state=json.loads(self.client.journal.read_text());self.assertNotIn('pending',state)
+        self.assertIn('rejected',state['reconciled_rejections'])
+        self.assertEqual(json.loads(Path(value['evidence']).read_text())['original_pending'],self.pending)
+        with patch.object(self.client,'request') as calls,self.assertRaises(LiveError):self.reconcile()
+        calls.assert_not_called()
+
+    def test_mismatch_or_nonexplicit_rejection_never_observes_or_clears(self):
+        for defect in ('state_session','pending_session','request','operation','response_session','command',
+                       'stage','error','status','fit_node','fit_position','baseline_session'):
+            with self.subTest(defect=defect):
+                self.setUp()
+                if defect=='pending_session':self.pending['session']='old'
+                elif defect=='request':self.response['request_id']='other'
+                elif defect=='operation':self.response['operation']='connection'
+                elif defect=='response_session':self.response['session']='old'
+                elif defect=='command':self.response['result'].pop('native_command_success')
+                elif defect=='stage':self.response['result']['stage']='fit'
+                elif defect=='error':self.response['result']['error']='timeout'
+                elif defect=='status':self.response['status']='mutation_unverified'
+                elif defect=='fit_node':self.response['result']['fit']['start_node']=12
+                elif defect=='fit_position':self.response['result']['fit']['start']=[1,0,1]
+                elif defect=='baseline_session':self.original['session']='old'
+                self.save_pending()
+                if defect=='state_session':self.client.journal.write_text(json.dumps({'session':'old','pending':self.pending}))
+                with patch.object(self.client,'request') as calls,self.assertRaises(LiveError):self.reconcile()
+                calls.assert_not_called()
+                self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+
+    def test_changed_ambiguous_or_incomplete_fresh_anchor_retains_pending(self):
+        for defect in ('changed','ambiguous','occupied','owner','wrong_edge','node','position','TRACK',
+                       'incomplete','truncated','incidence','incident_edges','query','session'):
+            with self.subTest(defect=defect):
+                self.setUp();r=self.fresh['result'];c=r['candidates'][0]
+                if defect=='changed':c['edge_snapshot']['t1'][0]=11
+                elif defect=='ambiguous':r['candidates'].append(json.loads(json.dumps(c)))
+                elif defect=='occupied':c['incident_count']=2;c['eligible']=False
+                elif defect=='owner':c['construction_owner']=5
+                elif defect=='wrong_edge':c['edge_snapshot']['id']=20
+                elif defect=='node':c['node_id']=12
+                elif defect=='position':c['pos']=[1,0,1]
+                elif defect=='TRACK':c['edge_snapshot']['road_type']='STREET'
+                elif defect=='incomplete':r['complete']=False
+                elif defect=='truncated':r['truncated']=True
+                elif defect=='incidence':c['incidence_complete']=False
+                elif defect=='incident_edges':c['incident_edges']=[20]
+                elif defect=='query':self.fresh['status']='error'
+                elif defect=='session':self.fresh['session']='old'
+                with patch.object(self.client,'request',return_value=self.fresh),self.assertRaises(LiveError):self.reconcile()
+                self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+                self.assertFalse((self.client.evidence/'rejected.reconciliation.json').exists())
+
+    def test_pending_race_and_observation_storage_failure_do_not_clear_mutation(self):
+        for defect in ('race','storage'):
+            with self.subTest(defect=defect):
+                self.setUp()
+                def query(*args):
+                    if defect=='storage':raise PermissionError('observation unavailable')
+                    changed=self.pending|{'request_id':'different'}
+                    self.client.journal.write_text(json.dumps({'session':'current','pending':changed}))
+                    return self.fresh
+                with patch.object(self.client,'request',side_effect=query),self.assertRaises((LiveError,PermissionError)):self.reconcile()
+                self.assertIn('pending',json.loads(self.client.journal.read_text()))
+                self.assertFalse((self.client.evidence/'rejected.reconciliation.json').exists())
+
 class ExactChainRemovalTests(unittest.TestCase):
     def test_named_chain_is_freshly_observed_before_exact_mutation(self):
         with tempfile.TemporaryDirectory() as d:

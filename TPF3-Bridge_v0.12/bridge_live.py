@@ -1941,6 +1941,69 @@ def reconcile_rejected_fixture(client, discovery):
     latest.pop('pending');atomic_json(client.journal,latest)
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
 
+def reconcile_rejected_extension(client, discovery):
+    """Observe an unchanged free anchor after explicit rejection; never replay."""
+    state=json.loads(client.journal.read_text());pending=state.get('pending')
+    if (state.get('session')!=client.session or not pending
+            or pending.get('session')!=client.session or pending.get('operation')!='extension'
+            or pending.get('params',{}).get('execute') is not True):
+        raise LiveError('reconciliation_required','no current-session pending native-rejected extension')
+    rid=pending['request_id'];response_path=client.evidence/(rid+'.response.json')
+    response=json.loads(response_path.read_text());result=response.get('result',{})
+    if (response.get('session')!=client.session or response.get('request_id')!=rid
+            or response.get('operation')!='extension' or response.get('status')!='error'
+            or result.get('native_command_success') is not False
+            or result.get('error')!='native_construction_rejected' or result.get('stage')!='build'):
+        raise LiveError('reconciliation_required','no explicit native extension rejection',rid)
+    brief=validate_brief(pending['params']['brief'])
+    if (not isinstance(discovery,dict) or discovery.get('operation')!='discover'
+            or discovery.get('session')!=client.session or discovery.get('status')!='ok'):
+        raise LiveError('reconciliation_required','current-session anchor discovery required',rid)
+    def selected(record):
+        value=record.get('result',{})
+        matches=[c for c in value.get('candidates',[]) if
+                 c.get('edge_id')==brief['anchor_edge'] and c.get('node_id')==brief['anchor_node']]
+        if (value.get('complete') is not True or value.get('truncated') is not False
+                or value.get('game_constructed') is not False or len(matches)!=1):
+            raise LiveError('reconciliation_required','anchor discovery incomplete or ambiguous',rid)
+        c=matches[0];snapshot=c.get('edge_snapshot',{})
+        if (c.get('eligible') is not True or c.get('incidence_complete') is not True
+                or c.get('incident_output_truncated') is not False or c.get('incident_count')!=1
+                or c.get('incident_edges')!=[brief['anchor_edge']]
+                or c.get('construction_owner') not in (None,'none',-1,0)
+                or snapshot.get('id')!=brief['anchor_edge'] or snapshot.get('road_type')!='TRACK'
+                or brief['anchor_node'] not in (snapshot.get('node0'),snapshot.get('node1'))):
+            raise LiveError('reconciliation_required','exact free TRACK anchor not established',rid)
+        pos=c.get('pos');endpoint=snapshot.get('p0' if snapshot.get('node0')==brief['anchor_node'] else 'p1')
+        if (not isinstance(pos,list) or len(pos)!=3 or pos!=endpoint
+                or any(type(x) not in (int,float) or not math.isfinite(x) for x in pos)):
+            raise LiveError('reconciliation_required','anchor position unavailable or inconsistent',rid)
+        return c
+    original=selected(discovery);fit=result.get('fit',{})
+    if fit.get('start_node')!=brief['anchor_node'] or fit.get('start')!=original['pos']:
+        raise LiveError('reconciliation_required','rejected fit does not bind the original anchor',rid)
+    pos=original['pos'];region={'min':[x-1 for x in pos],'max':[x+1 for x in pos]}
+    observed=discover(client,{'region':region,'max_edges':16})
+    if (observed.get('status')!='ok' or observed.get('session')!=client.session
+            or observed.get('operation')!='discover'):
+        raise LiveError('reconciliation_required','fresh anchor observation unavailable',rid)
+    current=selected(observed)
+    if current['edge_snapshot']!=original['edge_snapshot'] or current['pos']!=pos:
+        raise LiveError('reconciliation_required','anchor changed; extension outcome uncertain',rid)
+    latest=json.loads(client.journal.read_text())
+    if latest.get('session')!=client.session or latest.get('pending')!=pending:
+        raise LiveError('reconciliation_required','pending changed during observation',rid)
+    record={'status':'reconciled_rejected_extension','original_pending':pending,
+            'original_response':str(response_path.resolve()),'anchor_discovery':discovery['request_id'],
+            'observation':observed['request_id'],'anchor_edge':brief['anchor_edge'],
+            'anchor_node':brief['anchor_node'],'anchor_unchanged_and_free':True,
+            'completed_extension_absent':True,'other_effects':'unknown',
+            'effects_history_complete':False,'automatic_replay':False}
+    path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
+    latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(client.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
 def reconcile_rejected_connection(client, discoveries=None):
     """Record a native-rejected connection as absent using fresh exact incidence."""
     state=json.loads(client.journal.read_text());pending=state.get('pending')

@@ -1,3 +1,23 @@
+## P49 complete — explicit rejected extension reconciled (4 October 2026)
+
+Added reconcile_rejected_extension(client, original_discovery): one fresh bounded
+native discovery binds exact unchanged free TRACK anchor to correlated rejected fit.
+Mismatch/non-explicit rejection, changed/ambiguous/incomplete incidence and pending
+race retain pending; no replay, native change, global rollback claim or geometry repair.
+Build40408/sessionpif_1791139669_139218306: request652b52b39bb249ca92dfa89a2f8ac07e
+reconciled completed extension absent. TRACK95451/node95449 unchanged, complete incidence
+[95451], fresh observationf52da73a660e4df9be86cd50f33b8321. Original failure preserved;
+other effects unknown, pending none. No track construction/reload/save in P49.
+python tools/quiet_checks.py --suite live_client --label pif-p49-rejection:
+345passed/0fail/error/skip; .local_checks/pif-p49-rejection_apzw21op/report.json.
+Compile/diff passed. Native: python .local_runs/live_python_interface/p49/reconcile.py.
+Evidence .local_runs/live_python_interface/p49/{HANDOFF.md,checks.json,checkpoint.json,
+baseline.json,fresh_observation.json,reconciliation.json,final_result.json}.
+Revision: p49/checkpoint.json; local milestone/no push. Usage unavailable.
+Recovery gap resolved; native construction rejection cause unestablished, full throat
+incomplete. Astra resumes layout design; operation11 track8 spine remains, track3 spine
+was removed by operation12. Prior P48 save/evidence remain historical, not current map.
+
 ## P48 closed — useful partial, Astra-directed stop (4 October 2026)
 
 Exact-chain cleanup removed24 superseded edges; six entrance tracks span local300..500.
