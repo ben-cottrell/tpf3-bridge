@@ -1,3 +1,31 @@
+## P26 complete - native curved four-track main with two outward branches
+bridge_branching plan/publish/execute/inspect_branching_corridor; CLI
+branching-corridor [--execute [--layout-record PARTIAL]], branching-corridor-inspect.
+Level UUDD; explicit4through +2outward branch movements; native tangent leads,
+canonical main/lead hashes, semantic role reacquisition and exact current forks.
+Explicit partial continuation freshly proves completed branches and never replays
+UP; changed completed intent/constraints/pending or unclaimed effects reject.
+Build40408/session pif_1791087681_87230402: all6 full native TRAIN routes passed
+fresh process; junctions UP139930/DOWN131838.46physical TRACK edges;33samples/edge:
+min radius416.905464>=400,grade0,exact continuity/joins/region; retained5/10/15normal
+spacing. Source/target stubs included.970byte inspection summary; no fitter.
+Bounded site/terrain inspection identified road collisions.12exact ordinary roads
+removed by explicit native proposals; isolated failed fixtures removed; DOWN then
+succeeded. Earlier failures/reconciliation/unknown incidental effects preserved.
+python tools/quiet_checks.py --suite live_client --label pif-p26-continuation:
+184passed; .local_checks/pif-p26-continuation_kf1whcez/report.json.
+Fresh inspect and independent geometry commands/results/source hashes:
+.local_runs/live_python_interface/p26/checks.json,result.json,HANDOFF.md;
+continuation/fresh_inspection.json,independent_complete_result.json.
+Offline example plan,py_compile and git diff --check passed. Lua standalone syntax
+unperformed; loaded adapter site/clearance runtime demonstrated. No pending request.
+Local milestone checkpoint: .local_runs/live_python_interface/p26/checkpoint.json;
+previous accepted revision c8d0bd5839f87e09aabeb9501c48a95297fada5c. No push.
+Normal save TPF3_Bridge_P26_Complete_20261004_0532; paused/non-maximised2099x1284.
+No continuous clearance proof,train traversal/reservation,direction enforcement,
+complete effects history or durable native save/load identity mapping guarantee.
+No blockers. Usage unavailable. P26 boundary reached; no follow-on work launched.
+
 ## P25 complete - curved native four-track corridor (checkpoint in p25/checkpoint.json)
 bridge_parallel plan/publish/execute/inspect_multitrack_connection; bridge_live.py
 multitrack-connection [--execute], multitrack-connection-inspect --layout-record.

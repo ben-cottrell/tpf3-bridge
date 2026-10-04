@@ -109,7 +109,62 @@ function M.inspect(p)
     min_curve_radius_build=resource.minCurveRadiusBuild,road_type=tostring(resource.roadType)}
   end
  end
- return {edges=out,game_constructed=false,native_save_identity="unknown",load_epoch="unknown"}
+ local result={edges=out,game_constructed=false,native_save_identity="unknown",load_epoch="unknown"}
+ if p.site then
+  local q=p.site;assert(type(q.region)=="table","site_region_required");vector(q.region.min);vector(q.region.max)
+  assert(#q.region.min==3 and #q.region.max==3,"site_region_xyz_required")
+  for i=1,3 do assert(q.region.min[i]<q.region.max[i] and q.region.max[i]-q.region.min[i]<=400,"site_region_bound") end
+  assert(type(q.positions)=="table" and #q.positions<=8,"site_terrain_sample_bound")
+  local observed,seen={},{};local queried,processed,truncated=0,0,false
+  api.engine.system.octreeSystem.findIntersectingEntities(api.type.Box3.new(v(q.region.min),v(q.region.max)),function(id,_volume)
+   queried=queried+1;if processed>=256 then truncated=true;return end;processed=processed+1
+   if seen[id] then return end;seen[id]=true
+   local base=api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)
+   local building=api.engine.getComponent(id,api.type.ComponentType.TOWN_BUILDING)
+   local construction=api.engine.getComponent(id,api.type.ComponentType.CONSTRUCTION)
+   if base or building or construction then
+    if #observed>=32 then truncated=true;return end
+    local row={entity=id,base_edge=base~=nil,town_building=building~=nil,construction=construction~=nil}
+    if base then row.road_type=tostring(base.roadType);row.TRACK=base.roadType==E.RoadType.TRACK;row.node0=base.node0;row.node1=base.node1;row.p0=arr(base.position0);row.p1=arr(base.position1);row.t0=arr(base.tangent0);row.t1=arr(base.tangent1) end
+    observed[#observed+1]=row
+   end
+  end)
+  local terrain={}
+  for _,pos in ipairs(q.positions) do
+   vector(pos);assert(#pos==2,"terrain_position_needs_xy");assert(pos[1]>=q.region.min[1] and pos[1]<=q.region.max[1] and pos[2]>=q.region.min[2] and pos[2]<=q.region.max[2],"terrain_position_outside_site")
+   local xy=api.type.Vec2f.new(pos[1],pos[2]);terrain[#terrain+1]={xy=pos,height=api.engine.terrain.getHeightAt(xy),valid=api.engine.terrain.isValidCoordinate(xy)}
+  end
+  result.site={region=q.region,entities=observed,terrain=terrain,queried=queried,processed=processed,truncated=truncated,classification="BASE_EDGE,TOWN_BUILDING,CONSTRUCTION only;other incidental categories not exported",game_constructed=false}
+ end
+ return result
+end
+-- Explicit small road clearance from a bounded fresh site observation. TRACK is
+-- always rejected here; this is not a broad world bulldozer or automatic repair.
+function M.clear_obstructions(p,s,state,request_id,respond)
+ assert(p.authorised==true and type(p.edges)=="table" and #p.edges>=1 and #p.edges<=8,"road_clearance_bound")
+ assert(not s.mutationPending,"unreconciled_mutation");vector(p.region.min);vector(p.region.max)
+ for k=1,3 do assert(p.region.min[k]<p.region.max[k] and p.region.max[k]-p.region.min[k]<=400,"road_clearance_region_bound") end
+ local ids,seen={},{}
+ for _,q in ipairs(p.edges) do
+  assert(q.TRACK==false and type(q.entity)=="number" and not seen[q.entity],"only_observed_non_TRACK_edge_clearance")
+  local e=api.engine.getComponent(q.entity,api.type.ComponentType.BASE_EDGE)
+  assert(e and e.roadType~=E.RoadType.TRACK and tostring(e.roadType)==q.road_type and e.type==E.BaseEdgeType.NORMAL,"clearance_not_ordinary_road")
+  assert(e.node0==q.node0 and e.node1==q.node1,"stale_clearance_identity")
+  for _,pair in ipairs({{arr(e.position0),q.p0},{arr(e.position1),q.p1},{arr(e.tangent0),q.t0},{arr(e.tangent1),q.t1}}) do assert(near(pair[1],pair[2],.001),"stale_clearance_geometry") end
+  in_region(q.p0,p.region);in_region(q.p1,p.region)
+  local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForEdge(q.entity);assert(not(owner and owner>0),"construction_owned_road_clearance_unsupported")
+  seen[q.entity]=true;ids[#ids+1]=q.entity
+ end
+ local proposal=api.engine.util.proposal.makeSegmentsRemoveProposal(ids)
+ s.mutationPending=request_id;local root=state:get() or {};root.pifLive=s;state:set(root)
+ api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(_,success)
+  local ok,r=pcall(function()
+   assert(success==true,"native_road_clearance_rejected")
+   for _,id in ipairs(ids) do assert(not api.engine.entityExists(id) or api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)==nil,"road_removal_unverified") end
+   s.mutationPending=nil;return {game_constructed=true,removed_road_edges=ids,native_effect_history_complete=false,rollback=false}
+  end)
+  respond(request_id,ok and "ok" or "mutation_unverified",ok and r or {error=tostring(r):sub(1,400),game_constructed="unknown",retry=false})
+ end)
 end
 -- Native normal-offset geometry and sampler, not a Python parallel-curve fitter.
 local function offset_geometry(e,spacing)

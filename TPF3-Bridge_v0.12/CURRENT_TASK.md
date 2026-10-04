@@ -1,9 +1,11 @@
-# PIF-P25 - complete; awaiting coordinator review
+# PIF-P26 - complete; await coordinator review
 
-Reusable curved native multitrack corridor passed on build40408: UUDD, eight exact
-attachments,four complete routes,neighbor/shared-reference spacing and geometry.
-Card: .local_runs/live_python_interface/p25/orchestrator/TASK.md
-Handoff/checks/result/checkpoint: .local_runs/live_python_interface/p25/
-169affected tests passed; fresh-process read-only inspection and independent
-checks passed. Initial domain level compatible native5m offsets; sampled only.
-Local milestone commit;no push. Stop here;no next task authorised by this card.
+Reusable curved UUDD four-track main plus outward UP/DOWN branches completed.
+Four through and two branch movements pass fresh native inspection on build40408;
+exact forks, semantic attachments, retained normal spacing and independent46-edge
+geometry checks pass.184 affected tests passed. No pending native mutation.
+Evidence: .local_runs/live_python_interface/p26/HANDOFF.md,checks.json,result.json,
+checkpoint.json; continuation/fresh_inspection.json,independent_complete_result.json.
+Reviewed card: .local_runs/live_python_interface/p26/orchestrator/TASK.md.
+Local milestone commit only; no push,extra task,batch or completion message.
+Stop here. Next work requires coordinator adoption; existing exclusions remain.

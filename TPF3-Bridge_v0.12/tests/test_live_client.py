@@ -665,6 +665,21 @@ class LiveClientTests(unittest.TestCase):
             self.assertEqual(calls.call_args.args[0],'selected_connection')
             self.assertNotIn('execute',calls.call_args.args[1])
 
+    def test_rejected_selected_connection_reconciles_without_replaying_or_inventing_effects(self):
+        for defect in ('none','wrong_node','constructed','query'):
+            pending=self.rejected_connection_pending();pending['operation']='selected_connection';pending['params']={'execute':True,'source':{'node_id':11},'target':{'node_id':21}}
+            self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending}));response=self.response('rejected_connection','selected_connection',result={'stage':'build','native_command_success':False,'error':'native_construction_rejected'});response['status']='error'
+            (self.client.evidence/'rejected_connection.response.json').write_text(json.dumps(response))
+            observed=self.response('fresh','selected_connection',result={'game_constructed':defect=='constructed','fit':{'start_node':11,'target_node':22 if defect=='wrong_node' else 21}})
+            if defect=='query':observed['status']='error'
+            with patch.object(self.client,'request',return_value=observed) as native:
+                if defect=='none':
+                    r=reconcile_rejected_connection(self.client);self.assertFalse(r['result']['completed_connection_constructed']);self.assertEqual(r['result']['other_effects'],'unknown');self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+                else:
+                    with self.assertRaises(LiveError):reconcile_rejected_connection(self.client)
+                    self.assertEqual(json.loads(self.client.journal.read_text())['pending'],pending)
+                self.assertEqual(native.call_count,1);self.assertFalse(native.call_args.args[1]['execute'])
+
     def test_rejected_junction_reconciliation_is_read_only_and_preserves_unknowns(self):
         for operation,defect in [(op,d) for op in ('junction','interior_junction') for d in ('none','failed_query','through','constructed')]:
             pending=self.rejected_connection_pending();pending['operation']=operation
@@ -2549,6 +2564,207 @@ class MultitrackConnectionTests(unittest.TestCase):
         with patch('bridge_parallel._multitrack_ports',return_value=ports),patch('bridge_parallel._read_chain',side_effect=self.chain),patch('bridge_parallel._verify_multitrack',return_value={'final_multitrack_verified':False}),patch('bridge_live._require_engineering_readback'),patch.object(self.client,'request',side_effect=offset),patch('bridge_live.connect_corridor') as build:
             s=execute_multitrack_connection(self.client,p,continuation_record=path);self.assertEqual(s['status'],'ok');self.assertEqual(count[0],3);build.assert_not_called()
         self.assertEqual(path.read_bytes(),before)
+
+class BranchingCorridorTests(unittest.TestCase):
+    setUp=LiveClientTests.setUp
+    response=LiveClientTests.response
+
+    def brief(self):
+        return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/branching_corridor_example.json').read_text())
+
+    def parent(self):
+        from bridge_parallel import plan_multitrack_connection
+        b=json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/multitrack_connection_example.json').read_text());p=plan_multitrack_connection(b);ports={};chains={}
+        for i,t in enumerate(p['tracks']):
+            nodes=[20+2*i,21+2*i];chains[t['id']]={'edges':[100+i],'nodes':nodes}
+            for j,end in enumerate(('start','end')):
+                key=t[end];q=p['ports'][key]['endpoint'];pos=q['guide_xyz'];d=q['travel_direction'];n=sum(x*x for x in d)**.5;outside=[pos[k]+(-20 if not j else 20)*(d[k]/n if k<2 else 0) for k in range(3)];a,z=(outside,pos) if not j else (pos,outside);delta=[z[k]-a[k] for k in range(3)]
+                ports[key]={'edge_id':10+2*i+j,'node_id':nodes[j],'edge_snapshot':{'id':10+2*i+j,'p0':a,'p1':z,'t0':delta,'t1':delta,'node0':200+2*i+j if not j else nodes[j],'node1':nodes[j] if not j else 200+2*i+j,'template':'track','style':'style'}}
+        return {'plan':p,'ports':ports,'chains':chains,'summary':{'status':'ok','game_constructed':True}}
+
+    def plan(self):
+        from bridge_branching import plan_branching_corridor
+        parent=self.parent()
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')):return plan_branching_corridor(self.brief()),parent
+
+    def ports(self,p):
+        return {name:{'edge_id':400+i,'node_id':800+i,'edge_snapshot':{'id':400+i},'grade':0,'eligible':True} for i,name in enumerate(p['roles'])}
+
+    def native(self,p,parent,ports,op,q):
+        if op=='verify_adjacency':return self.response(result={'sampled_verified':True,'correspondence':[{'signed_normal':q['spacing']}],'curved_reference_chord_length':500})
+        if op=='inspect':
+            index=0 if 501 in q['edge_ids'] else 1
+            return self.response(result={'edges':[{'id':e,'node0':900+index,'node1':999+e,'road_type':'TRACK'} for e in q['edge_ids']]})
+        self.assertEqual(op,'route');self.assertTrue(q['geometry_constraints']['all_path']);self.assertEqual(q['geometry_constraints']['radius'],400)
+        row=next(row for row in p['movements'] if ports[row['from']]['edge_id']==q['source_edge'] and ports[row['to']]['edge_id']==q['target_edge'])
+        t=next(t for t in p['main']['tracks'] if t['id']==row['track']);core=parent['chains'][t['id']]['edges'];related=next((b for b in p['brief']['branches'] if b['track']==t['id']),None)
+        ids=[q['source_edge']]+core
+        ji=None
+        if related:
+            index=p['brief']['branches'].index(related);ji=900+index;ids.append(501+index)
+            if row['kind']=='branch':ids.append(601+index)
+        ids.append(q['target_edge'])
+        return self.response(result={'requested_route_verified':True,'total_path_length':1700,'path':[{'confirmed_TRACK':True,'forward':t['forward'],'edge':{'entity':e},'from':{'entity':ji or 700},'to':{'entity':ji or 701}} for e in ids]})
+
+    def chain(self,client,p,r,name):
+        r.setdefault('current_chains',{})[name]={'inspection':{'result':{'edges':[{'id':e} for e in r['chains'][name]['edges']]}}}
+        return [{'edge':{'id':e},'forward':True} for e in r['chains'][name]['edges']]
+
+    def discovery(self,p,ports,q):
+        b=next(b for b in p['brief']['branches'] if b['source']['region']==q['region']);index=p['brief']['branches'].index(b);t=next(t for t in p['main']['tracks'] if t['id']==b['track']);exit=t['end'] if t['forward'] else t['start']
+        return self.response(result={'complete':True,'candidates':[{'node_id':900+index,'incidence_complete':True,'incident_count':3,'incident_edges':[501+index,601+index,ports[exit]['edge_id']]}]})
+
+    def test_six_explicit_movements_and_distinct_shared_divergence(self):
+        p,parent=self.plan();self.assertEqual(len(p['movements']),6);self.assertEqual(sum(x['kind']=='through' for x in p['movements']),4);self.assertEqual(len(p['roles']),10);self.assertEqual(len(p['junction_zones']),2)
+        self.assertIn('excluded',p['shared_section']);self.assertFalse(p['game_constructed']);self.assertEqual(p['main'],parent['plan'])
+
+    def test_zero_lead_names_original_tangent_and_retains_original_outer_role(self):
+        from bridge_branching import plan_branching_corridor,_outer,_intent
+        parent=self.parent();b=self.brief();row=b['branches'][1];stub=parent['ports']['D4:target']['edge_snapshot'];row['lead_length']=0;row['source']=_intent([(stub['p0'][k]+stub['p1'][k])/2 for k in range(3)],[-1,0])
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')):p=plan_branching_corridor(b)
+        self.assertEqual(p['roles']['D4:target']['endpoint']['guide_xyz'],_outer(parent['ports']['D4:target']));self.assertEqual(p['roles']['D4:target']['sign'],-1)
+
+    def test_invalid_direction_matrix_region_radius_and_junction_zone(self):
+        from bridge_branching import plan_branching_corridor
+        parent=self.parent()
+        for kind in ('direction','movement','radius','region','location','inward','duplicate','lead'):
+            b=self.brief()
+            if kind=='direction':b['branches'][0]['source']['travel_direction']=[-1,0]
+            elif kind=='movement':b['movements'][-1]['from']='U1:source'
+            elif kind=='radius':b['radius']=120
+            elif kind=='region':b['region']['max'][0]=-2000
+            elif kind=='location':b['branches'][0]['source']['guide_xyz'][0]-=100
+            elif kind=='inward':b['branches'][0]['target']['guide_xyz']=b['branches'][0]['source']['guide_xyz'][:]
+            elif kind=='lead':b['branches'][0]['lead_length']=float('inf')
+            else:b['branches'][1]['id']=b['branches'][0]['id']
+            with self.subTest(kind=kind),patch('bridge_branching._parent',return_value=(parent,'known_hash')),self.assertRaises((ValueError,LiveError)):plan_branching_corridor(b)
+
+    def test_replaced_approach_ids_are_reacquired_and_six_paths_cross_actual_forks(self):
+        from bridge_branching import _assess
+        p,parent=self.plan();ports=self.ports(p);r={}
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_branching._roles',return_value=ports),patch('bridge_parallel._read_chain',side_effect=self.chain),patch('bridge_live._recipe_junction',side_effect=lambda c,e:(900+next(i for i,b in enumerate(p['brief']['branches']) if b['source']==e),['current'])),patch('bridge_live.discover',side_effect=lambda c,q:self.discovery(p,ports,q)),patch.object(self.client,'request',side_effect=lambda op,q:self.native(p,parent,ports,op,q)):
+            s=_assess(self.client,p,r)
+        self.assertTrue(s['final_network_verified']);self.assertEqual(s['routes_verified'],6);self.assertEqual(s['junctions_verified'],2);self.assertEqual(len(r['retained_spacing']),5)
+        self.assertEqual(len(r['semantic_attachment_reconciliation']['changed_main_approach_handles']),8);self.assertFalse(r['semantic_attachment_reconciliation']['original_stage_receipt_fresh'])
+
+    def test_missing_core_direction_and_wrong_fork_reject(self):
+        from bridge_branching import _assess
+        p,parent=self.plan();ports=self.ports(p)
+        for kind in ('core','direction','fork'):
+            def request(op,q):
+                v=self.native(p,parent,ports,op,q)
+                if op=='route':
+                    if kind=='core':v['result']['path']=[v['result']['path'][0],v['result']['path'][-1]]
+                    elif kind=='direction':v['result']['path'][1]['forward']=not v['result']['path'][1]['forward']
+                    else:
+                        for x in v['result']['path']:x['from']['entity']=1;x['to']['entity']=2
+                return v
+            with self.subTest(kind=kind),patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_branching._roles',return_value=ports),patch('bridge_parallel._read_chain',side_effect=self.chain),patch('bridge_live._recipe_junction',side_effect=lambda c,e:(900+next(i for i,b in enumerate(p['brief']['branches']) if b['source']==e),['current'])),patch('bridge_live.discover',side_effect=lambda c,q:self.discovery(p,ports,q)),patch.object(self.client,'request',side_effect=request),self.assertRaises(LiveError):_assess(self.client,p,{})
+
+    def test_partial_fresh_inspection_keeps_four_through_and_never_builds(self):
+        from bridge_branching import inspect_branching_corridor
+        p,parent=self.plan();ports={k:v for k,v in self.ports(p).items() if k not in ('branch_up','branch_down')};path=self.root/'branching.json';path.write_text(json.dumps({'plan':p,'summary':{'game_constructed':'unknown'}}));before=path.read_bytes()
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_branching._roles',return_value=ports),patch('bridge_parallel._read_chain',side_effect=self.chain),patch('bridge_live._recipe_junction',side_effect=LiveError('recipe_state_unknown','no junction')),patch.object(self.client,'request',side_effect=lambda op,q:self.native(p,parent,ports,op,q)),patch('bridge_live.connect_junction_at') as build:
+            s=inspect_branching_corridor(self.client,path);self.assertEqual(s['status'],'branching_incomplete');self.assertEqual(s['routes_verified'],4);self.assertFalse(s['game_constructed']);build.assert_not_called()
+        self.assertEqual(path.read_bytes(),before)
+
+    def test_pending_and_existing_fixture_stop_without_replay(self):
+        from bridge_branching import execute_branching_corridor
+        p,parent=self.plan();self.client.journal.write_text(json.dumps({'pending':{'request_id':'unknown'}}))
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_live.connect_junction_at') as build,patch.object(self.client,'request') as native:
+            s=execute_branching_corridor(self.client,p);self.assertEqual(s['status'],'reconciliation_required');native.assert_not_called();build.assert_not_called()
+        self.client.journal.write_text('{}')
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_parallel.inspect_multitrack_connection',return_value={'status':'ok'}),patch('bridge_branching._roles',return_value=self.ports(p)),patch('bridge_live.connect_junction_at') as build,patch.object(self.client,'request') as native:
+            s=execute_branching_corridor(self.client,p);self.assertEqual(s['status'],'reconciliation_required');native.assert_not_called();build.assert_not_called()
+
+    def test_integrated_build_and_second_branch_unknown_remains_visible(self):
+        from bridge_branching import execute_branching_corridor
+        p,parent=self.plan();ports={k:v for k,v in self.ports(p).items() if k not in ('branch_up','branch_down','U1:target','D4:target')}
+        for failure in (False,True):
+            count=[0]
+            def fixture(op,q):
+                self.assertEqual(op,'test_approach');box=q['fixture']['region'];pos=q['fixture']['position'];d=q['fixture']['travel_direction'];n=sum(x*x for x in d)**.5
+                for k in range(3):
+                    self.assertLessEqual(box['max'][k]-box['min'][k],100);self.assertGreaterEqual(box['min'][k],p['brief']['region']['min'][k]);self.assertLessEqual(box['max'][k],p['brief']['region']['max'][k]);self.assertTrue(box['min'][k]<=pos[k]+20*(d[k]/n if k<2 else 0)<=box['max'][k])
+                return self.response(result={'game_constructed':True})
+            def branch(c,b,**kw):
+                count[0]+=1
+                if failure and count[0]==2:return {'status':'mutation_unverified','game_constructed':'unknown','error':'partial'}
+                return {'status':'ok','game_constructed':True,'placement':{'original_edge':888},'junction':{'node':900+count[0]}}
+            def lead(c,b,**kw):
+                self.assertTrue(kw['execute']);self.assertEqual(b['max_fit_attempts'],1);self.assertLessEqual(b['max_route_length'],800)
+                self.assertEqual(b['radius'],400);return {'status':'ok','game_constructed':True,'edges':[888]}
+            with patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_parallel.inspect_multitrack_connection',return_value={'status':'ok'}),patch('bridge_branching._roles',return_value=ports),patch('bridge_live._select_throat_port',return_value=({'edge_id':888},'current')),patch.object(self.client,'request',side_effect=fixture),patch('bridge_live.connect_brief',side_effect=lead) as leads,patch('bridge_live.connect_junction_at',side_effect=branch),patch('bridge_branching._assess',return_value={'final_network_verified':True,'routes_verified':6}):
+                s=execute_branching_corridor(self.client,p);self.assertEqual(count[0],2)
+                self.assertEqual(leads.call_count,2)
+                if failure:self.assertEqual(s['game_constructed'],'unknown');self.assertEqual(json.loads(Path(s['evidence']).read_text())['unfinished_step'],'branch_down')
+                else:self.assertEqual(s['status'],'ok')
+
+    def test_native_junction_internal_transport_requires_exact_verified_junction_identity(self):
+        from bridge_branching import _assess
+        p,parent=self.plan();ports=self.ports(p)
+        for wrong in (False,True):
+            def request(op,q):
+                r=self.native(p,parent,ports,op,q)
+                if op=='route' and q['source_edge']==ports['U1:source']['edge_id']:
+                    node=77 if wrong else 900;r['result']['path'].insert(-1,{'confirmed_TRACK':False,'edge':{'entity':node,'index':1},'from':{'entity':node,'index':0},'to':{'entity':node,'index':2},'forward':True})
+                return r
+            with patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_branching._roles',return_value=ports),patch('bridge_parallel._read_chain',side_effect=self.chain),patch('bridge_live._recipe_junction',side_effect=lambda c,e:(900+next(i for i,b in enumerate(p['brief']['branches']) if b['source']==e),['current'])),patch('bridge_live.discover',side_effect=lambda c,q:self.discovery(p,ports,q)),patch.object(self.client,'request',side_effect=request):
+                if wrong:
+                    with self.assertRaises(LiveError):_assess(self.client,p,{})
+                else:self.assertTrue(_assess(self.client,p,{})['final_network_verified'])
+
+    def test_explicit_acknowledged_lead_reuse_is_hash_bound_and_rechecked_before_mutation(self):
+        from bridge_branching import _lead_brief,plan_branching_corridor,execute_branching_corridor
+        parent=self.parent();b=self.brief();path=self.root/'lead.json';b['branches'][0]['lead_record']=str(path)
+        expected=_lead_brief(parent,b,b['branches'][0]);receipt={'brief':expected,'summary':{'status':'ok','game_constructed':True,'native_route_verified':True,'edges':[888]}}
+        path.write_text(json.dumps(receipt))
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')):p=plan_branching_corridor(b)
+        ports={k:v for k,v in self.ports(p).items() if k not in ('branch_up','branch_down','D4:target')};self.client.journal.write_text('{}')
+        rejected=self.response(result={'requested_route_verified':False});rejected['status']='error'
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_parallel.inspect_multitrack_connection',return_value={'status':'ok'}),patch('bridge_branching._roles',return_value=ports),patch.object(self.client,'request',return_value=rejected) as native,patch('bridge_live.connect_brief') as lead,patch('bridge_live.connect_junction_at') as branch:
+            s=execute_branching_corridor(self.client,p);self.assertEqual(s['status'],'native_verification_failed');self.assertFalse(s['game_constructed']);self.assertEqual(native.call_count,1);self.assertEqual(native.call_args.args[0],'route');lead.assert_not_called();branch.assert_not_called()
+        receipt['summary']['game_constructed']='unknown';path.write_text(json.dumps(receipt))
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')),self.assertRaises(ValueError):plan_branching_corridor(b)
+
+    def test_partial_continuation_proves_completed_branch_and_freezes_its_intent(self):
+        from bridge_branching import _continuation
+        p,parent=self.plan();path=self.root/'partial.json';old={'plan':p,'completed_branches':['branch_up'],'summary':{'game_constructed':'unknown'}}
+        path.write_text(json.dumps(old));ports=self.ports(p)
+        def fresh(c,plan,r,**kw):
+            r.update(current_roles=ports,current_junctions={'branch_up':900},routes=[x|{'verified':x['kind']=='through' or x['to']=='branch_up'} for x in p['movements']]);return {'routes_verified':5}
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_branching._assess',side_effect=fresh),patch.object(self.client,'request') as mutation:
+            r={};actual=_continuation(self.client,p,r,path);self.assertEqual(actual[2],{'branch_up'});self.assertFalse(r['continuation']['automatic_replay']);mutation.assert_not_called()
+            changed=json.loads(json.dumps(p));changed['brief']['branches'][0]['target']['guide_xyz'][0]+=1
+            with self.assertRaises(ValueError):_continuation(self.client,changed,{},path)
+
+    def test_partial_continuation_rejects_stale_or_unclaimed_junctions(self):
+        from bridge_branching import _continuation
+        p,parent=self.plan();path=self.root/'partial.json';path.write_text(json.dumps({'plan':p,'completed_branches':['branch_up'],'summary':{}}))
+        for wrong in ('through','branch','extra'):
+            def fresh(c,plan,r,**kw):
+                r.update(current_roles=self.ports(p),current_junctions={'branch_up':900},routes=[x|{'verified':x['kind']=='through' or x['to']=='branch_up'} for x in p['movements']])
+                if wrong=='through':r['routes'][0]['verified']=False
+                elif wrong=='branch':r['routes'][-2]['verified']=False
+                else:r['current_junctions']['branch_down']=901
+                return {}
+            with self.subTest(wrong=wrong),patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_branching._assess',side_effect=fresh),self.assertRaises(LiveError):_continuation(self.client,p,{},path)
+
+    def test_continuation_executes_only_unfinished_branch_without_original_stage_replay(self):
+        from bridge_branching import execute_branching_corridor
+        p,parent=self.plan();ports={k:v for k,v in self.ports(p).items() if k not in ('branch_down','D4:target')}
+        def adopt(c,plan,r,path):r['completed_branches']=['branch_up'];return ports,[900],{'branch_up'}
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_branching._continuation',side_effect=adopt),patch('bridge_parallel.inspect_multitrack_connection') as original,patch.object(self.client,'request',return_value=self.response(result={'game_constructed':True})) as fixtures,patch('bridge_live._select_throat_port',return_value=({'edge_id':888},'current')),patch('bridge_live.connect_brief',return_value={'status':'ok','game_constructed':True,'edges':[888]}) as lead,patch('bridge_live.connect_junction_at',return_value={'status':'ok','game_constructed':True,'placement':{'original_edge':888},'junction':{'node':901}}) as branch,patch('bridge_branching._assess',return_value={'final_network_verified':True,'routes_verified':6}):
+            s=execute_branching_corridor(self.client,p,continuation_record='explicit.json');self.assertEqual(s['status'],'ok');original.assert_not_called();self.assertEqual(lead.call_count,1);self.assertEqual(branch.call_count,1);self.assertEqual(branch.call_args.args[1]['source'],p['brief']['branches'][1]['source']);self.assertEqual(fixtures.call_count,2)
+
+    def test_road_clearance_is_always_mutation_and_native_guards_exact_site(self):
+        from bridge_live import is_mutation
+        self.assertTrue(is_mutation('clear_obstructions',{}))
+        source=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text()
+        block=source.split('function M.clear_obstructions',1)[1].split('-- Native normal-offset',1)[0]
+        for guard in ('p.authorised==true','#p.edges<=8','q.TRACK==false','e.roadType~=E.RoadType.TRACK','stale_clearance_identity','stale_clearance_geometry','in_region(q.p0,p.region)','makeSegmentsRemoveProposal(ids)','road_removal_unverified'):
+            self.assertIn(guard,block)
+        self.assertIn('makeWorldBuildProposalCmd(proposal,nil,false,false)',block)
 
 if __name__ == '__main__':
     unittest.main()

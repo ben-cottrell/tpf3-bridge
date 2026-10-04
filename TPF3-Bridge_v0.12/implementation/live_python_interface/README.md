@@ -1126,3 +1126,85 @@ and confirmation that remaining ports are free. Pending journals, unfinished or
 unknown mutations, changed plans and completed runs reject. Completed tracks are
 not replayed; old records remain untouched. Unacknowledged effects require separate
 reconciliation and cannot be promoted to success by this continuation.
+
+
+### Curved main line with outward branches (P26)
+
+`bridge_branching.plan_branching_corridor`, `publish_branching_corridor`,
+`execute_branching_corridor`, `inspect_branching_corridor` compose a completed
+UUDD multitrack receipt with two outgoing outer-track branches. The receipt is
+hash-bound as DESIGN input; its old native attachment handles are not required
+to survive legitimate approach splits. Provide four through and two branch
+movements explicitly, using track IDs and named project endpoints.
+
+```
+python bridge_live.py branching-corridor --params implementation/live_python_interface/branching_corridor_example.json --evidence .local_runs/branching_plans
+python bridge_live.py branching-corridor --context CONTEXT.json --params BRANCHES.json --execute
+python bridge_live.py branching-corridor-inspect --context CONTEXT.json --params BRANCHES.json --layout-record RECEIPT.json
+```
+
+The example references the local accepted P25 receipt; supply your own completed
+main record for another site. The initial domain is level UUDD with straight
+outgoing tangent approaches. Explicit lead_length is zero for the original
+approach, or100-600native units for a straight native lead; the split lies in
+its middle25-75percent. One outward branch belongs to each outer UP/DOWN track.
+Native20unit through/branch target stubs are authored from the actual main track resource. The full movements start at
+the unchanged entry approach's outer free endpoints and terminate at through/branch outer
+free endpoints, including the retained curved corridor and junction approach.
+The user-supplied branch target guide names the build attachment; acceptance
+includes its20unit stub to the outer endpoint. No signals, stations or train
+traversal are implied.
+
+The original curved connector is the retained shared section. Its neighboring
+and cumulative normal-offset checks remain binding. Source/target region boxes
+in the junction-zone record are observation locators: the tangent approach and
+entire divergent branch are excluded from the shared-spacing requirement.
+Every final native path must traverse its complete ordered main connector in the
+stated traffic direction and, where applicable, the exact current three-TRACK
+junction. Through/branch paths must use distinct exits and a common incoming
+edge at that fork. All current route geometry has selected radius/grade/region
+checks. Native identities come from bounded observations and exact connectivity;
+coordinate resemblance alone does not establish attachment or movement.
+
+Inspection reacquires semantic outer roles after native splits/replacements and
+records old/current approach handles, current junction incidence and ordered
+paths. It does not claim the standalone P25 receipt remains fresh after splitting.
+Partial/unknown effects remain visible; there is no automatic replay or resume.
+Pending mutation, stale main input or existing target/lead fixtures stop construction
+for focused reconciliation. Inspection never builds. Shared spacing and geometry
+checks are sampled; no continuous clearance or save/load identity guarantee.
+
+P26 native acceptance passed on build40408: all four through and both outward
+branch movements, with exact current three-track forks and retained normal spacing.
+Independent fresh46-edge checks used33observations/edge: min radius416.905464,
+maximum grade0. Road collisions were resolved by explicit bounded site observation
+and authorised exact road removal; no constraint was lowered. Previous failures
+and unknown incidental effects remain recorded locally.
+
+An optional explicit lead_record may reuse only a matching acknowledged straight
+connection receipt after fresh route/geometry checks; its hash is plan-bound.
+For a partial composition, the callable accepts continuation_record, or use:
+
+```
+python bridge_live.py branching-corridor --context CONTEXT.json --params BRANCHES.json --execute --layout-record PARTIAL.json
+```
+
+The prior canonical main/constraints/movement matrix and each completed branch
+intent must match. Fresh inspection must establish all four through routes and
+exactly the acknowledged completed forks/branch paths. Those branches are not
+rebuilt; only unfinished intent is executed. Unknown pending requests block it.
+Changing an unfinished branch is an explicit new brief, never automatic repair.
+A remaining isolated target fixture needs explicit reconciliation/cleanup rather
+than blind recreation. Completed receipts cannot be continued. No cross-crash job
+restoration or complete native mutation history is promised.
+
+For focused site diagnosis, low-level inspect accepts optional site with a native
+XYZ region <=400units per axis and up to8XY terrain positions. It retains at most
+32BASE_EDGE/TOWN_BUILDING/CONSTRUCTION observations, processes at most256query
+callbacks, and reports truncation; other categories are not exhaustively exported.
+Low-level clear_obstructions requires authorised:true and1-8exact observed non-TRACK
+ordinary edge snapshots plus a bounded region. It checks current identity/geometry,
+rejects construction-owned edges, removes named roads using a native proposal and
+checks disappearance. It is an explicit map mutation with possible incidental
+native effects, never an automatic clearance policy or generic world bulldozer.
+Raw diagnostic responses stay in local request evidence.
