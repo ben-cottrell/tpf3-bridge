@@ -1,0 +1,309 @@
+{
+  "evidence_class": "controlled_reference_not_native_terminal",
+  "endpoints": [
+    "UP_A",
+    "DOWN_A",
+    "UP_B",
+    "DOWN_B",
+    "UP_C",
+    "DOWN_C",
+    "T01",
+    "T02",
+    "T03",
+    "T04",
+    "T05",
+    "T06",
+    "T07",
+    "T08",
+    "T09",
+    "T10",
+    "T11",
+    "T12",
+    "T13",
+    "T14",
+    "T15",
+    "T16"
+  ],
+  "movements": [
+    {
+      "id": "UP_A_to_T01",
+      "from": "UP_A",
+      "to": "T01"
+    },
+    {
+      "id": "T01_to_DOWN_A",
+      "from": "T01",
+      "to": "DOWN_A"
+    },
+    {
+      "id": "UP_A_to_T02",
+      "from": "UP_A",
+      "to": "T02"
+    },
+    {
+      "id": "T02_to_DOWN_A",
+      "from": "T02",
+      "to": "DOWN_A"
+    },
+    {
+      "id": "UP_A_to_T03",
+      "from": "UP_A",
+      "to": "T03"
+    },
+    {
+      "id": "T03_to_DOWN_A",
+      "from": "T03",
+      "to": "DOWN_A"
+    },
+    {
+      "id": "UP_A_to_T04",
+      "from": "UP_A",
+      "to": "T04"
+    },
+    {
+      "id": "T04_to_DOWN_A",
+      "from": "T04",
+      "to": "DOWN_A"
+    },
+    {
+      "id": "UP_A_to_T05",
+      "from": "UP_A",
+      "to": "T05"
+    },
+    {
+      "id": "T05_to_DOWN_A",
+      "from": "T05",
+      "to": "DOWN_A"
+    },
+    {
+      "id": "UP_A_to_T06",
+      "from": "UP_A",
+      "to": "T06"
+    },
+    {
+      "id": "T06_to_DOWN_A",
+      "from": "T06",
+      "to": "DOWN_A"
+    },
+    {
+      "id": "UP_A_to_T07",
+      "from": "UP_A",
+      "to": "T07"
+    },
+    {
+      "id": "T07_to_DOWN_A",
+      "from": "T07",
+      "to": "DOWN_A"
+    },
+    {
+      "id": "UP_A_to_T08",
+      "from": "UP_A",
+      "to": "T08"
+    },
+    {
+      "id": "T08_to_DOWN_A",
+      "from": "T08",
+      "to": "DOWN_A"
+    },
+    {
+      "id": "UP_B_to_T03",
+      "from": "UP_B",
+      "to": "T03"
+    },
+    {
+      "id": "T03_to_DOWN_B",
+      "from": "T03",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_B_to_T04",
+      "from": "UP_B",
+      "to": "T04"
+    },
+    {
+      "id": "T04_to_DOWN_B",
+      "from": "T04",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_B_to_T05",
+      "from": "UP_B",
+      "to": "T05"
+    },
+    {
+      "id": "T05_to_DOWN_B",
+      "from": "T05",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_B_to_T06",
+      "from": "UP_B",
+      "to": "T06"
+    },
+    {
+      "id": "T06_to_DOWN_B",
+      "from": "T06",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_B_to_T07",
+      "from": "UP_B",
+      "to": "T07"
+    },
+    {
+      "id": "T07_to_DOWN_B",
+      "from": "T07",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_B_to_T08",
+      "from": "UP_B",
+      "to": "T08"
+    },
+    {
+      "id": "T08_to_DOWN_B",
+      "from": "T08",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_B_to_T09",
+      "from": "UP_B",
+      "to": "T09"
+    },
+    {
+      "id": "T09_to_DOWN_B",
+      "from": "T09",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_B_to_T10",
+      "from": "UP_B",
+      "to": "T10"
+    },
+    {
+      "id": "T10_to_DOWN_B",
+      "from": "T10",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_B_to_T11",
+      "from": "UP_B",
+      "to": "T11"
+    },
+    {
+      "id": "T11_to_DOWN_B",
+      "from": "T11",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_B_to_T12",
+      "from": "UP_B",
+      "to": "T12"
+    },
+    {
+      "id": "T12_to_DOWN_B",
+      "from": "T12",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_B_to_T13",
+      "from": "UP_B",
+      "to": "T13"
+    },
+    {
+      "id": "T13_to_DOWN_B",
+      "from": "T13",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_B_to_T14",
+      "from": "UP_B",
+      "to": "T14"
+    },
+    {
+      "id": "T14_to_DOWN_B",
+      "from": "T14",
+      "to": "DOWN_B"
+    },
+    {
+      "id": "UP_C_to_T09",
+      "from": "UP_C",
+      "to": "T09"
+    },
+    {
+      "id": "T09_to_DOWN_C",
+      "from": "T09",
+      "to": "DOWN_C"
+    },
+    {
+      "id": "UP_C_to_T10",
+      "from": "UP_C",
+      "to": "T10"
+    },
+    {
+      "id": "T10_to_DOWN_C",
+      "from": "T10",
+      "to": "DOWN_C"
+    },
+    {
+      "id": "UP_C_to_T11",
+      "from": "UP_C",
+      "to": "T11"
+    },
+    {
+      "id": "T11_to_DOWN_C",
+      "from": "T11",
+      "to": "DOWN_C"
+    },
+    {
+      "id": "UP_C_to_T12",
+      "from": "UP_C",
+      "to": "T12"
+    },
+    {
+      "id": "T12_to_DOWN_C",
+      "from": "T12",
+      "to": "DOWN_C"
+    },
+    {
+      "id": "UP_C_to_T13",
+      "from": "UP_C",
+      "to": "T13"
+    },
+    {
+      "id": "T13_to_DOWN_C",
+      "from": "T13",
+      "to": "DOWN_C"
+    },
+    {
+      "id": "UP_C_to_T14",
+      "from": "UP_C",
+      "to": "T14"
+    },
+    {
+      "id": "T14_to_DOWN_C",
+      "from": "T14",
+      "to": "DOWN_C"
+    },
+    {
+      "id": "UP_C_to_T15",
+      "from": "UP_C",
+      "to": "T15"
+    },
+    {
+      "id": "T15_to_DOWN_C",
+      "from": "T15",
+      "to": "DOWN_C"
+    },
+    {
+      "id": "UP_C_to_T16",
+      "from": "UP_C",
+      "to": "T16"
+    },
+    {
+      "id": "T16_to_DOWN_C",
+      "from": "T16",
+      "to": "DOWN_C"
+    }
+  ]
+}

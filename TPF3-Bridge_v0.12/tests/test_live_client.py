@@ -3773,5 +3773,103 @@ class ComposedCrossingTests(unittest.TestCase):
             with patch('bridge_crossing.live._select_throat_port',side_effect=selected):r=bc.crossing(client,b,execute=True,prepared_record=p)
             self.assertEqual(r['status'],'no_eligible_candidates');self.assertFalse(r['game_constructed']);client.request.assert_not_called()
 
+class ReferenceRouteSetTests(unittest.TestCase):
+    """Controlled native-shaped binary tree: no physical terminal demonstration."""
+    def run_reference(self,tmp,*,fault=None,batch_size=16):
+        import bridge_route_set as rs
+        reference=json.loads((Path(__file__).parent/'fixtures/route_set_reference.json').read_text())
+        names=reference['endpoints'];edges={};calls=[];route_index=0;inspect_counts={}
+        def edge(i,a,z):return {'id':i,'road_type':'TRACK','node0':a,'node1':z,'p0':[a,0,0],'p1':[z,0,0],'t0':[z-a,0,0],'t1':[z-a,0,0],'template':'mock_track','style':'mock_normal'}
+        for n in range(2,44):edges[n-1]=edge(n-1,n//2,n)
+        for i,n in enumerate(names):edges[100+i]=edge(100+i,22+i,1000+i)
+        hints={n:{'region':{'min':[21+i,-1,-1],'max':[23+i,1,1]},'max_edges':16,'guide_xyz':[22+i,0,0],'position_tolerance':.001,'travel_direction':[-1,0],'heading_tolerance_deg':.1} for i,n in enumerate(names)}
+        brief={'version':1,'endpoints':hints,'junctions':{},'movements':reference['movements'],'mode':'TRAIN','max_length':8000,'batch_size':batch_size}
+        client=type('Client',(),{'session':'reference_session','evidence':Path(tmp)})()
+        def request(op,q):
+            nonlocal route_index
+            calls.append((op,q));out={'session':client.session,'request_id':str(len(calls)),'status':'ok'}
+            if op=='inspect':
+                assert len(q['edge_ids'])<=16
+                rows=[]
+                for i in q['edge_ids']:
+                    inspect_counts[i]=inspect_counts.get(i,0)+1;e=json.loads(json.dumps(edges[i]))
+                    if fault=='resource' and i==101 and inspect_counts[i]>=3:e['t0'][0]+=1
+                    rows.append(e)
+                out['result']={'edges':rows}
+            elif op=='discover':
+                pos=[sum(q['region'][v][i] for v in ('min','max'))/2 for i in range(3)];node=round(pos[0]);inc=[i for i,e in edges.items() if node in (e['node0'],e['node1'])]
+                candidates=[]
+                for i in inc:
+                    e=edges[i];d=-1 if node==e['node0'] else 1
+                    candidates.append({'node_id':node,'edge_id':i,'edge_snapshot':e,'pos':pos,'outward_direction':[d,0,0],'grade':0,'eligible':len(inc)==1,'construction_owner':-1,'incident_edges':inc,'incident_count':len(inc),'incidence_complete':True,'incident_output_truncated':False})
+                out['result']={'complete':True,'candidates':candidates}
+            else:
+                assert op=='route';index=route_index;route_index+=1
+                a=edges[q['source_edge']]['node0'];z=edges[q['target_edge']]['node0']
+                up=lambda n:[n]+up(n//2) if n>1 else [1]
+                aa,zz=up(a),up(z);lca=next(n for n in aa if n in zz);nodes=[q['source_node']]+aa[:aa.index(lca)+1]+list(reversed(zz[:zz.index(lca)]))+[q['target_node']]
+                path=[]
+                for x,y in zip(nodes,nodes[1:]):
+                    i=next(i for i,e in edges.items() if {e['node0'],e['node1']}=={x,y})
+                    path.append({'edge':{'entity':i,'index':0},'from':{'entity':x,'index':0},'to':{'entity':y,'index':0},'forward':edges[i]['node0']==x,'confirmed_TRACK':True})
+                out['result']={'path':path,'path_count':len(path),'native_path_found':True,'requested_route_verified':True,'transport_continuous':True,'truncated':False}
+                if index==20 and fault=='route_error':out.update(status='error',result={'error':'controlled native error'})
+                if index==20 and fault=='opaque':
+                    p=path[0]['to'];path.insert(1,{'edge':{'entity':9000,'index':0},'from':p,'to':p,'forward':True,'confirmed_TRACK':False});out['result']['path_count']+=1
+                if index==16 and fault=='session':client.session='other_session'
+            return out
+        client.request=request
+        result=rs.inspect_route_set(client,brief);saved=json.loads(Path(result['evidence']).read_text())
+        return result,saved,calls,brief
+
+    def test_full_distinct_contract_and_all_cross_batch_comparisons(self):
+        with tempfile.TemporaryDirectory() as tmp:r,s,c,b=self.run_reference(tmp)
+        self.assertEqual(len(b['endpoints']),22);self.assertEqual(len({(m['from'],m['to']) for m in b['movements']}),56)
+        self.assertEqual(r['complete_paths'],56);self.assertEqual(r['pairs_assessed'],1540);self.assertEqual(r['observation_batches'],4)
+        a,z=b['movements'][0]['id'],b['movements'][16]['id'];p=next(p for p in s['pairs'] if (p['a'],p['b'])==(a,z))
+        self.assertTrue(p['shared_TRACK_edges']);self.assertEqual(p['result'],'topology_overlap')
+        self.assertTrue(all(op in ('discover','inspect','route') for op,q in c));self.assertLess(len(json.dumps(r).encode()),4096)
+        self.assertEqual(sum(op=='route' for op,q in c),56)
+        # Endpoint binding once at start and once for final freshness, independent of batches.
+        guides={tuple(h['guide_xyz']) for h in b['endpoints'].values()}
+        endpoint_reads=[q for op,q in c if op=='discover' and tuple(sum(q['region'][v][i] for v in ('min','max'))/2 for i in range(3)) in guides and q['region']['max'][1]==1]
+        self.assertEqual(len(endpoint_reads),44)
+
+    def test_cross_batch_native_errors_and_opaque_resources_remain_unknown(self):
+        for fault in ('route_error','opaque'):
+            with self.subTest(fault=fault),tempfile.TemporaryDirectory() as tmp:r,s,c,b=self.run_reference(tmp,fault=fault)
+            self.assertEqual(r['pairs_assessed'],1540);self.assertEqual(r['complete_paths'],55)
+            p=next(p for p in s['pairs'] if p['a']==b['movements'][0]['id'] and p['b']==b['movements'][20]['id'])
+            self.assertFalse(p['both_paths_complete']);self.assertNotEqual(p['result'],'topology_disjoint')
+
+    def test_session_change_stops_and_preserves_all_requested_unknown_pairs(self):
+        with tempfile.TemporaryDirectory() as tmp:r,s,c,b=self.run_reference(tmp,fault='session')
+        self.assertEqual(r['status'],'stale_session');self.assertEqual(r['pair_counts']['unknown'],1540);self.assertEqual(r['complete_paths'],0)
+        self.assertEqual(sum(op=='route' for op,q in c),17)
+
+    def test_final_resource_change_invalidates_affected_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:r,s,c,b=self.run_reference(tmp,fault='resource')
+        self.assertIn(101,s['stale_resources']['edges']);self.assertLess(r['complete_paths'],56)
+        changed=[m for m in s['movements'] if m.get('stale_resources')];self.assertTrue(changed);self.assertTrue(all(not m['complete'] for m in changed))
+
+    def test_finite_call_budget_keeps_partial_records_without_disjoint_claims(self):
+        with patch('bridge_route_set.MAX_CALLS',100),tempfile.TemporaryDirectory() as tmp:r,s,c,b=self.run_reference(tmp)
+        self.assertEqual(r['status'],'observation_budget_exhausted');self.assertEqual(len(c),100);self.assertEqual(r['pair_counts']['unknown'],1540)
+        self.assertTrue(s['observation_failure']);self.assertFalse(r['game_constructed'])
+
+    def test_batch_boundary_and_request_limits(self):
+        import bridge_route_set as rs
+        with tempfile.TemporaryDirectory() as tmp:r,s,c,b=self.run_reference(tmp,batch_size=3)
+        self.assertEqual(r['complete_paths'],56);self.assertEqual(r['pairs_assessed'],1540);self.assertEqual(r['observation_batches'],19)
+        for size in (0,17,True):
+            with self.assertRaises(ValueError):rs.validate(b|{'batch_size':size})
+        with self.assertRaises(ValueError):rs.validate(b|{'movements':[b['movements'][0]|{'id':'m'+str(i)} for i in range(65)]})
+
+    def test_deadline_and_resource_budget_stop_without_success_claims(self):
+        with patch('bridge_route_set.MAX_SECONDS',0),tempfile.TemporaryDirectory() as tmp:r,s,c,b=self.run_reference(tmp)
+        self.assertEqual(r['status'],'observation_budget_exhausted');self.assertEqual(len(c),0);self.assertEqual(r['pair_counts']['unknown'],1540)
+        with patch('bridge_route_set.MAX_TRACKS',10),tempfile.TemporaryDirectory() as tmp:r,s,c,b=self.run_reference(tmp)
+        self.assertEqual(r['status'],'observation_bound');self.assertEqual(r['pair_counts']['unknown'],1540)
+
 if __name__ == '__main__':
     unittest.main()

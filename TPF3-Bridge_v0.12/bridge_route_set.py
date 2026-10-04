@@ -2,9 +2,27 @@
 import itertools
 import math
 import re
+import time
 import uuid
 from pathlib import Path
 import bridge_live as live
+
+MAX_ENDPOINTS,MAX_MOVEMENTS,MAX_JUNCTIONS=32,64,32
+MAX_TRACKS,MAX_NODES,MAX_CALLS,MAX_SECONDS=512,1024,2304,600
+
+class _ReadPass:
+    """One finite semantic observation pass, not a scheduler or retry loop."""
+    def __init__(self,client):
+        self.client=client;self.initial_session=client.session;self.calls=0;self.started=time.monotonic()
+    def __getattr__(self,name):return getattr(self.client,name)
+    def request(self,operation,params):
+        if operation not in ('discover','inspect','route'):raise ValueError('route-set permits only native reads')
+        if self.client.session!=self.initial_session:raise live.LiveError('stale_session','session changed during route-set pass')
+        if self.calls>=MAX_CALLS or time.monotonic()-self.started>=MAX_SECONDS:raise live.LiveError('observation_budget_exhausted','finite route-set call/time budget exhausted')
+        self.calls+=1;r=self.client.request(operation,params)
+        if self.client.session!=self.initial_session or r.get('session',self.initial_session)!=self.initial_session:raise live.LiveError('stale_session','native response changed route-set session')
+        if operation=='route' and len(r.get('result',{}).get('path',[]))>64:raise live.LiveError('observation_bound','native route exceeds existing64-row observation bound')
+        return r
 
 
 def _name(s):
@@ -28,17 +46,19 @@ def _hint(h,endpoint):
 
 
 def validate(brief):
-    if not isinstance(brief,dict) or set(brief)!={'version','endpoints','junctions','movements','mode','max_length'} or brief['version']!=1:raise ValueError('version1 route-set brief required')
+    if not isinstance(brief,dict) or set(brief)-{'batch_size'}!={'version','endpoints','junctions','movements','mode','max_length'} or brief['version']!=1:raise ValueError('version1 route-set brief required')
+    size=brief.get('batch_size',16)
+    if type(size) is not int or not 1<=size<=16:raise ValueError('batch_size must be1..16')
     if brief['mode'] not in ('TRAIN','ELECTRIC_TRAIN'):raise ValueError('supported native rail mode required')
     v=brief['max_length']
     if type(v) not in (int,float) or not math.isfinite(v) or not 0<v<=8000:raise ValueError('max_length must be within(0,8000]')
     es,js,ms=brief['endpoints'],brief['junctions'],brief['movements']
-    if not isinstance(es,dict) or not 2<=len(es)<=16 or not isinstance(js,dict) or len(js)>16 or set(es)&set(js):raise ValueError('2..16 endpoints and up to16 distinct junction hints required')
+    if not isinstance(es,dict) or not 2<=len(es)<=MAX_ENDPOINTS or not isinstance(js,dict) or len(js)>MAX_JUNCTIONS or set(es)&set(js):raise ValueError('2..32 endpoints and up to32 distinct junction hints required')
     for names,endpoint in ((es,True),(js,False)):
         for n,h in names.items():
             if not _name(n):raise ValueError('invalid semantic name')
             _hint(h,endpoint)
-    if not isinstance(ms,list) or not 1<=len(ms)<=16:raise ValueError('1..16 explicit movements required')
+    if not isinstance(ms,list) or not 1<=len(ms)<=MAX_MOVEMENTS:raise ValueError('1..64 explicit movements required')
     names=set()
     for m in ms:
         if not isinstance(m,dict) or set(m)-{'via'}!={'id','from','to'} or not _name(m['id']) or m['id'] in names or m['from'] not in es or m['to'] not in es or m['from']==m['to']:raise ValueError('unique named directed movement required')
@@ -106,6 +126,7 @@ def _normalise(row,edges,incidence):
         bindings=row.get('bindings',{})
         if len(bindings)!=2 or any(c['node_id'] not in nodes for c in bindings.values()):row['unknowns'].append('named endpoint not in physical path')
         if row.get('stale_binding'):row['unknowns'].append('endpoint/via binding changed during observation')
+        if row.get('stale_resources'):row['unknowns'].append('physical resource/incidence changed or unavailable at final readback')
         complete=v.get('requested_route_verified') is True and v.get('transport_continuous') is True and v.get('truncated') is False and v.get('path_count')==len(path) and len(path)>0 and not row['unknowns']
         row['complete']=complete;row['outcome']='verified_complete' if complete else row['outcome']
     except (KeyError,TypeError,ValueError) as exc:row['unknowns'].append(str(exc))
@@ -123,7 +144,7 @@ def assess_route_set(rows,edges,incidence):
         internal_a={_transport_ref(x['edge']) for x in a['non_TRACK_transport']};internal_b={_transport_ref(x['edge']) for x in b['non_TRACK_transport']}
         internals=[{'entity':e,'index':i} for e,i in sorted(internal_a&internal_b)]
         shared_nodes=sorted(nodes)
-        positive=bool(shared or shared_nodes or internals) and not (a.get('stale_binding') or b.get('stale_binding'))
+        positive=bool(shared or shared_nodes or internals) and not (a.get('stale_binding') or b.get('stale_binding') or a.get('stale_resources') or b.get('stale_resources'))
         outcome='topology_overlap' if positive else 'topology_disjoint' if a['complete'] and b['complete'] else 'unknown'
         pairs.append({'a':a['id'],'b':b['id'],'result':outcome,'both_paths_complete':a['complete'] and b['complete'],'shared_TRACK_edges':shared,'opposite_traversal_edges':reverse,'shared_junction_nodes':junctions,'junction_classification_unknown_nodes':sorted(n for n in nodes if not incidence.get(n,{}).get('complete')),'shared_endpoint_nodes':endpoints,'shared_physical_nodes':shared_nodes,'shared_non_TRACK_transport':internals,'conflicts_outside_shared_graph':'unknown','simultaneous_operation':'unprobed'})
     return pairs
@@ -133,7 +154,7 @@ def _incidence(client,edges,record):
     nodes={}
     for e in edges.values():
         for k in (0,1):nodes[e['node'+str(k)]]=e['p'+str(k)]
-    if len(nodes)>256:raise live.LiveError('observation_bound','route-set exceeds256 observed physical nodes')
+    if len(nodes)>MAX_NODES:raise live.LiveError('observation_bound','route-set exceeds1024 observed physical nodes')
     out={}
     for n,p in sorted(nodes.items()):
         q=live.discover(client,{'region':{'min':[v-.1 for v in p],'max':[v+.1 for v in p]},'max_edges':16});record['node_observations'].append(q)
@@ -154,7 +175,7 @@ def _incidence(client,edges,record):
                     ids=c['incident_edges']
                     out[n]={'complete':True,'edges':ids,'degree':len(ids),'evidence_request':rid,'source':'fresh_named_exact_junction'}
     extra=sorted({i for v in out.values() for i in v['edges']}-set(edges))
-    if len(extra)+len(edges)>256:raise live.LiveError('observation_bound','route-set incidence exceeds256 TRACK observations')
+    if len(extra)+len(edges)>MAX_TRACKS:raise live.LiveError('observation_bound','route-set incidence exceeds512 TRACK observations')
     for i in range(0,len(extra),16):
         r=client.request('inspect',{'edge_ids':extra[i:i+16]});record['edge_observations'].append(r)
         if r['status']=='ok':edges.update({e['id']:e for e in r['result']['edges']})
@@ -179,8 +200,10 @@ def _matrix(rows,pairs):
 
 def inspect_route_set(client,brief):
     validate(brief)
+    client=_ReadPass(client);size=brief.get('batch_size',16)
     path=client.evidence/(uuid.uuid4().hex+'.route_set.json');matrix=path.with_suffix('.md')
-    record={'version':1,'epoch':'COMMITTED','session':client.session,'brief':brief,'bindings':{},'binding_errors':{},'junctions':{},'movements':[],'observations':[],'edge_observations':[],'node_observations':[],'operations':[]}
+    record={'version':1,'epoch':'COMMITTED','session':client.session,'brief':brief,'bindings':{},'binding_errors':{},'junctions':{},'movements':[],'observations':[],'edge_observations':[],'node_observations':[],'operations':[],'batches':[],'limits':{'endpoints':MAX_ENDPOINTS,'movements':MAX_MOVEMENTS,'junctions':MAX_JUNCTIONS,'TRACKs':MAX_TRACKS,'nodes':MAX_NODES,'native_calls':MAX_CALLS,'seconds':MAX_SECONDS,'batch_size':size}}
+    edges={};incidence={}
     try:
         for n,h in brief['endpoints'].items():
             try:c,rid=_endpoint(client,h);record['bindings'][n]=c;record['observations'].append(rid)
@@ -192,7 +215,8 @@ def inspect_route_set(client,brief):
             except live.LiveError as exc:
                 if exc.status not in ('discovery_incomplete','ambiguous_junction','junction_unavailable'):raise
                 record['binding_errors'][n]={'status':exc.status,'error':str(exc)}
-        for m in brief['movements']:
+        for index,m in enumerate(brief['movements']):
+            if index%size==0:record['batches'].append({'start':index,'count':min(size,len(brief['movements'])-index),'observed':0})
             row=m|{'bindings':{n:record['bindings'][n] for n in (m['from'],m['to']) if n in record['bindings']}}
             names=[m['from'],m['to'],*m.get('via',[])]
             if any(n in record['binding_errors'] for n in names):row['binding_error']={n:record['binding_errors'][n] for n in names if n in record['binding_errors']}
@@ -202,14 +226,27 @@ def inspect_route_set(client,brief):
                 q={'source_edge':a['edge_id'],'source_node':other(a),'target_edge':z['edge_id'],'target_node':other(z),'mode':brief['mode'],'max_length':brief['max_length'],'required_edges':sorted({a['edge_id'],z['edge_id']})}
                 if a['edge_id']==z['edge_id']:q['single_edge']=True
                 row['query']=q;row['response']=client.request('route',q)
-            record['movements'].append(row);live.atomic_json(path,record)
+            record['movements'].append(row);record['batches'][-1]['observed']+=1;live.atomic_json(path,record)
         ids=sorted({x['edge']['entity'] for r in record['movements'] for x in r.get('response',{}).get('result',{}).get('path',[]) if x.get('confirmed_TRACK') is True})
-        if len(ids)>256:raise live.LiveError('observation_bound','route-set exceeds256 TRACK observations')
-        edges={}
-        for i in range(0,len(ids),16):
-            r=client.request('inspect',{'edge_ids':ids[i:i+16]});record['edge_observations'].append(r)
+        if len(ids)>MAX_TRACKS:raise live.LiveError('observation_bound','route-set exceeds512 TRACK observations')
+        for i in range(0,len(ids),size):
+            r=client.request('inspect',{'edge_ids':ids[i:i+size]});record['edge_observations'].append(r)
             if r['status']=='ok':edges.update({e['id']:e for e in r['result']['edges']})
         incidence=_incidence(client,edges,record);record['incidence']=incidence
+        # One fresh read per unique resource in the final pass, not per route.
+        final_edges={};record['final_edge_observations']=[];ids=sorted(edges)
+        for i in range(0,len(ids),size):
+            r=client.request('inspect',{'edge_ids':ids[i:i+size]});record['final_edge_observations'].append(r)
+            if r['status']=='ok':final_edges.update({e['id']:e for e in r['result']['edges']})
+        final_record={'brief':brief,'junctions':record['junctions'],'edge_observations':[],'node_observations':[]}
+        final_incidence=_incidence(client,final_edges,final_record)
+        record['final_resource_observations']=final_record;record['final_incidence']=final_incidence
+        changed_edges={i for i,e in edges.items() if final_edges.get(i)!=e}
+        changed_nodes={n for n,v in incidence.items() if v.get('complete') and (not final_incidence.get(n,{}).get('complete') or final_incidence[n]['edges']!=v['edges'])}
+        record['stale_resources']={'edges':sorted(changed_edges),'nodes':sorted(changed_nodes)}
+        for row in record['movements']:
+            p=row.get('response',{}).get('result',{}).get('path',[])
+            if any(x['edge']['entity'] in changed_edges or x['from']['entity'] in changed_nodes or x['to']['entity'] in changed_nodes for x in p):row['stale_resources']=True
         # Fresh binding recheck detects stale observations; no construction/replay.
         for n,h in {**brief['endpoints'],**brief['junctions']}.items():
             old=record['bindings'].get(n,record['junctions'].get(n))
@@ -222,9 +259,15 @@ def inspect_route_set(client,brief):
                 record.setdefault('stale_bindings',{})[n]={'status':exc.status,'error':str(exc)}
                 for row in record['movements']:
                     if n in (row['from'],row['to'],*row.get('via',[])):row['stale_binding']=True
-        pairs=assess_route_set(record['movements'],edges,incidence);record['pairs']=pairs
-        matrix.write_text(_matrix(record['movements'],pairs),encoding='utf-8')
-        counts={k:sum(p['result']==k for p in pairs) for k in ('topology_overlap','topology_disjoint','unknown')}
-        summary={'status':'ok','operation':'route-set-inspect','game_constructed':False,'movements':len(record['movements']),'complete_paths':sum(r['complete'] for r in record['movements']),'pair_counts':counts,'evidence':str(path.resolve()),'matrix':str(matrix.resolve()),'reservation_availability':'unprobed','train_traversal':'unprobed','conflicts_outside_shared_graph':'unknown','capacity':'not_assessed','native_snapshot_atomic':False}
-    except (live.LiveError,OSError,ValueError,KeyError,TypeError) as exc:summary={'status':getattr(exc,'status','invalid_result'),'operation':'route-set-inspect','game_constructed':False,'error':str(exc)[:400],'evidence':str(path.resolve())}
+        status='ok';error=None
+    except (live.LiveError,OSError,ValueError,KeyError,TypeError) as exc:
+        status=getattr(exc,'status','invalid_result');error=str(exc)[:400]
+        record['observation_failure']={'status':status,'error':error}
+        for row in record['movements']:row['stale_binding']=True
+        for m in brief['movements'][len(record['movements']):]:record['movements'].append(m|{'binding_error':record['observation_failure']})
+    pairs=assess_route_set(record['movements'],edges,incidence);record['pairs']=pairs
+    matrix.write_text(_matrix(record['movements'],pairs),encoding='utf-8')
+    counts={k:sum(p['result']==k for p in pairs) for k in ('topology_overlap','topology_disjoint','unknown')}
+    summary={'status':status,'operation':'route-set-inspect','game_constructed':False,'movements':len(record['movements']),'complete_paths':sum(r['complete'] for r in record['movements']),'pair_counts':counts,'pairs_assessed':len(pairs),'observation_batches':len(record['batches']),'native_calls':client.calls,'evidence':str(path.resolve()),'matrix':str(matrix.resolve()),'reservation_availability':'unprobed','train_traversal':'unprobed','conflicts_outside_shared_graph':'unknown','capacity':'not_assessed','native_snapshot_atomic':False}
+    if error:summary['error']=error
     record['summary']=summary;live.atomic_json(path,record);return summary

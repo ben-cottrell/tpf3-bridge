@@ -1,3 +1,25 @@
+## P37 complete - bounded full-reference movement-set assessment
+Existing route-set-inspect/inspect_route_set version1 supports32roles/64movements/
+32junction hints; optional batch_size1..16(default16), all cross-batch pairs compared.
+Native per-call16-edge discovery/inspection and64path rows unchanged. Aggregate512TRACKs,
+1024nodes,2304reads,600second deadline between calls; existing per-call timeout unchanged.
+Initial/final role binding and unique resource/incidence passes detect stale/session
+changes. Budget/error stops preserve partial observations and all requested unknown
+pair slots. Sequential observation is not atomic; no mutation/retry/new scheduler.
+Approved22distinct roles/56relationships validate. Controlled native-shaped binary-tree
+public-workflow tests cover1540pairs, cross-batch overlaps/errors/opaque resources,
+resource/session changes, limits and deadline stops; never a native terminal claim.
+Fresh existing P36 read only: build40408/session pif_1791114344_113893262,4complete
+paths/6overlaps/0unknown,2batches(batch_size2),86native reads; unchanged crossing94033.
+No construction, mod update, simulation/save/reload or fixture duplication.
+python tools/quiet_checks.py --suite live_client --label pif-p37-final-acceptance:
+285passed,0fail/error/skip; .local_checks/pif-p37-final-acceptance_lpp_vsst/report.json.
+py_compile/diff passed. .local_runs/live_python_interface/p37/: checks.json,native_summary.json,
+p36_readonly_brief.json,reference_complete/,reference_error/,HANDOFF.md,checkpoint.json.
+tests/fixtures/route_set_reference.json retains the exact approved contract. Full
+16-terminal physical embedding/witnesses remain Astra work; topology separation is
+not capacity/signalling/train proof. No blocker/push; actual usage unavailable.
+
 ## P36 complete - caller-paired oblique crossing with fitted parallel interfaces
 Version2 bridge_crossing/bridge_live plain-crossing composes four native extensions
 and one paired four-arm proposal; read-only preparation, explicit execute, durable

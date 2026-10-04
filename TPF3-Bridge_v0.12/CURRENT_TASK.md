@@ -1,42 +1,36 @@
-# PIF-P36 — reusable oblique crossing with native-fitted parallel interfaces
+# PIF-P37 — full-reference route-set assessment
 
-**Complete — 4 October 2026.** Public composed native build and fresh-process inspection
-passed at the selected30degree/300x30 layout.278affected tests passed. Actual physical
-crossing conflict/no shared TRACK stem recorded; no capacity/train-operation claim.
-Evidence and scoped checkpoint: `.local_runs/live_python_interface/p36/`.
-No next topology/task is selected by this implementation agent.
+**Complete — 4 October 2026.** Controlled22-role/56-movement coverage and all1540pairs
+pass; fresh P36 read-only4-path/2-batch inspection passes.285affected tests passed.
+No full-terminal construction or native56-route claim. Checkpoint/evidence:
+`.local_runs/live_python_interface/p37/`. Next physical design belongs to Astra.
 
-## Outcome and bridge gap
-P35 is accepted at 8c39f38ac097cbe33df09eebb4102a04c747f99d: level orthogonal crossing observed, 268 tests, native shared physical conflict accurately reported. Do not repeat that fixture or research a dedicated crossing enum.
-The approved 6-approach/16-terminal 8-12-8 design needs routes with inverted transverse ordering. Current bridge_crossing hard-codes cardinal names/right angles and only constructs straight arms between dedicated stubs. Deliver a reusable, caller-specified two-route crossing connection with native-fitted external leads. This is the selected component of that design, not a new ladder template or full station.
+## Approved outcome and concrete gap
+Astra accepts P36 at ccf7d19e1b7df0b590169f705e397dc30b57619b. Preserve its evidence; no additional crossing construction/angle sweep.
+The approved reference has6directional approach roles and16terminal roles,56directed required movements. bridge_route_set.validate currently rejects more than16endpoints or16movements. Its exact resource comparison must work across the entire route set, not just separate16movement reports.
+Extend the existing reusable read-only route-set workflow to assess the full approved contract. No new planner/subsystem or construction required.
 
-## Astra design decision (implementation must preserve)
-Local longitudinal X, transverse Y:
-- boundary A_in=(0,0), B_in=(0,30), A_out=(300,30), B_out=(300,0).
-- All boundary rails tangent to X. Required corridors A_in <-> A_out and B_in <-> B_out exchange sides.
-- Crossing C=(150,15). Route A passes C at +15 degrees to X, route B at -15 degrees: included acute angle30degrees.
-- Straight half-arms initially40 units: arm tips C +/-40*(cos15,sin15) for A and C +/-40*(cos15,-sin15) for B.
-- Native-fitted leads connect each external endpoint to its corresponding arm tip. No inter-route turn or common track stem; one shared physical crossing node is intentional and must appear as a conflict.
-- Same observed local railhead/base elevation for the four boundary stubs and crossing; ordinary native cut/fill allowed. No arbitrary elevated default/flyover, station assets or actual train operations.
-- Initial endpoint-centre envelope300x30; provide20-unit outward fixture stubs, report actual footprint including them. Translate/rotate entire layout onto inspected clear disposable land. Existing project material can be cleared as authorised.
-- Native fitting owns detailed leads. Selected minimum radius60units; grade0 for this level component. This is a low-speed design choice, not a universal UK constraint. Arm length can be adjusted to fit geometry, retaining30degree crossing and boundary ordering. If a demonstrated native fit failure needs more longitudinal space, length may increase up to600 keeping C at midpoint and30transverse span; report actual fit reason/footprint. No arbitrary extra site clearance beyond observed needs.
-- This component is deliberately conflicting; it does not satisfy the reference design's independent-route witnesses. Do not claim simultaneous operation or complete physical embedding of the16-track reference.
-- No shallow-angle sweep: prove the chosen useful geometry through the reusable workflow. If native behaviour prevents it, preserve precise failed/unknown evidence and return that concrete limitation rather than replacing topology with90degrees, a turnout, shared bank neck, slip or flyover.
+## Astra functional contract
+Read .local_runs/design/terminal_16_8_12_8/DESIGN.md and route_requirements.json.
+Keep UP_A,DOWN_A,UP_B,DOWN_B,UP_C,DOWN_C and T01..T16 identities.
+A servesT01..T08, B T03..T14, C T09..T16, arrival/departure each:56relationships.
+Do not substitute repeated aliases of four crossing endpoints and claim the terminal exists.
+The sixteen-track physical embedding remains Astra's pending design work. This task makes the bridge able to assess it, not create it.
 
-## Reusable implementation
-Extend existing bridge_crossing/native adapter instead of introducing a planner/framework. Caller explicitly supplies route pairing and crossing geometry; use role identities independent of compass labels. Preserve version1 compatibility or explicitly migrate with regression coverage. Validate nondegenerate, opposed pairs and actual geometry; do not relabel30degree evidence as arbitrary-angle certification.
-Compose existing native fit/build/attachment operations for the four external leads, cross and inspection. Native-first, no Python spline replacement. Fresh identity after construction; current session and semantic endpoints, actual XYZ/tangents/resources. Keep mutations journalled; inspect uncertain outcomes before retry, no assumed transaction/rollback or automatic blind replay.
-The public Python/CLI workflow must execute the actual composed build, not just adopt a low-level receipt for the final inspection. Use an explicit brief, read-only preparation and explicit execute. Keep failed/partial stage receipts recoverable as evidence; task does not require cross-load automatic resume.
-Use existing route-set inspector for conflicts; fix only affected actual gaps. No unrelated56-route batching work in this task.
+## Implementation
+Extend existing inspector/CLI with explicit finite request limits sufficient for22endpoints/56movements and the reference junction hints. Keep existing per-native-call bounds and bounded observation sizes; use deterministic batching where necessary, report budget exhaustion/incomplete honestly. Select practical finite aggregate bounds, document their rationale, no unbounded world scan or generic scheduler.
+Bind each semantic endpoint/junction once per observation pass; inspect each unique physical resource once where possible. Compare ALL requested movement pairs including across any batch boundary (56choose2=1540). Preserve shared physical nodes/rails, opposite traversal, known junction vs unknown incidence, opaque transport and incomplete-path semantics.
+Same world/session throughout, final binding/readback checks across the overall pass. Sequential observation is not atomic. Stale/incomplete/native errors must not become disjoint/absent claims. Preserve partial evidence and precise unknowns.
+Keep compact user/model summary and complete local evidence/matrix. Add a concise summary for explicitly nominated independence witnesses from DESIGN.md if useful through existing reporting, without asserting operating capacity or creating a reservation simulator.
+No hardcoded16-platform layout constructor or geometry template; maintain existing consumers and version compatibility.
 
-## Acceptance
-- One integrated native result from the reusable command at selected30degree crossing with four fitted external leads, actual source/effect evidence and fresh-process inspection.
-- Four directed through routes complete (A both directions, B both directions), eight cross-pair directed queries observed with no returned turning paths, without errors/truncation. Unknown is not absence proof.
-- Physical TRACK/attachment and crossing-node evidence; distinguish internal transport rows. Show A/B shared crossing conflict and no unintended shared TRACK stem.
-- Actual radius/grade, endpoint spacing, crossing angle, elevation/terrain-relative and footprint summaries; no appearance-only acceptance.
-- Focused affected tests via tools/quiet_checks.py, regressions for pairing/geometry/read-only/execute/partial or stale readback as relevant; reuse unchanged acceptance.
-- Concise source docs/STATE, normal scoped cleanup and local milestone commit; preserve useful failure history. No remote push/PR, new dependencies/services, host recovery or station/signals/operations.
-- Save local evidence/HANDOFF under .local_runs/live_python_interface/p36. Send compact completion to coordinator01a0f987-8917-7f31-84c3-838acacc9e04 and final response. Permanent direct human authorisation permits project chat and payload/evidence handoffs; external review remains binding. If denied, retain local handoff and report exact blocker, never bypass/retry unchanged.
+## Acceptance without another construction exercise
+- Deterministic tests exercise the actual public inspector path with22distinct semantic endpoints and the56named movement contract using controlled native responses;1540pair assessments including shared resource and unknown cases across batching boundaries. These are mock/reference tests, never native full-terminal proof.
+- Regression of current small callers and meaningful stale/session/partial/boundary cases. Reuse unchanged geometry tests; affected quiet_checks suite once final.
+- One fresh read-only native inspection of P36's existing four paths through the extended workflow. Exercise cross-batch aggregation with a smaller observation batch setting if batching exists; avoid56duplicate native queries to fake scale coverage.
+- Reference56route contract validates without actual endpoint bindings; if a dry validation output is provided, label it specification validation, not56native paths.
+- No game mutation/save reload needed unless read-only runtime genuinely requires ordinary authorised context refresh; do not build a new fixture to satisfy counts.
+- Scoped docs/STATE, cleanup and local milestone commit, no push/PR. Local evidence/HANDOFF .local_runs/live_python_interface/p37.
+- Report remaining physical-design/observation limitations accurately. Astra chooses next topology.
 
-## Continuation discipline
-Finish repairs, tests, docs and commit within this integrated task. Context compaction is not completion: reread this active card and pending evidence, continue the actual remaining work rather than ending with an acknowledgement of standing communication authority. Sol implements this specified component; Astra owns next topology.
+Permanent direct human authority allows project chat and payload handoff to coordinator01a0f987-8917-7f31-84c3-838acacc9e04. Send compact completion with evidence and final response; external review remains binding. After compaction resume unfinished active task, not an authority acknowledgement. No new services/dependencies, host recovery, stations, signals or train operations.
