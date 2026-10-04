@@ -1,3 +1,29 @@
+## P52 complete — native node/edge observations separated (4 October 2026)
+
+Freshly reproduced read-only discover_interior endpoint_node_mismatch. Universal
+.001 BaseNode/edge-position equality aborted an entire useful query. Native TRACK
+identity still requires exact BaseEdge.node0/node1 components; finite node/edge
+positions recorded separately. endpoint_node_position_match is diagnostic.
+Freshness retains IDs/edge controls/template/style and new snapshot node positions;
+legacy snapshots supported. Genuine fit/build tolerances unchanged.
+Build40408: nearby104794/104819 node/edge XYdelta up to.006103515625; cause unknown,
+no broken connectivity inferred. Recovered platform8 candidate97196 and platform9
+candidate100845, one each; exact independent inspect reads match, invalid ID rejects.
+Current sessionpif_1791147593_147142820; pending none. No fit/build/deletion of tracks.
+Saved ACTUAL current manual/fan5 world and normal-loaded only that save; no historical
+P51 load. TPF3_Bridge_P52_CurrentFans_20261004.sav,95786564bytes,SHA256
+cf1a5304aac4405abf1e6cf7191f24b00a2d0eddeffda98f82d0b7840f3a318a.
+Cleaned superseded P51_BranchCleared .sav/.jpg only,96075558bytes; originals untouched.
+python tools/quiet_checks.py --suite live_client --label pif-p52-native-node-read:
+349passed/0fail/error/skip; .local_checks/pif-p52-native-node-read_pk9fma6c/report.json.
+Compile/diff passed; no standalone Lua checker, actual loaded readback passed.
+Native commands: python .local_runs/live_python_interface/p52/recover.py before|after.
+Evidence .local_runs/live_python_interface/p52/{HANDOFF.md,checks.json,checkpoint.json,
+fresh_failure.json,stage.json,bindings.json,node_edge_observations.json,final_result.json,
+platform8_discovery.json,platform9_discovery.json,cleanup.json}. Local commit/no push.
+Usage unavailable; discovery blocker none. Full throat still incomplete; Astra resumes
+design/construction using fresh candidate bindings. No physical train claims.
+
 ## P51 complete — exact mixed-endpoint branch removal (4 October 2026)
 
 Exact-chain removal retains every unselected TRACK snapshot and complete endpoint

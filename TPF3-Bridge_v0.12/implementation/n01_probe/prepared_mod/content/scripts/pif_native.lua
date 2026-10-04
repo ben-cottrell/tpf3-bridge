@@ -15,8 +15,13 @@ local function edge(id)
  assert(e and e.roadType==E.RoadType.TRACK,"entity_not_TRACK")
  local n0=api.engine.getComponent(e.node0,api.type.ComponentType.BASE_NODE)
  local n1=api.engine.getComponent(e.node1,api.type.ComponentType.BASE_NODE)
- assert(n0 and n1 and near(arr(n0.position),arr(e.position0),.001) and near(arr(n1.position),arr(e.position1),.001),"endpoint_node_mismatch")
- return {id=id,node0=e.node0,node1=e.node1,p0=arr(e.position0),p1=arr(e.position1),t0=arr(e.tangent0),t1=arr(e.tangent1),template=e.roadTemplate,style=e.roadStyle,road_type="TRACK"}
+ assert(n0 and n1,"endpoint_node_unavailable")
+ -- Native node IDs establish attachment identity. BaseNode and BaseEdge positions
+ -- are separate observations, not an extra universal coordinate-equality gate.
+ local np0,np1=arr(n0.position),arr(n1.position);vector(np0);vector(np1)
+ local ep0,ep1=arr(e.position0),arr(e.position1);vector(ep0);vector(ep1)
+ return {id=id,node0=e.node0,node1=e.node1,p0=ep0,p1=ep1,t0=arr(e.tangent0),t1=arr(e.tangent1),template=e.roadTemplate,style=e.roadStyle,road_type="TRACK",
+  node_positions={np0,np1},endpoint_node_position_match=near(np0,ep0,.001) and near(np1,ep1,.001)}
 end
 local function anchor(p)
  local a=edge(p.anchor_edge);assert(p.anchor_node==a.node0 or p.anchor_node==a.node1,"anchor_not_edge_endpoint")
@@ -30,6 +35,10 @@ local function assert_fresh(original)
   near(current.p0,original.p0,.001) and near(current.p1,original.p1,.001) and
   near(current.t0,original.t0,.001) and near(current.t1,original.t1,.001) and
   current.template==original.template and current.style==original.style,"stale_attachment")
+ if original.node_positions then
+  assert(near(current.node_positions[1],original.node_positions[1],.001) and
+   near(current.node_positions[2],original.node_positions[2],.001),"stale_attachment_node_position")
+ end
  return current
 end
 local function in_region(p,region)

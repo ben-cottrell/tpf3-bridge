@@ -1,13 +1,13 @@
-# PIF-P51 COMPLETE — exact mixed-endpoint branch removal
+# PIF-P52 COMPLETE — unblock native interior discovery
 
-Authority: .local_runs/live_python_interface/p51/orchestrator/TASK.md and standing
-human implementation, disposable-map, save/load/staging, cleanup/local commit/handoff authority.
+Authority: .local_runs/live_python_interface/p52/orchestrator/TASK.md and standing
+human implementation/current-world save-load/staging/local commit/handoff authority.
 
-Only the five obsolete branch edges removed; exact retained through104886/104887
-and original platform1 lead95517 verified, four directional native routes pass.
-Shared-internal negative rejected before mutation. Current sessionpif_1791144583_144132436,
-build40408, pending none. 348application tests and compile/diff pass.
-Final save TPF3_Bridge_P51_BranchCleared_20261004 retained; only two authorised
-P50/P51 temporary save pairs cleaned. Details .local_runs/live_python_interface/p51/
-{HANDOFF.md,checks.json,checkpoint.json,bindings.json,cleanup.json}.
-Return to Astra for sweeping fan redesign; full throat incomplete. No remote push.
+Separated native node and edge position observations; exact native identities and
+freshness remain binding. Both formerly blocked bounded discoveries now yield useful
+candidates97196/100845. Current sessionpif_1791147593_147142820/build40408,pending none.
+349application tests, compile/diff and actual native reads pass. No fit/construction.
+Current manual/fan5 world saved and reloaded as P52_CurrentFans; historicalP51 not loaded.
+Only superseded P51 save pair cleaned. Evidence .local_runs/live_python_interface/p52/
+{HANDOFF.md,checks.json,checkpoint.json,bindings.json,node_edge_observations.json,cleanup.json}.
+Return to Astra for construction; full throat incomplete. No remote push.

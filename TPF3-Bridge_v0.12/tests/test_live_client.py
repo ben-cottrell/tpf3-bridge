@@ -4611,6 +4611,24 @@ class RejectedExtensionTests(unittest.TestCase):
                 self.assertFalse((self.client.evidence/'rejected.reconciliation.json').exists())
 
 class ExactChainRemovalTests(unittest.TestCase):
+    def test_native_identity_read_separates_node_and_edge_positions(self):
+        source=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text()
+        read=source[source.index('local function edge(id)'):source.index('local function anchor(p)')]
+        self.assertIn('e.roadType==E.RoadType.TRACK',read)
+        self.assertIn('getComponent(e.node0,api.type.ComponentType.BASE_NODE)',read)
+        self.assertIn('getComponent(e.node1,api.type.ComponentType.BASE_NODE)',read)
+        self.assertIn('assert(n0 and n1,"endpoint_node_unavailable")',read)
+        self.assertIn('vector(np0);vector(np1)',read)
+        self.assertIn('vector(ep0);vector(ep1)',read)
+        self.assertIn('node_positions={np0,np1}',read)
+        self.assertIn('endpoint_node_position_match=near(np0,ep0,.001) and near(np1,ep1,.001)',read)
+        self.assertNotIn('endpoint_node_mismatch',read)
+        fresh=source[source.index('local function assert_fresh'):source.index('local function in_region')]
+        self.assertIn('current.node0==original.node0 and current.node1==original.node1',fresh)
+        self.assertIn('near(current.p0,original.p0,.001)',fresh)
+        self.assertIn('if original.node_positions then',fresh)
+        self.assertIn('stale_attachment_node_position',fresh)
+
     def test_native_mixed_endpoint_retains_exact_incidence_and_rejects_shared_interior(self):
         source=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text()
         block=source[source.index('function M.remove_branch'):source.index('function M.verify_crossover')]
