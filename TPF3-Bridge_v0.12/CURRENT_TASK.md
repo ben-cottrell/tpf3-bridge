@@ -1,11 +1,9 @@
-# PIF-P26 - complete; await coordinator review
+# PIF-P27 complete - portable complete curved branching layout
 
-Reusable curved UUDD four-track main plus outward UP/DOWN branches completed.
-Four through and two branch movements pass fresh native inspection on build40408;
-exact forks, semantic attachments, retained normal spacing and independent46-edge
-geometry checks pass.184 affected tests passed. No pending native mutation.
-Evidence: .local_runs/live_python_interface/p26/HANDOFF.md,checks.json,result.json,
-checkpoint.json; continuation/fresh_inspection.json,independent_complete_result.json.
-Reviewed card: .local_runs/live_python_interface/p26/orchestrator/TASK.md.
-Local milestone commit only; no push,extra task,batch or completion message.
-Stop here. Next work requires coordinator adoption; existing exclusions remain.
+Delivered fresh-brief fixture/main-line/branch composition, bounded site assessment,
+durable inspection/explicit checked continuation and native six-route acceptance.
+197 affected tests pass; raw evidence and exact commands in
+.local_runs/live_python_interface/p27/HANDOFF.md,checks.json,result.json,checkpoint.json.
+No historical layout receipt prerequisite; current native seed/context still required.
+Level UUDD domain and native-first limitations retained. Local milestone commit only.
+Stop at P27 for coordinator review; no follow-on work launched.

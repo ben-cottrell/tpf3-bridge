@@ -2766,5 +2766,153 @@ class BranchingCorridorTests(unittest.TestCase):
             self.assertIn(guard,block)
         self.assertIn('makeWorldBuildProposalCmd(proposal,nil,false,false)',block)
 
+class CompleteLayoutTests(unittest.TestCase):
+    setUp=LiveClientTests.setUp
+    response=LiveClientTests.response
+
+    def brief(self):return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/complete_layout_example.json').read_text())
+
+    def plan(self):
+        from bridge_complete import plan_complete_layout
+        return plan_complete_layout(self.brief())
+
+    def test_portable_offline_plan_has_no_historical_receipt_dependency(self):
+        from bridge_complete import plan_complete_layout,publish_complete_layout
+        with patch('bridge_live.client_from_context') as client,patch('bridge_branching._parent') as historical:
+            p=self.plan();s=publish_complete_layout(p,self.root/'plans');self.assertEqual(s['status'],'ok');client.assert_not_called();historical.assert_not_called()
+        self.assertEqual(len(p['fixtures']),12);self.assertEqual(len(p['movements']),6);self.assertNotIn('main_record',p['brief']);self.assertEqual([t['direction'] for t in p['main_plan']['tracks']],['UP','UP','DOWN','DOWN'])
+        params=self.root/'brief.json';params.write_text(json.dumps(self.brief()));out=io.StringIO()
+        with patch('bridge_live.client_from_context') as client,contextlib.redirect_stdout(out):self.assertEqual(main(['complete-layout','--params',str(params),'--evidence',str(self.root/'plans')]),0);client.assert_not_called()
+        self.assertLess(len(out.getvalue().encode()),4096)
+
+    def test_translation_rotation_and_opposing_directions_preserve_layout_relationships(self):
+        import math
+        from bridge_complete import plan_complete_layout
+        b=self.brief();p=self.plan()
+        def xyz(v):return [-v[1]+250,v[0]+500,v[2]]
+        def direction(v):return [-v[1],v[0]]
+        for key in ('start','finish'):
+            b['reference'][key]['position']=xyz(b['reference'][key]['position']);b['reference'][key]['travel_direction']=direction(b['reference'][key]['travel_direction'])
+        for g in b['reference']['guides']:g['position']=xyz(g['position']);g['travel_direction']=direction(g['travel_direction'])
+        for r in b['branches']:r['target']['position']=xyz(r['target']['position']);r['target']['travel_direction']=direction(r['target']['travel_direction'])
+        corners=[xyz(b['region'][key]) for key in ('min','max')];b['region']={'min':[min(v[k] for v in corners) for k in range(3)],'max':[max(v[k] for v in corners) for k in range(3)]}
+        q=plan_complete_layout(b)
+        for a,z in zip(p['fixtures'],q['fixtures']):self.assertLess(math.dist(xyz(a['position']),z['position']),1e-9)
+        self.assertEqual([t['forward'] for t in q['main_plan']['tracks']],[True,True,False,False])
+
+    def test_invalid_domain_and_constraints_rejected_before_native_work(self):
+        from bridge_complete import plan_complete_layout
+        for kind in ('vertical','direction','branch','seed','scope','policy'):
+            b=self.brief()
+            if kind=='vertical':b['reference']['finish']['position'][2]+=1
+            elif kind=='direction':b['tracks'][-1]['direction']='UP'
+            elif kind=='branch':b['branches'][0]['split_fraction']=1
+            elif kind=='seed':b['seed_edge']=True
+            elif kind=='scope':b['region']['min'][0]=-3500
+            else:b['site_policy']='demolish_world'
+            with self.subTest(kind=kind),self.assertRaises((ValueError,LiveError)):plan_complete_layout(b)
+
+    def test_stage_failure_is_durable_and_stops_before_main_or_branches(self):
+        from bridge_complete import execute_complete_layout
+        p=self.plan();calls=[]
+        def request(op,q):
+            calls.append(op)
+            if op=='inspect':return self.response(result={'edges':[{'resource':{'track_distance':5}}]})
+            self.assertEqual(op,'test_approach');return self.response(result={'game_constructed':'unknown','error':'partial'})|{'status':'mutation_unverified'}
+        with patch('bridge_complete._site'),patch('bridge_live._select_throat_port',side_effect=LiveError('no_eligible_candidates','empty')),patch.object(self.client,'request',side_effect=request),patch('bridge_parallel.execute_multitrack_connection') as parent,patch('bridge_branching.execute_branching_corridor') as branch:
+            s=execute_complete_layout(self.client,p);self.assertEqual(s['status'],'mutation_unverified');self.assertEqual(s['game_constructed'],'unknown');parent.assert_not_called();branch.assert_not_called()
+        r=json.loads(Path(s['evidence']).read_text());self.assertEqual(r['unfinished_step'],'U1:source');self.assertEqual(r['fixtures']['U1:source']['status'],'mutation_unverified');self.assertEqual(len(calls),2)
+
+    def test_complete_reexecution_only_checks_current_state_and_changed_brief_stops(self):
+        from bridge_complete import execute_complete_layout
+        p=self.plan();path=self.root/'done.json';path.write_text(json.dumps({'plan':p,'fixtures':{},'stages':{'main':{'status':'ok','evidence':'current'},'branches':{'status':'ok','evidence':'current'}},'summary':{'status':'ok','game_constructed':True}}))
+        with patch('bridge_complete._inspect',return_value={'status':'ok','routes_verified':6,'junctions_verified':2,'final_network_verified':True}),patch.object(self.client,'request') as native,patch('bridge_branching.execute_branching_corridor') as branch:
+            s=execute_complete_layout(self.client,p,continuation_record=path);self.assertTrue(s['checked_existing']);self.assertFalse(s['game_constructed']);native.assert_not_called();branch.assert_not_called()
+        changed=json.loads(json.dumps(p));changed['plan_hash']='changed'
+        with patch('bridge_complete.plan_complete_layout',return_value=changed),patch.object(self.client,'request') as native:
+            s=execute_complete_layout(self.client,changed,continuation_record=path);self.assertEqual(s['status'],'invalid_result');native.assert_not_called()
+
+    def test_interrupted_and_pending_work_never_replays(self):
+        from bridge_complete import execute_complete_layout
+        p=self.plan();path=self.root/'interrupted.json';path.write_text(json.dumps({'plan':p,'fixtures':{},'stages':{},'unfinished_step':'main','summary':{'game_constructed':'unknown'}}))
+        with patch('bridge_complete._inspect',return_value={'status':'complete_layout_incomplete'}),patch.object(self.client,'request') as native:
+            s=execute_complete_layout(self.client,p,continuation_record=path);self.assertEqual(s['status'],'reconciliation_required');native.assert_not_called()
+        self.client.journal.write_text(json.dumps({'pending':{'request_id':'unknown'}}))
+        with patch.object(self.client,'request') as native:
+            s=execute_complete_layout(self.client,p);self.assertEqual(s['status'],'reconciliation_required');native.assert_not_called()
+
+    def test_site_bounds_nontrack_terrain_and_truncation_fail_honestly(self):
+        from bridge_complete import _site,_boxes
+        p=self.plan();box=_boxes(p,[[[-3200,-2900,33],[-3220,-2900,33]]]);self.assertTrue(all(max(b['max'][k]-b['min'][k] for k in range(3))<=400 for b in box))
+        seen=[]
+        def request(op,q):
+            seen.append(q);self.assertEqual(op,'inspect');return self.response(result={'site':{'truncated':True,'entities':[],'terrain':[]}})
+        with patch.object(self.client,'request',side_effect=request),self.assertRaises(LiveError):_site(self.client,p,{'summary':{}},'fixture',[[[-3200,-2900,33]]],mutate=True)
+        self.assertIn('site',seen[0]);self.assertEqual(len(seen[0]['site']['positions']),1)
+
+    def test_fresh_inspection_delegates_semantic_replacement_and_never_builds(self):
+        from bridge_complete import inspect_complete_layout
+        p=self.plan();path=self.root/'complete.json';path.write_text(json.dumps({'plan':p,'fixtures':{},'stages':{'main':{'evidence':'new_main'},'branches':{'evidence':'new_branches'}},'summary':{}}));before=path.read_bytes()
+        current={'routes_verified':6,'junctions_verified':2,'final_network_verified':True,'retained_spacing_verified':True,'status':'ok'}
+        with patch('bridge_complete._branch_plan',return_value={'current':'intent'}),patch('bridge_live._load_layout_record',side_effect=[json.loads(before),{'plan':{'current':'intent'}}]),patch('bridge_branching.inspect_branching_corridor',return_value=current) as inspect,patch('bridge_branching.execute_branching_corridor') as build:
+            s=inspect_complete_layout(self.client,path);self.assertEqual(s['status'],'ok');self.assertFalse(s['game_constructed']);inspect.assert_called_once_with(self.client,'new_branches');build.assert_not_called()
+        self.assertEqual(path.read_bytes(),before)
+
+    def test_successful_composition_and_acknowledged_fixture_continuation(self):
+        from bridge_complete import execute_complete_layout
+        p=self.plan();prior=self.root/'fixtures.json'
+        ack={f['name']:self.response(result={'game_constructed':True}) for f in p['fixtures'][:3]}
+        prior.write_text(json.dumps({'plan':p,'fixtures':ack,'stages':{},'summary':{'game_constructed':True}}))
+        built=[];sites=[]
+        def request(op,q):
+            if op=='inspect':return self.response(result={'edges':[{'resource':{'track_distance':5}}]})
+            self.assertEqual(op,'test_approach');built.append(q['fixture']['position']);return self.response(result={'game_constructed':True})
+        def inspect(c,plan,r):return {'status':'ok','routes_verified':6,'junctions_verified':2,'retained_spacing_verified':True,'final_network_verified':True} if 'branches' in r['stages'] else {'status':'complete_layout_incomplete'}
+        def branch(c,plan,**kw):
+            kw['before_build']('native_branch',{'status':'ok'})
+            return {'status':'ok','evidence':'branches','game_constructed':True}
+        with patch('bridge_complete._inspect',side_effect=inspect),patch('bridge_complete._site',side_effect=lambda c,p,r,n,f,**kw:sites.append(n)),patch('bridge_complete._controls',return_value=[[[0,0,33],[1,0,33]]]),patch('bridge_live._select_throat_port',side_effect=LiveError('no_eligible_candidates','empty')),patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_corridor',return_value={'status':'ok'}),patch('bridge_parallel.execute_multitrack_connection',return_value={'status':'ok','evidence':'main','game_constructed':True}) as main,patch('bridge_complete._branch_plan',return_value={'generated':'current main'}),patch('bridge_branching.execute_branching_corridor',side_effect=branch):
+            result=execute_complete_layout(self.client,p,continuation_record=prior)
+        self.assertEqual(result['status'],'ok');self.assertEqual(result['routes_verified'],6);self.assertEqual(result['fixtures_acknowledged'],8);self.assertEqual(len(built),5)
+        self.assertEqual(built,[f['position'] for f in p['fixtures'][3:8]])
+        self.assertIn('native_main_candidate',sites);self.assertIn('native_branch',sites);main.assert_called_once()
+        self.assertEqual(json.loads(prior.read_text())['fixtures'],ack)
+
+    def test_prepared_branch_fixture_adoption_requires_exact_current_receipt(self):
+        from bridge_branching import _adopt_prepared_fixture
+        e={'id':42,'node0':7,'node1':8,'template':3,'style':0,'p0':[0,0,33],'p1':[20,0,33],'t0':[20,0,0],'t1':[20,0,0]}
+        receipt=self.response(result={'game_constructed':True,'edges':[e]})
+        with patch.object(self.client,'request',return_value=self.response(result={'edges':[e]})) as request:
+            _adopt_prepared_fixture(self.client,receipt);request.assert_called_once_with('inspect',{'edge_ids':[42]})
+        changed=e|{'node1':9}
+        with patch.object(self.client,'request',return_value=self.response(result={'edges':[changed]})),self.assertRaises(LiveError):_adopt_prepared_fixture(self.client,receipt)
+        with patch.object(self.client,'request') as request,self.assertRaises(LiveError):_adopt_prepared_fixture(self.client,receipt|{'status':'mutation_unverified'});request.assert_not_called()
+
+    def test_dense_site_is_subdivided_with_finite_budget(self):
+        from bridge_complete import _site
+        p=self.plan();calls=[]
+        def request(op,q):
+            calls.append(q['site']['region']);return self.response(result={'site':{'truncated':len(calls)==1,'entities':[],'terrain':[]}})
+        record={'summary':{}}
+        with patch.object(self.client,'request',side_effect=request):r=_site(self.client,p,record,'dense',[[[-3200,-2900,33]]],mutate=False)
+        self.assertTrue(r['truncated']);self.assertGreater(len(calls),1);self.assertLess(len(calls),256)
+        self.assertTrue(any(b['max'][0]-b['min'][0]<=125 for b in calls))
+
+    def test_inspection_receipt_cannot_discard_interruption_history_for_continuation(self):
+        from bridge_complete import execute_complete_layout
+        p=self.plan();path=self.root/'inspect.json';path.write_text(json.dumps({'plan':p,'fixtures':{},'stages':{},'summary':{'operation':'complete-layout-inspect','game_constructed':False}}))
+        with patch.object(self.client,'request') as native:
+            result=execute_complete_layout(self.client,p,continuation_record=path)
+        self.assertEqual(result['status'],'invalid_result');native.assert_not_called()
+
+    def test_native_fit_controls_are_preserved_for_site_bounds(self):
+        from bridge_complete import _controls
+        rid='site_fit';control={'p0':[0,0,33],'p1':[100,20,33],'t0':[90,0,0],'t1':[90,30,0]}
+        (self.client.evidence/(rid+'.response.json')).write_text(json.dumps({'result':{'fit':{'controls':[control]}}}))
+        self.assertEqual(_controls(self.client,{'status':'ok','native_request_id':rid}),[[[0,0,33],[30,0,33],[70,10,33],[100,20,33]]])
+        source=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text()
+        self.assertIn('fit.controls=all.controls',source)
+        self.assertNotIn('controls=profile and controls or nil',source)
+
 if __name__ == '__main__':
     unittest.main()

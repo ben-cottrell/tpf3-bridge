@@ -202,13 +202,23 @@ def _finish(record,exc=None):
     live.atomic_json(Path(s['evidence']),record);return s
 
 
+def _adopt_prepared_fixture(client,response):
+    if response.get('status')!='ok' or response.get('result',{}).get('game_constructed') is not True or len(response['result'].get('edges',[]))!=1:raise live.LiveError('reconciliation_required','no exact acknowledged fixture')
+    old=response['result']['edges'][0];q=client.request('inspect',{'edge_ids':[old['id']]})
+    rows=q.get('result',{}).get('edges',[])
+    if q['status']!='ok' or len(rows)!=1:raise live.LiveError('reconciliation_required','prepared fixture unavailable')
+    now=rows[0]
+    if any(now[k]!=old[k] for k in ('id','node0','node1','template','style')) or any(math.dist(now[k],old[k])>.001 for k in ('p0','p1','t0','t1')):raise live.LiveError('reconciliation_required','prepared fixture changed')
+    return q
+
+
 def _continuation(client,plan,record,path):
     """Explicitly adopt proven completed branches; never infer/replay prior writes."""
     old=live._load_layout_record(path);prior=old['plan']
     if prior!=plan_branching_corridor(prior['brief']):raise ValueError('prior branching plan changed')
     if prior['main_sha256']!=plan['main_sha256'] or {k:v for k,v in prior['brief'].items() if k!='branches'}!={k:v for k,v in plan['brief'].items() if k!='branches'}:raise ValueError('continuation main/constraints/movements changed')
     completed=old.get('completed_branches',[])
-    if not isinstance(completed,list) or not 0<len(completed)<2 or len(set(completed))!=len(completed):raise ValueError('explicit partial completed-branch record required')
+    if not isinstance(completed,list) or not 0<=len(completed)<2 or len(set(completed))!=len(completed):raise ValueError('explicit partial completed-branch record required')
     for name in completed:
         before=next((b for b in prior['brief']['branches'] if b['id']==name),None)
         after=next((b for b in plan['brief']['branches'] if b['id']==name),None)
@@ -219,10 +229,23 @@ def _continuation(client,plan,record,path):
     if len(through)!=4 or not all(r['verified'] for r in through) or verified!=set(completed) or set(proof['current_junctions'])!=set(completed):raise live.LiveError('reconciliation_required','prior branches/current through routes not independently proven')
     record['continuation']={'record':str(Path(path).resolve()),'sha256':hashlib.sha256(json.dumps(old,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest(),'fresh_proof':proof,'fresh_summary':s,'automatic_replay':False,'prior_effect_history_complete':False}
     record['completed_branches']=completed[:]
+    operations={x['name']:x['response'] for x in old.get('operations',[])}
+    operations.update(old.get('adopted_preparations',{}))
+    record['adopted_preparations']={};record['adopted_leads']={}
+    for b in plan['brief']['branches']:
+        if b['id'] in completed:continue
+        prior_branch=next((x for x in prior['brief']['branches'] if x['id']==b['id']),None)
+        if prior_branch!=b:continue
+        target='prepare_'+b['id']
+        if target in operations:
+            if b['id'] not in proof['current_roles']:raise live.LiveError('reconciliation_required','acknowledged target missing;no recreation')
+            _adopt_prepared_fixture(client,operations[target]);record['adopted_preparations'][target]=operations[target]
+        lead=operations.get('lead_'+b['id'],old.get('adopted_leads',{}).get(b['id']))
+        if lead and lead.get('status')=='ok':record['adopted_leads'][b['id']]=lead
     return proof['current_roles'],list(proof['current_junctions'].values()),set(completed)
 
 
-def execute_branching_corridor(client,plan,*,continuation_record=None):
+def execute_branching_corridor(client,plan,*,continuation_record=None,before_build=None):
     if plan!=plan_branching_corridor(plan['brief']):raise ValueError('branching plan changed')
     path=client.evidence/(uuid.uuid4().hex+'.branching.json');lock=client.evidence/'branching.lock'
     record={'plan':plan,'operations':[],'routes':[],'summary':{'status':'incomplete','operation':'branching-corridor','game_constructed':False,'plan_hash':plan['plan_hash'],'evidence':str(path.resolve())}}
@@ -237,6 +260,13 @@ def execute_branching_corridor(client,plan,*,continuation_record=None):
         if effect in (True,'unknown') or record['summary']['game_constructed'] is not True:record['summary']['game_constructed']=effect
         if r['status']!='ok':raise live.LiveError(r['status'],r.get('error',r.get('result',{}).get('error','native branch failed')))
         record.pop('unfinished_step');live.atomic_json(path,record);return r
+    def connection(name,brief,*,junction=False):
+        call=(lambda execute:live.connect_junction_at(client,brief,execute=execute,junction_nodes=junctions)) if junction else (lambda execute:live.connect_brief(client,brief,execute=execute))
+        if before_build:
+            preview=call(False);record.setdefault('native_fit_screening',{})[name]=preview
+            if preview['status']!='ok':return preview
+            before_build(name,preview)
+        return call(True)
     try:
         if client.journal.exists() and json.loads(client.journal.read_text()).get('pending'):raise live.LiveError('reconciliation_required','pending mutation; no branching')
         if continuation_record:
@@ -245,12 +275,12 @@ def execute_branching_corridor(client,plan,*,continuation_record=None):
             proof=parallel.inspect_multitrack_connection(client,plan['main_record']);record['initial_main_inspection']=proof
             if proof['status']!='ok':raise live.LiveError('main_state_unverified','original main must be freshly complete before new composition')
             ports=_roles(client,plan,record,True);junctions=[];completed=set()
-        if any(b['id'] in ports and b['id'] not in completed for b in plan['brief']['branches']):raise live.LiveError('reconciliation_required','existing unadopted branch target; inspect prior effects, no fixture replay')
+        if any(b['id'] in ports and b['id'] not in completed and 'prepare_'+b['id'] not in record.get('adopted_preparations',{}) for b in plan['brief']['branches']):raise live.LiveError('reconciliation_required','existing unadopted branch target; inspect prior effects, no fixture replay')
         for b in plan['brief']['branches']:
             if b['id'] in completed:continue
             t=next(t for t in plan['main']['tracks'] if t['id']==b['track'])
             present=(t['end'] if t['forward'] else t['start']) in ports
-            if b['lead_length'] and present!=('lead_record' in b):raise live.LiveError('reconciliation_required','lead target/explicit acknowledged receipt mismatch; inspect prior effects')
+            if b['lead_length'] and present!=('lead_record' in b or b['id'] in record.get('adopted_leads',{})):raise live.LiveError('reconciliation_required','lead target/explicit acknowledged receipt mismatch; inspect prior effects')
         for b in plan['brief']['branches']:
             if b['id'] in completed:continue
             t=next(t for t in plan['main']['tracks'] if t['id']==b['track']);exit_role=t['end'] if t['forward'] else t['start']
@@ -262,23 +292,25 @@ def execute_branching_corridor(client,plan,*,continuation_record=None):
             lead_brief=_lead_brief(parent,plan['brief'],b)
             if not b['lead_length']:
                 lead={'edges':[ports[exit_role]['edge_id']]}
-            elif 'lead_record' in b:
-                lead,digest=_lead_receipt(b['lead_record'],lead_brief)
-                if digest!=plan['lead_receipt_hashes'][b['id']]:raise ValueError('lead receipt changed')
+            elif 'lead_record' in b or b['id'] in record.get('adopted_leads',{}):
+                receipt=b.get('lead_record',record.get('adopted_leads',{}).get(b['id'],{}).get('evidence'))
+                lead,digest=_lead_receipt(receipt,lead_brief)
+                if 'lead_record' in b and digest!=plan['lead_receipt_hashes'][b['id']]:raise ValueError('lead receipt changed')
                 original=parent['ports'][exit_role];z=ports[exit_role]
                 observed=client.request('route',{'source_edge':original['edge_id'],'source_node':original['node_id'],'target_edge':z['edge_id'],'target_node':z['node_id'],'mode':'TRAIN','max_length':lead_brief['max_route_length'],
                     'required_edges':lead['edges'],'geometry_constraints':{'all_path':True,'edge_ids':[],'radius':plan['brief']['radius'],'max_grade':plan['brief']['max_grade'],'region':plan['brief']['region']}})
-                record.setdefault('reused_leads',{})[b['id']]={'receipt':b['lead_record'],'fresh_route':observed,'automatic_replay':False}
+                record.setdefault('reused_leads',{})[b['id']]={'receipt':receipt,'fresh_route':observed,'automatic_replay':False}
                 if observed['status']!='ok' or observed.get('result',{}).get('requested_route_verified') is not True:raise live.LiveError('native_verification_failed','acknowledged lead no longer connects intended current roles')
             else:
                 original,rid=live._select_throat_port(client,_intent(origin,d),outward_sign=1,tolerance=.001);record.setdefault('observations',[]).append(rid)
                 perform('prepare_lead_'+b['id'],lambda:fixture(finish,d,original['edge_id']))
-                lead=perform('lead_'+b['id'],lambda:live.connect_brief(client,lead_brief,execute=True))
+                lead=perform('lead_'+b['id'],lambda:connection('lead_'+b['id'],lead_brief))
             source,rid=live._select_throat_port(client,b['source'],interior=True,tolerance=.5)
             record.setdefault('observations',[]).append(rid)
             if source['edge_id'] not in lead.get('edges',[]):raise live.LiveError('wrong_branch_attachment','interior source is not the freshly built named tangent lead')
-            perform('prepare_'+b['id'],lambda:fixture(b['target']['guide_xyz'],b['target']['travel_direction'],source['edge_id']))
-            branch=perform(b['id'],lambda b=b:live.connect_junction_at(client,_branch_brief(plan,b),execute=True,junction_nodes=junctions))
+            if 'prepare_'+b['id'] not in record.get('adopted_preparations',{}):
+                perform('prepare_'+b['id'],lambda:fixture(b['target']['guide_xyz'],b['target']['travel_direction'],source['edge_id']))
+            branch=perform(b['id'],lambda b=b:connection(b['id'],_branch_brief(plan,b),junction=True))
             if branch.get('placement',{}).get('original_edge')!=source['edge_id']:raise live.LiveError('wrong_branch_attachment','native split did not use named approach')
             junctions.append(branch['junction']['node']);record.setdefault('completed_branches',[]).append(b['id'])
         record['summary'].update(_assess(client,plan,record),status='ok');return _finish(record)

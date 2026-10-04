@@ -1208,3 +1208,42 @@ rejects construction-owned edges, removes named roads using a native proposal an
 checks disappearance. It is an explicit map mutation with possible incidental
 native effects, never an automatic clearance policy or generic world bulldozer.
 Raw diagnostic responses stay in local request evidence.
+
+
+## Portable complete curved branching layout (P27)
+
+`bridge_complete.plan_complete_layout` prepares a level UUDD brief without a live
+client or historical P25/P26 receipts. `execute_complete_layout` authors approach
+fixtures, native curved main lines and two outward branches; `inspect_complete_layout`
+reacquires current semantic attachments/forks and all six native TRAIN paths.
+
+```
+python bridge_live.py complete-layout --params implementation/live_python_interface/complete_layout_example.json --evidence .local_runs/complete_plans
+python bridge_live.py complete-layout --context CONTEXT.json --params BRIEF.json --execute
+python bridge_live.py complete-layout-inspect --context CONTEXT.json --params BRIEF.json --layout-record RESULT.json
+python bridge_live.py complete-layout --context CONTEXT.json --params BRIEF.json --execute --layout-record PARTIAL.json
+```
+
+Adapt reference XYZ/directions/guides, outer branch targets, authorised region and
+an exact current native seed_edge to the actual site. The seed supplies an existing
+track asset/style, not a historical layout prerequisite. Native template spacing5,
+compatible level anchors, ordered UUDD and outward tangent leads100-600 are supported.
+Overall translation/rotation is supported; no generic routing or station modelling.
+
+The explicit site_policy is observe or clear_roads. Bounded native observations cover
+approaches and native fitted control bounds; terrain and unsupported objects are
+recorded. clear_roads removes exact observed ordinary non-TRACK edges within the
+region. Observations are practical screening, not exhaustive collision/effect proof.
+Native construction still decides terrain/structure realisation and validity.
+
+Every stage has local receipts and honest partial/unknown effects. Explicit same-brief
+continuation freshly checks acknowledged fixtures and completed stages, skips them,
+and adopts only independently proven main/branch progress. Pending requests, missing
+receipts, failed fixtures and unclaimed target/lead effects require reconciliation;
+they are never blindly recreated. This is not crash recovery. A completed-record
+execution returns checked existing state without construction. Use inspection to
+resolve stale identities; saved geometry/proximity alone is not attachment proof.
+
+Normal output stays compact. Full observations/native fit controls stay local.
+Route/direction/spacing/geometry checks do not demonstrate physical train traversal,
+signalling/reservation behaviour, continuous clearance or complete mutation history.

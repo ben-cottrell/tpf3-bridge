@@ -1,3 +1,30 @@
+## P27 complete - portable native curved UUDD layout from a fresh brief
+bridge_complete plan/publish/execute/inspect_complete_layout; CLI complete-layout
+[--execute [--layout-record PARTIAL]], complete-layout-inspect --layout-record.
+No historical P25/P26 receipt or one-off fixture script prerequisite; exact current
+native asset seed/context still required. Level compatible anchors,UUDD,native5m
+spacing,1-3guides,outward leads100-600; translation/rotation retained. No new fitter.
+Durable fixture/main/branch receipts; explicit same-brief continuation freshly adopts
+known work, no unknown replay. Completed re-execution checked_existing/no construction.
+Bounded site/terrain/native-control screening; finite dense-cell subdivision;
+explicit clear_roads removed15 observed ordinary roads. Failed/truncated evidence kept.
+Build40408/session pif_1791090607_90156522:6native TRAIN routes,2forks UP138864/
+DOWN103228. Independent46TRACK edges,33samples/edge: radius416.874569>=400,grade0,
+exact connectivity/joins/region,retained5/10/15normal spacing. Fresh inspect671bytes.
+Eight approaches survived normal save/load and were freshly checked,not rebuilt.
+Main/UP branch/DOWN lead-target were adopted before final DOWN construction.
+python tools/quiet_checks.py --suite live_client --label pif-p27-receipt-acceptance:
+197passed; .local_checks/pif-p27-receipt-acceptance_9mf3ptpn/report.json.
+Exact commands/results/source hashes: .local_runs/live_python_interface/p27/checks.json;
+HANDOFF.md,result.json,checkpoint.json,fresh_inspection.json,checked_existing.json,
+independent_complete_result.json. py_compile/git diff --check passed.
+Local milestone checkpoint records revision; prior accepted bdf5330. No push.
+Normal save TPF3_Bridge_P27_Complete_20261004_0821;paused/non-maximised2099x1284.
+No continuous clearance,train traversal/reservations/direction enforcement,complete
+native effects history or general save/load identity guarantee. Lua standalone
+syntax unperformed; updated native-control evidence runtime demonstrated.
+No blockers. Usage unavailable. P27 boundary reached; no follow-on task launched.
+
 ## P26 complete - native curved four-track main with two outward branches
 bridge_branching plan/publish/execute/inspect_branching_corridor; CLI
 branching-corridor [--execute [--layout-record PARTIAL]], branching-corridor-inspect.

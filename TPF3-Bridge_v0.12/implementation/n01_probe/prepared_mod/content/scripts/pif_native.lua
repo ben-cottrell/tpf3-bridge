@@ -686,7 +686,7 @@ function M.fit(p,s,request_id,target,start)
  return {fit_request=request_id,pieces=#controls,total_length=total,start_node=p.anchor_node,target_node=target and target.node or nil,start=pos,finish=last.p1,radius=p.radius,grade=grade,end_grade=endgrade,
   discarded_native_tiny_parts=discarded,discarded_native_total_length=discardedlength,
   vertical_domain=profile and "native_cubic_endpoint_height_grade" or "constant_grade_compatible_endpoints",max_grade=maxgrade,max_sampled_grade=maxsampledgrade,sampled_Z_error=maxzerr,
-  vertical_samples=profile and vertical_samples or nil,controls=profile and controls or nil,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,
+  vertical_samples=profile and vertical_samples or nil,controls=controls,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,
   native_fit_radius=fitradius,requested_min_radius=p.radius,min_sampled_converted_radius=minsampledradius~=math.huge and minsampledradius or nil,
   native_orientation=orientation,orientation_evidence=orientation_evidence,sampled_only=true,game_constructed=false}
 end
@@ -842,7 +842,7 @@ function M.corridor(p,s,state,request_id,respond)
    if i<#goals then all.guides[#all.guides+1]={after_piece=#all.controls,pos=goal.pos,direction=goal.direction,grade=goal.grade} end
    local last=f.controls[#f.controls];start={anchor=a,pos=last.p1,direction=norm(last.t1),grade=slope(last.t1)}
   end
-  fit.pieces=#all.controls;fit.total_length=all.total_length;fitted=all
+  fit.pieces=#all.controls;fit.total_length=all.total_length;fit.controls=all.controls;fitted=all
   local fit_id=request_id.."_corridor_fit";s.fits[fit_id]=all
   if not p.execute then reply("ok",{game_constructed=false});return end
   stage="build";assert(not s.mutationPending,"unreconciled_mutation")
