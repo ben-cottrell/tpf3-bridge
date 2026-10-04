@@ -73,12 +73,54 @@ class ScissorsTests(unittest.TestCase):
                 calls.append((op,p))
                 if p.get('execute'):
                     return {'status':'error','result':{'error':'native_construction_rejected','game_constructed':'unknown'}}
-                n=next(n for n,h in b['turnouts'].items() if h['guide_xyz']==p['location']['guide_xyz']);v=b['turnouts'][n]['guide_xyz']
-                return {'status':'ok','result':{'fit':{'controls':[{'p0':v,'p1':[150,2.5,0],'t0':[0,0,0],'t1':[0,0,0]}]}}}
+                fits={n:{'controls':[{'p0':h['guide_xyz'],'p1':[150,2.5,0],'t0':[0,0,0],'t1':[0,0,0]}]} for n,h in b['turnouts'].items()}
+                return {'status':'ok','result':{'fits':fits}}
             with patch('bridge_scissors.live._select_throat_port',return_value=({},'read')),patch('bridge_scissors._source',side_effect=lambda client,brief,n:({'location':{'guide_xyz':brief['turnouts'][n]['guide_xyz']}},'read')),patch.object(client,'request',side_effect=request):
                 result=scissors(client,b,execute=True)
-            self.assertEqual(len(calls),5);self.assertEqual(result['stage'],'turnout_L0');self.assertEqual(result['game_constructed'],'unknown')
-            record=json.loads(Path(result['evidence']).read_text());self.assertEqual(len(record['operations']),5);self.assertFalse(record['leads']);self.assertNotIn('complete_receipts',record)
+            self.assertEqual(len(calls),2);self.assertEqual(result['stage'],'connected_pointwork');self.assertEqual(result['game_constructed'],'unknown')
+            self.assertTrue(all(op=='scissors_candidate' for op,p in calls));self.assertFalse(calls[0][1]['execute']);self.assertTrue(calls[1][1]['execute'])
+            record=json.loads(Path(result['evidence']).read_text());self.assertEqual(len(record['operations']),2);self.assertFalse(record['leads']);self.assertNotIn('complete_receipts',record)
+
+    def test_connected_scissors_execution_is_classified_as_mutation(self):
+        self.assertTrue(is_mutation('scissors_candidate',{'execute':True}))
+        self.assertFalse(is_mutation('scissors_candidate',{'execute':False}))
+
+    def test_rejected_scissors_reconciliation_requires_current_rails_and_routes(self):
+        from bridge_live import reconcile_rejected_scissors
+        originals=[{'id':11,'node0':1,'node1':2},{'id':22,'node0':3,'node1':4}]
+        for failure in (None,'ack','snapshot','route'):
+            with self.subTest(failure=failure),tempfile.TemporaryDirectory() as d:
+                root=Path(d);client=LiveClient(root/'mod',root/'log',root/'evidence','test',.1)
+                pending={'request_id':'rejected','operation':'scissors_candidate','params':{'execute':True,'max_route_length':500,
+                    'leads':{n:{'source':{'edge_snapshot':e}} for n,e in zip(('L0','L1'),originals)}}}
+                client.journal.write_text(json.dumps({'pending':pending}))
+                (client.evidence/'rejected.response.json').write_text(json.dumps({'session':'test','request_id':'rejected','operation':'scissors_candidate',
+                    'status':'error','result':{'native_command_success':failure=='ack','error':'native_construction_rejected','stage':'build'}}))
+                calls=[]
+                def request(op,p):
+                    calls.append((op,p))
+                    if op=='scissors_candidate':return {'request_id':'read','status':'ok','result':{'game_constructed':False,'originals':[] if failure=='snapshot' else originals}}
+                    return {'request_id':'route'+str(len(calls)),'status':'ok','result':{'requested_route_verified':failure!='route'}}
+                with patch.object(client,'request',side_effect=request):
+                    if failure:
+                        with self.assertRaises(LiveError):reconcile_rejected_scissors(client)
+                        self.assertEqual(json.loads(client.journal.read_text())['pending'],pending)
+                    else:
+                        result=reconcile_rejected_scissors(client)
+                        self.assertFalse(result['result']['automatic_replay']);self.assertEqual(result['result']['other_effects'],'unknown')
+                        self.assertNotIn('pending',json.loads(client.journal.read_text()));self.assertEqual(len(calls),3)
+                self.assertTrue(all(not p.get('execute') for _,p in calls))
+
+    def test_connected_scissors_keeps_incomplete_native_receipt(self):
+        from bridge_scissors import scissors
+        b=self.brief()
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);client=LiveClient(root/'mod',root/'log',root/'evidence','test',.1)
+            fits={n:{'controls':[{'p0':h['guide_xyz'],'p1':[150,2.5,0],'t0':[0,0,0],'t1':[0,0,0]}]} for n,h in b['turnouts'].items()}
+            with patch('bridge_scissors.live._select_throat_port',return_value=({},'read')),patch('bridge_scissors._source',return_value=({},'read')),patch.object(client,'request',side_effect=[{'status':'ok','result':{'fits':fits}},{'status':'mutation_unverified','result':{'game_constructed':True,'returned_edges':[20],'error':'receipt_incomplete'}}]) as call:
+                summary=scissors(client,b,execute=True)
+            self.assertEqual(summary['status'],'mutation_unverified');self.assertIs(summary['game_constructed'],True);self.assertEqual(call.call_count,2)
+            record=json.loads(Path(summary['evidence']).read_text());self.assertEqual(record['operations'][-1]['response']['result']['returned_edges'],[20]);self.assertNotIn('complete_receipts',record)
 
 class LiveClientTests(unittest.TestCase):
     def setUp(self):

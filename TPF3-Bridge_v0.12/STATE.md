@@ -1,27 +1,30 @@
-## P38 closed with native limitation - compact scissors on existing5-unit rails
-bridge_scissors.scissors / bridge_live scissors: default read-only four native interior
-fits, explicit execute, reacquisition after splits, durable stage receipts/no replay.
-scissors-inspect prepares fresh receipt-bound geometry/12movement/conflict assessment;
-completed scissors acceptance remains untested because native construction rejected L0.
-Existing interior_junction narrowly supports a level fitted free-end lead. Explicitly
-paired crossing arms may be positive below20; older unpaired domain unchanged.
-Build40408/session pif_1791118665_118214242: inspected centre(-1450,-4297.5), terrain
-height7.324996948; two existing300x5 rails with20outside stubs,340x5 actual extent.
-Original h14.5652/q23.5774 failed native conversion tolerance before mutation. Symmetric
-h14.4652/q23.7774 passed four3-piece fits (~9.4623length), hard60/nativefit70, level,
-within300x5. First L0 proposal returned native_construction_rejected; no replay,
-remaining turnouts/crossing not built. Unknown general effects retained; fresh readback
-confirmed six original TRACKs103773/103776/103780/103785/103788/103792 and four complete
-through paths, independent running rails graph-disjoint. Not scissors/8movement proof.
-python tools/quiet_checks.py --suite live_client --label pif-p38-final-acceptance:
-291passed/0fail/error/skip; .local_checks/pif-p38-final-acceptance_yk0zcn00/report.json.
-py_compile/diff pass. Evidence .local_runs/live_python_interface/p38/:site.json,
-fixtures.json,brief_initial.json,prepare_initial.json,brief.json,prepare.json,execute.json,
-post_rejection_running_rails.json,post_rejection_through.json,native_preflight_fits.json,
-checks.json,result.json,HANDOFF.md,checkpoint.json; earlier evidence preserved.
-Checkpoint revision recorded in checkpoint.json; no push. Astra decides compact
-turnout limitation/topology; no larger replacement, lowered constraints, capacity,
-physical train/signalling claim or automatic partial/cross-load resume. Usage unknown.
+## P38 continuation closed - tested connected proposals remain natively rejected
+Failed checkpoint2884ee8 preserved; no completed scissors capability claimed.
+scissors / scissors-inspect now prepare one connected pointwork proposal, preserve
+native receipts/unknown effects and reject automatic replay. Native fit-part
+repartitioning compares99samples/branch against one cubic, exact ends/headings,
+existing0.1 sampled conversion tolerance, hard60 radius/grade0/region unchanged.
+Centre inspection uses known-arm envelope; completed8movement inspection untested.
+Build40408: connected22segment/17node proposal rejected; repaired14segment/9node
+proposal also rejected: Construction Not Possible, no finer native validation reason.
+Four preflights pass: sampled radius>=69.942, combined sampled error<0.005;
+5spacing/15degree/fourturnout topology retained. Not an engine minimum/global proof.
+Fresh session pif_1791121053_120602056 confirms six original TRACKs
+103773/103776/103780/103785/103788/103792,4complete through paths, independent rails
+graph-disjoint; general effects remain unknown. Explicit rejection reconciliation
+recorded, pending clear, no unchanged replay. Separate fixture save:
+TPF3_Bridge_P38_Running_Rails_20261004.sav, verified hash in repair1/running_rails_save.json.
+python tools/quiet_checks.py --suite live_client --label pif-p38-repartition-pre-native:
+294passed/0fail/error/skip; .local_checks/pif-p38-repartition-pre-native_4mjugczv/report.json.
+Unchanged tested code reused; py_compile/diff checks recorded in repair2/checks.json.
+Evidence .local_runs/live_python_interface/p38/repair1/:diagnosis.json,execute.json,
+connected_rejection_context.txt,connected_reconciliation.json; repair2/:staging.json,
+prepare.json,execute.json,rejection_context.txt,reconciliation.json,
+post_rejection_running_rails.json,post_rejection_through.json,result.json,HANDOFF.md,
+checks.json,checkpoint.json. Earlier p38 evidence/history retained. Revision recorded
+in repair2/checkpoint.json; local commit only/no push. Astra decides next specific
+native gap in reference challenge; no more standalone angle/size sweep. Actual usage
+unavailable; no completed scissors/8movement/capacity/train/signalling claim.
 
 ## P37 complete - bounded full-reference movement-set assessment
 Existing route-set-inspect/inspect_route_set version1 supports32roles/64movements/

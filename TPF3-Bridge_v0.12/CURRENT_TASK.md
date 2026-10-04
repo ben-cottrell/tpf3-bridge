@@ -1,14 +1,23 @@
-# PIF-P38 — closed with concrete native construction limitation
+# PIF-P38 continuation — closed with persistent native rejection
 
-Implemented compact scissors preparation/execution/inspection workflow on existing
-level300x5 running rails, with caller-declared external/turnout roles and15-degree
-crossing axes. Focused checks pass291tests. Native first L0 turnout rejected on
-build40408; stopped without replay or substituting another layout. Fresh readback
-confirms original six TRACKs and four through paths; complete scissors not demonstrated.
+The approved native-proposal repair continuation has finished its bounded diagnosis.
+P38 scissors construction remains **unqualified**. Build40408 rejected both complete
+connected assemblies:22segments/17nodes preserving all native fit parts, then
+14segments/9nodes with checked single-cubic branch repartitioning. Exact native
+error: `ProposalData error: Construction Not Possible`; no finer restriction exposed.
+Spacing5, crossing15degrees, fourturnouts, two independent through rails, hard sampled
+radius60 and grade0 were retained. No global impossibility or engine minimum inferred.
 
-Canonical approved card: .local_runs/live_python_interface/p38/orchestrator/TASK.md.
-Result/evidence/HANDOFF/checkpoint: .local_runs/live_python_interface/p38/.
-Next decision belongs to Astra: interpret compact-turnout rejection and explicitly
-adopt any material geometry/topology change. No unsolicited follow-on task/batch.
-Permanent human coordinator communication and disposable-map/local milestone
-authority remain binding; remote pushes need separate authority.
+Four repartitioned preflights pass; final fresh inspection confirms six original
+TRACKs/four through routes/independent running rails. Rejection reconciliation retains
+unknown general effects and original history, clears pending without replay.
+294affected quiet tests pass; STATE.md gives exact report/command and evidence paths.
+Completed8movement/scissors acceptance remains untested; no success promotion.
+
+Full approved topology/continuation card and failed history remain local under
+`.local_runs/live_python_interface/p38/orchestrator/TASK.md` and `repair1/`, `repair2/`.
+Finish source/docs/local checkpoint and send compact handoff to coordinator
+01a0f987-8917-7f31-84c3-838acacc9e04 under permanent direct human communication authority.
+Then stop; Astra decides the next concrete bridge gap in the larger reference use.
+No automatic feature/task batch, widened geometry sweep, remote push, host restart,
+runner changes, stations, signalling or train-physics work.

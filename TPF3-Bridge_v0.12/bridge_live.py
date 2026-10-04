@@ -15,10 +15,10 @@ import time
 import uuid
 
 MARKER = 'TPF3_BRIDGE_LIVE_RESPONSE '
-OPERATIONS = {'degree_four_candidate', 'inspect_degree_four', 'inspect', 'clear_obstructions', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'remove_branch', 'crossover', 'adjacent', 'verify_adjacency', 'junction', 'interior_junction', 'selected_connection', 'corridor'}
+OPERATIONS = {'scissors_candidate', 'degree_four_candidate', 'inspect_degree_four', 'inspect', 'clear_obstructions', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'remove_branch', 'crossover', 'adjacent', 'verify_adjacency', 'junction', 'interior_junction', 'selected_connection', 'corridor'}
 
 def is_mutation(operation, params):
-    return operation in ('build', 'test_approach', 'remove_branch', 'clear_obstructions') or (operation in ('extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover', 'adjacent', 'degree_four_candidate') and params.get('execute') is True)
+    return operation in ('build', 'test_approach', 'remove_branch', 'clear_obstructions') or (operation in ('scissors_candidate', 'extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover', 'adjacent', 'degree_four_candidate') and params.get('execute') is True)
 
 def discover_session(log_path):
     """Read transport markers locally; a later request must still prove responsiveness."""
@@ -2030,6 +2030,37 @@ def reconcile_rejected_crossover(client):
     latest.pop('pending');atomic_json(client.journal,latest)
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
 
+def reconcile_rejected_scissors(client):
+    """Observe unchanged original rails after rejection; never replay the proposal."""
+    state=json.loads(client.journal.read_text());pending=state.get('pending')
+    if not pending or pending['operation']!='scissors_candidate' or pending['params'].get('execute') is not True:
+        raise LiveError('reconciliation_required','no pending native-rejected scissors')
+    rid=pending['request_id'];response_path=client.evidence/(rid+'.response.json');response=json.loads(response_path.read_text());v=response.get('result',{})
+    if (response.get('session')!=client.session or response.get('request_id')!=rid or response.get('operation')!='scissors_candidate'
+            or response.get('status')!='error' or v.get('native_command_success') is not False
+            or v.get('error')!='native_construction_rejected' or v.get('stage')!='build'):
+        raise LiveError('reconciliation_required','no explicit native scissors rejection',rid)
+    observed=client.request('scissors_candidate',pending['params']|{'execute':False})
+    expected=[pending['params']['leads'][n]['source']['edge_snapshot'] for n in ('L0','L1')]
+    if observed['status']!='ok' or observed.get('result',{}).get('game_constructed') is not False or observed['result'].get('originals')!=expected:
+        raise LiveError('reconciliation_required','unchanged original running rails not established',rid)
+    routes=[]
+    for e in expected:
+        route=client.request('route',{'source_edge':e['id'],'source_node':e['node0'],'target_edge':e['id'],'target_node':e['node1'],
+            'single_edge':True,'mode':'TRAIN','required_edges':[e['id']],'max_length':pending['params']['max_route_length']})
+        routes.append(route['request_id'])
+        if route['status']!='ok' or route.get('result',{}).get('requested_route_verified') is not True:
+            raise LiveError('reconciliation_required','original through route not established',rid)
+    latest=json.loads(client.journal.read_text())
+    if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
+    record={'status':'reconciled_rejected_scissors','original_pending':pending,'original_response':str(response_path.resolve()),
+        'observation':observed['request_id'],'through_observations':routes,'completed_scissors_absent':True,
+        'other_effects':'unknown','effects_history_complete':False,'automatic_replay':False}
+    path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
+    latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(client.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
 def reconcile_rejected_junction(client):
     """Fresh fit-only identity/incidence checks after an explicit native rejection."""
     state=json.loads(client.journal.read_text());pending=state.get('pending')
@@ -2350,7 +2381,7 @@ class LiveClient:
         if state['session'] != self.session:
             raise LiveError('session_changed', 'use a new evidence directory for a new runtime session')
         unresolved = state.get('pending')
-        if unresolved and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'verify_adjacency', 'adjacent', 'remove_branch', 'crossover', 'selected_connection', 'corridor', 'junction', 'interior_junction')):
+        if unresolved and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'verify_adjacency', 'adjacent', 'remove_branch', 'crossover', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'scissors_candidate')):
             raise LiveError('reconciliation_required', 'previous request is unfinished; inspect its matching response/current world before any repeat', state['pending']['request_id'])
         if (self.evidence / (request_id + '.request.json')).exists():
             raise LiveError('request_id_reused', 'request ID already recorded', request_id)

@@ -119,22 +119,16 @@ def scissors(client,b,*,execute=False):
         if client.journal.exists() and json.loads(client.journal.read_text()).get('pending'):raise live.LiveError('reconciliation_required','unfinished native request; no replay')
         for n in ROLES:
             live._select_throat_port(client,{k:v for k,v in b['endpoints'][n].items() if k!='position_tolerance'},tolerance=b['endpoints'][n]['position_tolerance'],connected=True)
-        for n in TURNS:
-            p,rid=_source(client,b,n);p['execute']=False
-            response=call('prepare_'+n,'interior_junction',p)
-            _branch_envelope(b,response['result']['fit']['controls'])
+        leads={n:_source(client,b,n)[0] for n in TURNS}
+        p={'leads':leads,'center':b['center'],'region':b['region'],'radius':b['radius'],'fit_radius':b['fit_radius'],'max_route_length':b['max_route_length'],'repartition':True,'execute':False}
+        response=call('prepare_connected_pointwork','scissors_candidate',p)
+        for n in TURNS:_branch_envelope(b,response['result']['fits'][n]['controls'])
         if not execute:
             summary={'status':'ok','operation':'scissors','stage':'prepared','game_constructed':False,'evidence':str(path.resolve())};r['summary']=summary;save();return summary
-        for n in TURNS:
-            stage='turnout_'+n;p,rid=_source(client,b,n);p['junction_nodes']=[v['junction']['node'] for v in r['leads'].values()];p['execute']=True
-            response=call(stage,'interior_junction',p);r['leads'][n]=response['result'];save()
-        stage='crossing'
-        ports={}
-        for n,v in r['leads'].items():
-            rb=v['readback'];current=call('current_tip_'+n,'inspect',{'edge_ids':[rb['ordered_edges'][-1]]})
-            ports[n]={'edge_snapshot':current['result']['edges'][0],'node_id':rb['ordered_nodes'][-1]}
-        p={'center':b['center'],'region':b['region'],'ports':ports,'pairs':PAIRS,'execute':True,'authorised':True}
-        response=call(stage,'degree_four_candidate',p);r['crossing']={'params':p,'response':response};r['complete_receipts']=True;save()
+        stage='connected_pointwork';response=call(stage,'scissors_candidate',p|{'execute':True});v=response['result']
+        r['leads']=v['leads'];r['assembly']='connected_pointwork'
+        r['crossing']={'params':{'center':b['center'],'region':b['region'],'ports':v['ports'],'pairs':PAIRS},'response':response}
+        r['complete_receipts']=True;save()
         stage='inspection';summary=_inspect(client,r,path);summary.update(operation='scissors',game_constructed=True,construction_record=str(path.resolve()));r['summary']=summary;save();return summary
     except (live.LiveError,ValueError,KeyError,TypeError,OSError) as exc:
         summary={'status':getattr(exc,'status','invalid_scissors_record'),'operation':'scissors','stage':stage,'game_constructed':r['game_constructed'],'error':str(exc)[:400],'evidence':str(path.resolve()),'automatic_resume':False};r['summary']=summary;save();return summary
@@ -155,7 +149,8 @@ def _inspect(client,r,original):
     inner=crossing['result'];assessment=classify(inner);obs['crossing_assessment']=assessment
     _check_arms({'center':b['center'],'pairs':PAIRS,'axes':b['axes'],'half_arm_length':b['half_arm_length']},inner)
     junctions={n:{k:h[k] for k in ('region','max_edges','guide_xyz','position_tolerance')} for n,h in b['turnouts'].items()}
-    junctions['C']={'region':{'min':[x-1 for x in b['center']],'max':[x+1 for x in b['center']]},'max_edges':16,'guide_xyz':b['center'],'position_tolerance':.001}
+    arm_envelope=[b['center'],*(t['position'] for t in tips(b).values())]
+    junctions['C']={'region':{'min':[min(t[i] for t in arm_envelope)-2 for i in range(3)],'max':[max(t[i] for t in arm_envelope)+2 for i in range(3)]},'max_edges':16,'guide_xyz':b['center'],'position_tolerance':.001}
     # Query all12 movements once; complete paths are assessed across the entire set.
     movements=_movements()
     summary=inspect_route_set(client,{'version':1,'endpoints':b['endpoints'],'junctions':junctions,'movements':movements,'mode':'TRAIN','max_length':b['max_route_length']})

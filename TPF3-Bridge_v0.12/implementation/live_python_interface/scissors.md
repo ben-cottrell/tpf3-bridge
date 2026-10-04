@@ -2,8 +2,8 @@
 
 `bridge_scissors.scissors(client, brief, execute=False)` and `bridge_live.py scissors`
 prepare four native interior-turnout fits on existing running rails. `--execute`
-explicitly builds the fitted leads, reacquiring native attachment identity after each
-split, then submits one caller-paired ordinary crossing. No automatic retry/resume.
+submits one complete connected native proposal: both through-rail subdivisions,
+four fitted branches and one caller-paired ordinary crossing. No automatic retry/resume.
 `inspect_scissors(client, record)` / `scissors-inspect --layout-record RECORD` inspect
 completed current-session receipts without construction. Partial records require
 focused reconciliation; neither command invents success or guarantees rollback.
@@ -28,13 +28,27 @@ the existing conversion tolerance. A symmetric0.1-unit reduction in half-arm len
 and0.2-unit outward shift of each turnout passed all four native fits and the
 300x5 branch-envelope check, without lowering constraints.
 
-**Native construction is unqualified:** build40408 rejected the first L0 turnout
-proposal (`native_construction_rejected`). Execution stopped; no rejected proposal
-was repeated and the centre/remaining turnouts were not built. Fresh readback found
-all six original running-rail TRACKs and four complete through routes; different
-running rails remained graph-disjoint. This does not prove all possible side effects
-absent, transactionality or rollback. Full evidence is local in
-`.local_runs/live_python_interface/p38/`.
+The connected path also performs bounded branch repartitioning: exact native-fit
+endpoints/headings form one native cubic per branch, compared at33 samples per
+original fit part. The sum of sampled conversion errors must remain within the
+existing0.1 tolerance; selected radius/grade/region checks remain binding. Original
+controls and comparison results remain in evidence. This is sampled approximation,
+not exact continuous equality or a claim about the engine's minimum segment size.
+
+**Native construction is unqualified:** build40408 rejected the original isolated
+L0 proposal, a complete22-segment/17-node connected proposal, and a repartitioned
+14-segment/9-node connected proposal. All returned `Construction Not Possible`;
+the native response provided no more specific validation reason. Repartitioning
+passed four native preflights (sampled radius>=69.942, combined sampled error<0.005)
+without relaxing radius60, grade0, spacing5 or15-degree crossing.
+No unchanged proposal was replayed. Explicit read-only rejection reconciliation
+confirmed original rail snapshots and through routes before clearing pending state.
+Final fresh readback found six original TRACKs and four complete through routes;
+different running rails remained graph-disjoint. Other effects remain unknown.
+This establishes a persistent rejection of these tested proposals, not global
+topology impossibility or an engine minimum. Evidence remains local in
+`.local_runs/live_python_interface/p38/repair1/` and `repair2/`; earlier evidence
+is preserved. The separate running-rail save retains the test fixture.
 
 Completed-state acceptance (prepared, not natively demonstrated for this scissors)
 requires eight complete directed cross-end paths, four explicit same-end no-returned
@@ -44,5 +58,5 @@ witnesses with no shared TRACK or junction node. Existing route-set inspection
 records the full conflict matrix. No-path observations are bounded, geometry checks
 sampled, and graph separation is not capacity, signalling, clearance or train proof.
 
-The concrete compact-turnout rejection is an Astra design decision boundary. Do not
+The unresolved native validation rejection is an Astra decision boundary. Do not
 substitute a spread-out crossing, lower radius or silently change the selected topology.

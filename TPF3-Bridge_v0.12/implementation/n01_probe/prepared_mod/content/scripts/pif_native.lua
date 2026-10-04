@@ -954,9 +954,14 @@ end
 -- Disposable-world test fixture, not a planner: place one short independent
 -- approach at a native-fitted finish, with the same template, tangent and grade.
 -- Native evaluation and one coherent remove/replace/add proposal. No Python fitter.
-local function interior_splits(a,parameter,region,radius,max_grade)
+local function interior_splits(a,parameter,region,radius,max_grade,second_parameter)
   local g=cubic({p0=a.p0,p1=a.p1,t0=a.t0,t1=a.t1,length=1});local splits={}
-  for i,interval in ipairs({{0,parameter},{parameter,1}}) do
+  local intervals={{0,parameter},{parameter,1}}
+  if second_parameter then
+   assert(finite(second_parameter) and parameter<second_parameter and second_parameter<1,"ordered_native_split_parameters_required")
+   intervals={{0,parameter},{parameter,second_parameter},{second_parameter,1}}
+  end
+  for i,interval in ipairs(intervals) do
    local x,y=interval[1],interval[2];local first,last=g:calcPos(x),g:calcPos(y)
    local t0,t1=arr(first[2]),arr(last[2]);for k=1,3 do t0[k]=t0[k]*(y-x);t1[k]=t1[k]*(y-x) end
    splits[i]={p0=arr(first[1]),p1=arr(last[1]),t0=t0,t1=t1,length=1}
@@ -1403,5 +1408,140 @@ function M.degree_four_candidate(p,s,state,request_id,respond)
   if not ok then value.error=tostring(out):sub(1,400);value.game_constructed="unknown";value.retry=false end
   respond(request_id,ok and "ok" or "mutation_unverified",ok and out or value)
  end)
+end
+-- P38: remove internal fit-part nodes only after checking a single native cubic
+-- against every original part. This is a sampled lowering approximation, not an
+-- engine minimum-segment rule or continuous equality proof.
+local function scissors_repartition(f,report)
+ local original=f.controls;local first,last=original[1],original[#original];local total=f.total_length
+ local a,b=norm(first.t0),norm(last.t1)
+ local c={p0=first.p0,p1=last.p1,t0={a[1]*total,a[2]*total,0},t1={b[1]*total,b[2]*total,0},length=total}
+ local cg=cubic(c);local samples,offset,maxerr={},0,0
+ for _,part in ipairs(original) do
+  local source=cubic(part)
+  for j=0,32 do
+   local u=(offset+j/32*part.length)/total;local pos,dir=sample(source,j/32);local bp=sample(cg,u)
+   maxerr=math.max(maxerr,distance(pos,bp))
+   samples[#samples+1]={u=u,pos=pos,dir=dir,base_pos=bp}
+  end
+  offset=offset+part.length
+ end
+ assert(maxerr+report.sampled_XY_error<=.1,"scissors_repartition_outside_conversion_tolerance")
+ assert(angle(c.t0,first.t0)<=.1 and angle(c.t1,last.t1)<=.1,"scissors_repartition_heading_mismatch")
+ local radius=geometry_bounds(cg,f.region,f.min_radius,0)
+ report.original_native_controls=original
+ report.repartition={original_pieces=#original,proposal_pieces=1,sample_count=#samples,
+  sampled_XY_error=maxerr,sampled_combined_conversion_error=maxerr+report.sampled_XY_error,
+  sampled_only=true,min_sampled_radius=radius}
+ report.controls={c};report.pieces=1;report.min_sampled_converted_radius=radius
+ f.controls={c};f.samples={samples}
+end
+-- Complete connected pointwork avoids isolated near-parent free turnout stubs.
+function M.scissors_candidate(p,s,state,request_id,respond)
+ local stage="inspect";local names={"L0","L1","R0","R1"};local fittings,locations,originals,splits={},{},{},{}
+ local function reply(status,value) value.stage=stage;value.assembly="connected_pointwork";respond(request_id,status,value) end
+ local ok,err=pcall(function()
+  assert(type(p.execute)=="boolean" and type(p.leads)=="table","scissors_parameters_required")
+  assert(p.radius>=60 and p.fit_radius>=70 and p.fit_radius>=p.radius,"scissors_radius_requirements")
+  vector(p.center);in_region(p.center,p.region)
+  local fits={}
+  for _,name in ipairs(names) do
+   local q=p.leads[name];assert(q and not q.target,"explicit_four_native_interior_roles_required")
+   local a=assert_fresh(q.source.edge_snapshot);local c=interior_location(a,q.location)
+   assert(math.abs(c.parameter-q.source.parameter)<=.000001,"stale_interior_location")
+   assert(math.abs(c.grade)<=.000001 and math.abs(c.pos[3]-p.center[3])<=.001 and math.abs(q.end_xyz[3]-p.center[3])<=.001,"level_scissors_required")
+   locations[name]=c
+   local id=request_id.."_"..name
+   fits[name]=M.fit({end_xy={q.end_xyz[1],q.end_xyz[2]},end_direction=q.end_direction,radius=p.radius,fit_radius=p.fit_radius,region=p.region},s,id,nil,
+     {anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
+   local f=s.fits[id];f.min_radius=p.radius;f.max_grade=0;fittings[name]=f
+   if p.repartition==true then scissors_repartition(f,fits[name]) end
+  end
+  for i=0,1 do
+   local left,right=locations["L"..i],locations["R"..i]
+   assert(left.edge_id==right.edge_id and left.canonical_forward and not right.canonical_forward,"ordered_same_native_running_edge_required")
+   local a=assert_fresh(left.edge_snapshot);originals[i+1]=a
+   splits[i+1]=interior_splits(a,left.parameter,p.region,p.radius,0,right.parameter)
+   local through=M.route({source_edge=a.id,source_node=a.node0,target_edge=a.id,target_node=a.node1,single_edge=true,
+    mode="TRAIN",required_edges={a.id},max_length=p.max_route_length})
+   assert(through.requested_route_verified,"existing_through_route_unverified")
+  end
+  assert(originals[1].id~=originals[2].id,"distinct_running_rails_required")
+  assert(originals[1].template==originals[2].template and originals[1].style==originals[2].style,"incompatible_track_resources")
+  if not p.execute then reply("ok",{game_constructed=false,fits=fits,originals=originals,split_preview=splits});return end
+  assert(not s.mutationPending,"unreconciled_mutation")
+  for _,a in ipairs(originals) do assert_fresh(a) end
+  stage="build";local proposal=api.type.SimpleProposal.new();local nodes,segments,expected={}, {}, {};local temporary=-1000
+  local role_nodes,through_indices,branch_indices,arm_indices={},{},{},{}
+  local function node(pos) temporary=temporary-1;local n=api.type.NodeAndEntity.new();n.entity=temporary;n.comp.position=v(pos);nodes[#nodes+1]=n;return temporary end
+  for _,name in ipairs(names) do role_nodes[name]=node(locations[name].pos) end
+  local center_node=node(p.center)
+  local function add(ctrl,n0,n1,base)
+   local e=api.type.SegmentAndEntity.new();e.entity=-#segments-1;e.type=1;e.comp=base:clone()
+   e.comp.node0=n0;e.comp.node1=n1;e.comp.position0=v(ctrl.p0);e.comp.position1=v(ctrl.p1);e.comp.tangent0=v(ctrl.t0);e.comp.tangent1=v(ctrl.t1)
+   segments[#segments+1]=e;expected[#expected+1]={ctrl=ctrl,node0=n0,node1=n1};return #segments
+  end
+  for i,a in ipairs(originals) do
+   local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE);local chain={a.node0,role_nodes["L"..(i-1)],role_nodes["R"..(i-1)],a.node1}
+   through_indices[i]={}
+   for j,ctrl in ipairs(splits[i]) do through_indices[i][j]=add(ctrl,chain[j],chain[j+1],base) end
+  end
+  for _,name in ipairs(names) do
+   local f=fittings[name];local base=api.engine.getComponent(f.anchor.id,api.type.ComponentType.BASE_EDGE);local current=role_nodes[name]
+   branch_indices[name]={}
+   for _,ctrl in ipairs(f.controls) do local finish=node(ctrl.p1);branch_indices[name][#branch_indices[name]+1]=add(ctrl,current,finish,base);current=finish end
+   local tip=f.controls[#f.controls].p1;local delta={p.center[1]-tip[1],p.center[2]-tip[2],0};local length=distance(tip,p.center)
+   assert(length>0 and length<=300 and angle(delta,f.controls[#f.controls].t1)<=.1,"exact_crossing_arm_required")
+   arm_indices[name]={ctrl={p0=tip,p1=p.center,t0=delta,t1=delta,length=length},node0=current,node1=center_node,base=base}
+  end
+  for _,name in ipairs(names) do local arm=arm_indices[name];arm.index=add(arm.ctrl,arm.node0,arm.node1,arm.base) end
+  assert(#segments<=40 and #nodes<=40,"bounded_scissors_proposal_required")
+  proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments;proposal.streetProposal.edgesToRemove={originals[1].id,originals[2].id}
+  s.mutationPending=request_id;local root=state:get() or {};root.pifLive=s;state:set(root)
+  api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(res,success)
+   if success~=true then s.mutationPending=nil;reply("error",{error="native_construction_rejected",native_command_success=false,game_constructed="unknown",retry=false,
+    proposal_segments=#segments,proposal_nodes=#nodes,original_edges={originals[1].id,originals[2].id}});return end
+   local ids={};for _,e in ipairs(res.proposal.proposal.addedSegments) do ids[#ids+1]=e.entity end
+   local checked,value=pcall(function()
+    assert(#ids==#expected,"scissors_receipt_incomplete")
+    local remaining,matched,mapping={}, {}, {}
+    for _,id in ipairs(ids) do remaining[id]=edge(id) end
+    local function mapped(id) return id>0 and id or mapping[id] end
+    -- Reacquire only receipt identities, anchored in exact original native nodes.
+    -- Controls verify correspondence; there is no nearest-world-entity matching.
+    for i,x in ipairs(expected) do
+     local start=mapped(x.node0);assert(start,"receipt_start_identity_unestablished");local selected=nil
+     for id,e in pairs(remaining) do
+      local valid=e.node0==start and (not mapped(x.node1) or e.node1==mapped(x.node1))
+      for _,k in ipairs({"p0","p1","t0","t1"}) do valid=valid and near(e[k],x.ctrl[k],.001) end
+      if valid then assert(not selected,"ambiguous_receipt_correspondence");selected=e end
+     end
+     assert(selected,"exact_receipt_correspondence_missing");mapping[x.node1]=selected.node1;remaining[selected.id]=nil;matched[i]=selected
+     assert(selected.template==originals[1].template and selected.style==originals[1].style,"scissors_resource_mismatch")
+    end
+    for _ in pairs(remaining) do error("unreconciled_scissors_receipt") end
+    for _,a in ipairs(originals) do assert(not api.engine.entityExists(a.id) or api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)==nil,"old_running_edge_still_present") end
+    local leads,ports,arms={}, {}, {}
+    for _,name in ipairs(names) do
+     local i=tonumber(name:sub(2,2))+1;local left=name:sub(1,1)=="L";local incoming=matched[through_indices[i][left and 1 or 3]];local through=matched[through_indices[i][2]]
+     local junction=mapped(role_nodes[name]);local incident=incidence(junction)
+     local f=fittings[name];f.node=junction;f.junction_node=junction;f.anchor=incoming;f.ids={}
+     for _,index in ipairs(branch_indices[name]) do f.ids[#f.ids+1]=matched[index].id end
+     assert(#incident==3,"scissors_turnout_degree_mismatch")
+     local wanted={[incoming.id]=true,[through.id]=true,[f.ids[1]]=true};for _,id in ipairs(incident) do assert(wanted[id],"scissors_turnout_identity_mismatch") end
+     local rb=M.readback(f);local arm=matched[arm_indices[name].index]
+     assert(arm.node0==rb.ordered_nodes[#rb.ordered_nodes] and arm.node1==mapped(center_node),"scissors_arm_identity_mismatch")
+     leads[name]={readback=rb,junction={node=junction,incoming_edge=incoming.id,through_edge=through.id,branch_edge=f.ids[1],incident_edges=incident,exact_native_identity=true}}
+     ports[name]={edge_snapshot=rb.edges[#rb.edges],node_id=arm.node0};arms[#arms+1]=arm.id
+    end
+    local center=mapped(center_node);local incident=incidence(center);assert(#incident==4,"scissors_crossing_degree_mismatch")
+    local wanted={};for _,id in ipairs(arms) do wanted[id]=true end;for _,id in ipairs(incident) do assert(wanted[id],"scissors_crossing_identity_mismatch") end
+    s.mutationPending=nil;return {game_constructed=true,leads=leads,ports=ports,arm_edges=arms,center_node=center,returned_edges=ids,
+     original_edges={originals[1].id,originals[2].id},effects={added_segments=#ids,added_nodes=#res.proposal.proposal.addedNodes,removed_segments=#res.proposal.proposal.removedSegments},exact_receipt_mapping=true}
+   end)
+   reply(checked and "ok" or "mutation_unverified",checked and value or {error=tostring(value):sub(1,400),returned_edges=ids,game_constructed=true,retry=false})
+  end)
+ end)
+ if not ok then reply(s.mutationPending==request_id and "mutation_unverified" or "error",{error=tostring(err):sub(1,400),game_constructed=s.mutationPending==request_id and "unknown" or false,retry=false}) end
 end
 return M
