@@ -749,6 +749,13 @@ function M.fit(p,s,request_id,target,start,diagnostics)
   end
   if not skip then filtered[#filtered+1]=row end
  end
+ -- If individually tiny pieces exceed the collective discard budget, retain
+ -- ALL native parts. Eligible near-straight lowering below can represent them
+ -- safely; other paths still face the unchanged conversion/engineering checks.
+ if discardedlength>.001 then
+  if diagnostics then diagnostics.retained_tiny_parts_reason="aggregate_exceeds_discard_budget";diagnostics.retained_tiny_total_length=discardedlength end
+  filtered=result;discarded={};discardedlength=0
+ end
  assert(discardedlength<=.001 and #filtered>0,"unsupported_degenerate_native_fit")
  result=filtered
  if diagnostics then diagnostics.discarded_native_tiny_parts=discarded;diagnostics.discarded_native_total_length=discardedlength end

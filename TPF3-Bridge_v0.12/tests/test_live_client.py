@@ -4348,5 +4348,42 @@ class NativeNearstraightEvidenceTests(unittest.TestCase):
                 self.assertEqual(main(['extend','--context','unused','--params',str(params)]),0)
             self.assertLess(len(stdout.getvalue().encode()),4096)
 
+class NativeAggregateTinyEvidenceTests(unittest.TestCase):
+    """Actual P44 record; independent geometry checks, not a Lua interpreter."""
+    def fixture(self):
+        return json.loads((Path(__file__).parent/'fixtures/live_nearstraight_aggregate.json').read_text())
+
+    def test_aggregate_over_budget_retains_every_native_part(self):
+        f=self.fixture();parts=f['failed_native_parts'];fit=f['accepted_fit']
+        arcs=[p for p in parts if 'radius' in p]
+        self.assertEqual(len(arcs),2)
+        self.assertTrue(all(p['length']<=.001 for p in arcs))
+        self.assertGreater(sum(p['length'] for p in arcs),.001)
+        self.assertEqual(parts,fit['native_parts'])
+        self.assertFalse(parts[0]['forward'])
+        self.assertEqual(fit['discarded_native_total_length'],0)
+        self.assertFalse(fit['discarded_native_tiny_parts'])
+        self.assertEqual(len(fit['original_native_controls']),3)
+        self.assertEqual(fit['nearstraight_repartition']['original_pieces'],3)
+
+    def test_actual_130_unit_repartition_keeps_endpoints_and_hard_bounds(self):
+        f=self.fixture();c=f['accepted_fit']['controls'][0];b=f['brief']
+        observer=NativeNearstraightEvidenceTests()
+        samples=[observer.observe(c,j/256) for j in range(257)]
+        self.assertGreaterEqual(min(x[0] for x in samples),b['radius'])
+        self.assertLessEqual(max(x[1] for x in samples),b['vertical']['max_grade'])
+        self.assertEqual(c['p0'][:2],f['failed_native_parts'][0]['start'][:2])
+        self.assertEqual(c['p1'][:2],f['failed_native_parts'][-1]['finish'][:2])
+        self.assertEqual(c['p1'][2],b['vertical']['end_height'])
+        self.assertLessEqual(f['accepted_fit']['sampled_XY_error'],.1)
+
+    def test_retention_precedes_existing_lowering_and_hard_checks(self):
+        s=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text()
+        fit=s.split('function M.fit(',1)[1].split('function M.readback',1)[0]
+        self.assertLess(fit.index('if discardedlength>.001 then'),fit.index('assert(discardedlength<=.001'))
+        self.assertIn('filtered=result;discarded={};discardedlength=0',fit)
+        self.assertLess(fit.index('assert(discardedlength<=.001'),fit.index('#controls>1 and straight_count==1 and arc_turn<=.1'))
+        self.assertIn('geometry_bounds(cg,p.region,p.radius,maxgrade or math.abs(grade))',fit)
+
 if __name__ == '__main__':
     unittest.main()

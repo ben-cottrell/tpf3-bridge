@@ -33,3 +33,18 @@ junction IDs, sampled geometry and ground-relative observations. BaseEdge datum
 and native movement geometry heights are recorded separately; their observed
 difference is not a universal asset conversion. Platform associations, physical
 train traversal and native save GUID remain unknown/unprobed.
+
+P44 fixes the filtering/lowering interaction exposed by an actual 130-unit
+continuation: two individually tiny arcs totalled 0.00165224, exceeding the
+collective discard budget before near-straight lowering could run. Such paths
+now retain ALL native parts, discard nothing and undergo the same lowering and
+hard checks. The discard budget is still 0.001. The recorded case passes native
+read-only fitting and independent finer-sampled regression checks.
+
+P44's fixed 100-unit/10-unit native-parts crossover passed preflight but was
+constructed with an unacceptable realised movement radius (74.2073 < 150).
+Fresh native re-verification retained that failure. Its partial effects and
+unfinished-mutation guard remain visible; a second crossover was not attempted.
+This result does not invalidate the repaired continuation, and does not establish
+general native-parts crossover acceptance. See P44's local handoff for exact IDs
+and the coordinator decision required before further mutation.

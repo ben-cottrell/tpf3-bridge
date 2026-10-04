@@ -1,3 +1,31 @@
+## P44 stopped at native crossover acceptance — continuation repair verified
+
+Build40408/session pif_1791132513_132062371. Aggregate tiny arcs total.00165224
+previously rejected before near-straight lowering. Retain ALL parts when collective
+.001 discard budget would be exceeded; unchanged hard/conversion limits. Original
+130-unit brief passes radius12511702.95/grade0. All6specified extension actions
+succeeded: rails9/12 from150to280;10/11 transition30 thenlevel280. Current6extended
+leads8..13;8/13 end150. Not8extendedleads or full16throat.
+Fixed9@160→10@260 native_parts crossover prefit radius187.1468 passed; native build
+returned7entities but realised movement geometry radius74.2072767<150. Fresh native
+verify_crossover and geometry-required TRAIN route still reject. Connectivity-only
+bothdirections exists; NOT accepted railway. Pending mutation e3c5eae2c9cc47c39b65631dd220459e
+preserved. Connector104611/104612/104613; junction104599/104602. Second12@160→11@260
+prefit passed radius187.2218; construction NOT attempted. No replay/delete/alternate.
+Fresh12through +4previouscrossover directional routes pass geometry;16original
+userlead snapshots unchanged;192frozen stationTRACK identities/endpointpairs intact.
+Full station component reinspection blocked by existing pending-mutation guard;
+not claimed. Geometry sampled; physicaltrain/platform association unprobed.
+python tools/quiet_checks.py --suite live_client --label pif-p44-pre-native:
+326passed/0fail/error/skip; .local_checks/pif-p44-pre-native_rffppueh/report.json.
+Native evidence .local_runs/live_python_interface/p44/native/{prefit,rails_completed,
+final_result03}.json, extensions/,crossovers/,partial_readback03/; p44/HANDOFF.md,
+checks.json,checkpoint.json. Original failures/local stops preserved. Staged Lua
+exercised, no standalone syntax checker. Return concrete partial state to Astra;
+New distinct TPF3_Bridge_P44_Wickham_PARTIAL_20261004.sav saved; path/hash in
+p44/native/world_checkpoint.json (not reloaded). Existing P43 useful baseline retained.
+Local repair checkpoint only/no push/usage unavailable.
+
 ## P43 complete — rotated near-straight lowering and Wickham connections
 
 Native float quantisation made two 0.003154-unit ARC fragments lower to invalid
