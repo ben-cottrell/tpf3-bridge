@@ -1,0 +1,67 @@
+{
+  "layout": "ordered_parallel_branches_v1",
+  "route_reference": {
+    "origin": [
+      1200,
+      2400,
+      33
+    ],
+    "heading_deg": -50,
+    "up": "decreasing"
+  },
+  "tracks": [
+    {
+      "id": "U1",
+      "direction": "UP"
+    },
+    {
+      "id": "D1",
+      "direction": "DOWN"
+    }
+  ],
+  "movements": [
+    {
+      "from": "U1:east",
+      "to": "U1:west"
+    },
+    {
+      "from": "D1:west",
+      "to": "D1:east"
+    },
+    {
+      "from": "branch_up",
+      "to": "U1:west"
+    },
+    {
+      "from": "D1:west",
+      "to": "branch_down"
+    }
+  ],
+  "spacing": 5,
+  "radius": 120,
+  "max_grade": 0.04,
+  "region": {
+    "min": [
+      700,
+      900,
+      0
+    ],
+    "max": [
+      2500,
+      3100,
+      80
+    ]
+  },
+  "asset_region": {
+    "min": [
+      1786,
+      4514,
+      0
+    ],
+    "max": [
+      1808,
+      4528,
+      80
+    ]
+  }
+}

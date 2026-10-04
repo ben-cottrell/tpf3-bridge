@@ -1015,9 +1015,12 @@ def plan_parallel_layout(brief):
     plan={'version':1,'layout':PARALLEL_LAYOUT,'brief':brief,'epoch':'DESIGN','pattern':pattern,
           'order_convention':'increasing left-normal offset when looking along increasing route reference',
           'ports':ports,'fixtures':fixtures,'corridors':corridors,'branches':branches,'movements':movements,'footprint':footprint,
-          'native_execution_supported':pattern=='UP-UP-DOWN-DOWN' and ref['up']=='increasing','native_runtime_demonstrated':False,
+          'native_execution_supported':True,'native_runtime_demonstrated':False,
           'native_construction_direction':d,'direction_enforcement':'not_provided','train_traversal':'unprobed',
           'game_constructed':False,'limitations':['fixed level geometry/radius120/spacing5','outer branches only; no cross-track switching','native execution initially UUDD with increasing UP only']}
+    # Preserve accepted UUDD DESIGN hashes/receipts. Only newly enabled domains
+    # replace the historical initial-execution limitation.
+    if pattern!='UP-UP-DOWN-DOWN' or ref['up']!='increasing':plan['limitations'][-1]='UD/UDUD/UUDD; explicit increasing or decreasing UP reference'
     plan['plan_hash']=hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
     return plan
 
@@ -1030,18 +1033,29 @@ def publish_parallel_layout(plan,evidence):
             'movements':plan['movements'],'direction_enforcement':'not_provided','evidence':str(path.resolve())}
 
 
-def _verify_parallel_layout(client,plan,record,*,movement_edges=None):
+def _verify_parallel_layout(client,plan,record,*,movement_edges=None,partial=False):
     ports={};observations=[];d=plan['native_construction_direction'];ref=plan['brief']['route_reference']
+    states={};record['current_steps']=states
     for name,p in plan['ports'].items():
-        c,rid=_select_throat_port(client,_recipe_intent(plan,p['position'],p.get('construction_direction',d)),tolerance=.5,
-                                  outward_sign=-1 if p['end']=='west' else 1)
-        ports[name]=c;observations.append(rid)
+        try:
+            c,rid=_select_throat_port(client,_recipe_intent(plan,p['position'],p.get('construction_direction',d)),tolerance=.5,
+                                      outward_sign=-1 if p['end']=='west' else 1)
+            ports[name]=c;observations.append(rid);states[name]='completed'
+        except LiveError as exc:
+            if not partial or exc.status!='no_eligible_candidates':raise
+            states[name]='unavailable'
     if len({c['node_id'] for c in ports.values()})!=len(ports):raise LiveError('native_verification_failed','functional ports share current native attachment')
     nodes={}
     for b in plan['branches']:
-        node,rids=_recipe_junction(client,b['source']);nodes[b['name']]=node;observations+=rids
+        try:
+            node,rids=_recipe_junction(client,b['source']);nodes[b['name']]=node;observations+=rids;states[b['name']+'_junction']='completed'
+        except LiveError as exc:
+            if not partial or exc.status not in ('no_eligible_candidates','recipe_state_unknown'):raise
+            states[b['name']+'_junction']='unavailable'
     routes=[]
     for row in plan['movements']:
+        if partial and (any(row[k] not in ports for k in ('from','to')) or any(name not in nodes for name in (row.get('via') or [b['name'] for b in plan['branches'] if b['name'] in (row['from'],row['to'])]))):
+            routes.append(row|{'verified':False,'reason':'current attachment/junction unavailable'});record['routes']=routes;continue
         a,b=(ports[row[k]] for k in ('from','to'))
         q={'source_edge':a['edge_id'],'source_node':a['node_id'],'target_edge':b['edge_id'],'target_node':b['node_id'],
                'mode':'TRAIN','required_edges':list(dict.fromkeys([a['edge_id'],b['edge_id']]+(movement_edges or {}).get((row['from'],row['to']),[]))),'max_length':2500,
@@ -1052,11 +1066,15 @@ def _verify_parallel_layout(client,plan,record,*,movement_edges=None):
         if any(name not in nodes or nodes[name] not in current_nodes for name in via):accepted=False
         routes.append(row|{'verified':accepted,'request_id':r['request_id'],'response':r})
         record['routes']=routes;atomic_json(Path(record['summary']['evidence']),record)
-        if not accepted:raise LiveError('native_verification_failed','required intended movement not verified: '+row['from']+'->'+row['to'])
+        if not accepted and not partial:raise LiveError('native_verification_failed','required intended movement not verified: '+row['from']+'->'+row['to'])
     spacing=[];normal=[-d[1],d[0]];lines=[]
     for i,t in enumerate(plan['brief']['tracks']):
         o=ref['origin'];q=[o[0]+50*d[0]+5*i*normal[0],o[1]+50*d[1]+5*i*normal[1],o[2]]
-        c,rid=_select_throat_port(client,_recipe_intent(plan,q,d),interior=True,tolerance=.5);observations.append(rid);e=c['edge_snapshot']
+        try:c,rid=_select_throat_port(client,_recipe_intent(plan,q,d),interior=True,tolerance=.5)
+        except LiveError as exc:
+            if not partial or exc.status!='no_eligible_candidates':raise
+            states['approach_spacing']='unavailable';lines=[];break
+        observations.append(rid);e=c['edge_snapshot']
         chord=[e['p1'][k]-e['p0'][k] for k in range(3)]
         if any(abs(e[k][j]-chord[j])>.001 for k in ('t0','t1') for j in range(3)):raise LiveError('native_verification_failed','retained parallel approach is not straight')
         origin=[o[0]+5*i*normal[0],o[1]+5*i*normal[1],o[2]]
@@ -1074,8 +1092,9 @@ def _verify_parallel_layout(client,plan,record,*,movement_edges=None):
         if any(abs(x-5)>.1 for x in values):raise LiveError('native_verification_failed','ordered native spacing differs from5')
         spacing.append({'tracks':[plan['brief']['tracks'][i]['id'],plan['brief']['tracks'][i+1]['id']],'min':min(values),'max':max(values),'samples':17})
     record.update(current_ports=ports,current_junction_nodes=nodes,observations=observations,retained_spacing=spacing)
-    return {'routes_verified':len(routes),'final_network_verified':True,'retained_spacing':spacing,
-            'direction_intent_compatible':True,'direction_enforcement':'not_provided','geometry_sampled_only':True,'native_runtime_demonstrated':True}
+    verified=sum(r['verified'] for r in routes);complete=verified==len(plan['movements']) and len(lines)==len(plan['brief']['tracks'])
+    return {'routes_verified':verified,'final_network_verified':complete,'retained_spacing':spacing,
+            'direction_intent_compatible':complete,'direction_enforcement':'not_provided','geometry_sampled_only':True,'native_runtime_demonstrated':complete}
 
 
 def inspect_parallel_layout(client,invocation):
@@ -1085,16 +1104,22 @@ def inspect_parallel_layout(client,invocation):
     if plan!=plan_parallel_layout(plan.get('brief')):raise ValueError('parallel invocation plan differs from brief')
     path=client.evidence/(uuid.uuid4().hex+'.parallel_inspection.json')
     summary={'status':'incomplete','operation':'parallel-layout-inspect','game_constructed':False,'evidence':str(path.resolve()),'plan_hash':plan['plan_hash'],'routes_verified':0,'train_traversal':'unprobed'}
-    record={'plan':plan,'summary':summary,'original_record':str(Path(invocation).resolve()),'routes':[]}
-    try:summary.update(_verify_parallel_layout(client,plan,record),status='ok',stage='verified')
+    record={'plan':plan,'summary':summary,'original_record':str(Path(invocation).resolve()),'routes':[],
+            'recorded_prior_game_constructed':original.get('summary',{}).get('game_constructed','unknown')}
+    try:
+        summary.update(_verify_parallel_layout(client,plan,record,partial=original.get('summary',{}).get('status')!='ok'))
+        summary.update(status='ok' if summary['final_network_verified'] else 'layout_incomplete',stage='verified' if summary['final_network_verified'] else 'current_partial_readback')
     except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
-    finally:atomic_json(path,record)
+    finally:
+        _reciprocal_outcome(plan,record,summary)
+        if summary['status']!='ok':summary.update(routes_verified=sum(bool(r.get('verified')) for r in record['routes']),final_network_verified=False)
+        if summary['status']=='layout_incomplete':summary.update(current_steps=record.get('current_steps',{}),next_action='reconcile_native_operation' if original.get('unfinished_step') or _layout_uncertain_operations(client,original) else 'inspect_missing_attachments')
+        atomic_json(path,record)
     return summary
 
 
 def execute_parallel_layout(client,plan):
     if plan!=plan_parallel_layout(plan.get('brief')):raise ValueError('parallel plan differs from deterministic brief')
-    if not plan['native_execution_supported']:raise LiveError('unsupported_native_pattern','native execution is currently UUDD with increasing-reference UP; other patterns are planning evidence only')
     path=client.evidence/(uuid.uuid4().hex+'.parallel.json');lock=client.evidence/'parallel.lock'
     summary={'status':'incomplete','operation':'parallel-layout','stage':'asset','pattern':plan['pattern'],'game_constructed':False,'plan_hash':plan['plan_hash'],
              'evidence':str(path.resolve()),'routes_verified':0,'train_traversal':'unprobed','direction_enforcement':'not_provided'}
@@ -1132,7 +1157,7 @@ def execute_parallel_layout(client,plan):
     except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:
         summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
         if getattr(exc,'status',None)=='mutation_outcome_unknown':summary['game_constructed']='unknown'
-    finally:atomic_json(path,record);lock.unlink()
+    finally:_reciprocal_outcome(plan,record,summary);atomic_json(path,record);lock.unlink()
     return summary
 
 

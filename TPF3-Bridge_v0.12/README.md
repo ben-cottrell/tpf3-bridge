@@ -1,5 +1,10 @@
 # TPF3-Bridge — implementation-ready handoff
 
+Current shared `parallel-layout` also supports UD/UDUD and either explicit UP reference.
+P22 demonstrated UD decreasing-UP and UDUD increasing-UP on build40408, with fresh
+inspection, sampled geometry/spacing and145passing tests. See the compact command,
+domain and partial-effect notes in [live-interface usage](implementation/live_python_interface/README.md#ordered-patterns-and-reversed-up-reference-p22-demonstrated).
+
 ## Current native junction workflow — P21, 4 October 2026
 
 The standalone brief [portable_junction_example.json](implementation/live_python_interface/portable_junction_example.json)

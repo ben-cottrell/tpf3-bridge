@@ -784,7 +784,52 @@ This establishes checked continuation on the demonstrated network, not arbitrary
 success, continuous geometry proof, signalling permission or physical train traversal.
 
 
-## Ordered running-direction layout (P18 demonstrated)
+## Ordered patterns and reversed UP reference (P22 demonstrated)
+
+The same `parallel-layout` plan/build/inspect interface now executes UD, UDUD and
+UUDD with explicit increasing or decreasing UP along the route reference. New
+`ud_layout_example.json` declares decreasing-UP UD; `udud_layout_example.json`
+declares increasing-UP UDUD. Track order still follows increasing left-normal offset;
+west/east are reference-coordinate ends, not traffic directions. Native construction
+tangents remain forward. Reversing UP swaps entry/exit and merge/diverge semantics:
+the UD example requires U1east->U1west, D1west->D1east, branch_up->U1west and
+D1west->branch_down. An available unsignalled reverse path is not traffic enforcement.
+
+```powershell
+python bridge_live.py parallel-layout --params implementation/live_python_interface/ud_layout_example.json --evidence .local_runs/layout_plans
+python bridge_live.py parallel-layout --context context.json --params implementation/live_python_interface/ud_layout_example.json --execute --timeout 60
+python bridge_live.py parallel-layout-inspect --context context.json --params implementation/live_python_interface/ud_layout_example.json --layout-record RECORD.json --timeout 60
+```
+
+Use `udud_layout_example.json` for the four-track interleaved arrangement. Supply a
+healthy configured adapter/context, suitable bounded native TRACK/template seed
+region and an authorised site. Examples describe the demonstrated world, not universal
+map locations. Same level/radius120/spacing5 constraints and outward branch family;
+no crossing the intervening DOWN track to switch the two UP tracks. Unsupported
+requested movements reject before native requests; they are never silently omitted.
+Accepted UUDD/P18-P21 plan hashes and receipts remain compatible.
+
+On build40408, UD decreasing-UP at(1200,2400,33),heading-50 built four required routes
+and two exact three-edge junctions. Fresh-process inspection and independent17-point
+sampling:18TRACK edges,radius124.122312,grade0,region,spacing4.999938-4.999965.
+UDUD increasing-UP at(600,4200,33),heading-50 built six required routes/two junctions:
+26TRACK,radius124.121004,grade0,region,three adjacent approach pairs4.999915-5.000003.
+Other pattern/reference combinations and rotations have deterministic test evidence;
+the unchanged increasing-UP UUDD native evidence remains the P18 baseline below.
+No live Cartesian-product sweep was performed.
+
+An initial UDUD site rejected its first through corridor after ten fixture stubs.
+Read-only reconciliation found the complete corridor absent; other effects unknown.
+Fresh partial inspection reports all ten current interfaces completed, missing
+junctions/spacing unavailable and six movements unverified. Original failure receipts
+remain; relocation succeeded without replay or constraint relaxation. Inspection is
+read-only and reports each movement, prior effects and next action. A failed final
+spacing check cannot turn verified paths into full acceptance. No automatic retry,
+crash resume or rollback. Geometry is sampled only; no continuous clearance proof,
+signals/reservations, operational direction enforcement or physical traversal claim.
+Affected quiet suite:145passed; exact report and local P22 evidence in `STATE.md`.
+
+## Ordered running-direction layout (P18 historical baseline)
 
 `parallel_layout_example.json` declares UP-UP-DOWN-DOWN, the ordered track IDs, an
 explicit route reference and six required functional movements. UP means increasing

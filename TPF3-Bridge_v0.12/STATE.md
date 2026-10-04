@@ -1,6 +1,39 @@
 # TPF3-Bridge milestone state — 4 October 2026
 
-## Current task - P21 complete, portable fresh-base junction verified
+## Current task - P22 complete, ordered patterns/reversed UP verified
+Shared plan/publish/execute/inspect_parallel_layout and CLI parallel-layout (offline
+or --execute),parallel-layout-inspect now support UD/UDUD/UUDD with explicit UP
+increasing/decreasing. Native construction orientation remains increasing reference;
+entry/exit/merge/diverge follow traffic intent. Unsupported requested cross-track
+movements reject unchanged; no intervening opposite-direction crossing supplied.
+New ud_layout_example.json:UD decreasing-UP,(1200,2400,33),heading-50;4required routes,
+2exact junctions,18TRACK;independent17samples radius124.122312,grade0,region,
+spacing4.999938-4.999965. New udud_layout_example.json:UDUD increasing-UP,
+(600,4200,33),heading-50;6routes,2junctions,26TRACK,radius124.121004,grade0,region,
+three approach pairs4.999915-5.000003. Both build40408/fresh-process inspection passed,
+zero inspection construction. Other pattern/reference/rotation combinations tested;
+unchanged UUDD native acceptance reused. No live Cartesian-product sweep.
+Initial UDUD site(2800,1200,33),heading20 rejected first through corridor after10stubs.
+Read-only exact-request reconciliation:complete corridor absent,other effects unknown.
+Fresh partial inspection:all10interfaces completed,junctions/spacing unavailable,
+6movements unverified. Failure/partial/reconciliation receipts preserved,no blind replay;
+relocation succeeded without lowering constraints. Partial reports retain verified
+movements/route counts while failed spacing cannot become final success.
+python tools/quiet_checks.py --suite live_client --label pif-p22-final-acceptance:145passed;
+.local_checks/pif-p22-final-acceptance_3m4r35v_/report.json.
+python bridge_live.py parallel-layout --context .local_runs/live_python_interface/p02/context.json --params implementation/live_python_interface/ud_layout_example.json --execute --timeout 60:passed;
+same command with udud_layout_example.json:alternative site passed;original failure retained.
+python bridge_live.py parallel-layout-inspect --context .local_runs/live_python_interface/p02/context.json --params implementation/live_python_interface/ud_layout_example.json --layout-record .local_runs/live_python_interface/p22/ud_build_summary.json --timeout 60:passed;
+same inspect with udud_layout_example.json/udud_alternative_build_summary.json:passed.
+python .local_runs/live_python_interface/p22/independent_acceptance.py ud:passed;
+same command udud:passed. Exact commands/hashes/full receipt pointers in p22/checks.json;
+HANDOFF/result/checkpoint in .local_runs/live_python_interface/p22. Local commit,no push.
+P18-P21 accepted hashes/receipts preserved;Lua/runner/L01-L14 unchanged. Sampled only;
+traversal,signals,reservations,direction enforcement/save-load identity unprobed.
+Disposable sandbox saved;paused/non-maximised. No blocker;stop P22 for coordinator.
+Actual usage unavailable;no credit estimate.
+
+## P21 baseline - 7609743 (portable fresh-base junction verified)
 Standalone portable_junction_example.json; callable/CLI reciprocal-layout (offline
 or --execute), reciprocal-layout-inspect, explicit --execute --layout-record continuation.
 No P19 receipt/ID prerequisite; healthy adapter/context plus bounded suitable TRACK

@@ -1597,7 +1597,7 @@ class LiveClientTests(unittest.TestCase):
             for up in ('increasing','decreasing'):
                 b=self.parallel_brief(pattern,up,90);p=plan_parallel_layout(b)
                 self.assertEqual(p,plan_parallel_layout(b));self.assertEqual(p['pattern'],'-'.join(pattern));self.assertEqual(len(p['movements']),len(pattern)+2)
-                self.assertEqual(p['native_execution_supported'],pattern==('UP','UP','DOWN','DOWN') and up=='increasing')
+                self.assertTrue(p['native_execution_supported'])
                 self.assertEqual(p['direction_enforcement'],'not_provided');self.assertFalse(p['game_constructed'])
                 self.assertAlmostEqual(p['native_construction_direction'][1],1)
                 for t in b['tracks']:
@@ -1616,14 +1616,10 @@ class LiveClientTests(unittest.TestCase):
         duplicate=json.loads(json.dumps(b));duplicate['tracks'][1]['id']='T1';cases.append(duplicate)
         ambiguous=json.loads(json.dumps(b));ambiguous['route_reference'].pop('up');cases.append(ambiguous)
         bad=json.loads(json.dumps(b));bad['tracks'][0]['direction']='NORTH';cases.append(bad)
+        interleaved=self.parallel_brief(('UP','DOWN','UP','DOWN'));interleaved['movements'][0]={'from':'T1:west','to':'T3:east'};cases.append(interleaved)
         for brief in cases:
             with patch.object(self.client,'request') as worker:
                 with self.assertRaises((ValueError,LiveError)):plan_parallel_layout(brief)
-                worker.assert_not_called()
-        for pattern in [('UP','DOWN'),('UP','DOWN','UP','DOWN')]:
-            p=plan_parallel_layout(self.parallel_brief(pattern))
-            with patch.object(self.client,'request') as worker:
-                with self.assertRaises(LiveError):execute_parallel_layout(self.client,p)
                 worker.assert_not_called()
 
     def test_parallel_cli_plan_is_offline_compact_and_current_record_must_match(self):
@@ -1710,6 +1706,71 @@ class LiveClientTests(unittest.TestCase):
         p=plan_parallel_layout(b);self.assertLess(p['footprint']['max'][0],3000)
         old=json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/junction_recipe_example.json').read_text())
         self.assertEqual(plan_junction_recipe(old)['plan_hash'],'19cb06710e1ecf27a4387619450053d0f1e27b810855bfdaf93a4c516023f71f')
+
+    def test_parallel_enabled_patterns_execute_shared_native_stages_with_fixed_construction_orientation(self):
+        from bridge_live import plan_parallel_layout,execute_parallel_layout
+        for pattern in [('UP','DOWN'),('UP','DOWN','UP','DOWN'),('UP','UP','DOWN','DOWN')]:
+            for up in ('increasing','decreasing'):
+                p=plan_parallel_layout(self.parallel_brief(pattern,up,37));calls=[]
+                def request(op,q):
+                    calls.append(op)
+                    if op=='discover':v={'complete':True,'candidates':[{'edge_id':900,'edge_snapshot':{'template':'t','style':'s'}}]}
+                    elif op=='inspect':v={'edges':[{'resource':{'track_distance':5}}]}
+                    else:
+                        self.assertEqual(op,'test_approach');self.assertEqual(q['fixture']['travel_direction'],p['native_construction_direction']);v={'game_constructed':True}
+                    return self.response('r'+str(len(calls)),op,result=v)
+                def verified(c,plan,record):
+                    record['routes']=[r|{'verified':True} for r in plan['movements']]
+                    return {'routes_verified':len(plan['movements']),'final_network_verified':True}
+                with patch.object(self.client,'request',side_effect=request),patch('bridge_live.connect_corridor',return_value={'status':'ok','game_constructed':True}) as through,patch('bridge_live.connect_junction_at',return_value={'status':'ok','game_constructed':True,'junction':{'node':500}}) as branch,patch('bridge_live._verify_parallel_layout',side_effect=verified):
+                    result=execute_parallel_layout(self.client,p);self.assertEqual(result['status'],'ok');self.assertEqual(through.call_count,len(pattern));self.assertEqual(branch.call_count,2)
+                    self.assertEqual(calls.count('test_approach'),2*len(pattern)+2);self.assertTrue(all(r['state']=='verified' for r in result['movement_results']))
+                    self.assertLess(len(json.dumps(result).encode()),4096)
+                    for call in through.call_args_list:self.assertEqual(call.args[1]['source']['travel_direction'],p['native_construction_direction'])
+
+    def test_parallel_partial_readback_preserves_current_completed_movements_and_unavailable_port(self):
+        from bridge_live import plan_parallel_layout,inspect_parallel_layout
+        p=plan_parallel_layout(self.parallel_brief(('UP','DOWN'),'decreasing',0));o=p['brief']['route_reference']['origin']
+        ports={name:{'edge_id':100+i,'node_id':200+i,'pos':v['position']} for i,(name,v) in enumerate(p['ports'].items())}
+        def select(c,intent,**opts):
+            if opts.get('interior'):
+                i=round((intent['guide_xyz'][1]-o[1])/5);a=[o[0],o[1]+5*i,o[2]];z=[o[0]+600,a[1],a[2]]
+                return {'edge_snapshot':{'id':800+i,'p0':a,'p1':z,'t0':[600,0,0],'t1':[600,0,0]}},'approach'
+            name=next(name for name,v in p['ports'].items() if v['position']==intent['guide_xyz'])
+            if name=='T2:east':raise LiveError('no_eligible_candidates','not currently established')
+            return ports[name],'port_'+name
+        def request(op,q):
+            self.assertEqual(op,'route');return self.response('route',op,result={'requested_route_verified':True,'path':[{'from':{'entity':500},'to':{'entity':501}}]})
+        original=self.root/'partial_parallel.json';original.write_text(json.dumps({'plan':p,'summary':{'status':'no_accepted_candidate','game_constructed':True},'operations':[]}));before=original.read_bytes()
+        with patch('bridge_live._select_throat_port',side_effect=select),patch('bridge_live._recipe_junction',return_value=(500,['junction'])),patch.object(self.client,'request',side_effect=request):
+            result=inspect_parallel_layout(self.client,original)
+        self.assertEqual(result['status'],'layout_incomplete');self.assertEqual(result['routes_verified'],3);self.assertFalse(result['game_constructed']);self.assertFalse(result['final_network_verified'])
+        self.assertTrue(result['recorded_prior_game_constructed']);self.assertEqual([r['state'] for r in result['movement_results']],['verified','unverified','verified','verified'])
+        self.assertEqual(result['current_steps']['T2:east'],'unavailable');self.assertEqual(result['next_action'],'inspect_missing_attachments');self.assertEqual(original.read_bytes(),before)
+        self.assertLess(len(json.dumps(result).encode()),4096)
+
+    def test_parallel_inspection_keeps_unknown_effects_separate_from_partial_readback(self):
+        from bridge_live import plan_parallel_layout,inspect_parallel_layout
+        p=plan_parallel_layout(self.parallel_brief(('UP','DOWN'),'decreasing'))
+        path=self.root/'unfinished_parallel.json';path.write_text(json.dumps({'plan':p,'summary':{'game_constructed':'unknown'},'unfinished_step':'through_T1','operations':[]}))
+        def partial(c,plan,record,**kw):
+            self.assertTrue(kw['partial']);record['routes']=[plan['movements'][0]|{'verified':True}]
+            return {'routes_verified':1,'final_network_verified':False}
+        with patch('bridge_live._verify_parallel_layout',side_effect=partial),patch.object(self.client,'request') as native:
+            result=inspect_parallel_layout(self.client,path);native.assert_not_called()
+        self.assertEqual(result['status'],'layout_incomplete');self.assertEqual(result['next_action'],'reconcile_native_operation');self.assertEqual(result['recorded_prior_game_constructed'],'unknown')
+
+    def test_parallel_final_spacing_failure_keeps_verified_routes_without_claiming_acceptance(self):
+        from bridge_live import plan_parallel_layout,inspect_parallel_layout
+        p=plan_parallel_layout(self.parallel_brief(('UP','DOWN'),'decreasing'))
+        path=self.root/'spacing_failure.json';path.write_text(json.dumps({'plan':p,'summary':{'status':'ok','game_constructed':True}}))
+        def fail(c,plan,record,**kw):
+            record['routes']=[r|{'verified':True} for r in plan['movements']]
+            raise LiveError('native_verification_failed','ordered native spacing differs from5')
+        with patch('bridge_live._verify_parallel_layout',side_effect=fail),patch.object(self.client,'request') as native:
+            result=inspect_parallel_layout(self.client,path);native.assert_not_called()
+        self.assertEqual(result['status'],'native_verification_failed');self.assertEqual(result['routes_verified'],4);self.assertFalse(result['final_network_verified'])
+        self.assertTrue(all(r['state']=='verified' for r in result['movement_results']));self.assertFalse(result['game_constructed'])
 
     def switching_brief(self):
         return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/switching_layout_example.json').read_text())
