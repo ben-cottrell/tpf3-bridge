@@ -146,6 +146,68 @@ class PublicationTests(unittest.TestCase):
         slot=self.client._slot(requests[1]);slot.parent.mkdir(parents=True);slot.write_bytes(self.client._request_body(requests[1]))
         return requests
 
+    def nested_mutation_read(self):
+        mutation={'version':1,'session':'test_session','sequence':20,'request_id':'constructed','operation':'crossover','params':{'execute':True,'radius':70},'log_offset':0,'outcome':'mutation_unverified','publication':{'state':'published'}}
+        read={'version':1,'session':'test_session','sequence':42,'request_id':'retained','operation':'route','params':{'mode':'TRAIN'},'log_offset':0,'operation_kind':'read'}
+        read['publication']={'state':'unpublished','phase':'temporary_written','sha256':__import__('hashlib').sha256(self.client._request_body(read)).hexdigest()}
+        for p in (mutation,read):
+            (self.client.evidence/(p['request_id']+'.request.json')).write_text(json.dumps({k:p[k] for k in ('version','session','sequence','request_id','operation','params')}))
+            slot=self.client._slot(p);slot.parent.mkdir(parents=True,exist_ok=True)
+            (slot if p is mutation else slot.with_suffix('.pending')).write_bytes(self.client._request_body(p))
+        read['unresolved_mutation']=mutation
+        self.client.journal.write_text(json.dumps({'session':'test_session','next_sequence':42,'pending':read}))
+        return mutation,read
+
+    def test_unpublished_read_restored_without_replaying_or_clearing_nested_mutation(self):
+        mutation,read=self.nested_mutation_read();old=self.client._slot(mutation).read_bytes()
+        publish=self.client._publish_file
+        def worker(temp,path):publish(temp,path);self.append(read)
+        with patch.object(self.client,'_publish_file',side_effect=worker) as calls:
+            result=self.client.reconcile_read_publications(['retained'])
+        self.assertEqual(calls.call_count,1);self.assertEqual(self.state()['pending'],mutation)
+        self.assertEqual(self.state()['next_sequence'],43);self.assertEqual(self.client._slot(mutation).read_bytes(),old)
+        self.assertEqual(result['result']['original_pending']['unresolved_mutation'],mutation)
+        self.assertFalse(result['result']['mutation_replay'])
+
+    def test_nested_mutation_identity_hash_and_positive_publication_evidence_rejected(self):
+        for defect in ('mutation_slot','mutation_envelope','mutation_hash','hash','ack','ambiguous','ids'):
+            with self.subTest(defect=defect),tempfile.TemporaryDirectory() as d:
+                old=self.client;self.client=LiveClient(Path(d)/'mod',self.log,Path(d)/'evidence','test_session',.02)
+                mutation,read=self.nested_mutation_read();state=self.state()
+                if defect=='mutation_slot':self.client._slot(mutation).write_bytes(b'foreign')
+                if defect=='mutation_envelope':(self.client.evidence/'constructed.request.json').write_text('{}')
+                if defect=='mutation_hash':state['pending']['unresolved_mutation']['publication']['sha256']='wrong'
+                if defect=='hash':state['pending']['publication']['sha256']='wrong'
+                if defect=='ack':self.append(read)
+                if defect=='ambiguous':state['pending']['unresolved_read']=mutation
+                self.client.journal.write_text(json.dumps(state))
+                with patch.object(self.client,'_publish_file') as publish,self.assertRaises(LiveError):
+                    self.client.reconcile_read_publications(['constructed','retained'] if defect=='ids' else ['retained'])
+                publish.assert_not_called();self.assertEqual(self.state(),state);self.client=old;self.log.write_text('')
+
+    def test_nested_mutation_retained_on_timeout_and_journal_denial_after_publication(self):
+        for deny in (False,True):
+            with self.subTest(deny=deny),tempfile.TemporaryDirectory() as d:
+                import bridge_live as live
+                old=self.client;self.client=LiveClient(Path(d)/'mod',self.log,Path(d)/'evidence','test_session',.02)
+                mutation,read=self.nested_mutation_read();atomic=live.atomic_json
+                def writer(path,value):
+                    if deny and path==self.client.journal:raise PermissionError('fake journal replace denied')
+                    atomic(path,value)
+                with patch('bridge_live.atomic_json',side_effect=writer),self.assertRaises((LiveError,PermissionError)):
+                    self.client.reconcile_read_publications(['retained'])
+                self.assertEqual(self.state()['pending']['unresolved_mutation'],mutation)
+                self.assertTrue(self.client._slot(read).exists());self.assertFalse((self.client.evidence/'client.lock').exists())
+                self.client=old
+
+    def test_nested_mutation_published_read_consumes_response_without_republication(self):
+        mutation,read=self.nested_mutation_read()
+        self.client._publish_file(self.client._slot(read).with_suffix('.pending'),self.client._slot(read));self.append(read)
+        with patch.object(self.client,'_publish_file') as again:
+            result=self.client.reconcile_read_publications(['retained'])
+        again.assert_not_called();self.assertEqual(result['status'],'ok')
+        self.assertEqual(self.state()['pending'],mutation);self.assertEqual(self.state()['next_sequence'],43)
+
     def test_permission_before_publication_preserves_identity_without_advancing(self):
         original=Path.open
         def denied(path,*args,**kwargs):

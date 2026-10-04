@@ -1,3 +1,30 @@
+## P46 complete — exact read recovered; native trimmed-curve failure localised
+
+LiveClient read-publication reconciliation now accepts up to2 exact pending reads
+above a proven-published terminal mutation. Saved envelope/hash/session/slot/log/
+sequence checks remain; mutation is never replayed/changed/cleared. Tests include
+positive publication evidence, mismatch/ambiguity, timeout and write denial.
+Exact read c499365de9194f10818e33d0374bc0b1 sequence42 recovered once; normal journal
+publication worked, nested mutation33dd9333f5e04b2ca0983ec45089024d remains pending.
+No host/ACL repair or repeated access-denial attempt. Prior P45 evidence preserved.
+Build40408/sessionpif_1791134311_133860007 unchanged; no reload/build/deletion/save.
+Fresh native70 check isolates failure to TRACK95579: trimmed movement length.253313,
+first sampleu0 radius37.43414797 at[-3060.13623,-7019.81787,1.62999845]. Full BaseEdge
+controls equal original fit, native check187.22183. Saved native endpoint/derivative
+Hermite reconstruction reproduces37.434 exactly; sampled17 minimum26.74686 atu1 is
+offline derived, not a new native acceptance result. Direction residual<1.5e-8;
+world-position rounding residual<.0005. No cross-segment estimator/route reversal
+defect demonstrated. Native trim/float formation internals remain unprobed; no
+verifier/threshold correction justified.95585 straight;95602 native98.90945 passes70.
+Second connection remains NOT accepted; first revised connection stays accepted.
+python tools/quiet_checks.py --suite live_client --label pif-p46-recovery-final:
+334passed/0fail/error/skip; .local_checks/pif-p46-recovery-final_zisrrm8r/report.json.
+Compile/diff checks passed. Evidence p46/native/{recovery,connector_samples,
+base_controls_checked,route_edge_95579,route_edge_95585,route_edge_95602}.json;
+p46/offline/diagnosis.json, HANDOFF.md/checks.json/checkpoint.json. Existing P45
+PARTIAL save retained; geometry/control evidence local. Return material design to
+Astra (outer-first priority), no physicaltrain/speed/continuous-bound claim or push.
+
 ## P45 stopped — explicit revision accepted first connector; matching build fails70
 
 New caller-supplied radius-only acceptance revision records exact original request,

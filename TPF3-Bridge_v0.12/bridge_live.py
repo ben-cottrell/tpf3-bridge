@@ -2550,9 +2550,13 @@ class LiveClient:
         state=json.loads(self.journal.read_text());pending=state.get('pending');chain=[]
         if state.get('session')!=self.session or not pending:raise LiveError('reconciliation_required','no current pending read publication')
         if self.require_ack and discover_session(self.log)!=self.session:raise LiveError('session_changed','adapter load changed; do not publish')
-        item=pending
+        item=pending;mutation=None
         while item:
-            if len(chain)==2 or is_mutation(item.get('operation'),item.get('params',{})):
+            if is_mutation(item.get('operation'),item.get('params',{})):
+                if not chain or item.get('unresolved_read') or item.get('unresolved_mutation'):
+                    raise LiveError('reconciliation_required','only a terminal unresolved mutation may be preserved')
+                mutation=item;break
+            if len(chain)==2:
                 raise LiveError('reconciliation_required','only one or two explicit pending reads may be reconciled')
             chain.append(item)
             if item.get('unresolved_mutation') and item.get('unresolved_read'):raise LiveError('reconciliation_required','ambiguous pending chain')
@@ -2560,6 +2564,16 @@ class LiveClient:
         chain.reverse()
         if not isinstance(request_ids,(list,tuple)) or list(request_ids)!=[p['request_id'] for p in chain]:
             raise LiveError('reconciliation_required','exact oldest-first pending read IDs required')
+        if mutation:
+            envelope={k:mutation[k] for k in ('version','session','sequence','request_id','operation','params')}
+            body=self._request_body(mutation)
+            if (mutation['session']!=self.session or type(mutation['sequence']) is not int
+                    or not 0<mutation['sequence']<chain[0]['sequence']
+                    or json.loads((self.evidence/(mutation['request_id']+'.request.json')).read_text())!=envelope
+                    or mutation.get('publication',{}).get('state') not in (None,'published')
+                    or mutation.get('publication',{}).get('sha256') not in (None,hashlib.sha256(body).hexdigest())
+                    or self._existing_bytes(self._slot(mutation))!=body):
+                raise LiveError('reconciliation_required','underlying mutation identity/publication unproven')
         prepared=[];observations=[]
         with self.log.open('rb') as stream:
             offset=min(p['log_offset'] for p in chain)
@@ -2572,6 +2586,8 @@ class LiveClient:
             if json.loads((self.evidence/(p['request_id']+'.request.json')).read_text())!=envelope:
                 raise LiveError('reconciliation_required','saved request differs from pending identity',p['request_id'])
             body=self._request_body(p);path=self._slot(p);actual=self._existing_bytes(path);temporary=path.with_suffix('.pending');temp=self._existing_bytes(temporary)
+            if p.get('publication',{}).get('sha256') not in (None,hashlib.sha256(body).hexdigest()):
+                raise LiveError('reconciliation_required','saved publication hash differs from exact read',p['request_id'])
             if actual is not None and actual!=body or temp is not None and temp!=body:
                 raise LiveError('request_slot_conflict','occupied slot/temporary differs from exact saved read',p['request_id'])
             if actual is None:
@@ -2604,7 +2620,7 @@ class LiveClient:
         state['next_sequence']=max(state['next_sequence'],chain[-1]['sequence']+1)
         for p in chain:
             p['operation_kind']='read';p['publication']={'state':'published','phase':'explicit_read_reconciliation','sha256':hashlib.sha256(self._request_body(p)).hexdigest()}
-            if p.get('unresolved_mutation'):p['unresolved_read']=p.pop('unresolved_mutation')
+            if p.get('unresolved_mutation') and p['unresolved_mutation'] is not mutation:p['unresolved_read']=p.pop('unresolved_mutation')
         atomic_json(self.journal,state)
         record['status']='published_waiting_for_existing_responses';atomic_json(evidence,record)
         deadline=time.monotonic()+self.timeout;responses={}
@@ -2636,7 +2652,9 @@ class LiveClient:
                 evidence.with_suffix('.log').write_bytes(raw)
                 atomic_json(evidence,record)
                 state.setdefault('publication_reconciliations',{})[pending['request_id']]={'evidence':str(evidence.resolve()),'request_ids':list(request_ids),'mutation_replay':False}
-                state.pop('pending');atomic_json(self.journal,state)
+                if mutation:state['pending']=mutation
+                else:state.pop('pending')
+                atomic_json(self.journal,state)
                 return {'status':'ok','result':record,'evidence':str(evidence.resolve())}
             time.sleep(.1)
         record.update(status='incomplete',error='existing read responses/ACKs incomplete; no new slot allocated')
