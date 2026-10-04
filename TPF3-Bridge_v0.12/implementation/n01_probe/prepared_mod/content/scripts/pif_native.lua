@@ -1153,7 +1153,15 @@ local function interior_readback(a,c,splits,f,te,ids,p,before)
     local incoming,through=c.canonical_forward and left or right,c.canonical_forward and right or left
     f.node=junction;f.junction_node=junction;f.anchor=incoming;f.ids={}
     for _,eid in ipairs(ids) do if eid~=left.id and eid~=right.id then f.ids[#f.ids+1]=eid end end
-    local rb=M.readback(f);local incident=incidence(junction)
+    local rb=M.readback(f);local free_end=nil
+    if not te then
+     local node=rb.ordered_nodes[#rb.ordered_nodes];local last=rb.edges[#rb.edges];local all,owner=incidence(node)
+     assert(#all==1 and all[1]==last.id and not(owner and owner>0),"realised_free_lead_not_free")
+     assert(near(last.p1,p.end_xyz,.001) and angle(last.t1,p.end_direction)<=.1,"realised_free_lead_endpoint_mismatch")
+     free_end={node=node,edge=last.id,position=last.p1,outward_direction=norm(last.t1),incident_edges=all,
+      exact_native_identity=true,free=true}
+    end
+    local incident=incidence(junction)
     assert(#incident==3,"split_junction_incidence_mismatch")
     local expected={[left.id]=true,[right.id]=true,[rb.ordered_edges[1]]=true};for _,eid in ipairs(incident) do assert(expected[eid],"split_junction_incidence_mismatch") end
     local junctions={junction};for _,n in ipairs(p.junction_nodes or {}) do junctions[#junctions+1]=n end
@@ -1167,7 +1175,7 @@ local function interior_readback(a,c,splits,f,te,ids,p,before)
     assert(after.requested_route_verified and branch.requested_route_verified,"realised_split_movements_unverified")
     if rb.attachments then rb.attachments.source_incident_edges=incident end
     placement.junction_node=junction;placement.replacement_edges={left.id,right.id};placement.incoming=incoming;placement.through=through;placement.original_removed=true;placement.game_constructed=true
-    return {game_constructed=true,placement=placement,readback=rb,through_before=before,through_after=after,branch_after=branch,
+    return {game_constructed=true,placement=placement,readback=rb,free_end=free_end,through_before=before,through_after=after,branch_after=branch,
      junction={node=junction,incoming_edge=incoming.id,through_edge=through.id,branch_edge=rb.ordered_edges[1],incident_edges=incident,
       exact_native_identity=true,through_route_verified=true,branch_geometry_verified=true,min_sampled_radius=branch.min_sampled_radius,max_sampled_grade=branch.max_sampled_grade}}
 end
@@ -1202,6 +1210,9 @@ function M.interior_junction(p,s,state,request_id,respond)
    te and {edge=te,node=target.node_id,pos=tp,direction=td,grade=tg} or nil,{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
   fit.start_node=nil;fit.requested_min_radius=p.radius
   local f=s.fits[fit_id];f.node=-100;f.junction_node=-100;f.min_radius=p.radius
+  -- Free leads use the already-validated level profile without M.fit's positive
+  -- vertical option. Preserve the explicit zero limit for realised junction checks.
+  f.max_grade=p.vertical.max_grade;fit.max_grade=p.vertical.max_grade
   for _,ctrl in ipairs(f.controls) do geometry_bounds(cubic(ctrl),p.region,p.radius,p.vertical.max_grade) end
   local placement={original_edge=a.id,original_nodes={a.node0,a.node1},parameter=c.parameter,position=c.pos,
    canonical_forward=c.canonical_forward,subdivision_sampled_verified=true,game_constructed=false}
@@ -1482,10 +1493,20 @@ function M.verify_interior(p)
  local a=p.source.edge_snapshot;local c={parameter=p.parameter,canonical_forward=p.source.canonical_forward,pos=p.fit.start}
  assert(a.id==p.source.edge_id and finite(c.parameter) and c.parameter>=.05 and c.parameter<=.95,"invalid_recorded_interior")
  assert(type(p.edge_ids)=="table" and #p.edge_ids==p.fit.pieces+2 and #p.edge_ids<=10,"invalid_split_receipt")
- local te=assert_fresh(p.target.edge_snapshot);local _,tp,td,tg=anchor({anchor_edge=te.id,anchor_node=p.target.node_id});td={-td[1],-td[2],0};tg=-tg
+ local te,td,tg=nil,nil,p.fit.end_grade
+ if p.target then
+  te=assert_fresh(p.target.edge_snapshot);local _,tp;_,tp,td,tg=anchor({anchor_edge=te.id,anchor_node=p.target.node_id});td={-td[1],-td[2],0};tg=-tg
+ else
+  vector(p.end_xyz);vector(p.end_direction)
+  assert(#p.end_xyz==3 and p.vertical.max_grade==0 and finite(p.fit.grade) and math.abs(p.fit.grade)<=.000001 and
+   finite(tg) and math.abs(tg)<=.000001,"recorded_free_lead_not_level")
+ end
  local splits=interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade)
- local f={anchor=a,target={edge=te,node=p.target.node_id,direction=td},controls=p.fit.controls,samples={},region=p.region,grade=p.fit.grade,end_grade=tg,max_grade=p.vertical.max_grade,min_radius=p.radius}
+ local f={anchor=a,target=te and {edge=te,node=p.target.node_id,direction=td} or nil,controls=p.fit.controls,samples={},region=p.region,grade=p.fit.grade,end_grade=tg,max_grade=p.vertical.max_grade,min_radius=p.radius}
  assert(#f.controls==p.fit.pieces and near(c.pos,splits[1].p1,.001),"recorded_split_fit_mismatch")
+ if not te then local last=f.controls[#f.controls]
+  assert(near(last.p1,p.end_xyz,.001) and angle(last.t1,p.end_direction)<=.1,"recorded_free_lead_endpoint_mismatch")
+ end
  for i,ctrl in ipairs(f.controls) do f.samples[i]={};for _,u in ipairs({0,.25,.5,.75,1}) do local pos,dir=sample(cubic(ctrl),u);f.samples[i][#f.samples[i]+1]={u=u,pos=pos,dir=dir,base_pos=pos} end end
  local result=interior_readback(a,c,splits,f,te,p.edge_ids,p,p.through_before)
  result.reconciled_current_state=true;result.automatic_replay=false;result.native_effect_history_complete=false

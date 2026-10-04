@@ -1,3 +1,26 @@
+## P50 complete — constructed free-lead readback repaired (4 October 2026)
+
+Confirmed nil maxgrade: level free-lead fitting omitted positive-limit vertical option;
+junction readback lost its explicit0 limit. Preserve0 in fit/runtime state, no changed
+geometry/permissive default. verify_interior now supports target-less receipt and exact
+free endpoint incidence/position/direction; Python reconciliation checks returned binding.
+Original requeste05ba4b4cb57438b825474de0d2d0ba9 preserved and verified without replay.
+Build40408: oldsessionpif_1791139669_139218306 → currentpif_1791143579_143128533.
+Exact current through104886/104887, branch104888/104889/104890, junction104882;
+freeTRACK104890/node104885, both native through/branch routes pass, sampled radius179.46583,
+grade0. Old/current pending none. New construction after fix not performed; actual existing
+receipt verification demonstrated. Physical trains/effect history unprobed/incomplete.
+Current constructed world saved normally as TPF3_Bridge_P50_FreeLead_PreRepair_20261004.sav
+and same save reloaded to activate staged repair; SHA25605edf451297bebfed5ce06cd363dbf1533cfc59f50c5e44a442bd0f587fc02d8.
+python tools/quiet_checks.py --suite live_client --label pif-p50-free-lead:
+347passed/0fail/error/skip; .local_checks/pif-p50-free-lead_s1t6swq7/report.json.
+Compile/diff passed; standalone Lua syntax unperformed, loaded native verification passed.
+Native: python .local_runs/live_python_interface/p50/reconcile.py (reads only).
+Evidence .local_runs/live_python_interface/p50/{HANDOFF.md,checks.json,checkpoint.json,
+stage.json,reacquired_receipt_edges.json,reconciliation.json,bindings.json,final_result.json}.
+Revision: p50/checkpoint.json; local milestone/no push. Usage unavailable, repair blocker none.
+Return to Astra with fresh free-end binding for platform1 connection; full throat incomplete.
+
 ## P49 complete — explicit rejected extension reconciled (4 October 2026)
 
 Added reconcile_rejected_extension(client, original_discovery): one fresh bounded

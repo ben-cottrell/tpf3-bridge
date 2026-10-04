@@ -819,6 +819,63 @@ class LiveClientTests(unittest.TestCase):
                     self.assertNotIn('pending',json.loads(self.client.journal.read_text()));self.assertFalse(v['result']['automatic_replay'])
                 if defect!='unknown':self.assertEqual(call.call_count,1);self.assertEqual(call.call_args.args[0],'verify_interior');self.assertFalse(call.call_args.args[1]['execute'])
 
+    def test_free_lead_reconciliation_after_normal_load_requires_exact_free_binding(self):
+        for defect in (None,'missing_free','occupied','wrong_node','wrong_edge','incidence','branch','through','receipt'):
+            with self.subTest(defect=defect):
+                params={'execute':True,'source':{'edge_id':10,'parameter':.5},
+                        'end_xyz':[50,5,1],'end_direction':[1,0],'vertical':{'max_grade':0}}
+                pending={'operation':'interior_junction','request_id':'built_free','params':params}
+                self.client.journal.write_text(json.dumps({'pending':pending}))
+                response=self.response('built_free','interior_junction',result={
+                    'game_constructed':True,'returned_edges':[40,41,30],
+                    'fit':{'pieces':1,'controls':[{}],'grade':0,'end_grade':0}})
+                response['status']='mutation_unverified'
+                (self.client.evidence/'built_free.response.json').write_text(json.dumps(response))
+                current=LiveClient(self.root/'mod',self.log,self.root/'new_evidence','new_session',.5)
+                result={'reconciled_current_state':True,
+                    'readback':{'connected':True,'ordered_edges':[30],'ordered_nodes':[31,32]},
+                    'placement':{'original_removed':True,'original_edge':10,'replacement_edges':[40,41]},
+                    'junction':{'exact_native_identity':True,'branch_geometry_verified':True},
+                    'through_after':{'requested_route_verified':True},'branch_after':{'requested_route_verified':True},
+                    'free_end':{'exact_native_identity':True,'free':True,'node':32,'edge':30,'incident_edges':[30]}}
+                if defect=='missing_free':result.pop('free_end')
+                elif defect=='occupied':result['free_end']['free']=False
+                elif defect=='wrong_node':result['free_end']['node']=99
+                elif defect=='wrong_edge':result['free_end']['edge']=99
+                elif defect=='incidence':result['free_end']['incident_edges']=[30,99]
+                elif defect=='branch':result['branch_after']['requested_route_verified']=False
+                elif defect=='through':result['through_after']['requested_route_verified']=False
+                elif defect=='receipt':result['placement']['replacement_edges']=[40,99]
+                with patch.object(current,'request',return_value={'status':'ok','request_id':'verify_free','result':result}) as call:
+                    if defect:
+                        with self.assertRaises(LiveError):reconcile_constructed_interior(current,self.client)
+                        self.assertEqual(json.loads(self.client.journal.read_text())['pending'],pending)
+                    else:
+                        value=reconcile_constructed_interior(current,self.client)
+                        self.assertEqual(value['result']['current_session'],'new_session')
+                        self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+                        self.assertFalse(value['result']['automatic_replay'])
+                call.assert_called_once();op,p=call.call_args.args
+                self.assertEqual(op,'verify_interior');self.assertFalse(p['execute']);self.assertNotIn('target',p)
+                self.assertEqual(p['vertical']['max_grade'],0);self.assertEqual(p['edge_ids'],[40,41,30])
+                self.assertFalse(is_mutation(op,p))
+
+    def test_native_free_lead_retains_explicit_zero_grade_and_read_only_endpoint_checks(self):
+        source=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text()
+        junction=source[source.index('function M.interior_junction'):source.index('local function reacquire_split')]
+        self.assertIn('vertical=te and p.vertical or nil',junction)
+        self.assertIn('f.max_grade=p.vertical.max_grade;fit.max_grade=p.vertical.max_grade',junction)
+        self.assertLess(junction.index('f.max_grade=p.vertical.max_grade'),junction.index('stage="build"'))
+        verifier=source[source.index('function M.verify_interior'):source.index('function M.test_approach')]
+        self.assertIn('if p.target then',verifier)
+        self.assertIn('recorded_free_lead_not_level',verifier)
+        self.assertIn('recorded_free_lead_endpoint_mismatch',verifier)
+        self.assertIn('max_grade=p.vertical.max_grade',verifier)
+        self.assertNotIn('M.build',verifier);self.assertNotIn('sendCommand',verifier)
+        readback=source[source.index('local function interior_readback'):source.index('function M.interior_junction')]
+        self.assertIn('realised_free_lead_not_free',readback)
+        self.assertIn('realised_free_lead_endpoint_mismatch',readback)
+
     def test_discovery_invalid_bounds_never_query(self):
         for params in ({'region':{'min':[0,0,0],'max':[401,1,1]},'max_edges':1},
                        {'region':{'min':[0,0,0],'max':[1,1,1]},'max_edges':True}):

@@ -2236,6 +2236,13 @@ def reconcile_constructed_interior(client, original_client=None):
             or result.get('through_after',{}).get('requested_route_verified') is not True
             or result.get('branch_after',{}).get('requested_route_verified') is not True):
         raise LiveError('reconciliation_required',result.get('error','realised junction not verified'),rid)
+    if params.get('target') is None:
+        free=result.get('free_end',{})
+        if (not rb.get('ordered_nodes') or free.get('exact_native_identity') is not True
+                or free.get('free') is not True or free.get('node')!=rb['ordered_nodes'][-1]
+                or free.get('edge')!=rb['ordered_edges'][-1]
+                or free.get('incident_edges')!=[free.get('edge')]):
+            raise LiveError('reconciliation_required','exact free lead endpoint not verified',rid)
     latest=json.loads(old.journal.read_text())
     if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
     record={'status':'reconciled_verified_interior','original_pending':pending,'original_response':str((old.evidence/(rid+'.response.json')).resolve()),
