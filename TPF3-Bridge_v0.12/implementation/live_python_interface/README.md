@@ -1357,3 +1357,53 @@ prefix under the existing no-replay rules. Fresh complete-layout-inspect is read
 Existing UUDD commands/briefs and receipts remain compatible; unchanged engineering
 acceptance evidence is reused. Physical train traversal and continuous clearance are
 not established by native route or sampled geometry checks.
+
+
+## Fixed-interface two-ladder throat (P31)
+
+ladder-layout plans or constructs four parallel approach interfaces distributing to
+six aligned destination interfaces. ladder-layout-inspect freshly checks the assembled
+native railway. Callable functions are in bridge_ladder.py. The input names actual
+free TRACK attachment roles, two explicit groups and twelve directed movements:
+each destination has inbound from its group's first approach and outbound to its
+second approach. It is not an all-to-all throat or Birmingham replica.
+
+Each group has a native-fitted spine, a widened outbound arm, one merge and two
+successive fan turnouts. The outer destination diverges before the inner destination;
+route acceptance requires the named exact current turnout nodes in traversal order.
+This shared-neck functional alternative avoids assuming crossings or slips. Both
+approach tracks may physically carry either direction; intended inbound/outbound is
+not native one-way enforcement. Destination tracks are railway interfaces, not stations.
+
+The current domain is level aligned approach/destination fans with parallel declared
+construction headings, selected minimum interface spacing and bounded native guides.
+Translation/rotation are supported through the supplied native coordinates/directions.
+The selected native spine/turnout fitting radii may exceed, never lower, the hard
+minimum. Existing native limits apply: 800-unit fit legs, 1,000-unit extension envelope,
+3,000-unit corridor envelope and up to three spine guides. Unknown/rejected geometry
+is reported, not made successful by lowering tolerances or limits.
+
+The example ladder_layout_example.json uses fixed existing endpoints and explicit
+radius120, turnout radius400, widened fan spacing80 and native approach spacing5.
+Create or select the ten actual free interfaces in the authorised world first; the
+production workflow does not create fixture stand-ins or assume native IDs from pixels.
+It binds current exact native nodes and confirms TRACK/type/direction; current edge
+handles may change at native splits, while a changed fixed node requires reconciliation.
+
+```
+python bridge_live.py ladder-layout --params implementation/live_python_interface/ladder_layout_example.json --evidence .local_runs/ladder_plans
+python bridge_live.py ladder-layout --context CONTEXT.json --params BRIEF.json --execute
+python bridge_live.py ladder-layout-inspect --context CONTEXT.json --params BRIEF.json --layout-record RESULT.json
+```
+
+--layout-record on execution checks an already completed result without rebuilding.
+An explicitly supplied partial receipt may adopt only a matching freshly proved
+completed prefix, with the next failed stage independently established unbuilt by
+no-attempt discovery failure/native pre-build rejection or the existing exact
+rejection-reconciliation record.
+Unknown outcomes, changed completed stages/roles, stale attachments or pending commands
+stop; no blind replay, automatic resume or assumed rollback. Partial effects and
+original failed receipts remain visible. Fresh full TRAIN paths prove connections and
+turnout transitions, not physical train operation, capacity or signalling.
+Observed geometry/route overview is development evidence; sampled acceptance does not
+constitute continuous clearance proof or complete native incidental-effect history.

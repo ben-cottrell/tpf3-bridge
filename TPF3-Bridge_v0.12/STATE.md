@@ -1,3 +1,29 @@
+## P31 complete - fixed-interface native two-ladder throat
+bridge_ladder.py callable plan/build/fresh-inspect; bridge_live.py ladder-layout and
+ladder-layout-inspect reuse native fitting/extension/interior turnouts and transport.
+Four parallel approaches, six aligned destinations, two widened shared-neck ladders,
+explicit12directed inbound/outbound paths; six successive turnouts with ordered exact
+native node traversal. Level aligned domain, supplied translation/rotation, hard
+radius120, selected turnout400, approach spacing5/fan80; no all-to-all/slips/stations.
+Build40408/session pif_1791096942_96491105:12paths/6forks,49currentTRACK; independent
+33samples/edge radius124.310881>=120,grade0,exact attachments/joins/region passed.
+Fresh-process inspection and completed execution passed; operations=[]/no construction.
+Rejected native proposals and known prebuild failures preserved; explicit proven-prefix
+continuation only. Old graded test rails obstructed south footprint; one ordinary road
+and four exact old curve/stub pairs cleared. Unknown historical incidental effects remain.
+python tools/quiet_checks.py --suite live_client --label pif-p31-discovery-recovery:
+230passed,0fail/error/skip; .local_checks/pif-p31-discovery-recovery_wrxrv_uw/report.json.
+py_compile/diff checks passed. Exact commands/source hashes/native receipts:
+.local_runs/live_python_interface/p31/checks.json,verification_commands.json,
+build.json,fresh_inspection.json,checked_existing.json,independent_ladder_result.json.
+Observed geometry overview: p31/observed_ladder.svg; route_matrix.json/.csv.
+Final normal save TPF3_Bridge_P31_Ladder_Complete_20261004;40exact obsolete project
+save/thumbnail files removed, unrelated saves untouched; p31/save_cleanup_result.json.
+Local milestone revision in p31/checkpoint.json; HANDOFF.md/result.json; no push.
+Game paused/non-maximised2099x1284. No Lua/runner changes or blockers. Native paths
+are not train operation/direction enforcement/capacity or continuous clearance proof.
+No complete effects-history/save-load identity guarantee. Usage unavailable. Stop P31.
+
 ## P30 complete - portable UD/UUDD/UDUD with explicit UP reference
 Existing complete-layout/complete-layout-inspect and branching workflow now use
 actual track/role/movement counts and increasing(default)/decreasing reference_up.

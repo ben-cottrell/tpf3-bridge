@@ -3149,5 +3149,121 @@ class DirectionalCompleteLayoutTests(unittest.TestCase):
         CompleteLayoutTests.test_complete_reexecution_only_checks_current_state_and_changed_brief_stops(self)
         CompleteLayoutTests.test_interrupted_and_pending_work_never_replays(self)
 
+class LadderLayoutTests(unittest.TestCase):
+    setUp=LiveClientTests.setUp
+    def brief(self):return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/ladder_layout_example.json').read_text())
+    def test_explicit_fixed_roles_and_bidirectional_matrix_plan_without_game(self):
+        from bridge_ladder import plan_ladder,publish_ladder
+        with patch('bridge_live.client_from_context') as native:
+            p=plan_ladder(self.brief());r=publish_ladder(p,self.root)
+        native.assert_not_called();self.assertEqual(r['movements'],12);self.assertFalse(r['game_constructed']);self.assertEqual(len(p['steps']),10)
+        self.assertTrue(all(len(m['via'])>=2 for m in p['movements']))
+        self.assertEqual({m['from'] for m in p['movements']} & set('A1 A2 A3 A4'.split()),{'A1','A3'})
+    def test_missing_matrix_pairing_spacing_vertical_and_turnout_order_reject(self):
+        from bridge_ladder import plan_ladder
+        for kind in ('matrix','pair','spacing','vertical','order'):
+            b=self.brief()
+            if kind=='matrix':b['movements'].pop()
+            elif kind=='pair':b['groups'][1]['outbound']='A2'
+            elif kind=='spacing':b['spacing']=10
+            elif kind=='vertical':b['roles']['S3']['endpoint']['guide_xyz'][2]+=1
+            else:b['groups'][0]['junctions'].reverse()
+            with self.subTest(kind=kind),self.assertRaises((ValueError,LiveError)):plan_ladder(b)
+    def test_translated_rotated_fixed_endpoint_brief_is_supported(self):
+        import math
+        from bridge_ladder import plan_ladder
+        b=self.brief();a=math.radians(20);c,z=math.cos(a),math.sin(a)
+        def p(v):return [c*v[0]-z*v[1]+40,z*v[0]+c*v[1]-70,v[2]]
+        def d(v):return [c*v[0]-z*v[1],z*v[0]+c*v[1]]
+        def transform(e):
+            e['guide_xyz']=p(e['guide_xyz']);e['travel_direction']=d(e['travel_direction']);e['region']={'min':[v-2 for v in e['guide_xyz']],'max':[v+2 for v in e['guide_xyz']]}
+        for r in b['roles'].values():transform(r['endpoint'])
+        for g in b['groups']:
+            transform(g['arm_end'])
+            for e in g['junctions']:transform(e)
+            for e in g['spine_guides']:e['position']=p(e['position']);e['travel_direction']=d(e['travel_direction'])
+        corners=[p([x,y,33]) for x in (-1950,650) for y in (-3400,-2800)]
+        b['region']={'min':[min(q[k] for q in corners) for k in range(2)]+[30],'max':[max(q[k] for q in corners) for k in range(2)]+[36]}
+        self.assertEqual(len(plan_ladder(b)['movements']),12)
+    def test_build_order_and_failure_stop_keep_partial_effects(self):
+        import bridge_ladder as ladder
+        p=ladder.plan_ladder(self.brief());calls=[]
+        def build(kind):
+            calls.append(kind)
+            return {'status':'mutation_unverified' if kind=='merge' else 'ok','game_constructed':'unknown' if kind=='merge' else True,'error':'reported partial mutation','junction':{'node':10}}
+        with patch('bridge_ladder._roles',return_value={}),patch('bridge_live._select_throat_port',return_value=({'edge_id':1,'node_id':2},'r')),patch('bridge_live.connect_corridor',side_effect=lambda *a,**k:build('spine')),patch('bridge_live.extend',side_effect=lambda *a,**k:build('arm')),patch('bridge_live.connect_junction_at',side_effect=lambda *a,**k:build('merge')),patch('bridge_ladder._assess') as assess:
+            r=ladder.execute_ladder(self.client,p)
+        self.assertEqual(calls,['spine','arm','merge']);assess.assert_not_called();self.assertEqual(r['game_constructed'],'unknown')
+        saved=json.loads(Path(r['evidence']).read_text());self.assertEqual(saved['unfinished_step'],'north_junction_0')
+        with self.assertRaises(LiveError):ladder.execute_ladder(self.client,p,layout_record=r['evidence'])
+    def test_completed_execution_only_inspects_and_changed_brief_cannot_replay(self):
+        import bridge_ladder as ladder
+        p=ladder.plan_ladder(self.brief());path=self.root/'complete.json';path.write_text(json.dumps({'plan':p,'summary':{'status':'ok'}}))
+        with patch('bridge_ladder.inspect_ladder',return_value={'status':'ok','game_constructed':False}) as inspect,patch('bridge_live.connect_corridor') as build:
+            r=ladder.execute_ladder(self.client,p,layout_record=path)
+        self.assertFalse(r['game_constructed']);build.assert_not_called();inspect.assert_called_once()
+        b=self.brief();b['radius']=121
+        with self.assertRaises(ValueError):ladder.execute_ladder(self.client,ladder.plan_ladder(b),layout_record=path)
+    def test_final_route_requires_ordered_exact_junctions_not_nearby_geometry(self):
+        import bridge_ladder as ladder
+        p=ladder.plan_ladder(self.brief());ports={n:{'edge_id':i+100,'node_id':i+1,'edge_snapshot':{'node0':i+1,'node1':i+20}} for i,n in enumerate(p['brief']['roles'])}
+        js={s['name']:i+300 for i,s in enumerate(p['steps']) if s['kind']=='junction'}
+        rows=iter(p['movements'])
+        def request(*a):
+            row=next(rows);nodes=[ports[row['from']]['edge_snapshot']['node1'],*[js[n] for n in row['via']],ports[row['to']]['edge_snapshot']['node1']]
+            if row['to']=='N3':nodes=nodes[:1]+nodes[1:-1][::-1]+nodes[-1:]
+            return {'status':'ok','result':{'requested_route_verified':True,'path':[{'from':{'entity':a},'to':{'entity':b}} for a,b in zip(nodes,nodes[1:])]}}
+        junctions=iter(js.values());record={}
+        with patch('bridge_ladder._roles',return_value=ports),patch('bridge_live._recipe_junction',side_effect=lambda *a:(next(junctions),[])),patch.object(self.client,'request',side_effect=request),self.assertRaises(LiveError):ladder._assess(self.client,p,record)
+        self.assertEqual(sum(r['verified'] for r in record['routes']),4);self.assertFalse(record['routes'][-1]['verified'])
+    def test_current_role_replacement_keeps_exact_node_and_rejects_changed_identity(self):
+        import bridge_ladder as ladder
+        p=ladder.plan_ladder(self.brief());old={n:{'node_id':3} for n in p['brief']['roles']};candidate={'edge_id':200,'node_id':3,'edge_snapshot':{'road_type':'TRACK','node0':3,'node1':4,'t0':[20,0,0],'t1':[20,0,0]}}
+        with patch('bridge_live._select_throat_port',return_value=(candidate,'r')):now=ladder._roles(self.client,p,{'initial_ports':old},True)
+        self.assertTrue(all(c['edge_id']==200 for c in now.values()))
+        candidate['node_id']=4
+        with patch('bridge_live._select_throat_port',return_value=(candidate,'r')),self.assertRaises(LiveError):ladder._roles(self.client,p,{'initial_ports':old},True)
+
+class LadderRecoveryTests(unittest.TestCase):
+    setUp=LiveClientTests.setUp
+    brief=LadderLayoutTests.brief
+    def test_arm_region_is_bounded_subset_and_large_arm_is_unsupported(self):
+        import bridge_ladder as ladder
+        b=self.brief();g=b['groups'][0];box=ladder._arm_region(b,b['roles'][g['outbound']]['endpoint'],g['arm_end'])
+        self.assertTrue(all(b['region']['min'][k]<=box['min'][k]<box['max'][k]<=b['region']['max'][k] for k in range(3)))
+        self.assertLessEqual(box['max'][0]-box['min'][0],1000)
+        end=json.loads(json.dumps(g['arm_end']));end['guide_xyz'][0]+=1000
+        with self.assertRaises(LiveError):ladder._arm_region(b,b['roles'][g['outbound']]['endpoint'],end)
+    def test_pending_and_unbound_records_stop_without_native_calls(self):
+        import bridge_ladder as ladder
+        p=ladder.plan_ladder(self.brief());self.client.journal.write_text(json.dumps({'pending':{'operation':'build'}}))
+        with patch('bridge_live.connect_corridor') as build,patch('bridge_ladder._roles') as roles:r=ladder.execute_ladder(self.client,p)
+        self.assertEqual(r['status'],'reconciliation_required');build.assert_not_called();roles.assert_not_called()
+        path=self.root/'unbound.json';path.write_text(json.dumps({'plan':p,'summary':{'status':'ok'}}))
+        with self.assertRaises(ValueError):ladder.inspect_ladder(self.client,path)
+    def test_discovery_failure_requires_no_attempt_and_proven_prefix_before_next_stage(self):
+        import bridge_ladder as ladder
+        p=ladder.plan_ladder(self.brief());w=self.root/'failed_discovery.json';w.write_text(json.dumps({'attempts':[]}))
+        failed={'operation':'connect-junction-at','status':'no_eligible_candidates','stage':'discover','game_constructed':False,'attempt_count':0,'evidence':str(w)}
+        ops=[{'name':s['name'],'response':{'status':'ok','game_constructed':True}} for s in p['steps'][:3]]+[{'name':p['steps'][3]['name'],'response':failed}]
+        ports={n:{'edge_id':i+100,'node_id':i+1,'edge_snapshot':{'node0':i+1,'node1':i+20}} for i,n in enumerate(p['brief']['roles'])}
+        old={'plan':p,'initial_ports':ports,'operations':ops,'unfinished_step':p['steps'][3]['name'],'summary':{'game_constructed':True}}
+        path=self.root/'prefix.json';path.write_text(json.dumps(old));q=ports['A2']
+        with patch('bridge_ladder._roles',return_value=ports),patch('bridge_live._recipe_junction',return_value=(999,[])),patch('bridge_live._select_throat_port',return_value=(q,'r')),patch.object(self.client,'request',return_value={'status':'ok','result':{'requested_route_verified':True}}),patch('bridge_live.extend') as arm,patch('bridge_live.connect_corridor') as spine,patch('bridge_live.connect_junction_at',return_value={'status':'error','stage':'fit','game_constructed':False}) as junction:
+            r=ladder.execute_ladder(self.client,p,layout_record=path)
+        arm.assert_not_called();spine.assert_not_called();junction.assert_called_once();self.assertEqual(r['steps_completed'],3)
+        saved=json.loads(Path(r['evidence']).read_text());self.assertEqual(len(saved['continuation']['prefix_proofs']),3)
+        old['operations'][-1]['response']['attempt_count']=1;path.write_text(json.dumps(old))
+        with patch.object(self.client,'request') as native,self.assertRaises(LiveError):ladder.execute_ladder(self.client,p,layout_record=path)
+        native.assert_not_called()
+    def test_harder_fit_limits_and_region_are_not_silently_relaxed(self):
+        import bridge_ladder as ladder
+        for key in ('turnout','spine','region'):
+            b=self.brief()
+            if key=='turnout':b['turnout_radius']=119
+            elif key=='spine':b['groups'][1]['spine_radius']=119
+            else:b['region']['max'][0]=300
+            with self.subTest(key=key),self.assertRaises((ValueError,LiveError)):ladder.plan_ladder(b)
+
 if __name__ == '__main__':
     unittest.main()
