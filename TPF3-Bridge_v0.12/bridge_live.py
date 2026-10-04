@@ -1250,8 +1250,62 @@ def _verify_switching_layout(client,plan,record):
     return answer|{'transfers_verified':2,'widened_switching':True,'direct5m_crossover':False}
 
 
-def execute_switching_layout(client,plan,*,prepared_record=None):
+def _layout_uncertain_operations(client,original,_depth=0):
+    if _depth>1:raise ValueError('nested base-stage records outside bounded workflow')
+    if original.get('unfinished_step'):return ['unfinished_'+original['unfinished_step']]
+    uncertain=[]
+    for o in original.get('operations',[]):
+        r=o['response'];v=r.get('result',{})
+        if r.get('game_constructed',v.get('game_constructed'))!='unknown' and r.get('status')!='mutation_unverified':continue
+        if o['name']=='base_build' and r.get('evidence'):
+            uncertain+=_layout_uncertain_operations(client,_load_layout_record(r['evidence']),_depth+1);continue
+        rid=r.get('request_id');rp=client.evidence/(str(rid)+'.reconciliation.json');reconciled=json.loads(rp.read_text()) if rp.exists() else {}
+        if (reconciled.get('status')=='reconciled_failed_fixture' and reconciled.get('original_pending',{}).get('request_id')==rid
+                and reconciled.get('intended_fixture_constructed') is False and reconciled.get('automatic_replay') is False):continue
+        uncertain+=_recipe_uncertain_operations({'operations':[o]})
+    return uncertain
+
+
+def _switching_recipe_assessment(client,plan,pair,original):
+    pp=pair|{'brief':plan['brief']['route_reference']|{'region':plan['brief']['region'],'max_grade':plan['brief']['max_grade']}}
+    view={'plan':pp,'operations':[o|{'name':o['name'][len(pair['name'])+1:]} for o in original.get('operations',[]) if o['name'].startswith(pair['name']+'_')]}
+    saved=original.get('pair_runtime',{}).get(pair['name']);throat=next((o['response'].get('evidence') for o in reversed(view['operations']) if o['name']=='throat'),None)
+    if saved:throat=saved['throat_record']
+    if throat:view['throat_brief']=json.loads(Path(throat).read_text(encoding='utf-8-sig'))['brief']
+    state=_assess_recipe(client,view)
+    # The recipe assessor returns early for missing roles. Qualify every retained
+    # fixture independently before allowing creation of any other fixture.
+    for f in pair['fixtures']:
+        c=state['roles'].get(f['name'])
+        a=f['position'];z=[a[k]+20*(f['travel_direction'][k] if k<2 else 0) for k in range(3)]
+        def matches(e):return any(math.dist(p,a)<=.001 and math.dist(q,z)<=.001 for p,q in ((e['p0'],e['p1']),(e['p1'],e['p0'])))
+        if not c:
+            if state['steps'].get('prepare_'+f['name'],{}).get('state')!='absent':
+                r=discover(client,{'region':f['region'],'max_edges':16});state['observations'].append(r['request_id'])
+                if r['status']=='ok' and r['result'].get('complete') is True and not any(matches(v['edge_snapshot']) for v in r['result']['candidates']):
+                    state['steps']['prepare_'+f['name']]={'state':'absent','basis':'complete bounded exact fixture observation; incidental assets not protected'}
+            continue
+        e=c['edge_snapshot']
+        chord=[e['p1'][k]-e['p0'][k] for k in range(3)]
+        old=next((o['response'].get('result',{}).get('edges',[None])[0] for o in view['operations'] if o['name']=='prepare_'+f['name'] and o['response']['status']=='ok'),None)
+        if (e.get('road_type')!='TRACK' or not matches(e) or (old and any(e.get(k)!=old.get(k) for k in ('template','style')))
+                or any(abs(e[t][k]-chord[k])>.001 for t in ('t0','t1') for k in range(3))):raise LiveError('layout_state_changed','current fixture differs from declared straight interface')
+        state['steps']['prepare_'+f['name']]={'state':'completed','current_edge':e['id']}
+    if state['steps'].get('reference',{}).get('state')=='completed':
+        a,z=(state['roles'][n] for n in ('A1','D1'))
+        q={'source_edge':a['edge_id'],'source_node':a['node_id'],'target_edge':z['edge_id'],'target_node':z['node_id'],'mode':'TRAIN','required_edges':[a['edge_id'],z['edge_id']],'max_length':2500,
+            'geometry_constraints':{'all_path':True,'edge_ids':[],'radius':160,'max_grade':plan['brief']['max_grade'],'region':plan['brief']['region']}}
+        r=client.request('route',q);state['observations'].append(r['request_id'])
+        if r['status']!='ok' or r['result'].get('requested_route_verified') is not True:raise LiveError('layout_state_changed','current reference no longer meets160limit')
+    return state
+
+
+def execute_switching_layout(client,plan,*,prepared_record=None,current_run=None):
     if plan!=plan_switching_layout(plan.get('brief')):raise ValueError('switching plan differs from brief')
+    if prepared_record and current_run:raise ValueError('use prepared fixtures or a current run, not both')
+    continuing=_load_layout_record(current_run) if current_run else None
+    if continuing is not None and continuing.get('plan')!=plan:raise ValueError('current switching run differs from brief')
+    if continuing is not None and (not isinstance(continuing.get('operations'),list) or any(not isinstance(o,dict) or not isinstance(o.get('response'),dict) for o in continuing['operations'])):raise ValueError('current switching stage records malformed')
     prepared=None
     if prepared_record:
         prepared=json.loads(Path(prepared_record).read_text(encoding='utf-8-sig'))
@@ -1274,6 +1328,8 @@ def execute_switching_layout(client,plan,*,prepared_record=None):
         with lock.open('x'):pass
     except FileExistsError:raise LiveError('client_busy','one switching layout at a time') from None
     def perform(name,call,mutation=False):
+        if mutation and name in completed:
+            r=completed[name];record['operations'].append({'name':name,'response':r,'reused_after_fresh_assessment':True});atomic_json(path,record);return r
         summary['stage']=name;record['unfinished_step']=name;atomic_json(path,record);r=call()
         record['operations'].append({'name':name,'response':r});record.pop('unfinished_step');atomic_json(path,record)
         if mutation:
@@ -1283,7 +1339,22 @@ def execute_switching_layout(client,plan,*,prepared_record=None):
         return r
     try:
         if client.journal.exists() and json.loads(client.journal.read_text()).get('pending'):raise LiveError('reconciliation_required','unfinished native request; no layout construction')
-        retained={}
+        retained={};completed={};assessments={}
+        if continuing:
+            if _layout_uncertain_operations(client,continuing):raise LiveError('reconciliation_required','unresolved current switching effects; no replay')
+            record.update(original_record=str(Path(current_run).resolve()),operations=list(continuing.get('operations',[])),pair_runtime=dict(continuing.get('pair_runtime',{})))
+            for pair in plan['pairs']:
+                state=_switching_recipe_assessment(client,plan,pair,continuing);assessments[pair['name']]=state
+                if any(v.get('state') not in ('completed','absent') for n,v in state['steps'].items() if n.startswith('prepare_')):raise LiveError('reconciliation_required','fixture not proven completed or absent')
+                for f in pair['fixtures']:
+                    if f['name'] in state['roles']:completed[pair['name']+'_prepare_'+f['name']]={'status':'ok','result':{'edges':[state['roles'][f['name']]['edge_snapshot']]},'current_state_proof':state['observations']}
+                for phase in ('reference','fanout'):
+                    old=next((o['response'] for o in reversed(continuing['operations']) if o['name']==pair['name']+'_'+phase and o['response']['status']=='ok'),None)
+                    if old and state['steps'].get(phase,{}).get('state')!='completed':raise LiveError('layout_state_changed','previously completed '+phase+' not established')
+                    if old:completed[pair['name']+'_'+phase]=old
+                if pair['name'] in record['pair_runtime'] and not all(state['steps'].get(n,{}).get('state')=='completed' for n in ('cross','branch')):raise LiveError('layout_state_changed','previous throat not currently established')
+                if state['steps'].get('cross',{}).get('state')=='completed' and pair['name'] not in record['pair_runtime']:raise LiveError('base_stage_reconciliation_required','partial throat requires focused semantic reconciliation; no crossover replay')
+            record['current_assessment']=assessments;atomic_json(path,record)
         if prepared:
             old=[o['response']['result']['edges'][0] for o in prepared['operations'][2:7]]
             r=perform('reacquire_prepared',lambda:client.request('inspect',{'edge_ids':[e['id'] for e in old]}))
@@ -1306,6 +1377,10 @@ def execute_switching_layout(client,plan,*,prepared_record=None):
                 rows=r['result'].get('edges',[])
                 if len(rows)!=1 or rows[0].get('road_type')!='TRACK':raise LiveError('native_verification_failed','fixture exact TRACK identity unavailable')
                 fixtures[f['name']]=rows[0]
+            if pair['name'] in record['pair_runtime']:continue
+            if continuing:
+                state=_switching_recipe_assessment(client,plan,pair,record)
+                if any(state['steps'].get(n,{}).get('state') not in ('completed','absent') for n in ('reference','fanout')):raise LiveError('reconciliation_required','current through track not proven completed or absent')
             perform(prefix+'reference',lambda:connect_corridor(client,pair['reference'],execute=True),True)
             fan=perform(prefix+'fanout',lambda:connect_corridor(client,_switching_fanout(pair,fixtures),execute=True),True)
             read=perform(prefix+'native_guides',lambda:client.request('inspect',{'edge_ids':fan['edges']}))
@@ -1412,7 +1487,7 @@ def _select_throat_port(client,intent,*,interior=False,tolerance=None,outward_si
         d=c['outward_direction'];heading=math.degrees(math.acos(max(-1,min(1,outward_sign*(d[0]*direction[0]+d[1]*direction[1])/size))))
         if heading>intent['heading_tolerance_deg']:continue
         distance=math.dist(c['pos'],intent['guide_xyz'])
-        if distance>(tolerance if interior else 10):continue
+        if distance>(tolerance if tolerance is not None else (.5 if interior else 10)):continue
         ranked.append((distance,heading,c['edge_id'],c))
     ranked.sort(key=lambda x:x[:3])
     if not ranked:raise LiveError('no_eligible_candidates','no current native attachment for declared role',found['request_id'])
@@ -1498,10 +1573,13 @@ def _return_throat(plan,module,target):
         'radius':120,'region':plan['brief']['region'],'vertical':{'max_grade':plan['brief']['max_grade']},'placement_tolerance':.5,'max_fit_attempts':1,'max_route_length':2500}
 
 
-def _verify_reciprocal_layout(client,plan,record):
-    if set(record.get('return_runtime',{}))!={m['name'] for m in plan['returns']}:raise LiveError('incomplete_layout','both reciprocal construction receipts required')
+def _verify_reciprocal_layout(client,plan,record,*,partial=False):
+    expected={m['name'] for m in plan['returns']};present=set(record.get('return_runtime',{}))
+    if (not partial and present!=expected) or not present<=expected:raise LiveError('incomplete_layout','both reciprocal construction receipts required')
     verify,edges,observations=_switching_verification(client,plan,record)
+    if partial:verify['movements']=[r for r in verify['movements'] if r not in [m['transfer'] for m in plan['returns'] if m['name'] not in present]]
     for module in plan['returns']:
+        if module['name'] not in present:continue
         saved=record['return_runtime'][module['name']];raw=Path(saved['throat_record']).read_bytes()
         if hashlib.sha256(raw).hexdigest()!=saved['sha256']:raise ValueError('return receipt changed')
         built=json.loads(raw.decode('utf-8-sig'));b=built['brief'];target=b['steps'][0]['target'];d=plan['native_construction_direction'];o=plan['brief']['route_reference']['origin']
@@ -1519,16 +1597,85 @@ def _verify_reciprocal_layout(client,plan,record):
             elif {row['from'],row['to']}=={module['reference']+':west',module['reference']+':east'}:
                 row['via']=[module['name'].removesuffix('_return')+'_cross_source',z]
     answer=_verify_parallel_layout(client,verify,record,movement_edges=edges);record['connector_observations']=observations
-    return answer|{'transfers_verified':4,'reciprocal_same_direction':True,'direct5m_crossover':False}
+    return answer|{'transfers_verified':2+len(present),'reciprocal_same_direction':len(present)==2,'direct5m_crossover':False}
 
 
-def execute_reciprocal_layout(client,plan,*,base_layout_record=None):
+def _reciprocal_outcome(plan,record,summary):
+    verified={(r['from'],r['to']) for r in record.get('routes',[]) if r.get('verified')}
+    summary['movement_results']=[r|{'state':'verified' if (r['from'],r['to']) in verified else 'unverified'} for r in plan['movements']]
+    summary['next_action']='none' if summary['status']=='ok' else ('reconcile_native_operation' if summary.get('game_constructed')=='unknown' or record.get('unfinished_step') else 'inspect_current_run')
+    summary['native_effect_history_complete']=False
+    if 'recorded_prior_game_constructed' in record:summary['recorded_prior_game_constructed']=record['recorded_prior_game_constructed']
+
+
+def _reciprocal_partial(client,original,record):
+    """Fresh bounded evidence; a failed stage is not evidence that it is absent."""
+    plan=original['plan'];ops=original.get('operations',[]);states={};record['stage_assessment']=states
+    if not isinstance(ops,list) or any(not isinstance(o,dict) or not isinstance(o.get('response'),dict) for o in ops):raise ValueError('reciprocal stage records malformed')
+    if set(original.get('pair_runtime',{}))!={'up','down'}:
+        base=next((o['response'].get('evidence') for o in reversed(ops) if o['name']=='base_build'),None)
+        if not base:raise LiveError('incomplete_layout','base-stage receipt unavailable; no construction inferred')
+        child=_load_layout_record(base)
+        if child.get('plan')!=plan['base_plan']:raise ValueError('base-stage receipt differs from standalone brief')
+        record['base_stage_record']=str(Path(base).resolve());record['base_assessment']={}
+        for pair in plan['base_plan']['pairs']:
+            record['base_assessment'][pair['name']]=_switching_recipe_assessment(client,plan['base_plan'],pair,child)
+        states['base']={'state':'incomplete','stage':child.get('summary',{}).get('stage'),'unfinished':child.get('unfinished_step')}
+        steps={label+'_'+n:v['state'] for label,s in record['base_assessment'].items() for n,v in s['steps'].items()}
+        unknown=_layout_uncertain_operations(client,original)
+        partial_throat=any(s['steps'].get('cross',{}).get('state')=='completed' and label not in child.get('pair_runtime',{}) for label,s in record['base_assessment'].items())
+        return {'status':'layout_incomplete','routes_verified':0,'final_network_verified':False,'current_steps':steps,'next_action':'reconcile_native_operation' if unknown else ('reconcile_partial_throat' if partial_throat else 'continue_known_missing_base_stages')}
+    current=json.loads(json.dumps(plan));completed={o['name']:o['response'] for o in ops if o['response'].get('status')=='ok'}
+    for module in plan['returns']:
+        name=module['name'];fixture=name+'_fixture';extension=name+'_extension';cross=name+'_crossover'
+        intent=_recipe_intent(plan,plan['ports'][module['fan']+':east']['position'],plan['ports'][module['fan']+':east']['construction_direction'])
+        if fixture in completed:
+            c,rid=_select_throat_port(client,intent,tolerance=.5);e=c['edge_snapshot'];p=module['fixture']['position'];z=plan['ports'][module['fan']+':east']['position']
+            if e.get('road_type')!='TRACK' or not any(math.dist(a,p)<=.001 and math.dist(b,z)<=.001 for a,b in ((e['p0'],e['p1']),(e['p1'],e['p0']))):raise LiveError('layout_state_changed','extended fixture differs from authored interface')
+            states[fixture]={'state':'completed','request_id':rid,'current_edge':e['id']}
+        else:
+            r=discover(client,{'region':module['fixture']['region'],'max_edges':16})
+            absent=r['status']=='ok' and r['result'].get('complete') is True and r['result'].get('edge_count')==0
+            states[fixture]={'state':'absent' if absent else 'unknown','request_id':r['request_id']}
+        if extension in completed:
+            states[extension]={'state':'awaiting_route_proof'}
+        else:
+            current['ports'][module['fan']+':east']=plan['base_plan']['ports'][module['fan']+':east']
+            free=True
+            for key,sign in [('extension_source',1),('extension_target',-1)]:
+                try:_select_throat_port(client,module[key],tolerance=.5,outward_sign=sign)
+                except LiveError:free=False
+            states[extension]={'state':'absent' if free or states[fixture]['state']=='absent' else 'unknown'}
+        states[cross]={'state':'awaiting_route_proof' if name in original.get('return_runtime',{}) else 'unknown'}
+    record.update(pair_runtime=original['pair_runtime'],return_runtime=original.get('return_runtime',{}))
+    result=_verify_reciprocal_layout(client,current,record,partial=True)
+    for module in plan['returns']:
+        name=module['name']
+        if name+'_extension' in completed:states[name+'_extension']={'state':'completed','basis':'fresh end-to-end through route'}
+        if name in record['return_runtime']:states[name+'_crossover']={'state':'completed','basis':'fresh connector/junction/transfer route'}
+        elif states[name+'_extension']['state']=='completed':
+            target=original.get('return_intents',{}).get(name)
+            if target is None:target,_=_return_target(client,current,module,record)
+            try:
+                for intent in (module['source'],target):_select_throat_port(client,intent,interior=True,tolerance=.5)
+                states[name+'_crossover']={'state':'absent','basis':'fresh unsplit native attachments','target':target}
+            except LiveError:states[name+'_crossover']={'state':'unknown'}
+    result.update(status='layout_incomplete',final_network_verified=False,current_steps={n:v['state'] for n,v in states.items()},next_action='continue_known_missing_stages' if all(v['state'] in ('completed','absent') for v in states.values()) else 'reconcile_unknown_stage')
+    return result
+
+
+def execute_reciprocal_layout(client,plan,*,base_layout_record=None,continuation_record=None):
     if plan!=plan_reciprocal_layout(plan.get('brief')):raise ValueError('reciprocal plan differs from brief')
+    if base_layout_record is not None and continuation_record is not None:raise ValueError('use explicit base or current-run continuation, not both')
+    original=_load_layout_record(continuation_record) if continuation_record else None
+    if original and original.get('summary',{}).get('operation')=='reciprocal-layout-inspect':original=_load_layout_record(original['original_record'])
+    if original is not None and original.get('plan')!=plan:raise ValueError('continuation differs from standalone brief')
     base=_load_layout_record(base_layout_record) if base_layout_record is not None else None
     if base is not None and (base.get('plan')!=plan['base_plan'] or base.get('summary',{}).get('status')!='ok' or base.get('unfinished_step')):raise ValueError('explicit base must be a completed matching switching layout')
     path=client.evidence/(uuid.uuid4().hex+'.reciprocal.json');lock=client.evidence/'reciprocal.lock'
     summary={'status':'incomplete','operation':'reciprocal-layout','stage':'base','game_constructed':False,'plan_hash':plan['plan_hash'],'evidence':str(path.resolve()),'routes_verified':0,'train_traversal':'unprobed'}
     record={'plan':plan,'summary':summary,'operations':[],'pair_runtime':{},'return_runtime':{}}
+    if original:record['recorded_prior_game_constructed']=original.get('summary',{}).get('game_constructed','unknown')
     try:
         with lock.open('x'):pass
     except FileExistsError:raise LiveError('client_busy','one reciprocal layout at a time') from None
@@ -1543,29 +1690,53 @@ def execute_reciprocal_layout(client,plan,*,base_layout_record=None):
         return r
     try:
         if client.journal.exists() and json.loads(client.journal.read_text()).get('pending'):raise LiveError('reconciliation_required','unfinished native request; no construction')
-        if not base:
+        completed={}
+        if original:
+            if original.get('unfinished_step') or _layout_uncertain_operations(client,original):raise LiveError('reconciliation_required','unfinished/uncertain current-run effects; no replay')
+            record['original_record']=str(Path(continuation_record).resolve())
+            assessed=inspect_reciprocal_layout(client,continuation_record);assessment=_load_layout_record(assessed['evidence']);record['continuation_inspection']=assessed
+            if assessed['status']=='ok':
+                record.update({k:v for k,v in assessment.items() if k not in ('plan','summary','original_record')})
+                summary.update(assessed,evidence=str(path.resolve()),operation='reciprocal-layout',next_action='none');return summary
+            if assessed['status']!='layout_incomplete':raise LiveError(assessed['status'],assessed.get('error','current-run inspection failed'))
+            record['operations']=list(original.get('operations',[]));record['return_runtime']=dict(original.get('return_runtime',{}))
+            if set(original.get('pair_runtime',{}))!={'up','down'}:
+                child=assessment['base_stage_record']
+                built=perform('base_build',lambda:execute_switching_layout(client,plan['base_plan'],current_run=child),True)
+                base=_load_layout_record(built['evidence'])
+            else:
+                if any(v['state'] not in ('completed','absent') for v in assessment['stage_assessment'].values()):raise LiveError('reconciliation_required','current-run stage not proven completed or absent')
+                completed={o['name']:o['response'] for o in original['operations'] if o['response']['status']=='ok' and assessment['stage_assessment'].get(o['name'],{}).get('state')=='completed'}
+                proof=assessment;record['pair_runtime']=dict(original['pair_runtime'])
+        if original and set(original.get('pair_runtime',{}))=={'up','down'}:
+            base=None
+        elif not base:
             built=perform('base_build',lambda:execute_switching_layout(client,plan['base_plan']),True);base=_load_layout_record(built['evidence'])
-        proof_path=client.evidence/(uuid.uuid4().hex+'.reciprocal_base.json');proof={'plan':plan['base_plan'],'pair_runtime':base['pair_runtime'],'summary':{'evidence':str(proof_path.resolve())}}
-        _verify_switching_layout(client,plan['base_plan'],proof);atomic_json(proof_path,proof)
-        record.update(base_readback=str(proof_path.resolve()),pair_runtime=base['pair_runtime'])
-        targets={}
+        if base:
+            proof_path=client.evidence/(uuid.uuid4().hex+'.reciprocal_base.json');proof={'plan':plan['base_plan'],'pair_runtime':base['pair_runtime'],'summary':{'evidence':str(proof_path.resolve())}}
+            _verify_switching_layout(client,plan['base_plan'],proof);atomic_json(proof_path,proof)
+            record.update(base_readback=str(proof_path.resolve()),pair_runtime=base['pair_runtime'])
+        targets={};record['return_intents']={}
         for module in plan['returns']:
+            if module['name'] in record['return_runtime']:continue
             target,observations=_return_target(client,plan,module,proof);targets[module['name']]=target
+            record['return_intents'][module['name']]=target
             record.setdefault('target_observations',[]).extend(observations)
         for module in plan['returns']:
             name=module['name'];f=module['fixture'];source=proof['current_ports'][module['fan']+':east']
+            if name in record['return_runtime']:continue
             q={'authorised':True,'length':20,'fixture':{'template_edge':source['edge_id'],'position':f['position'],'travel_direction':f['travel_direction'],'grade':0,'region':f['region']}}
-            perform(name+'_fixture',lambda q=q:client.request('test_approach',q),True)
+            if name+'_fixture' not in completed:perform(name+'_fixture',lambda q=q:client.request('test_approach',q),True)
             a,z=(module[k]['guide_xyz'] for k in ('extension_source','extension_target'));region={'min':[max(min(a[k],z[k])-40,plan['brief']['region']['min'][k]) for k in range(3)],'max':[min(max(a[k],z[k])+40,plan['brief']['region']['max'][k]) for k in range(3)]}
             b={'source':module['extension_source'],'target':module['extension_target'],'radius':120,'region':region,'vertical':{'max_grade':plan['brief']['max_grade']},'max_fit_attempts':1,'max_route_length':800}
-            perform(name+'_extension',lambda b=b:connect_brief(client,b,execute=True),True)
+            if name+'_extension' not in completed:perform(name+'_extension',lambda b=b:connect_brief(client,b,execute=True),True)
             b=_return_throat(plan,module,targets[name]);built=perform(name+'_crossover',lambda b=b:connect_throat(client,b,execute=True),True)
             p=Path(built['evidence']);record['return_runtime'][name]={'throat_record':str(p.resolve()),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()};atomic_json(path,record)
         summary['stage']='final_readback';summary.update(_verify_reciprocal_layout(client,plan,record),status='ok',stage='verified')
     except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:
         if getattr(exc,'status',None)=='mutation_outcome_unknown':summary['game_constructed']='unknown'
         summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
-    finally:atomic_json(path,record);lock.unlink(missing_ok=True)
+    finally:_reciprocal_outcome(plan,record,summary);atomic_json(path,record);lock.unlink(missing_ok=True)
     return summary
 
 
@@ -1574,10 +1745,17 @@ def inspect_reciprocal_layout(client,invocation):
     if plan!=plan_reciprocal_layout(plan.get('brief')):raise ValueError('reciprocal invocation differs from brief')
     path=client.evidence/(uuid.uuid4().hex+'.reciprocal_inspection.json')
     summary={'status':'incomplete','operation':'reciprocal-layout-inspect','game_constructed':False,'plan_hash':plan['plan_hash'],'evidence':str(path.resolve()),'routes_verified':0,'train_traversal':'unprobed'}
-    record={'plan':plan,'summary':summary,'original_record':str(Path(invocation).resolve()),'pair_runtime':original.get('pair_runtime',{}),'return_runtime':original.get('return_runtime',{})}
-    try:summary.update(_verify_reciprocal_layout(client,plan,record),status='ok',stage='verified')
+    record={'plan':plan,'summary':summary,'original_record':str(Path(invocation).resolve()),'pair_runtime':original.get('pair_runtime',{}),'return_runtime':original.get('return_runtime',{}),
+        'recorded_prior_game_constructed':original.get('summary',{}).get('game_constructed','unknown')}
+    try:
+        if set(original.get('return_runtime',{}))=={m['name'] for m in plan['returns']}:summary.update(_verify_reciprocal_layout(client,plan,record),status='ok',stage='verified')
+        elif original.get('operations'):summary.update(_reciprocal_partial(client,original,record))
+        else:raise LiveError('incomplete_layout','construction-stage evidence unavailable')
     except (LiveError,ValueError,KeyError,TypeError,OSError) as exc:summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400])
-    finally:atomic_json(path,record)
+    finally:
+        next_action=summary.get('next_action');_reciprocal_outcome(plan,record,summary)
+        if next_action:summary['next_action']=next_action
+        atomic_json(path,record)
     return summary
 
 
@@ -2280,7 +2458,7 @@ def main(argv=None):
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
         if args.base_layout_record and (args.operation!='reciprocal-layout' or not args.execute):raise ValueError('--base-layout-record requires reciprocal-layout --execute')
         if args.prepared_switching and (args.operation!='switching-layout' or not args.execute):raise ValueError('--prepared-switching requires switching-layout --execute')
-        if args.layout_record and args.operation not in ('parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect'):raise ValueError('--layout-record requires parallel-layout-inspect')
+        if args.layout_record and args.operation not in ('parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect','reciprocal-layout'):raise ValueError('--layout-record requires parallel-layout-inspect')
         if args.recipe_record and args.operation not in ('junction-recipe-inspect','junction-recipe-continue'):raise ValueError('--recipe-record requires recipe inspect/continue')
         if args.operation=='junction-recipe-continue' and not args.execute:raise ValueError('recipe continuation requires --execute')
         if args.recipe_plan and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--recipe-plan requires junction-recipe --execute')
@@ -2292,7 +2470,7 @@ def main(argv=None):
         if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout', 'switching-layout', 'switching-layout-continue', 'reciprocal-layout'):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
         if args.operation=='reciprocal-layout':
-            response=execute_reciprocal_layout(client,plan_reciprocal_layout(params),base_layout_record=args.base_layout_record)
+            response=execute_reciprocal_layout(client,plan_reciprocal_layout(params),base_layout_record=args.base_layout_record,continuation_record=args.layout_record)
         elif args.operation=='reciprocal-layout-inspect':
             if not args.layout_record:raise ValueError('--layout-record is required')
             saved=_load_layout_record(args.layout_record)

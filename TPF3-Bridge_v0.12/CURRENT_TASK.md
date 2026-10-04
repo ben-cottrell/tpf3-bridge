@@ -1,11 +1,10 @@
-# PIF-P20 - complete; awaiting coordinator acceptance
+# PIF-P21 - complete, portable junction acceptance passed
 
-Card: .local_runs/live_python_interface/p20/orchestrator/TASK.md
-Prior checkpoint: 980bb23 (P19 accepted). P20 local revision: p20/checkpoint.json.
-Reciprocal UUDD callable/CLI outcome implemented: ten intended native movements,
-four transfers, ten current junctions; fresh-process and independent sampled
-geometry/spacing acceptance on build40408.134affected quiet tests pass.
-Evidence/handoff: .local_runs/live_python_interface/p20/{HANDOFF.md,checks.json,result.json}.
-Disposable sandbox saved normally, paused/non-maximised. No remote push, native
-Lua/runner/L01-L14 changes, signalling/reservation/direction-enforcement or traversal claim.
-No next task started; coordinator retrieves the local handoff. Actual usage unknown.
+Card: .local_runs/live_python_interface/p21/orchestrator/TASK.md
+Handoff: .local_runs/live_python_interface/p21/HANDOFF.md
+Checkpoint: .local_runs/live_python_interface/p21/checkpoint.json
+Standalone fresh-base construction at translated/rotated site:ten native movements,
+four transfers;fresh-process inspection and completed explicit continuation read-only.
+141 affected tests pass. Failed first-site receipts and two stubs remain honest;
+partial inspection qualifies completed/absent/unknown work without blind replay.
+Local milestone commit,no remote push. Stop here;no further task adopted.

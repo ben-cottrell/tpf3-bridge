@@ -1,5 +1,51 @@
 # TPF3-Bridge — implementation-ready handoff
 
+## Current native junction workflow — P21, 4 October 2026
+
+The standalone brief [portable_junction_example.json](implementation/live_python_interface/portable_junction_example.json)
+drives plan/build/inspect through `bridge_live.py`. It needs a healthy running native
+adapter/context and a bounded `asset_region` containing a suitable native TRACK/template
+seed with five-unit spacing. No historical P19 receipt or native entity ID is required.
+Choose suitable land and set origin, heading, authorised region and asset region for
+the current world; the supplied coordinates describe the demonstrated sandbox site.
+
+```sh
+python bridge_live.py reciprocal-layout --params implementation/live_python_interface/portable_junction_example.json
+python bridge_live.py reciprocal-layout --context CONTEXT.json --params implementation/live_python_interface/portable_junction_example.json --execute --timeout 60
+python bridge_live.py reciprocal-layout-inspect --context CONTEXT.json --params implementation/live_python_interface/portable_junction_example.json --layout-record RUN.json --timeout 60
+python bridge_live.py reciprocal-layout --context CONTEXT.json --params implementation/live_python_interface/portable_junction_example.json --execute --layout-record RUN.json --timeout 60
+```
+
+`CONTEXT.json` identifies the configured native adapter; `RUN.json` is the saved compact
+build summary or its full receipt. The last command is explicit continuation: it
+freshly inspects before reusing completed stages and builds only proven missing work.
+A completed run is checked without construction. Partial inspection reports each
+declared movement, completed/absent/unknown stages, prior effects and next action.
+Pending/uncertain effects require reconciliation; no blind replay, automatic resume
+or assumed rollback. Mid-throat partial construction without a completed pair receipt
+requires focused semantic reconciliation, rather than replaying the whole throat.
+Original failures remain immutable. Existing P18–P20 interfaces/receipts are retained.
+
+Supported: level UUDD with increasing-coordinate UP intent, four through movements,
+two outer branches and both same-direction transfers on each pair; translated/rotated
+placement, retained five-unit approach spacing and widened switching zones. Hard radius
+120 and reference-track radius160 remain binding. No direct five-unit crossover or
+opposite-direction transfer is promised. Build40408 demonstrated a complete fresh-base
+build at `(2800,3200,33)`, heading20°, followed by fresh-process inspection: ten TRAIN
+routes, four exact transfer connectors, ten functional junctions and 66 TRACK edges.
+Independent17-point sampling found radius122.281179, grade0 and approach spacing
+4.999922–5.000161. Geometry evidence is sampled, not a continuous clearance proof.
+
+An earlier site rejected its third fixture after two stubs were built. Those partial
+effects and failure records remain; other incidental effects are unknown. Relocation
+succeeded without lowering constraints. No universal site buildability claim follows.
+Train traversal, signals/reservations, operational direction enforcement and save/load
+identity are unprobed. Affected quiet acceptance:141passed; compact local evidence in
+`.local_runs/live_python_interface/p21/` and the exact report in `STATE.md`.
+
+The following release handoff is historical; use `SPDD_SCOPE.md`,
+`NATIVE_FIRST_ARCHITECTURE.md` and current `STATE.md` for governing scope and evidence.
+
 **Version 0.12.0 · 21 September 2026**  
 **Purpose:** turn the existing engineering proofs into a practical UK-inspired Transport Fever 3 construction bridge.  
 **Status:** consolidated specification, checked domain contracts and implementation handoff; not a running production bridge or live game integration.

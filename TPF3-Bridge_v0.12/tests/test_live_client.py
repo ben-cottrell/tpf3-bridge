@@ -2010,6 +2010,88 @@ class LiveClientTests(unittest.TestCase):
         Path(record['return_runtime']['up_return']['throat_record']).write_text('{}')
         with patch.object(self.client,'request',side_effect=inspect),self.assertRaises(ValueError):_verify_reciprocal_layout(self.client,p,record)
 
+    def test_partial_reciprocal_reports_current_verified_movements_without_fabricated_completion(self):
+        from bridge_live import plan_reciprocal_layout,_reciprocal_outcome,_reciprocal_partial
+        p=plan_reciprocal_layout(self.reciprocal_brief());original={'plan':p,'pair_runtime':{'up':{},'down':{}},'return_runtime':{},'operations':[]};record={'summary':{'evidence':str(self.root/'partial.json')}}
+        def verified(c,current,record,**kw):
+            self.assertTrue(kw['partial']);self.assertEqual(current['ports']['U1:east'],p['base_plan']['ports']['U1:east'])
+            record['routes']=[r|{'verified':True} for r in current['movements'][:8]];return {'routes_verified':8,'transfers_verified':2,'final_network_verified':True}
+        with patch('bridge_live.discover',return_value=self.response('empty',result={'complete':True,'edge_count':0})),patch('bridge_live._select_throat_port',side_effect=LiveError('no_eligible_candidates','missing target')),patch('bridge_live._verify_reciprocal_layout',side_effect=verified):
+            result=_reciprocal_partial(self.client,original,record);self.assertEqual(result['status'],'layout_incomplete');self.assertFalse(result['final_network_verified']);self.assertEqual(result['routes_verified'],8)
+            self.assertEqual(record['stage_assessment']['up_return_fixture']['state'],'absent')
+        summary=result|{'game_constructed':False};_reciprocal_outcome(p,record,summary)
+        self.assertEqual([r['state'] for r in summary['movement_results']],['verified']*8+['unverified']*2);self.assertLess(len(json.dumps(summary).encode()),4096)
+
+    def test_reciprocal_explicit_continuation_skips_completed_stages_and_never_rebuilds_base(self):
+        from bridge_live import plan_reciprocal_layout,execute_reciprocal_layout,_load_layout_record
+        p=plan_reciprocal_layout(self.reciprocal_brief());original={'plan':p,'summary':{'status':'no_accepted_candidate'},'pair_runtime':{'up':{},'down':{}},'return_runtime':{'up_return':{'retained':True}},'operations':[{'name':'down_return_fixture','response':{'status':'ok','result':{'game_constructed':True}}},{'name':'down_return_extension','response':{'status':'no_accepted_candidate','game_constructed':False}}]}
+        path=self.root/'run.json';path.write_text(json.dumps(original));assessment={'plan':p,'summary':{'status':'layout_incomplete'},'stage_assessment':{'down_return_fixture':{'state':'completed'},'down_return_extension':{'state':'absent'},'down_return_crossover':{'state':'absent'}},'current_ports':{'U1:east':{'edge_id':71},'D2:east':{'edge_id':72}},'routes':[]}
+        checked=self.root/'inspection.json';checked.write_text(json.dumps(assessment));made=self.root/'return.json';made.write_text('{}')
+        with patch('bridge_live.inspect_reciprocal_layout',return_value={'status':'layout_incomplete','evidence':str(checked)}),patch('bridge_live._return_target',return_value=(p['returns'][1]['source'],[])),patch('bridge_live.execute_switching_layout') as base,patch.object(self.client,'request') as native,patch('bridge_live.connect_brief',return_value={'status':'ok','game_constructed':True}) as extension,patch('bridge_live.connect_throat',return_value={'status':'ok','game_constructed':True,'evidence':str(made)}) as crossover,patch('bridge_live._verify_reciprocal_layout',return_value={'routes_verified':10,'transfers_verified':4}):
+            before=path.read_bytes();result=execute_reciprocal_layout(self.client,p,continuation_record=path)
+            self.assertEqual(result['status'],'ok');base.assert_not_called();native.assert_not_called();extension.assert_called_once();crossover.assert_called_once();self.assertEqual(path.read_bytes(),before)
+        original['unfinished_step']='down_return_extension';path.write_text(json.dumps(original))
+        with patch('bridge_live.inspect_reciprocal_layout') as inspect,patch('bridge_live.connect_brief') as build:
+            r=execute_reciprocal_layout(self.client,p,continuation_record=path);self.assertEqual(r['status'],'reconciliation_required');inspect.assert_not_called();build.assert_not_called()
+        path.write_text('{}')
+        with patch('bridge_live.execute_switching_layout') as base,self.assertRaises(ValueError):execute_reciprocal_layout(self.client,p,continuation_record=path)
+        base.assert_not_called()
+
+    def test_reciprocal_completed_continuation_is_read_only_and_receipt_remains_inspectable(self):
+        from bridge_live import plan_reciprocal_layout,execute_reciprocal_layout
+        p=plan_reciprocal_layout(self.reciprocal_brief());old={'plan':p,'summary':{'status':'ok'},'operations':[],'pair_runtime':{'up':{},'down':{}},'return_runtime':{'up_return':{},'down_return':{}}};path=self.root/'done.json';path.write_text(json.dumps(old))
+        checked=self.root/'inspection.json';checked.write_text(json.dumps(old|{'routes':[r|{'verified':True} for r in p['movements']]}))
+        with patch('bridge_live.inspect_reciprocal_layout',return_value={'status':'ok','game_constructed':False,'routes_verified':10,'evidence':str(checked)}),patch('bridge_live.execute_switching_layout') as base,patch.object(self.client,'request') as native:
+            result=execute_reciprocal_layout(self.client,p,continuation_record=path);self.assertEqual(result['status'],'ok');self.assertFalse(result['game_constructed']);self.assertEqual(result['next_action'],'none');self.assertEqual(len(json.loads(Path(result['evidence']).read_text())['return_runtime']),2);base.assert_not_called();native.assert_not_called()
+
+    def test_reciprocal_partial_base_inspection_uses_current_recipe_observations_only(self):
+        from bridge_live import plan_reciprocal_layout,_reciprocal_partial
+        p=plan_reciprocal_layout(self.reciprocal_brief());child=self.root/'base.json';child.write_text(json.dumps({'plan':p['base_plan'],'summary':{'stage':'up_reference'},'operations':[]}))
+        original={'plan':p,'operations':[{'name':'base_build','response':{'status':'no_accepted_candidate','game_constructed':True,'evidence':str(child)}}]};record={}
+        with patch('bridge_live._switching_recipe_assessment',return_value={'roles':{},'steps':{'reference':{'state':'absent'}},'blockers':[]}) as assess,patch.object(self.client,'request') as native:
+            r=_reciprocal_partial(self.client,original,record);self.assertEqual(r['status'],'layout_incomplete');self.assertEqual(r['routes_verified'],0);self.assertEqual(assess.call_count,2);self.assertIn('up',record['base_assessment']);native.assert_not_called()
+        with patch('bridge_live._switching_recipe_assessment',return_value={'roles':{},'steps':{'cross':{'state':'completed'}},'blockers':[]}):
+            r=_reciprocal_partial(self.client,original,{});self.assertEqual(r['next_action'],'reconcile_partial_throat')
+        child.write_text('{}')
+        with self.assertRaises(ValueError):_reciprocal_partial(self.client,original,record)
+
+    def test_explicit_endpoint_tolerance_excludes_nearby_parallel_asset(self):
+        intent=self.throat_brief()['roles']['A1']['endpoint']
+        candidate={'eligible':True,'outward_direction':[1,0],'pos':[intent['guide_xyz'][0],5,0],'edge_id':71}
+        with patch('bridge_live.discover',return_value=self.response('nearby',result={'complete':True,'candidates':[candidate]})):
+            found,rid=_select_throat_port(self.client,intent);self.assertEqual(found['edge_id'],71)
+            with self.assertRaises(LiveError):_select_throat_port(self.client,intent,tolerance=.5)
+
+    def test_switching_continuation_reuses_exact_fixtures_and_blocks_unresolved_mutation(self):
+        from bridge_live import plan_switching_layout,execute_switching_layout
+        p=plan_switching_layout(self.switching_brief());fixtures=[]
+        for i,f in enumerate(p['pairs'][0]['fixtures'][:2]):
+            fixtures.append({'id':71+i,'road_type':'TRACK','p0':f['position'],'p1':[f['position'][k]+20*(f['travel_direction'][k] if k<2 else 0) for k in range(3)],'t0':[20*f['travel_direction'][0],20*f['travel_direction'][1],0],'t1':[20*f['travel_direction'][0],20*f['travel_direction'][1],0]})
+        old={'plan':p,'operations':[{'name':'up_prepare_'+f['name'],'response':{'status':'ok','result':{'edges':[e]}}} for f,e in zip(p['pairs'][0]['fixtures'],fixtures)]};path=self.root/'partial_base.json';path.write_text(json.dumps(old))
+        def state(c,plan,pair,record):
+            roles={f['name']:{'edge_snapshot':e} for f,e in zip(pair['fixtures'],fixtures)} if pair['name']=='up' else {}
+            return {'roles':roles,'observations':['current'],'steps':{'prepare_'+f['name']:{'state':'completed' if f['name'] in roles else 'absent'} for f in pair['fixtures']}}
+        calls=[]
+        def request(op,q):
+            calls.append((op,q))
+            if op=='discover':return self.response('asset',op,result={'complete':True,'candidates':[{'edge_id':99,'edge_snapshot':{'template':'same','style':'same'}}]})
+            if op=='inspect':return self.response('resource',op,result={'edges':[{'resource':{'track_distance':5}}]})
+            self.assertEqual(op,'test_approach');self.assertEqual(q['fixture']['position'],p['pairs'][0]['fixtures'][2]['position'])
+            return self.response('rejected',op,result={'game_constructed':False,'error':'not accepted'})|{'status':'no_accepted_candidate'}
+        with patch('bridge_live._switching_recipe_assessment',side_effect=state),patch.object(self.client,'request',side_effect=request):
+            before=path.read_bytes();r=execute_switching_layout(self.client,p,current_run=path);self.assertEqual(r['stage'],'up_prepare_D1');self.assertEqual(r['status'],'no_accepted_candidate');self.assertFalse(r['game_constructed']);self.assertEqual(path.read_bytes(),before);self.assertEqual([op for op,q in calls].count('test_approach'),1)
+        old['operations'].append({'name':'up_prepare_D1','response':{'status':'mutation_unverified','result':{'game_constructed':'unknown'}}});path.write_text(json.dumps(old))
+        with patch.object(self.client,'request') as native:
+            r=execute_switching_layout(self.client,p,current_run=path);self.assertEqual(r['status'],'reconciliation_required');native.assert_not_called()
+
+    def test_fixture_reconciliation_is_linked_to_exact_failed_request_and_keeps_unknown_other_effects(self):
+        from bridge_live import _layout_uncertain_operations
+        original={'operations':[{'name':'up_prepare_D1','response':{'status':'mutation_unverified','request_id':'failed','result':{'game_constructed':'unknown'}}}]}
+        self.assertEqual(_layout_uncertain_operations(self.client,original),['up_prepare_D1'])
+        record=self.client.evidence/'failed.reconciliation.json';record.write_text(json.dumps({'status':'reconciled_failed_fixture','original_pending':{'request_id':'failed'},'intended_fixture_constructed':False,'other_effects':'unknown','automatic_replay':False}))
+        self.assertEqual(_layout_uncertain_operations(self.client,original),[])
+        original['unfinished_step']='up_prepare_D1';self.assertEqual(_layout_uncertain_operations(self.client,original),['unfinished_up_prepare_D1'])
+
     def test_rejected_corridor_and_crossover_reconcile_without_replay(self):
         from bridge_live import reconcile_rejected_corridor,reconcile_rejected_crossover
         for op,fn in [('corridor',reconcile_rejected_corridor),('crossover',reconcile_rejected_crossover)]:

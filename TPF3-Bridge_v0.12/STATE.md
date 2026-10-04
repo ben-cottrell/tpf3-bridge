@@ -1,6 +1,36 @@
 # TPF3-Bridge milestone state — 4 October 2026
 
-## Current task - P20 complete, reciprocal native acceptance passed
+## Current task - P21 complete, portable fresh-base junction verified
+Standalone portable_junction_example.json; callable/CLI reciprocal-layout (offline
+or --execute), reciprocal-layout-inspect, explicit --execute --layout-record continuation.
+No P19 receipt/ID prerequisite; healthy adapter/context plus bounded suitable TRACK
+asset-region seed required. Level increasing-UP UUDD/translation/rotation/widened zones;
+ten movements/four exact transfers/ten functional junctions on build40408.
+Fresh base and complete network built at(2800,3200,33)/heading20 in one successful
+invocation after relocating from a rejected site.66TRACK/17independent samples:
+radius122.281179>=120,reference167.635255/167.673180>=160,grade0,authorised region;
+three100-unit approach pairs spacing4.999922-5.000161. Four negative checks reject.
+Fresh-process inspection and completed continuation:10routes,zero construction.
+Partial original site:two UP stubs currently completed,remaining fixtures absent;
+third fixture rejected,read-only exact-request reconciliation,no automatic replay.
+Other incidental effects unknown; original failures immutable. No inferred rollback.
+Explicit continuation freshly qualifies stages; uncertain/pending stops; partial
+mid-throat without completed pair receipt requires focused semantic reconciliation.
+python tools/quiet_checks.py --suite live_client --label pif-p21-reviewed-acceptance:141passed;
+.local_checks/pif-p21-reviewed-acceptance_7b7ta8kx/report.json.
+python bridge_live.py reciprocal-layout --context .local_runs/live_python_interface/p02/context.json --params implementation/live_python_interface/portable_junction_example.json --execute --timeout 60:passed;
+python bridge_live.py reciprocal-layout-inspect --context .local_runs/live_python_interface/p02/context.json --params implementation/live_python_interface/portable_junction_example.json --layout-record .local_runs/live_python_interface/p21/alternative_fresh_build_summary.json --timeout 60:passed;
+python .local_runs/live_python_interface/p21/independent_acceptance.py:passed;
+python bridge_live.py reciprocal-layout --context .local_runs/live_python_interface/p02/context.json --params implementation/live_python_interface/portable_junction_example.json --execute --layout-record .local_runs/live_python_interface/p21/alternative_fresh_build_summary.json --timeout 60:read-only completed success.
+Full receipts via p21/alternative_fresh_build_summary.json/fresh_inspection_summary.json/
+completed_continuation_summary.json; partial_inspection_summary.json/rejected_fixture_reconciliation.json.
+HANDOFF/checks/result/checkpoint in .local_runs/live_python_interface/p21;checkpoint
+records full local revision. No push. P18-P20 compatible;Lua/runner/L01-L14 unchanged.
+Geometry sampled only;traversal,signals,reservations,operational direction enforcement,
+save/load identity unprobed. Disposable TPF3_Bridge_NCD_C09_Test_20261002_1902 saved;
+paused/non-maximised. No completion blocker;stop P21 for coordinator. Usage unavailable.
+
+## P20 baseline - 3d7485c (complete, native acceptance passed)
 Callable plan/publish/execute/inspect_reciprocal_layout; CLI reciprocal-layout
 (offline default;--execute), reciprocal-layout-inspect; explicit --base-layout-record
 requires matching completed P19 plus fresh eight-route readback before extension.
