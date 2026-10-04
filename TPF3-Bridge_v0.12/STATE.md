@@ -1,3 +1,28 @@
+## P38 closed with native limitation - compact scissors on existing5-unit rails
+bridge_scissors.scissors / bridge_live scissors: default read-only four native interior
+fits, explicit execute, reacquisition after splits, durable stage receipts/no replay.
+scissors-inspect prepares fresh receipt-bound geometry/12movement/conflict assessment;
+completed scissors acceptance remains untested because native construction rejected L0.
+Existing interior_junction narrowly supports a level fitted free-end lead. Explicitly
+paired crossing arms may be positive below20; older unpaired domain unchanged.
+Build40408/session pif_1791118665_118214242: inspected centre(-1450,-4297.5), terrain
+height7.324996948; two existing300x5 rails with20outside stubs,340x5 actual extent.
+Original h14.5652/q23.5774 failed native conversion tolerance before mutation. Symmetric
+h14.4652/q23.7774 passed four3-piece fits (~9.4623length), hard60/nativefit70, level,
+within300x5. First L0 proposal returned native_construction_rejected; no replay,
+remaining turnouts/crossing not built. Unknown general effects retained; fresh readback
+confirmed six original TRACKs103773/103776/103780/103785/103788/103792 and four complete
+through paths, independent running rails graph-disjoint. Not scissors/8movement proof.
+python tools/quiet_checks.py --suite live_client --label pif-p38-final-acceptance:
+291passed/0fail/error/skip; .local_checks/pif-p38-final-acceptance_yk0zcn00/report.json.
+py_compile/diff pass. Evidence .local_runs/live_python_interface/p38/:site.json,
+fixtures.json,brief_initial.json,prepare_initial.json,brief.json,prepare.json,execute.json,
+post_rejection_running_rails.json,post_rejection_through.json,native_preflight_fits.json,
+checks.json,result.json,HANDOFF.md,checkpoint.json; earlier evidence preserved.
+Checkpoint revision recorded in checkpoint.json; no push. Astra decides compact
+turnout limitation/topology; no larger replacement, lowered constraints, capacity,
+physical train/signalling claim or automatic partial/cross-load resume. Usage unknown.
+
 ## P37 complete - bounded full-reference movement-set assessment
 Existing route-set-inspect/inspect_route_set version1 supports32roles/64movements/
 32junction hints; optional batch_size1..16(default16), all cross-batch pairs compared.

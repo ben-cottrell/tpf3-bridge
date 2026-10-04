@@ -1,0 +1,246 @@
+{
+  "version": 1,
+  "center": [
+    150,
+    2.5,
+    0
+  ],
+  "axes": [
+    [
+      0.9914448613738104,
+      0.13052619222005157
+    ],
+    [
+      0.9914448613738104,
+      -0.13052619222005157
+    ]
+  ],
+  "half_arm_length": 14.565201541784282,
+  "radius": 60,
+  "fit_radius": 70,
+  "max_route_length": 1500,
+  "region": {
+    "min": [
+      -21,
+      -0.001,
+      -1
+    ],
+    "max": [
+      321,
+      5.001,
+      1
+    ]
+  },
+  "endpoints": {
+    "W0": {
+      "region": {
+        "min": [
+          -1,
+          -1,
+          -1
+        ],
+        "max": [
+          1,
+          1,
+          1
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        0,
+        0,
+        0
+      ],
+      "position_tolerance": 0.001,
+      "travel_direction": [
+        1,
+        0
+      ],
+      "heading_tolerance_deg": 0.1
+    },
+    "W1": {
+      "region": {
+        "min": [
+          -1,
+          4,
+          -1
+        ],
+        "max": [
+          1,
+          6,
+          1
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        0,
+        5,
+        0
+      ],
+      "position_tolerance": 0.001,
+      "travel_direction": [
+        1,
+        0
+      ],
+      "heading_tolerance_deg": 0.1
+    },
+    "E0": {
+      "region": {
+        "min": [
+          299,
+          -1,
+          -1
+        ],
+        "max": [
+          301,
+          1,
+          1
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        300,
+        0,
+        0
+      ],
+      "position_tolerance": 0.001,
+      "travel_direction": [
+        -1,
+        0
+      ],
+      "heading_tolerance_deg": 0.1
+    },
+    "E1": {
+      "region": {
+        "min": [
+          299,
+          4,
+          -1
+        ],
+        "max": [
+          301,
+          6,
+          1
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        300,
+        5,
+        0
+      ],
+      "position_tolerance": 0.001,
+      "travel_direction": [
+        -1,
+        0
+      ],
+      "heading_tolerance_deg": 0.1
+    }
+  },
+  "turnouts": {
+    "L0": {
+      "region": {
+        "min": [
+          125.42257232112047,
+          -1,
+          -1
+        ],
+        "max": [
+          127.42257232112047,
+          1,
+          1
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        126.42257232112047,
+        0,
+        0
+      ],
+      "position_tolerance": 0.001,
+      "travel_direction": [
+        1,
+        0
+      ],
+      "heading_tolerance_deg": 0.1
+    },
+    "L1": {
+      "region": {
+        "min": [
+          125.42257232112047,
+          4,
+          -1
+        ],
+        "max": [
+          127.42257232112047,
+          6,
+          1
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        126.42257232112047,
+        5,
+        0
+      ],
+      "position_tolerance": 0.001,
+      "travel_direction": [
+        1,
+        0
+      ],
+      "heading_tolerance_deg": 0.1
+    },
+    "R0": {
+      "region": {
+        "min": [
+          172.57742767887953,
+          -1,
+          -1
+        ],
+        "max": [
+          174.57742767887953,
+          1,
+          1
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        173.57742767887953,
+        0,
+        0
+      ],
+      "position_tolerance": 0.001,
+      "travel_direction": [
+        -1,
+        0
+      ],
+      "heading_tolerance_deg": 0.1
+    },
+    "R1": {
+      "region": {
+        "min": [
+          172.57742767887953,
+          4,
+          -1
+        ],
+        "max": [
+          174.57742767887953,
+          6,
+          1
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        173.57742767887953,
+        5,
+        0
+      ],
+      "position_tolerance": 0.001,
+      "travel_direction": [
+        -1,
+        0
+      ],
+      "heading_tolerance_deg": 0.1
+    }
+  }
+}

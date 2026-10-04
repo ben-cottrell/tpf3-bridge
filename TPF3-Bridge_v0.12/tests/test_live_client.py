@@ -9,6 +9,77 @@ import contextlib
 import io
 from bridge_live import connect_adjacent, reconcile_constructed_crossover, connect_throat, validate_throat_brief, _select_throat_port, is_mutation, LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, connect_junction, connect_junction_at, reconcile_rejected_junction, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, reconcile_constructed_interior, discover_session, client_from_context
 
+class ScissorsTests(unittest.TestCase):
+    def brief(self):
+        return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/scissors_example.json').read_text())
+
+    def test_compact_scissors_validates_selected_domain(self):
+        from bridge_scissors import validate,tips
+        b=self.brief();validate(b)
+        for t in tips(b).values():self.assertTrue(0<=t['position'][1]<=5)
+        for field,value in [('radius',59),('fit_radius',69),('half_arm_length',0),('half_arm_length',float('nan'))]:
+            q=self.brief();q[field]=value
+            with self.subTest(field=field,value=value),self.assertRaises(ValueError):validate(q)
+
+    def test_scissors_movements_require_selected_turnouts_and_plain_crossing(self):
+        from bridge_scissors import _movements
+        ms={m['id']:m for m in _movements()}
+        self.assertEqual(len(ms),12)
+        self.assertEqual(ms['W0_to_E0']['via'],['L0','R0'])
+        self.assertEqual(ms['W0_to_E1']['via'],['L0','C','R1'])
+        self.assertEqual(ms['E1_to_W0']['via'],['R1','C','L0'])
+        self.assertEqual(ms['W0_to_W1']['via'],[])
+
+    def test_compact_scissors_does_not_silently_repair_layout(self):
+        from bridge_scissors import validate
+        for field in ('spacing','heading','level','axis'):
+            b=self.brief()
+            if field=='spacing':b['endpoints']['E1']['guide_xyz'][1]=30
+            if field=='heading':b['turnouts']['R0']['travel_direction']=[1,0]
+            if field=='level':b['endpoints']['W1']['guide_xyz'][2]=1
+            if field=='axis':b['axes'][0]=[1,1]
+            with self.subTest(field=field),self.assertRaises(ValueError):validate(b)
+
+    def test_scissors_pending_mutation_and_partial_record_stop(self):
+        from bridge_scissors import scissors,inspect_scissors
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);client=LiveClient(root/'mod',root/'log',root/'evidence','test',.1)
+            client.journal.write_text(json.dumps({'pending':{'request_id':'unknown'}}))
+            with patch.object(client,'request') as call:
+                summary=scissors(client,self.brief(),execute=True)
+                self.assertEqual(summary['status'],'reconciliation_required');call.assert_not_called()
+            r=root/'partial.json';r.write_text(json.dumps({'brief':self.brief(),'session':'test','complete_receipts':False}))
+            with patch.object(client,'request') as call,self.assertRaises(LiveError):inspect_scissors(client,r)
+            call.assert_not_called()
+
+    def test_scissors_rotated_envelope_checks_curve_interior(self):
+        from bridge_scissors import validate,_branch_envelope
+        import math
+        b=self.brief();a=.4;c,s=math.cos(a),math.sin(a)
+        def pos(v):return [100+c*v[0]-s*v[1],200+s*v[0]+c*v[1],9]
+        for h in [*b['endpoints'].values(),*b['turnouts'].values()]:
+            h['guide_xyz']=pos(h['guide_xyz']);h['region']={'min':[v-1 for v in h['guide_xyz']],'max':[v+1 for v in h['guide_xyz']]};d=h['travel_direction'];h['travel_direction']=[c*d[0]-s*d[1],s*d[0]+c*d[1]]
+        b['center']=pos(b['center']);b['axes']=[[c*d[0]-s*d[1],s*d[0]+c*d[1]] for d in b['axes']];b['region']={'min':[80,180,8],'max':[410,330,10]};validate(b)
+        e={'p0':pos([120,1,0]),'p1':pos([130,2,0]),'t0':[10*c,10*s,0],'t1':[10*c,10*s,0]};_branch_envelope(b,[e])
+        e['t0']=[10*c-100*s,10*s+100*c,0]
+        with self.assertRaises(LiveError):_branch_envelope(b,[e])
+
+    def test_scissors_native_rejection_stops_without_replay(self):
+        from bridge_scissors import scissors
+        b=self.brief();calls=[]
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);client=LiveClient(root/'mod',root/'log',root/'evidence','test',.1)
+            def request(op,p):
+                calls.append((op,p))
+                if p.get('execute'):
+                    return {'status':'error','result':{'error':'native_construction_rejected','game_constructed':'unknown'}}
+                n=next(n for n,h in b['turnouts'].items() if h['guide_xyz']==p['location']['guide_xyz']);v=b['turnouts'][n]['guide_xyz']
+                return {'status':'ok','result':{'fit':{'controls':[{'p0':v,'p1':[150,2.5,0],'t0':[0,0,0],'t1':[0,0,0]}]}}}
+            with patch('bridge_scissors.live._select_throat_port',return_value=({},'read')),patch('bridge_scissors._source',side_effect=lambda client,brief,n:({'location':{'guide_xyz':brief['turnouts'][n]['guide_xyz']}},'read')),patch.object(client,'request',side_effect=request):
+                result=scissors(client,b,execute=True)
+            self.assertEqual(len(calls),5);self.assertEqual(result['stage'],'turnout_L0');self.assertEqual(result['game_constructed'],'unknown')
+            record=json.loads(Path(result['evidence']).read_text());self.assertEqual(len(record['operations']),5);self.assertFalse(record['leads']);self.assertNotIn('complete_receipts',record)
+
 class LiveClientTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

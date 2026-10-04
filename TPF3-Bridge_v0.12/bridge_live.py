@@ -2467,7 +2467,7 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'plain-crossing','plain-crossing-inspect','route-set-inspect','height-ladder','height-ladder-inspect','ladder-layout', 'ladder-layout-inspect', 'complete-layout', 'complete-layout-inspect', 'branching-corridor', 'branching-corridor-inspect', 'multitrack-connection', 'multitrack-connection-inspect', 'paired-connection', 'paired-connection-inspect', 'layout-network', 'layout-network-inspect', 'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'switching-layout', 'switching-layout-inspect', 'switching-layout-continue', 'reciprocal-layout', 'reciprocal-layout-inspect', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'scissors','scissors-inspect','plain-crossing','plain-crossing-inspect','route-set-inspect','height-ladder','height-ladder-inspect','ladder-layout', 'ladder-layout-inspect', 'complete-layout', 'complete-layout-inspect', 'branching-corridor', 'branching-corridor-inspect', 'multitrack-connection', 'multitrack-connection-inspect', 'paired-connection', 'paired-connection-inspect', 'layout-network', 'layout-network-inspect', 'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'switching-layout', 'switching-layout-inspect', 'switching-layout-continue', 'reciprocal-layout', 'reciprocal-layout-inspect', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--reconciled-crossover', type=Path, help='explicit verified crossover evidence for connect-throat; rechecks read-only, never rebuilds it')
     parser.add_argument('--recipe-plan',type=Path,help='optional reviewed junction-recipe plan; must match current brief exactly')
@@ -2526,7 +2526,7 @@ def main(argv=None):
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
         if args.base_layout_record and (args.operation!='reciprocal-layout' or not args.execute):raise ValueError('--base-layout-record requires reciprocal-layout --execute')
         if args.prepared_switching and (args.operation!='switching-layout' or not args.execute):raise ValueError('--prepared-switching requires switching-layout --execute')
-        if args.layout_record and args.operation not in ('plain-crossing','plain-crossing-inspect','height-ladder','height-ladder-inspect','ladder-layout','ladder-layout-inspect','complete-layout','complete-layout-inspect','branching-corridor','branching-corridor-inspect','multitrack-connection','multitrack-connection-inspect','paired-connection','paired-connection-inspect','layout-network','layout-network-inspect','parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect','reciprocal-layout'):raise ValueError('--layout-record requires a supported layout operation')
+        if args.layout_record and args.operation not in ('scissors-inspect','plain-crossing','plain-crossing-inspect','height-ladder','height-ladder-inspect','ladder-layout','ladder-layout-inspect','complete-layout','complete-layout-inspect','branching-corridor','branching-corridor-inspect','multitrack-connection','multitrack-connection-inspect','paired-connection','paired-connection-inspect','layout-network','layout-network-inspect','parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect','reciprocal-layout'):raise ValueError('--layout-record requires a supported layout operation')
         if args.recipe_record and args.operation not in ('junction-recipe-inspect','junction-recipe-continue'):raise ValueError('--recipe-record requires recipe inspect/continue')
         if args.operation=='junction-recipe-continue' and not args.execute:raise ValueError('recipe continuation requires --execute')
         if args.recipe_plan and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--recipe-plan requires junction-recipe --execute')
@@ -2535,9 +2535,18 @@ def main(argv=None):
             raise ValueError('--reconciled-crossover requires connect-throat --execute')
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('plain-crossing','height-ladder','ladder-layout', 'complete-layout', 'branching-corridor', 'multitrack-connection', 'paired-connection', 'layout-network', 'extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout', 'switching-layout', 'switching-layout-continue', 'reciprocal-layout'):
+        if args.execute and args.operation not in ('scissors','plain-crossing','height-ladder','ladder-layout', 'complete-layout', 'branching-corridor', 'multitrack-connection', 'paired-connection', 'layout-network', 'extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout', 'switching-layout', 'switching-layout-continue', 'reciprocal-layout'):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
-        if args.operation=='plain-crossing':
+        if args.operation=='scissors':
+            from bridge_scissors import scissors
+            if args.layout_record:raise ValueError('scissors never automatically resumes a saved record')
+            response=scissors(client,params,execute=args.execute)
+        elif args.operation=='scissors-inspect':
+            from bridge_scissors import inspect_scissors
+            if not args.layout_record:raise ValueError('--layout-record is required')
+            if json.loads(args.layout_record.read_text(encoding='utf-8-sig'))['brief']!=params:raise ValueError('scissors record differs from brief')
+            response=inspect_scissors(client,args.layout_record)
+        elif args.operation=='plain-crossing':
             from bridge_crossing import crossing
             response=crossing(client,params,execute=args.execute,prepared_record=args.layout_record)
         elif args.operation=='plain-crossing-inspect':

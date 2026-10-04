@@ -990,12 +990,12 @@ local function interior_readback(a,c,splits,f,te,ids,p,before)
     local after=M.route({source_edge=incoming.id,source_node=original_start,target_edge=through.id,target_node=original_finish,
      junction_node=junction,junction_nodes=junctions,mode="TRAIN",required_edges={incoming.id,through.id},max_length=p.max_route_length,
      geometry_constraints={edge_ids={incoming.id,through.id},junction_node=junction,region=p.region,radius=p.radius,max_grade=p.vertical.max_grade}})
-    local required={incoming.id,te.id};for _,eid in ipairs(rb.ordered_edges) do required[#required+1]=eid end
-    local branch=M.route({source_edge=incoming.id,source_node=original_start,target_edge=te.id,target_node=te.node0==target.node_id and te.node1 or te.node0,
+    local required={incoming.id};if te then required[#required+1]=te.id end;for _,eid in ipairs(rb.ordered_edges) do required[#required+1]=eid end
+    local branch=M.route({source_edge=incoming.id,source_node=original_start,target_edge=te and te.id or rb.ordered_edges[#rb.ordered_edges],target_node=te and (te.node0==target.node_id and te.node1 or te.node0) or rb.ordered_nodes[#rb.ordered_nodes],
      junction_node=junction,junction_nodes=junctions,mode="TRAIN",required_edges=required,max_length=p.max_route_length,
      geometry_constraints={edge_ids=rb.ordered_edges,junction_node=junction,region=p.region,radius=p.radius,max_grade=p.vertical.max_grade}})
     assert(after.requested_route_verified and branch.requested_route_verified,"realised_split_movements_unverified")
-    rb.attachments.source_incident_edges=incident
+    if rb.attachments then rb.attachments.source_incident_edges=incident end
     placement.junction_node=junction;placement.replacement_edges={left.id,right.id};placement.incoming=incoming;placement.through=through;placement.original_removed=true;placement.game_constructed=true
     return {game_constructed=true,placement=placement,readback=rb,through_before=before,through_after=after,branch_after=branch,
      junction={node=junction,incoming_edge=incoming.id,through_edge=through.id,branch_edge=rb.ordered_edges[1],incident_edges=incident,
@@ -1008,27 +1008,35 @@ function M.interior_junction(p,s,state,request_id,respond)
   assert(type(p.execute)=="boolean","invalid_execution_option")
   local a=assert_fresh(p.source.edge_snapshot);local c=interior_location(a,p.location)
   assert(math.abs(c.parameter-p.source.parameter)<=.000001,"stale_interior_location")
-  local target=p.target;local te=assert_fresh(target.edge_snapshot)
-  local all,owner=incidence(target.node_id)
-  assert(#all==1 and all[1]==te.id and not (owner and owner>0),"selected_endpoint_not_free")
-  assert(target.node_id==te.node0 or target.node_id==te.node1,"target_endpoint_mismatch")
-  assert(a.id~=te.id and a.node0~=target.node_id and a.node1~=target.node_id,"distinct_split_target_required")
-  local _,tp,td,tg=anchor({anchor_edge=te.id,anchor_node=target.node_id});td={-td[1],-td[2],0};tg=-tg
+  local target=p.target;local te,tp,td,tg
+  if target then
+   te=assert_fresh(target.edge_snapshot)
+   local all,owner=incidence(target.node_id)
+   assert(#all==1 and all[1]==te.id and not (owner and owner>0),"selected_endpoint_not_free")
+   assert(target.node_id==te.node0 or target.node_id==te.node1,"target_endpoint_mismatch")
+   assert(a.id~=te.id and a.node0~=target.node_id and a.node1~=target.node_id,"distinct_split_target_required")
+   local ignored;ignored,tp,td,tg=anchor({anchor_edge=te.id,anchor_node=target.node_id});td={-td[1],-td[2],0};tg=-tg
+  else
+   -- A level fitted turnout lead ending in a new free attachment, for composition.
+   vector(p.end_xyz);assert(#p.end_xyz==3,"free_lead_endpoint_XYZ_required");vector(p.end_direction)
+   assert(p.vertical.max_grade==0 and math.abs(c.grade)<=.000001 and math.abs(p.end_xyz[3]-c.pos[3])<=.001,"level_free_lead_required")
+   tp=p.end_xyz;td=p.end_direction;tg=0
+  end
   local original_start=c.canonical_forward and a.node0 or a.node1;local original_finish=c.canonical_forward and a.node1 or a.node0
   local before=M.route({source_edge=a.id,source_node=original_start,target_edge=a.id,target_node=original_finish,
    single_edge=true,junction_nodes=p.junction_nodes,mode="TRAIN",required_edges={a.id},max_length=p.max_route_length})
   assert(before.requested_route_verified,"existing_through_route_unverified")
   local splits=interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade)
   stage="fit"
-  local fit_id=request_id.."_fit";fit=M.fit({end_xy={tp[1],tp[2]},end_direction=td,radius=p.radius,fit_radius=p.fit_radius or p.radius*1.05,region=p.region,vertical=p.vertical},s,fit_id,
-   {edge=te,node=target.node_id,pos=tp,direction=td,grade=tg},{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
+  local fit_id=request_id.."_fit";fit=M.fit({end_xy={tp[1],tp[2]},end_direction=td,radius=p.radius,fit_radius=p.fit_radius or p.radius*1.05,region=p.region,vertical=te and p.vertical or nil},s,fit_id,
+   te and {edge=te,node=target.node_id,pos=tp,direction=td,grade=tg} or nil,{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
   fit.start_node=nil;fit.requested_min_radius=p.radius
   local f=s.fits[fit_id];f.node=-100;f.junction_node=-100;f.min_radius=p.radius
   for _,ctrl in ipairs(f.controls) do geometry_bounds(cubic(ctrl),p.region,p.radius,p.vertical.max_grade) end
   local placement={original_edge=a.id,original_nodes={a.node0,a.node1},parameter=c.parameter,position=c.pos,
    canonical_forward=c.canonical_forward,subdivision_sampled_verified=true,game_constructed=false}
   if not p.execute then reply("ok",{game_constructed=false,placement=placement,through_before=before});return end
-  assert(not s.mutationPending,"unreconciled_mutation");assert_fresh(a);assert_fresh(te)
+  assert(not s.mutationPending,"unreconciled_mutation");assert_fresh(a);if te then assert_fresh(te) end
   stage="build";local proposal=api.type.SimpleProposal.new();local segments,nodes={},{}
   local n=api.type.NodeAndEntity.new();n.entity=-100;n.comp.position=v(c.pos);nodes[1]=n
   local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
@@ -1041,8 +1049,8 @@ function M.interior_junction(p,s,state,request_id,respond)
   end
   segment(splits[1],-1,a.node0,-100,true);segment(splits[2],-2,-100,a.node1,true)
   for i,ctrl in ipairs(f.controls) do
-   local finish=target.node_id
-   if i<#f.controls then local nn=api.type.NodeAndEntity.new();nn.entity=-100-i;nn.comp.position=v(ctrl.p1);nodes[#nodes+1]=nn;finish=nn.entity end
+   local finish=target and target.node_id or nil
+   if i<#f.controls or not target then local nn=api.type.NodeAndEntity.new();nn.entity=-100-i;nn.comp.position=v(ctrl.p1);nodes[#nodes+1]=nn;finish=nn.entity end
    segment(ctrl,-2-i,i==1 and -100 or -100-i+1,finish,false)
   end
   proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments;proposal.streetProposal.edgesToRemove={a.id}
@@ -1350,7 +1358,7 @@ function M.degree_four_candidate(p,s,state,request_id,respond)
   local a=assert_fresh(q.edge_snapshot);local e,pos,direction,grade=anchor({anchor_edge=a.id,anchor_node=q.node_id})
   local inc=api.engine.system.streetSystem.getNodeSegments(q.node_id);assert(#inc==1 and inc[1]==a.id,"candidate_attachment_not_free")
   local dx,dy=p.center[1]-pos[1],p.center[2]-pos[2];local length=math.sqrt(dx*dx+dy*dy)
-  assert(length>=20 and length<=300 and math.abs(pos[3]-p.center[3])<=.001 and math.abs(grade)<=1e-6,"level_bounded_candidate_required")
+  assert(length>0 and length<=300 and (p.pairs or length>=20) and math.abs(pos[3]-p.center[3])<=.001 and math.abs(grade)<=1e-6,"level_bounded_candidate_required")
   -- The caller supplies one rotated/translated orthogonal experiment. Validate
   -- its actual native arm directions, rather than imposing any transport edges.
   assert(angle(direction,{dx,dy,0})<=.1,"arm_tangent_not_toward_center")
