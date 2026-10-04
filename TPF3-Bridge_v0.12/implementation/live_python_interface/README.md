@@ -1040,3 +1040,49 @@ The selected 65-samples/edge pair-separation screen is a diagnostic/acceptance s
 not continuous clearance or dynamic gauging proof. Native collision checks still apply.
 Direction is declared routing intent, not signalling enforcement; train traversal,
 reservations, save/load identity and arbitrary versions remain unprobed.
+
+
+### Native curved paired connection (P24)
+
+Callable `bridge_parallel.plan_paired_connection`, `publish_paired_connection`,
+`execute_paired_connection`, `inspect_paired_connection`: one native UP reference
+corridor plus genuine `CUBIC_OFFSET_SPLINE` DOWN alignment. Four explicit project
+IDs/endpoint intents supply opposing traffic directions. DOWN construction follows
+UP parameter orientation; its intended route runs in reverse.
+
+```
+python bridge_live.py paired-connection --params implementation/live_python_interface/paired_connection_example.json --evidence .local_runs/paired_plans
+python bridge_live.py paired-connection --context CONTEXT.json --params PAIR.json --execute
+python bridge_live.py paired-connection-inspect --context CONTEXT.json --params PAIR.json --layout-record RECEIPT.json
+```
+
+Initial domain: level native BaseEdges, equal actual endpoint heights, template
+trackDistance5, compatible fixed normal-offset pairs, explicit left/right side and
+1-3 native guides. Radius, grade envelope, region, route length and minimum curved
+section remain hard limits. Graded or splayed arrangements are unsupported; there
+is no new elevation solver, automatic widening transition or tolerance relaxation.
+Actual heights are retained. Translation/rotation and both sides are supported by
+the contract; native demonstration uses left. Prior corridor/network receipts remain
+compatible. The entire connector is the shared section; compatible anchors need no
+widening transitions. The retained straight approaches are outside that section.
+
+Native sampling generates the offset; Python does not fit curves. Cubic conversion
+is checked before building. Fresh inspection proves exact four attachment IDs,
+degree-two TRACK incidence, complete ordered chains, UP/DOWN TRAIN routes and sampled
+radius/grade/region limits. It records17samples/reference piece: reference-u, located
+offset-u, actual signed normal spacing, tangential residual and positional error.
+Curved-section length sums chords of curved reference pieces with >=1degree endpoint
+heading change; this is a conservative measure, not integrated arc length. Clearance
+is sampled, not continuous or dynamic gauging proof. No signals, reservations,
+operational direction enforcement or physical train traversal is inferred.
+
+Partial/unknown builds remain visible; pending mutation stops execution. Inspection
+never builds. An explicit `--execute --layout-record FAILED.json` continuation handles
+only a reported reference `construction_receipt_incomplete`: fresh unchanged anchors,
+free DOWN ports, exact returned UP TRACK chain, full route and geometry are mandatory.
+Only DOWN is built; UP is not replayed. It cannot clear an unresolved current-session
+journal. Preserve old receipts/journals; after an authorised ordinary mod reload, a
+new healthy session must still prove the reference. This is focused semantic
+reconciliation, not automatic resume or crash restoration. Other failures require
+focused inspection. Native incidental non-TRACK additions are recorded separately
+from connector identities. Unknown historical effects remain unknown.

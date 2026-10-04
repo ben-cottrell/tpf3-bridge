@@ -2300,5 +2300,118 @@ class NetworkTests(unittest.TestCase):
             for value in (8001,float('inf'),0):
                 with self.assertRaises(ValueError):route(self.client,b|{'max_length':value})
 
+class PairedConnectionTests(unittest.TestCase):
+    setUp = LiveClientTests.setUp
+    response = LiveClientTests.response
+
+    def brief(self):
+        return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/paired_connection_example.json').read_text())
+
+    def ports(self,b):
+        ports={}
+        for i,(name,p) in enumerate(b['ports'].items()):
+            pos=p['endpoint']['guide_xyz'];d=p['endpoint']['travel_direction'];sign=1 if name.endswith('source') else -1
+            other=[pos[k]-sign*20*(d[k] if k<2 else 0) for k in range(3)]
+            edge={'id':10+i,'node0':20+i,'node1':30+i,'p0':pos,'p1':other,'t0':[other[k]-pos[k] for k in range(3)],'t1':[other[k]-pos[k] for k in range(3)],'template':'track','style':'style','road_type':'TRACK'}
+            ports[name]={'edge_id':10+i,'node_id':20+i,'edge_snapshot':edge,'grade':0,'eligible':True,'incident_count':1,'incident_edges':[10+i]}
+        return ports
+
+    def test_explicit_plan_direction_rotation_and_signed_offset(self):
+        from bridge_parallel import plan_paired_connection
+        b=self.brief();p=plan_paired_connection(b);self.assertEqual(p,plan_paired_connection(b));self.assertEqual(p['signed_spacing'],5);self.assertFalse(p['game_constructed'])
+        import math
+        def transform(pos):return [500-pos[1],100+pos[0],pos[2]]
+        for value in b['ports'].values():
+            e=value['endpoint'];e['guide_xyz']=transform(e['guide_xyz']);e['travel_direction']=[-e['travel_direction'][1],e['travel_direction'][0]];e['region']={'min':[e['guide_xyz'][0]-2,e['guide_xyz'][1]-2,31],'max':[e['guide_xyz'][0]+2,e['guide_xyz'][1]+2,35]}
+        for g in b['guides']:g['position']=transform(g['position']);g['travel_direction']=[-g['travel_direction'][1],g['travel_direction'][0]]
+        points=[x['endpoint']['guide_xyz'] for x in b['ports'].values()]+[g['position'] for g in b['guides']];b['region']={'min':[min(p[k] for p in points)-100 for k in range(3)],'max':[max(p[k] for p in points)+100 for k in range(3)]};self.assertEqual(plan_paired_connection(b)['signed_spacing'],5)
+        b=self.brief();b['side']='right'
+        for up,down in [('up_source','down_target'),('up_target','down_source')]:
+            a=b['ports'][up]['endpoint'];z=b['ports'][down]['endpoint'];d=a['travel_direction'];n=math.hypot(*d);z['guide_xyz']=[a['guide_xyz'][0]+5*d[1]/n,a['guide_xyz'][1]-5*d[0]/n,a['guide_xyz'][2]]
+        self.assertEqual(plan_paired_connection(b)['signed_spacing'],-5)
+
+    def test_unsupported_and_invalid_pair_rejects_before_native(self):
+        from bridge_parallel import plan_paired_connection
+        for field in ('spacing','direction','height','guide_grade','duplicate','splay','tolerance','length','nan'):
+            b=self.brief()
+            if field=='spacing':b['spacing']=4
+            elif field=='direction':b['ports']['down_target']['endpoint']['travel_direction']=[1,0]
+            elif field=='height':b['ports']['down_source']['endpoint']['guide_xyz'][2]+=1
+            elif field=='guide_grade':b['guides'][0]['grade']=.01
+            elif field=='duplicate':b['ports']['down_target']['id']='up_source'
+            elif field=='splay':b['ports']['down_target']['endpoint']['guide_xyz'][1]+=2
+            elif field=='tolerance':b['spacing_tolerance']=.2
+            elif field=='length':b['min_curved_length']=0
+            else:b['guides'][0]['position'][0]=float('nan')
+            with self.subTest(field=field),self.assertRaises((ValueError,LiveError)):plan_paired_connection(b)
+
+    def test_cli_planning_compact_and_offline(self):
+        b=self.brief();path=self.root/'brief.json';path.write_text(json.dumps(b));output=io.StringIO()
+        with patch('bridge_live.client_from_context') as native,contextlib.redirect_stdout(output):
+            self.assertEqual(main(['paired-connection','--params',str(path),'--evidence',str(self.root/'plans')]),0);native.assert_not_called()
+        self.assertLess(len(output.getvalue().encode()),4096)
+
+    def test_partial_and_pending_stop_without_replay(self):
+        from bridge_parallel import plan_paired_connection,execute_paired_connection
+        p=plan_paired_connection(self.brief());self.client.journal.write_text(json.dumps({'pending':{'request_id':'unknown'}}))
+        with patch('bridge_parallel._ports') as ports,patch('bridge_live.connect_corridor') as build:
+            r=execute_paired_connection(self.client,p);self.assertEqual(r['status'],'reconciliation_required');ports.assert_not_called();build.assert_not_called()
+        self.client.journal.write_text('{}');ports=self.ports(self.brief())
+        up={'status':'ok','game_constructed':True,'selected':{k:ports['up_'+n][v] for n in ('source','target') for k,v in ((n+'_edge','edge_id'),(n+'_node','node_id'))},'edges':[100],'nodes':[20,21]}
+        with patch('bridge_parallel._ports',return_value=ports),patch('bridge_live.connect_corridor',return_value=up),patch('bridge_parallel._read_chain',return_value=[{'edge':{'resource':{'track_distance':5}}}]),patch.object(self.client,'request',return_value=self.response('failed','adjacent',result={'game_constructed':'unknown','error':'partial'})|{'status':'mutation_unverified'}) as native:
+            r=execute_paired_connection(self.client,p);self.assertEqual(r['status'],'mutation_unverified');self.assertEqual(r['game_constructed'],'unknown');self.assertEqual(r['completed_connectors'],['UP']);self.assertEqual(native.call_count,1)
+            record=json.loads(Path(r['evidence']).read_text());self.assertEqual(record['unfinished_step'],'offset')
+        with patch('bridge_parallel._ports',return_value=ports),patch('bridge_live.connect_corridor',side_effect=LiveError('mutation_outcome_unknown','lost acknowledgement')):
+            r=execute_paired_connection(self.client,p);self.assertEqual(r['game_constructed'],'unknown')
+
+    def test_fresh_inspect_read_only_partial_receipt_and_stale_plan(self):
+        from bridge_parallel import plan_paired_connection,inspect_paired_connection
+        p=plan_paired_connection(self.brief());path=self.root/'partial.json';path.write_text(json.dumps({'plan':p,'summary':{'game_constructed':'unknown'},'chains':{}}));before=path.read_bytes()
+        with patch('bridge_parallel._ports',return_value=self.ports(self.brief())),patch('bridge_live.connect_corridor') as build,patch.object(self.client,'request') as native:
+            r=inspect_paired_connection(self.client,path);self.assertEqual(r['status'],'pair_incomplete');self.assertFalse(r['game_constructed']);self.assertEqual(r['routes_verified'],0);build.assert_not_called();native.assert_not_called()
+        self.assertEqual(path.read_bytes(),before)
+        record=json.loads(path.read_text());record['plan']['signed_spacing']=-5;path.write_text(json.dumps(record))
+        with self.assertRaises(ValueError):inspect_paired_connection(self.client,path)
+
+    def test_full_directional_routes_and_native_correspondence_required(self):
+        from bridge_parallel import plan_paired_connection,_verify
+        b=self.brief();p=plan_paired_connection(b);ports=self.ports(b);chains={'UP':{'edges':[100,101],'nodes':[20,90,21]},'DOWN':{'edges':[102,103],'nodes':[23,91,22]}}
+        for name,ids in [('up_source',[10,100]),('up_target',[11,101]),('down_target',[13,102]),('down_source',[12,103])]:ports[name].update(incident_edges=ids,incident_count=2)
+        record={'plan':p,'ports':ports,'chains':chains,'routes':[]}
+        def request(op,q):
+            if op=='route':
+                self.assertEqual(q['source_node'],30 if q['source_edge']==10 else 32)
+                ids=[10,100,101,11] if q['source_edge']==10 else [12,103,102,13]
+                return self.response(result={'requested_route_verified':True,'path':[{'confirmed_TRACK':True,'edge':{'entity':e}} for e in ids]})
+            self.assertEqual(op,'verify_adjacency');self.assertEqual(q['spacing'],5);self.assertEqual(q['reference'][0]['edge']['id'],100)
+            return self.response(result={'sampled_verified':True,'correspondence':[{'reference_u':.5,'signed_normal':5}],'curved_reference_chord_length':500,'min_sampled_separation':4.99,'max_sampled_separation':5.01,'samples':34})
+        def chain(c,plan,r,name):return [{'edge':{'id':e},'forward':True} for e in chains[name]['edges']]
+        with patch('bridge_parallel._ports',return_value=ports),patch('bridge_parallel._read_chain',side_effect=chain),patch.object(self.client,'request',side_effect=request):
+            r=_verify(self.client,p,record);self.assertTrue(r['final_pair_verified']);self.assertEqual(r['routes_verified'],2)
+        record['routes']=[]
+        with patch('bridge_parallel._ports',return_value=ports),patch('bridge_parallel._read_chain',side_effect=chain),patch.object(self.client,'request',return_value=self.response(result={'requested_route_verified':True,'path':[]})),self.assertRaises(LiveError):_verify(self.client,p,record)
+        self.assertFalse(record['routes'][0]['verified'])
+        with patch('bridge_parallel._ports',return_value=ports),patch('bridge_parallel._read_chain',side_effect=chain),patch.object(self.client,'request',side_effect=lambda op,q:request(op,q) if op=='route' else self.response(result={'sampled_verified':True,'correspondence':[],'curved_reference_chord_length':0})),self.assertRaises(LiveError):_verify(self.client,p,record)
+
+    def test_exact_role_and_chain_changes_fail(self):
+        from bridge_parallel import plan_paired_connection,_ports,_read_chain
+        b=self.brief();p=plan_paired_connection(b);old=self.ports(b);record={'ports':json.loads(json.dumps(old))}
+        old['up_source']['edge_snapshot']['p0'][0]+=.01
+        with patch('bridge_live._select_throat_port',side_effect=lambda c,intent,**kw:(next(v for k,v in old.items() if intent==b['ports'][k]['endpoint']),'current')),self.assertRaises(LiveError):_ports(self.client,p,record,connected=True)
+        record={'chains':{'UP':{'edges':[100],'nodes':[20,21]}}}
+        with patch.object(self.client,'request',return_value=self.response(result={'edges':[{'id':100,'node0':20,'node1':99,'road_type':'TRACK'}]})),self.assertRaises(LiveError):_read_chain(self.client,p,record,'UP')
+
+    def test_explicit_reference_continuation_skips_up_and_requires_precise_failure(self):
+        from bridge_parallel import plan_paired_connection,execute_paired_connection,_recover_reference
+        p=plan_paired_connection(self.brief());ports=self.ports(self.brief())
+        def recover(c,plan,record,path):record.update(ports=ports,current_ports=ports,chains={'UP':{'edges':[100],'nodes':[20,21]}},reference_reconciliation={'reference_current_verified':True})
+        def read(c,p,r,n):return [{'edge':{'resource':{'track_distance':5}}}]
+        rb={'ordered_edges':[101],'ordered_nodes':[23,22],'engineering_checks_verified':True,'requested_min_radius':p['brief']['radius'],'min_sampled_radius':500,'max_sampled_grade':0}
+        with patch('bridge_parallel._recover_reference',side_effect=recover),patch('bridge_parallel._read_chain',side_effect=read),patch('bridge_live.connect_corridor') as up,patch.object(self.client,'request',return_value=self.response('offset','adjacent',result={'game_constructed':True,'readback':rb})) as native,patch('bridge_parallel._verify',return_value={'final_pair_verified':True,'spacing_verified':True}):
+            r=execute_paired_connection(self.client,p,reference_record='explicit');self.assertEqual(r['status'],'ok');up.assert_not_called();self.assertEqual(native.call_count,1);self.assertEqual(native.call_args.args[0],'adjacent');self.assertEqual(native.call_args.args[1]['attachments']['source']['anchor_node'],ports['down_target']['node_id'])
+        raw=self.root/'workflow.json';raw.write_text(json.dumps({'attempts':[{'request_id':'wrong'}]}));response=self.root/'wrong.response.json';response.write_text(json.dumps({'operation':'corridor','status':'mutation_unverified','result':{'error':'different_failure','returned_edges':[100]}}));old=self.root/'old.json';old.write_text(json.dumps({'plan':p,'ports':ports,'operations':[{'name':'reference','response':{'evidence':str(raw)}}]}))
+        with patch.object(self.client,'request') as native,self.assertRaises(LiveError):_recover_reference(self.client,p,{'chains':{}},old)
+        native.assert_not_called()
+
 if __name__ == '__main__':
     unittest.main()

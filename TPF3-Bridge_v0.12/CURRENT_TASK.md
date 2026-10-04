@@ -1,10 +1,9 @@
-# PIF-P23 - complete; awaiting coordinator review
+# PIF-P24 - complete; awaiting coordinator review
 
-Connected native layouts via explicit UP/DOWN corridors are verified on build40408.
-2full intended movements +14local movements passed fresh-process read-only inspection.
-152affected quiet tests passed. Local HANDOFF/checks/result/checkpoint:
-.local_runs/live_python_interface/p23/
-
-Active card preserved: .local_runs/live_python_interface/p23/orchestrator/TASK.md
-Canonical coordinator state: .local_runs/n01_orchestrator/coordination.json
-Stop here. No automatic next task, signalling/traversal work or remote push.
+Native curved double-track connection accepted locally on TPF3 build40408.
+Card: .local_runs/live_python_interface/p24/orchestrator/TASK.md
+Evidence: .local_runs/live_python_interface/p24/HANDOFF.md, checks.json,
+result.json, checkpoint.json.160affected tests/fresh native inspection/independent
+geometry checks passed. Exact compatible level anchors, native5m normal offset,
+two full routes; sampled clearance only. Partial/unknown effects retained honestly.
+Local milestone commit; no push. Stop here; no next task is authorised by this card.

@@ -1,3 +1,29 @@
+## P24 complete - native curved connected pair (local checkpoint in p24/checkpoint.json)
+Callable bridge_parallel plan/publish/execute/inspect_paired_connection; CLI
+bridge_live.py paired-connection [--execute], paired-connection-inspect --layout-record.
+Level compatible fixed normal-offset anchors, explicit opposing UP/DOWN, native
+template spacing5,left/right,1-3guides; translation/rotation retained. No splayed or
+graded pairs. Entire connector shares native reference/offset; no widening transition.
+Build40408:12connector TRACK,4exact degree-two attachments,2full native routes;
+UP1035.442812,DOWN1031.508572.102correspondences:spacing4.998945-5.001422;
+curved reference chord length463.674519>=300. Independent33samples/edge:
+radius488.541837>=400,grade0,region/order passed;normal spacing4.999918-5.001010.
+Clearance sampled,not continuous proof; chord length is conservative,not arc length.
+Failed collision sites and214.889771<300curve retained. Receipt failure included
+6TRACK+1nonTRACK addition; native receipts now separate incidental identities.
+Explicit exact-current-reference continuation builds only DOWN; old pending journal
+and unknown historical effects preserved. Fresh inspection never constructs.
+python tools/quiet_checks.py --suite live_client --label pif-p24-reviewed-acceptance:160passed;
+.local_checks/pif-p24-reviewed-acceptance_o1xub7qj/report.json. py_compile/diff passed.
+Fresh-process paired-connection-inspect and independent_acceptance.py passed;
+exact commands/source hashes in .local_runs/live_python_interface/p24/checks.json.
+HANDOFF/result/checkpoint,fresh_inspection.json,independent_result.json in same area;
+raw correlated build/readback/failure/reconciliation records retained locally.
+L01-L14/runner/prior receipts unchanged. Direction enforcement,train traversal,
+signals/reservations/save-load identity unprobed. No blocker;stop for coordinator.
+Disposable sandbox saved;paused/non-maximised. Local milestone commit only,no push.
+Actual usage unavailable;no credit estimate.
+
 ## P23 complete - connected native layouts (local checkpoint in p23/checkpoint.json)
 Callable bridge_network plan_layout_network/execute_layout_network/inspect_layout_network;
 CLI bridge_live.py layout-network [--execute], layout-network-inspect --layout-record.

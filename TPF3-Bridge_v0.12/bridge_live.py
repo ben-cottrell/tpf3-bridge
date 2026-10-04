@@ -2451,7 +2451,7 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'layout-network', 'layout-network-inspect', 'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'switching-layout', 'switching-layout-inspect', 'switching-layout-continue', 'reciprocal-layout', 'reciprocal-layout-inspect', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'paired-connection', 'paired-connection-inspect', 'layout-network', 'layout-network-inspect', 'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'switching-layout', 'switching-layout-inspect', 'switching-layout-continue', 'reciprocal-layout', 'reciprocal-layout-inspect', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--reconciled-crossover', type=Path, help='explicit verified crossover evidence for connect-throat; rechecks read-only, never rebuilds it')
     parser.add_argument('--recipe-plan',type=Path,help='optional reviewed junction-recipe plan; must match current brief exactly')
@@ -2469,11 +2469,14 @@ def main(argv=None):
     parser.add_argument('--session')
     parser.add_argument('--timeout', type=float, default=30)
     args = parser.parse_args(argv)
-    if args.operation in ('junction-recipe','parallel-layout','switching-layout','reciprocal-layout','layout-network') and not args.execute:
+    if args.operation in ('junction-recipe','parallel-layout','switching-layout','reciprocal-layout','layout-network','paired-connection') and not args.execute:
         try:
             if args.base_layout_record or args.prepared_switching or args.layout_record or args.recipe_record or args.recipe_plan or args.prepared_recipe or args.discovery or args.reconciled_crossover:raise ValueError('planning accepts a brief, not native continuation records')
             brief=json.loads(args.params.read_text(encoding='utf-8-sig'))
-            if args.operation=='layout-network':
+            if args.operation=='paired-connection':
+                from bridge_parallel import plan_paired_connection,publish_paired_connection
+                response=publish_paired_connection(plan_paired_connection(brief),args.evidence or Path('.local_runs/paired_plans'))
+            elif args.operation=='layout-network':
                 from bridge_network import plan_layout_network,publish_layout_network
                 response=publish_layout_network(plan_layout_network(brief),args.evidence or Path('.local_runs/layout_networks'))
             elif args.operation=='junction-recipe':response=publish_junction_recipe(plan_junction_recipe(brief),args.evidence or Path('.local_runs/junction_recipes'))
@@ -2495,7 +2498,7 @@ def main(argv=None):
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
         if args.base_layout_record and (args.operation!='reciprocal-layout' or not args.execute):raise ValueError('--base-layout-record requires reciprocal-layout --execute')
         if args.prepared_switching and (args.operation!='switching-layout' or not args.execute):raise ValueError('--prepared-switching requires switching-layout --execute')
-        if args.layout_record and args.operation not in ('layout-network','layout-network-inspect','parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect','reciprocal-layout'):raise ValueError('--layout-record requires parallel-layout-inspect')
+        if args.layout_record and args.operation not in ('paired-connection','paired-connection-inspect','layout-network','layout-network-inspect','parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect','reciprocal-layout'):raise ValueError('--layout-record requires parallel-layout-inspect')
         if args.recipe_record and args.operation not in ('junction-recipe-inspect','junction-recipe-continue'):raise ValueError('--recipe-record requires recipe inspect/continue')
         if args.operation=='junction-recipe-continue' and not args.execute:raise ValueError('recipe continuation requires --execute')
         if args.recipe_plan and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--recipe-plan requires junction-recipe --execute')
@@ -2504,9 +2507,17 @@ def main(argv=None):
             raise ValueError('--reconciled-crossover requires connect-throat --execute')
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('layout-network', 'extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout', 'switching-layout', 'switching-layout-continue', 'reciprocal-layout'):
+        if args.execute and args.operation not in ('paired-connection', 'layout-network', 'extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout', 'switching-layout', 'switching-layout-continue', 'reciprocal-layout'):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
-        if args.operation=='layout-network':
+        if args.operation=='paired-connection':
+            from bridge_parallel import plan_paired_connection,execute_paired_connection
+            response=execute_paired_connection(client,plan_paired_connection(params),reference_record=args.layout_record)
+        elif args.operation=='paired-connection-inspect':
+            from bridge_parallel import plan_paired_connection,inspect_paired_connection
+            if not args.layout_record:raise ValueError('--layout-record is required')
+            if _load_layout_record(args.layout_record)['plan']!=plan_paired_connection(params):raise ValueError('paired record differs from brief')
+            response=inspect_paired_connection(client,args.layout_record)
+        elif args.operation=='layout-network':
             if args.layout_record and not args.execute:raise ValueError('network continuation requires --execute')
             from bridge_network import plan_layout_network,execute_layout_network
             response=execute_layout_network(client,plan_layout_network(params),continuation_record=args.layout_record)

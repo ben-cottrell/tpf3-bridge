@@ -140,34 +140,42 @@ function M.verify_adjacency(p)
  local refs,refnodes=directed_rows(p.reference,false);local adjacent,adjnodes=directed_rows(p.adjacent,false)
  for node in pairs(adjnodes) do assert(not refnodes[node],"adjacent_tracks_share_node") end
  local maximum,minimum,maxdistance,maxheading,observations=0,math.huge,0,0,0
+ local correspondence={};local curved_length=0
  for _,a in ipairs(refs) do
   local original=cubic({p0=a.p0,p1=a.p1,t0=a.t0,t1=a.t1,length=distance(a.p0,a.p1)})
   local wanted=offset_geometry(a,p.spacing)
-  geometry_bounds(original,p.region,p.radius,p.max_grade)
+  local r=geometry_bounds(original,p.region,p.radius,p.max_grade)
+  if r<math.huge and angle(a.t0,a.t1)>=1 then curved_length=curved_length+distance(a.p0,a.p1) end
   for j=0,16 do
    local u=j/16;local pos,dir=sample(original,u);local expected,expected_dir=sample(wanted,u)
    local tangent=norm(dir);local dx,dy=expected[1]-pos[1],expected[2]-pos[2]
    local signed=-tangent[2]*dx+tangent[1]*dy
    assert(math.abs(signed-p.spacing)<=p.tolerance and math.abs(tangent[1]*dx+tangent[2]*dy)<=p.tolerance,"native_offset_side_or_normal_mismatch")
-   local best,bestdir=math.huge,nil
+   local best,bestdir,bestpos,bestid,bestu=math.huge,nil,nil,nil,nil
    for _,b in ipairs(adjacent) do
     assert(a.id~=b.id,"adjacent_tracks_share_edge")
     local g=cubic({p0=b.p0,p1=b.p1,t0=b.t0,t1=b.t1,length=distance(b.p0,b.p1)})
     local located=g:locate(v(expected),64,p.tolerance)
     if located and finite(located[1]) and located[1]>=0 and located[1]<=1 then
      local q,d=sample(g,located[1]);local error=math.sqrt((q[1]-expected[1])^2+(q[2]-expected[2])^2+(q[3]-expected[3])^2)
-     if error<best then best=error;bestdir=d end
+     if error<best then best=error;bestdir=d;bestpos=q;bestid=b.id;bestu=located[1] end
     end
    end
    assert(best<=p.tolerance,"sampled_adjacent_alignment_failed")
    local heading=angle(expected_dir,bestdir);assert(heading<=1,"sampled_adjacent_heading_failed")
-   maximum=math.max(maximum,best);minimum=math.min(minimum,math.abs(signed)-best);maxdistance=math.max(maxdistance,math.abs(signed)+best)
+   local ax,ay=bestpos[1]-pos[1],bestpos[2]-pos[2]
+   local actual_signed=-tangent[2]*ax+tangent[1]*ay;local along=tangent[1]*ax+tangent[2]*ay
+   assert(math.abs(actual_signed-p.spacing)<=p.tolerance and math.abs(along)<=p.tolerance,"realised_normal_spacing_failed")
+   correspondence[#correspondence+1]={reference_edge=a.id,reference_u=u,adjacent_edge=bestid,adjacent_u=bestu,
+    reference_pos=pos,reference_direction=tangent,adjacent_pos=bestpos,signed_normal=actual_signed,tangential=along,error=best}
+   maximum=math.max(maximum,best);minimum=math.min(minimum,math.abs(actual_signed));maxdistance=math.max(maxdistance,math.abs(actual_signed))
    maxheading=math.max(maxheading,heading);observations=observations+1
   end
  end
  for _,b in ipairs(adjacent) do geometry_bounds(cubic({p0=b.p0,p1=b.p1,t0=b.t0,t1=b.t1,length=distance(b.p0,b.p1)}),p.region,p.radius,p.max_grade) end
  return {sampled_verified=true,independent_native_nodes=true,spacing=p.spacing,tolerance=p.tolerance,samples=observations,
   max_sampled_offset_error=maximum,min_sampled_separation=minimum,max_sampled_separation=maxdistance,max_heading_error=maxheading,
+  correspondence=correspondence,curved_reference_chord_length=curved_length,
   continuous_clearance_proof=false,vehicle_clearance="unprobed",game_constructed=false}
 end
 function M.adjacent(p,s,state,request_id,respond)
@@ -192,26 +200,51 @@ function M.adjacent(p,s,state,request_id,respond)
     samples[i][#samples[i]+1]={u=u,pos=pos,dir=dir,base_pos=q}
    end
   end
+  local attachment=nil
+  if p.attachments then
+   local a,pos,dir,grade=anchor(p.attachments.source);local z,zpos,zdir,zgrade=anchor(p.attachments.target)
+   assert(a.id~=z.id and p.attachments.source.anchor_node~=p.attachments.target.anchor_node,"distinct_offset_attachments_required")
+   for _,q in ipairs({p.attachments.source,p.attachments.target}) do
+    local ids=api.engine.system.streetSystem.getNodeSegments(q.anchor_node)
+    assert(#ids==1 and ids[1]==q.anchor_edge,"offset_attachment_not_free")
+   end
+   assert(a.template==refs[1].template and z.template==a.template and a.style==refs[1].style and z.style==a.style,"incompatible_offset_attachments")
+   local first,last=controls[1],controls[#controls]
+   assert(near(pos,first.p0,.001) and near(zpos,last.p1,.001),"offset_boundary_position_incompatible")
+   assert(angle(dir,first.t0)<=.1 and angle({-zdir[1],-zdir[2],0},last.t1)<=.1,"offset_boundary_direction_incompatible")
+   assert(math.abs(grade)<.000001 and math.abs(zgrade)<.000001,"adjacent_level_only")
+   attachment={anchor=a,node=p.attachments.source.anchor_node,target={edge=z,node=p.attachments.target.anchor_node,direction={-zdir[1],-zdir[2],0}}}
+  end
   stage="preflight"
   local value={game_constructed=false,controls=controls,native_track_distance=template.trackDistance,spacing=p.spacing,
    native_geometry="CUBIC_OFFSET_SPLINE",sampled_only=true}
   if not p.execute then respond(request_id,"ok",value);return end
   assert(not s.mutationPending,"unreconciled_mutation");directed_rows(p.reference,true)
   local proposal=api.type.SimpleProposal.new();local nodes,segments={},{}
-  for i=1,#controls+1 do local node=api.type.NodeAndEntity.new();node.entity=-100-i;node.comp.position=v(i==1 and controls[1].p0 or controls[i-1].p1);nodes[i]=node end
+  local nodeids={}
+  for i=1,#controls+1 do
+   if attachment and i==1 then nodeids[i]=attachment.node
+   elseif attachment and i==#controls+1 then nodeids[i]=attachment.target.node
+   else local node=api.type.NodeAndEntity.new();node.entity=-100-i;node.comp.position=v(i==1 and controls[1].p0 or controls[i-1].p1);nodes[#nodes+1]=node;nodeids[i]=node.entity end
+  end
   for i,c in ipairs(controls) do local seg=api.type.SegmentAndEntity.new();seg.entity=-i;seg.type=1
    seg.comp=api.engine.getComponent(refs[i].id,api.type.ComponentType.BASE_EDGE):clone()
-   seg.comp.node0=nodes[i].entity;seg.comp.node1=nodes[i+1].entity;seg.comp.position0=v(c.p0);seg.comp.position1=v(c.p1);seg.comp.tangent0=v(c.t0);seg.comp.tangent1=v(c.t1);segments[i]=seg
+   seg.comp.node0=nodeids[i];seg.comp.node1=nodeids[i+1];seg.comp.position0=v(c.p0);seg.comp.position1=v(c.p1);seg.comp.tangent0=v(c.t0);seg.comp.tangent1=v(c.t1);segments[i]=seg
   end
   proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments
   stage="build";s.mutationPending=request_id;local root=state:get() or {};root.pifLive=s;state:set(root)
   api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(res,success)
    local ids={};local checked,result=pcall(function()
     assert(success==true,"native_adjacent_construction_rejected")
-    for _,item in ipairs(res.proposal.proposal.addedSegments) do ids[#ids+1]=item.entity end
+    local other_ids={}
+    for _,item in ipairs(res.proposal.proposal.addedSegments) do
+     local e=api.engine.getComponent(item.entity,api.type.ComponentType.BASE_EDGE)
+     if e and e.roadType==E.RoadType.TRACK then ids[#ids+1]=item.entity else other_ids[#other_ids+1]=item.entity end
+    end
+    value.other_added_segments=other_ids
     local first
     for _,id in ipairs(ids) do local e=edge(id);if near(e.p0,controls[1].p0,.001) then assert(not first,"ambiguous_adjacent_start");first=e.node0 end end
-    local f={anchor=refs[1],node=first,ids=ids,controls=controls,samples=samples,region=p.region,grade=0,end_grade=0,max_grade=p.max_grade,min_radius=p.radius}
+    local f={anchor=attachment and attachment.anchor or refs[1],target=attachment and attachment.target or nil,node=first,ids=ids,controls=controls,samples=samples,region=p.region,grade=0,end_grade=0,max_grade=p.max_grade,min_radius=p.radius}
     local rb=M.readback(f);local paired={};for _,id in ipairs(rb.ordered_edges) do paired[#paired+1]={edge={id=id},forward=true} end
     local checked=M.verify_adjacency({reference=p.reference,adjacent=paired,spacing=p.spacing,tolerance=p.tolerance,region=p.region,radius=p.radius,max_grade=p.max_grade})
     directed_rows(p.reference,true);s.mutationPending=nil
@@ -692,10 +725,14 @@ function M.build(p,s,state,request_id,respond)
    return
   end
   local ok,value=pcall(function()
-   local receipt=res.proposal.proposal;f.ids={};for _,e in ipairs(receipt.addedSegments) do f.ids[#f.ids+1]=e.entity end
+   local receipt=res.proposal.proposal;f.ids={};f.other_added_segments={}
+   for _,item in ipairs(receipt.addedSegments) do
+    local e=api.engine.getComponent(item.entity,api.type.ComponentType.BASE_EDGE)
+    if e and e.roadType==E.RoadType.TRACK then f.ids[#f.ids+1]=item.entity else f.other_added_segments[#f.other_added_segments+1]=item.entity end
+   end
    f.effects={added_segments=#receipt.addedSegments,added_nodes=#receipt.addedNodes,removed_segments=#receipt.removedSegments,removed_nodes=#receipt.removedNodes}
    assert(success==true,"native_construction_rejected")
-   local result=M.readback(f);result.effects=f.effects;result.fit_request=p.fit_request;return result
+   local result=M.readback(f);result.effects=f.effects;result.other_added_segments=f.other_added_segments;result.fit_request=p.fit_request;return result
   end)
   respond(request_id,ok and "ok" or "mutation_unverified",ok and value or {error=tostring(value):sub(1,400),effects=f.effects,returned_edges=f.ids,game_constructed="unknown",retry=false})
  end
