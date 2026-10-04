@@ -1,3 +1,34 @@
+## P45 stopped — explicit revision accepted first connector; matching build fails70
+
+New caller-supplied radius-only acceptance revision records exact original request,
+old/new criteria, reason/authority, original failed response path/hash and fresh
+native observations. Default unchanged. First P44 crossover still rejects150;
+explicit Astra local70 passes native movement radius74.2072767, clearing pending
+through exact native verification without rebuilding. Original150 failure intact.
+Optional native crossover fit_radius separates fit target from realised minimum;
+default radius*1.25 unchanged. No global relaxation or topology replacement.
+Build40408/newsession pif_1791134311_133860007 after resolved current-worldsave/load.
+First exactconnector reverified. Matching12@160→11@260 radius70/nativefit187.5
+prefit187.2218 passed; construction33dd9333f5e04b2ca0983ec45089024d returned7TRACKs,
+fresh verify rejects native movement radius37.43414797<70. Connector95579/95585/95602,
+junction95547/95552; no replay/deletion/further radius revision. Stage NOT complete.
+Fresh18routes pass:12through,4previouscross,2first revisedcross;16originalleads
+unchanged,192frozen stationTRACK exactendpointpairs intact. Fullstation components
+verified before matchingbuild; later reinspection guarded/unclaimed. Matching
+connectivity-only read unperformed: journal atomic replace WinError5 Access denied.
+Pending unpublished read c499365de9194f10818e33d0374bc0b1 wraps unresolved matching
+mutation. Stop affected native reads, no permissions/host repair/publicationretry.
+python tools/quiet_checks.py --suite live_client --label pif-p45-revision:
+330passed/0fail/error/skip; .local_checks/pif-p45-revision_igxovn9n/report.json.
+Evidence .local_runs/live_python_interface/p45/native/{reconciliation,after_reload,
+final_result03,storage_stop}.json,crossovers/,partial_readback03/; p45/HANDOFF.md,
+checks.json,checkpoint.json. Physicaltrain/speed/platform claims unprobed; sampled,
+non-atomic. Return concrete failure and publication blocker to Astra. Local repair
+checkpoint only/no push/usage unavailable. No operation05 replacement implemented.
+Saved new TPF3_Bridge_P45_Wickham_PARTIAL_20261004.sav; SHA256
+d3e2a45f15ac67de46a604b2308fa59658f2153b8e565ad1b1d1c7b7d9f54c4c.
+Resolved pre-second Stage save preserved; partial not reloaded. Revision: p45/checkpoint.json.
+
 ## P44 stopped at native crossover acceptance — continuation repair verified
 
 Build40408/session pif_1791132513_132062371. Aggregate tiny arcs total.00165224

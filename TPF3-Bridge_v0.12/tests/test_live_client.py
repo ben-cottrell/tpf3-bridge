@@ -4385,5 +4385,60 @@ class NativeAggregateTinyEvidenceTests(unittest.TestCase):
         self.assertLess(fit.index('assert(discardedlength<=.001'),fit.index('#controls>1 and straight_count==1 and arc_turn<=.1'))
         self.assertIn('geometry_bounds(cg,p.region,p.radius,maxgrade or math.abs(grade))',fit)
 
+class CrossoverAcceptanceRevisionTests(unittest.TestCase):
+    """Native verifier stub models P44's measured 74.207 radius; no Lua execution."""
+    def setUp(self):
+        from types import SimpleNamespace
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        root=Path(self.tmp.name);self.client=SimpleNamespace(journal=root/'journal.json',evidence=root,session='current')
+        self.pending={'operation':'crossover','request_id':'original','params':{'execute':True,'radius':150,'source':{'edge_id':11},'target':{'edge_id':12},'vertical':{'max_grade':1e-6}}}
+        self.client.journal.write_text(json.dumps({'session':'current','pending':self.pending}))
+        self.original={'session':'current','operation':'crossover','request_id':'original','status':'mutation_unverified',
+            'result':{'game_constructed':True,'returned_edges':[1,2,3,4,5],'fit':{'pieces':1,'controls':[{}]}}}
+        self.path=root/'original.response.json';self.path.write_text(json.dumps(self.original));self.original_bytes=self.path.read_bytes()
+        self.revision={'original_request':'original','radius':70,'reason':'P45 explicit compact throat criterion','authority':'Astra design decision after direct human clarification'}
+
+    def native(self,op,p):
+        self.assertEqual(op,'verify_crossover');self.assertFalse(p['execute']);self.assertEqual(p['edge_ids'],[1,2,3,4,5])
+        self.assertEqual(p['source'],self.pending['params']['source']);self.assertEqual(p['vertical'],self.pending['params']['vertical'])
+        result={'error':'realised_sampled_radius_below_limit:74.207276734492<150'}
+        ok=p['radius']<=74.207276734492
+        if ok:result={'reconciled_current_state':True,'readback':{'connected':True,'requested_min_radius':p['radius'],'engineering_checks_verified':True},
+            'crossover_after':{'requested_route_verified':True},'placements':[{'original_removed':True,'subdivision_sampled_verified':True}]*2,'through_after':[{'requested_route_verified':True}]*2}
+        return {'session':'current','operation':op,'request_id':'fresh','status':'ok' if ok else 'error','result':result}
+
+    def test_default_150_still_rejects_and_preserves_pending(self):
+        self.client.request=unittest.mock.Mock(side_effect=self.native)
+        with self.assertRaises(LiveError):reconcile_constructed_crossover(self.client)
+        self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+        self.assertEqual(self.path.read_bytes(),self.original_bytes)
+
+    def test_explicit_70_uses_fresh_receipt_and_records_both_criteria(self):
+        self.client.request=unittest.mock.Mock(side_effect=self.native)
+        r=reconcile_constructed_crossover(self.client,acceptance_revision=self.revision)
+        self.client.request.assert_called_once();record=r['result'];self.assertFalse(record['automatic_replay'])
+        self.assertEqual(record['original_pending'],self.pending)
+        self.assertEqual(record['acceptance_revision']['original_criteria'],{'radius':150})
+        self.assertEqual(record['acceptance_revision']['revised_criteria'],{'radius':70})
+        self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+        self.assertEqual(self.path.read_bytes(),self.original_bytes)
+
+    def test_malformed_unrelated_and_wrong_request_revisions_do_not_send(self):
+        bad=[self.revision|{'radius':v} for v in (False,0,-1,float('nan'),float('inf'),'70')]
+        bad += [self.revision|{'original_request':'other'},self.revision|{'reason':''},self.revision|{'authority':None},self.revision|{'end_xy':[1,2]}]
+        self.client.request=unittest.mock.Mock()
+        for revision in bad:
+            with self.subTest(revision=revision),self.assertRaises(ValueError):reconcile_constructed_crossover(self.client,acceptance_revision=revision)
+        self.client.request.assert_not_called();self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+
+    def test_stale_or_missing_engineering_observation_never_clears(self):
+        for field,value in (('session','other'),('operation','inspect'),('missing_engineering',True)):
+            answer=self.native('verify_crossover',self.pending['params']|{'execute':False,'radius':70,'edge_ids':[1,2,3,4,5]})
+            if field=='missing_engineering':answer['result']['readback'].pop('engineering_checks_verified')
+            else:answer[field]=value
+            self.client.request=unittest.mock.Mock(return_value=answer)
+            with self.assertRaises(LiveError):reconcile_constructed_crossover(self.client,acceptance_revision=self.revision)
+            self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+
 if __name__ == '__main__':
     unittest.main()

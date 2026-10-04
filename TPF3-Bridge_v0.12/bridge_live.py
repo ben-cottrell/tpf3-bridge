@@ -2093,7 +2093,7 @@ def reconcile_rejected_junction(client):
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
 
 
-def reconcile_constructed_crossover(client,original_client=None):
+def reconcile_constructed_crossover(client,original_client=None,*,acceptance_revision=None):
     """Explicit read-only verification of returned crossover IDs; never replay."""
     old=original_client or client;state=json.loads(old.journal.read_text());pending=state.get('pending')
     if not pending or pending['operation']!='crossover' or pending['params'].get('execute') is not True:
@@ -2104,17 +2104,39 @@ def reconcile_constructed_crossover(client,original_client=None):
             or not isinstance(ids,list) or len(ids)!=fit.get('pieces',-5)+4 or len(set(ids))!=len(ids)
             or any(type(i) is not int or i<=0 for i in ids) or not isinstance(fit.get('controls'),list)):
         raise LiveError('reconciliation_required','no exact crossover receipt',rid)
+    revision=None
+    if acceptance_revision is not None:
+        q=acceptance_revision
+        if (not isinstance(q,dict) or set(q)!={'original_request','radius','reason','authority'}
+                or q['original_request']!=rid or type(q['radius']) not in (int,float)
+                or not math.isfinite(q['radius']) or q['radius']<=0
+                or any(not isinstance(q[k],str) or not q[k].strip() or len(q[k])>500 for k in ('reason','authority'))):
+            raise ValueError('invalid explicit crossover acceptance revision')
+        previous=pending['params'].get('radius')
+        if type(previous) not in (int,float) or not math.isfinite(previous) or previous<=0:
+            raise ValueError('original crossover radius unavailable')
+        revision=q.copy()|{'original_criteria':{'radius':previous},'revised_criteria':{'radius':q['radius']}}
     params=pending['params']|{'execute':False,'fit':fit,'edge_ids':ids,'original_request':rid}
+    if revision:params['radius']=revision['radius']
     observed=client.request('verify_crossover',params);r=observed.get('result',{})
     if (observed['status']!='ok' or r.get('reconciled_current_state') is not True or r.get('readback',{}).get('connected') is not True
             or r.get('crossover_after',{}).get('requested_route_verified') is not True or len(r.get('placements',[]))!=2
             or any(x.get('original_removed') is not True or x.get('subdivision_sampled_verified') is not True for x in r['placements'])
             or len(r.get('through_after',[]))!=2 or any(x.get('requested_route_verified') is not True for x in r['through_after'])):
         raise LiveError('reconciliation_required',r.get('error','current crossover unverified'),rid)
+    if revision and (observed.get('session')!=client.session or observed.get('operation')!='verify_crossover'
+            or r.get('readback',{}).get('requested_min_radius')!=revision['radius']
+            or r.get('readback',{}).get('engineering_checks_verified') is not True):
+        raise LiveError('reconciliation_required','revised criterion lacks fresh native engineering verification',rid)
     latest=json.loads(old.journal.read_text())
     if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during readback',rid)
     record={'status':'reconciled_verified_crossover','original_pending':pending,'verification_params':params,'observation':observed['request_id'],
             'current_session':client.session,'verified':r,'automatic_replay':False,'native_effect_history_complete':False}
+    if revision:
+        record['acceptance_revision']=revision
+        original_path=old.evidence/(rid+'.response.json')
+        record['original_response']=str(original_path.resolve())
+        record['original_response_sha256']=hashlib.sha256(original_path.read_bytes()).hexdigest()
     path=old.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
     latest.setdefault('reconciled_constructions',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
     latest.pop('pending');atomic_json(old.journal,latest)

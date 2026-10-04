@@ -1303,7 +1303,7 @@ function M.crossover(p,s,state,request_id,respond)
    assert(before[i].requested_route_verified,"existing_through_route_unverified")
   end
   stage="fit";local fitid=request_id.."_fit"
-  fit=M.fit({end_xy={d.pos[1],d.pos[2]},end_direction=d.outward_direction,radius=p.radius,fit_radius=p.radius*1.25,region=p.region,vertical=p.vertical},s,fitid,
+  fit=M.fit({end_xy={d.pos[1],d.pos[2]},end_direction=d.outward_direction,radius=p.radius,fit_radius=p.fit_radius or p.radius*1.25,region=p.region,vertical=p.vertical},s,fitid,
    {edge=b,pos=d.pos,direction=d.outward_direction,grade=d.grade},{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
   fit.requested_min_radius=p.radius;fit.start_node=nil;fit.target_node=nil
   local f=s.fits[fitid];f.min_radius=p.radius
