@@ -2948,12 +2948,13 @@ class GradedParallelTests(unittest.TestCase):
         pair.pop('vertical_mode');pair.pop('vertical_tolerance')
         with self.assertRaises(LiveError):plan_paired_connection(pair)
 
-    def test_graded_parent_cannot_enter_level_branching_workflow(self):
+    def test_nonzero_endpoint_grade_cannot_enter_level_branching_workflow(self):
         from bridge_branching import plan_branching_corridor
-        b={'layout':'native_branching_corridor_v1','main_record':'unused','branches':[],'movements':[],'radius':400,'max_grade':.04,'region':{},'max_route_length':2000}
-        from bridge_branching import LAYOUT
-        b['layout']=LAYOUT
-        with patch('bridge_branching._parent',return_value=({'plan':{'tracks':[],'brief':{'vertical_mode':'native_shared_height_v1'}}},'hash')),self.assertRaises(LiveError):plan_branching_corridor(b)
+        parent=BranchingCorridorTests.parent(self);parent['plan']['brief'].update(vertical_mode='native_shared_height_v1',vertical_tolerance=.05)
+        for port in parent['ports'].values():port['grade']=0
+        next(iter(parent['ports'].values()))['grade']=.005
+        b=BranchingCorridorTests.brief(self)
+        with patch('bridge_branching._parent',return_value=(parent,'hash')),self.assertRaises(LiveError):plan_branching_corridor(b)
 
     def test_actual_endpoint_grades_are_checked_in_construction_frame(self):
         from bridge_parallel import plan_multitrack_connection,_multitrack_ports
@@ -2997,6 +2998,81 @@ class GradedParallelTests(unittest.TestCase):
             result=execute_multitrack_connection(self.client,p)
         self.assertEqual(calls.call_count,1);self.assertTrue(result['game_constructed']);self.assertEqual(result['completed_connectors'],['U1']);self.assertFalse(result['final_multitrack_verified'])
         r=json.loads(Path(result['evidence']).read_text());self.assertEqual(r['unfinished_step'],'U2');self.assertEqual(r['operations'][-1]['response']['result']['game_constructed'],False)
+
+class GradedCompleteLayoutTests(unittest.TestCase):
+    setUp=LiveClientTests.setUp
+    response=LiveClientTests.response
+    def brief(self):return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/graded_complete_layout_example.json').read_text())
+    def plan(self):
+        from bridge_complete import plan_complete_layout
+        return plan_complete_layout(self.brief())
+
+    def test_fresh_brief_forwards_grading_and_keeps_local_fixtures_level(self):
+        from bridge_complete import _fixture_params
+        with patch('bridge_live.client_from_context') as client:p=self.plan();client.assert_not_called()
+        self.assertEqual(p['main_plan']['brief']['vertical_tolerance'],.05)
+        self.assertEqual(p['main_plan']['reference']['guides'][0]['grade'],.012)
+        self.assertEqual({f['position'][2] for f in p['fixtures']},{33,39})
+        for f in p['fixtures']:self.assertEqual(_fixture_params(p,f)['fixture']['grade'],0)
+        self.assertEqual([b['source']['guide_xyz'][2] for b in p['branch_intents']],[39,33])
+        self.assertEqual(len(p['movements']),6)
+
+    def test_nonzero_endpoint_grade_bad_local_height_and_missing_mode_reject(self):
+        from bridge_complete import plan_complete_layout
+        for kind in ('slope','nan','height','mode','budget'):
+            b=self.brief()
+            if kind=='slope':b['reference']['start']['grade']=.001
+            elif kind=='nan':b['reference']['finish']['grade']=float('nan')
+            elif kind=='height':b['branches'][0]['target']['position'][2]=33
+            elif kind=='mode':b.pop('vertical_mode');b.pop('vertical_tolerance')
+            else:b['vertical_tolerance']=.06
+            with self.subTest(kind=kind),self.assertRaises((LiveError,ValueError)):plan_complete_layout(b)
+
+    def test_graded_partial_composition_adopts_only_acknowledged_fixtures(self):
+        CompleteLayoutTests.test_successful_composition_and_acknowledged_fixture_continuation(self)
+
+    def test_completed_graded_record_rechecks_without_rebuild_or_changed_brief(self):
+        CompleteLayoutTests.test_complete_reexecution_only_checks_current_state_and_changed_brief_stops(self)
+
+    def test_grade_domain_retains_fresh_level_forks_and_forwards_height_checks(self):
+        import bridge_branching as branching
+        parent=BranchingCorridorTests.parent(self);parent['plan']['brief'].update(vertical_mode='native_shared_height_v1',vertical_tolerance=.05)
+        for port in parent['ports'].values():port['grade']=0
+        b=BranchingCorridorTests.brief(self)
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')):p=branching.plan_branching_corridor(b)
+        ports=BranchingCorridorTests.ports(self,p);record={}
+        def native(op,q):
+            result=BranchingCorridorTests.native(self,p,parent,ports,op,q)
+            if op=='verify_adjacency':
+                self.assertEqual(q['vertical_mode'],'native_shared_height_v1');self.assertEqual(q['vertical_tolerance'],.05)
+                result['result']['max_sampled_height_difference']=.002
+            if op=='inspect':
+                for e in result['result']['edges']:e.update(p0=[0,0,33],p1=[20,0,33],t0=[20,0,.01 if getattr(self,'bad_junction',False) else 0],t1=[20,0,0])
+            return result
+        with patch('bridge_branching._parent',return_value=(parent,'known_hash')),patch('bridge_branching._roles',return_value=ports),patch('bridge_parallel._read_chain',side_effect=lambda c,p,r,n:BranchingCorridorTests.chain(self,c,p,r,n)),patch('bridge_parallel._vertical_readback') as vertical,patch('bridge_live._recipe_junction',side_effect=lambda c,e:(900+next(i for i,b in enumerate(p['brief']['branches']) if b['source']==e),['current'])),patch('bridge_live.discover',side_effect=lambda c,q:BranchingCorridorTests.discovery(self,p,ports,q)),patch.object(self.client,'request',side_effect=native):
+            result=branching._assess(self.client,p,record)
+        self.assertEqual(vertical.call_count,4);self.assertTrue(result['final_network_verified']);self.assertEqual(result['max_sampled_height_difference'],.002)
+        self.assertIn('level local',result['junction_geometry'])
+
+    def test_nonlevel_current_fork_rejects_even_when_core_and_native_paths_pass(self):
+        self.bad_junction=True
+        with self.assertRaises(LiveError):self.test_grade_domain_retains_fresh_level_forks_and_forwards_height_checks()
+
+    def test_elevation_intent_changes_hash_without_flattening_or_direction_reversal(self):
+        from bridge_complete import plan_complete_layout
+        p=self.plan();b=self.brief();b['reference']['finish']['position'][2]=40;b['branches'][0]['target']['position'][2]=40
+        q=plan_complete_layout(b);self.assertNotEqual(p['plan_hash'],q['plan_hash']);self.assertEqual(q['main_plan']['reference']['target']['guide_xyz'][2],40)
+        self.assertEqual([t['forward'] for t in q['main_plan']['tracks']],[True,True,False,False])
+
+    def test_failed_graded_fixture_never_advances_to_main_or_branching(self):
+        CompleteLayoutTests.test_stage_failure_is_durable_and_stops_before_main_or_branches(self)
+
+    def test_changed_endpoint_tangent_rejects_parent_before_any_native_call(self):
+        from bridge_branching import plan_branching_corridor
+        parent=BranchingCorridorTests.parent(self);parent['plan']['brief'].update(vertical_mode='native_shared_height_v1',vertical_tolerance=.05)
+        for port in parent['ports'].values():port['grade']=0
+        next(iter(parent['ports'].values()))['edge_snapshot']['t0'][2]=.01
+        with patch('bridge_branching._parent',return_value=(parent,'hash')),self.assertRaises(LiveError):plan_branching_corridor(BranchingCorridorTests.brief(self))
 
 if __name__ == '__main__':
     unittest.main()

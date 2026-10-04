@@ -1,3 +1,27 @@
+## P29 complete - portable graded UUDD main with level endpoint branches
+Existing complete-layout/complete-layout-inspect compose P28 native_shared_height_v1
+and explicit height tolerance with P27 fixture/site/stage/continuation workflow.
+Endpoint heights may differ; authored/actual endpoint grades must be zero; fixtures,
+leads and forks level at each end's own height. No sloping pointwork/new fitter.
+Original level plans/hashes unchanged; nonzero-endpoint-grade lower-level P28 retained.
+Build40408/session pif_1791093799_93348377: fresh portable brief built graded33->39
+core,4through+2outward native TRAIN routes,2exact forks UP94846(Z39)/DOWN94882(Z33).
+Independent46TRACK/33samples: radius416.879796>=400,maxgrade.012143724<=.04;
+exact paths/joins/region,zero core endpoint grades,level fork geometry,5/10/15normal
+spacing and maxheightdifference.005221565<.05. One observed ordinary road cleared.
+Fresh-process inspection and completed-record execution passed6routes/2forks;
+checked_existing/game_constructed:false/operations=[] prove no rebuilding.
+python tools/quiet_checks.py --suite live_client --label pif-p29-acceptance:
+214passed; .local_checks/pif-p29-acceptance_60ved9sz/report.json.
+Exact commands/source hashes/receipts: .local_runs/live_python_interface/p29/checks.json;
+HANDOFF.md,result.json,checkpoint.json,fresh_inspection.json,checked_existing.json,
+independent_complete_result.json,fresh_complete_geometry.json. py_compile/diff passed.
+No Lua/mod change; reuse P28 runtime evidence. Original level canonical plan checked.
+Normal save TPF3_Bridge_P29_Complete_20261004_0726;paused/non-maximised2099x1284.
+Local milestone checkpoint records revision after a8cbfa2;no push. No blockers.
+No continuous clearance,train traversal/signals/direction enforcement,complete native
+effects history or general save/load identity guarantee. Usage unavailable. Stop P29.
+
 ## P28 complete - native graded curved paired/multitrack connection
 Existing paired-connection/multitrack-connection and read-only inspect commands now
 accept explicit native_shared_height_v1 + vertical_tolerance<=min(.05,spacing_tolerance).

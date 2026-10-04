@@ -1,4 +1,4 @@
-"""Portable level UUDD layout: authored attachments, native main and outward forks."""
+"""Portable UUDD layout with locally level outward forks: authored attachments, native main and outward forks."""
 import hashlib
 import json
 import math
@@ -31,7 +31,7 @@ def _move(p,d,length):return [p[0]+length*d[0],p[1]+length*d[1],p[2]]
 
 def plan_complete_layout(brief):
     keys={'layout','seed_edge','reference','tracks','branches','side','spacing','spacing_tolerance','radius','max_grade','region','max_route_length','min_curved_length','site_policy'}
-    if not isinstance(brief,dict) or set(brief)!=keys or brief['layout']!=LAYOUT:raise ValueError('explicit portable complete-layout brief required')
+    if not isinstance(brief,dict) or set(brief)-{'vertical_mode','vertical_tolerance'}!=keys or brief['layout']!=LAYOUT:raise ValueError('explicit portable complete-layout brief required')
     if type(brief['seed_edge']) is not int or brief['seed_edge']<=0:raise ValueError('exact current native asset seed edge required')
     if brief['site_policy'] not in ('observe','clear_roads'):raise ValueError('explicit observe/clear_roads site policy required')
     ref=brief['reference']
@@ -39,11 +39,13 @@ def plan_complete_layout(brief):
     ends=[]
     for key in ('start','finish'):
         row=ref[key]
-        if not isinstance(row,dict) or set(row)!={'position','travel_direction'}:raise ValueError('reference position/travel_direction required')
+        if not isinstance(row,dict) or set(row)-{'grade'}!={'position','travel_direction'}:raise ValueError('reference position/travel_direction required')
+        if 'grade' in row and (type(row['grade']) not in (int,float) or not math.isfinite(row['grade']) or row['grade']!=0):raise live.LiveError('unsupported_layout','complete-layout requires zero endpoint grades for level pointwork')
         ends.append((_position(row['position']),_unit(row['travel_direction'])))
     tracks=brief['tracks']
     if not isinstance(tracks,list) or len(tracks)!=4 or any(not isinstance(t,dict) or set(t)!={'id','direction'} or not isinstance(t['id'],str) or not t['id'] for t in tracks) or [t['direction'] for t in tracks]!=['UP','UP','DOWN','DOWN'] or len({t['id'] for t in tracks})!=4:raise live.LiveError('unsupported_layout','four unique ordered UUDD roles only; UP follows reference')
     main={k:brief[k] for k in ('side','spacing','spacing_tolerance','radius','max_grade','region','max_route_length','min_curved_length')}
+    main.update(parallel._vertical_options(brief))
     main.update(layout=parallel.MULTITRACK,reference_up='increasing',guides=ref['guides'],tracks=[])
     signed=brief['spacing']*(1 if brief['side']=='left' else -1);fixtures=[]
     for i,t in enumerate(tracks):
@@ -178,7 +180,7 @@ def _inspect(client,plan,record):
         if live._load_layout_record(stages['branches']['evidence'])['plan']!=p:raise ValueError('nested branching intent changed')
         record['fresh_branches']=r
         if r['status'] not in ('ok','branching_incomplete'):raise live.LiveError(r['status'],r.get('error','branches unverified'))
-        return {'status':r['status'] if r['status']=='ok' else 'complete_layout_incomplete',**{k:r[k] for k in ('routes_verified','junctions_verified','final_network_verified','retained_spacing_verified')}}
+        return {'status':r['status'] if r['status']=='ok' else 'complete_layout_incomplete',**{k:r[k] for k in ('routes_verified','junctions_verified','final_network_verified','retained_spacing_verified')},**{k:r[k] for k in ('vertical_mode','vertical_tolerance','spacing_convention','sampled_max_grades','max_sampled_height_difference','junction_geometry') if k in r}}
     record['fresh_fixtures']=_inspect_fixtures(client,plan,record)
     if 'main' in stages:
         r=parallel.inspect_multitrack_connection(client,stages['main']['evidence']);record['fresh_main']=r

@@ -1285,6 +1285,40 @@ or builds. Keep partial receipts; only explicitly reconciled acknowledged prefix
 may continue. Pending/unknown effects must not be replayed.
 
 Native build40408 demonstrated the four-track composition and both directions.
-Level branching/complete-layout domains remain unchanged; graded branching is rejected.
+Nonzero-endpoint-grade P28 cores cannot enter level pointwork; see P29 for level endpoint composition.
 Train traversal, signalling, continuous clearance and general save/load identity are
 not established. Saved evidence integrity remains separate from native acceptance.
+
+
+## Portable graded main with level endpoint branches (P29)
+
+Use complete-layout and complete-layout-inspect with
+implementation/live_python_interface/graded_complete_layout_example.json. Planning
+is offline by default; --execute and a healthy current --context authorise native
+construction. --layout-record selects explicit partial continuation or completed
+read-only verification without rebuilding; inspection never constructs.
+
+The optional native_shared_height_v1/vertical_tolerance fields reach the existing
+four-track core unchanged. Reference start/finish may be at different native heights;
+their optional grade field must be zero (omission means zero). All actual endpoint
+approaches must also be level. Fixtures, tangent leads and local junctions are level
+at each end's own height; the curved shared core alone changes elevation. Explicit
+branch targets must match their local junction height. Nonzero-endpoint-grade P28
+connections remain supported by the lower-level API but cannot enter this composition.
+
+Native shared-height transfer, horizontal normal spacing and its sampled limits remain
+as documented for P28. Exact current paths/forks, actual level junction geometry, core
+height/grade joins, engineering bounds and spacing are freshly checked. No sloping
+pointwork, new fitter, vertical optimiser, train traversal or continuous clearance
+proof is added. Original level complete-layout plans/receipts remain compatible.
+
+```
+python bridge_live.py complete-layout --params implementation/live_python_interface/graded_complete_layout_example.json --evidence .local_runs/graded_complete_plans
+python bridge_live.py complete-layout --context CONTEXT.json --params BRIEF.json --execute
+python bridge_live.py complete-layout-inspect --context CONTEXT.json --params BRIEF.json --layout-record RESULT.json
+python bridge_live.py complete-layout --context CONTEXT.json --params BRIEF.json --execute --layout-record RESULT.json
+```
+
+Use actual current seed_edge/native coordinates in the brief. Native construction
+and explicitly selected clear_roads may alter the authorised disposable map; receipts
+retain known/partial effects and do not promise rollback or complete incidental history.

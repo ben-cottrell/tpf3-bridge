@@ -1,10 +1,10 @@
-# PIF-P28 - complete; acceptance boundary reached
+# PIF-P29 - complete; acceptance boundary reached
 
-Native graded curved paired/multitrack connection implemented and demonstrated on
-build40408. Four UUDD routes, eight exact attachments, actual endpoint heights/grades,
-sampled radius/grade/region/normal spacing and fresh paired/multitrack readback passed.
-Normal save/load and original level native preflight passed. 205 application tests pass.
-Evidence: .local_runs/live_python_interface/p28/HANDOFF.md,checks.json,checkpoint.json.
-Task card retained: .local_runs/live_python_interface/p28/orchestrator/TASK.md.
-No follow-on launched. Graded branching,stations,signals,train traversal remain outside
-this task. Local milestone commit authorised; no push. Await coordinator decision.
+Portable complete-layout now composes a graded curved UUDD core with locally level
+endpoint junctions at different heights. Zero authored/actual endpoint grades required.
+Build40408:6native paths,2exact forks,independent46TRACK geometry/spacing/height checks.
+Fresh-process inspection and completed-record execution verified without rebuilding.
+214application tests passed. Original level plans/hashes and P28 lower-level support retained.
+Evidence: .local_runs/live_python_interface/p29/HANDOFF.md,checks.json,checkpoint.json.
+Card retained: .local_runs/live_python_interface/p29/orchestrator/TASK.md.
+No follow-on launched. Local milestone commit authorised; no push. Await coordinator.
