@@ -1454,3 +1454,9 @@ See [height_ladder.md](height_ladder.md) and height_ladder_example.json for nati
 read-only planning, construction, fresh inspection and checked-existing use. The
 compact pointwork uses observed destination height; four graded external leads
 add their own footprint. Current native geometry overrides bounded position hints.
+
+## General movement-set topology inspection (P34)
+
+See [route_set.md](route_set.md) and route_set_example.json. Read-only
+route-set-inspect reports exact shared rails (including reverse use), junctions
+and endpoints; complete topology-disjoint, overlap or unknown. No capacity claim.

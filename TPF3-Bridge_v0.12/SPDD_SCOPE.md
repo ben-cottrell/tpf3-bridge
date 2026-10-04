@@ -127,8 +127,11 @@ TPF3-Bridge is a practical British-railway construction assistant for an
 already-running, healthy Transport Fever 3 sandbox session. The intended world is
 loaded; the semantic adapter and required local environment are available.
 
-Astra/model supplies railway intent, material design choices and genuinely novel
-decisions. Python supplies UK railway engineering, game-scale constraints, bounded
+Astra/design orchestration owns railway topology, independent movement requirements,
+bottlenecks, footprint, elevations and engineering trade-offs. Sol implements the
+specified general bridge capabilities and reports concrete native limitations; it
+does not choose or replace topology. Templates remain examples and regressions.
+Python supplies UK railway engineering, game-scale constraints, bounded
 strategy/pattern selection, orchestration, engineering acceptance and bounded
 repair. The semantic adapter supplies native capability translation, supported
 commands, native identities, bounded observations and committed-state readback.

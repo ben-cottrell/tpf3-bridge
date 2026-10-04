@@ -1,3 +1,27 @@
+## P34 complete - general read-only movement-set topology inspection
+bridge_route_set.inspect_route_set / bridge_live.py route-set-inspect accepts named
+bounded endpoint hints, explicit directed movements and optional ordered via junctions;
+no ladder/history/fixed track count required. Existing native discovery/route/inspection
+only. Reports ordered physical TRACKs, exact junction transitions, shared rails
+including reverse traversal, junctions/endpoints separately, disjoint/overlap/unknown.
+Opaque non-TRACK internals, incomplete paths and stale bindings cannot prove separation.
+Graph separation is not capacity/signalling/clearance/reservation/train-operation proof.
+Astra owns topology/footprint/elevation/tradeoffs; Sol implements specified general
+capabilities (short AGENTS/SPDD guidance). No new topology or map construction chosen.
+Existing P33 build40408/session pif_1791105680_105229692: five fresh complete native
+paths, six overlap/four graph-disjoint pairs. Within-group different-endpoint routes
+share reverse-used neck rails93843/93859; same approach shares six stem rails;
+full reverse shares eight physical rails; selected north route disjoint from all four
+south routes. Exact supporting paths/incidence/IDs and human-readable matrix local.
+python tools/quiet_checks.py --suite live_client --label pif-p34-acceptance:
+261passed,0fail/error/skip; .local_checks/pif-p34-acceptance_oha36z5i/report.json.
+py_compile/diff passed; .local_runs/live_python_interface/p34/checks.json,
+native_command.json/native_summary.json,movement_report.json,movement_matrix.md,
+result.json/HANDOFF.md; milestone revision in checkpoint.json. No blockers.
+No native writes, mod edits, save/load, runner/physics/station/train changes or push.
+Readback is bounded/sequential, not atomic or cross-load identity proof. Usage unknown.
+Stop P34; next topology/design outcome belongs to coordinator.
+
 ## P33 complete - observed-height throat and four graded leads
 bridge_height_ladder.py plus bridge_live.py height-ladder/height-ladder-inspect:
 read-only observed plan, explicit execution, fresh inspection/checked-existing.

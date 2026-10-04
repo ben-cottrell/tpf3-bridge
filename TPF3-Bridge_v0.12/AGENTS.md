@@ -98,6 +98,10 @@ Do not request repeated approval for ordinary decisions within approved scope.
 Actual usage only when exposed; runtime/message counts are not credits.
 
 ## Production boundary
+Design/orchestration Astra chooses railway topology, independent movement needs,
+bottlenecks, footprint, elevations and engineering trade-offs. Implementation Sol
+implements specified general bridge capabilities and reports native limitations;
+it does not choose/replace railway topology. Templates are examples/regressions.
 Astra chooses intent/material trade-offs; Python engineers and supervises; the
 semantic mod translates without becoming another planner; TPF3 owns native mechanics.
 Prefer native construction tools and bounded semantic state. Keep DESIGN/PREVIEW/

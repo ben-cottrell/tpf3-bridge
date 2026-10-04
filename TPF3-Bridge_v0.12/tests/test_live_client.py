@@ -3442,5 +3442,124 @@ class HeightLadderTests(unittest.TestCase):
             self.assertEqual(main(args),0)
         plan.assert_called_once();build.assert_not_called();self.assertLess(len(out.getvalue().encode()),4096)
 
+class RouteSetTests(unittest.TestCase):
+    setUp=LiveClientTests.setUp
+    def data(self):
+        edges={10:{'id':10,'road_type':'TRACK','node0':1,'node1':2,'p0':[0,0,0],'p1':[10,0,0]},20:{'id':20,'road_type':'TRACK','node0':2,'node1':3,'p0':[10,0,0],'p1':[20,0,0]},30:{'id':30,'road_type':'TRACK','node0':4,'node1':5,'p0':[0,5,0],'p1':[10,5,0]}}
+        incidence={n:{'complete':True,'degree':2,'edges':[]} for n in range(1,6)}
+        incidence[2]={'complete':True,'degree':3,'edges':[10,20,40]}
+        def row(name,ids,reverse=False):
+            path=[]
+            for i in ids:
+                e=edges[i];a,z=(e['node1'],e['node0']) if reverse else (e['node0'],e['node1'])
+                path.append({'edge':{'entity':i,'index':1 if reverse else 0},'from':{'entity':a,'index':0},'to':{'entity':z,'index':0},'forward':not reverse,'confirmed_TRACK':True})
+            return {'id':name,'from':name+'a','to':name+'z','bindings':{'a':{'node_id':path[0]['from']['entity']},'z':{'node_id':path[-1]['to']['entity']}},'response':{'status':'ok','result':{'native_path_found':True,'requested_route_verified':True,'transport_continuous':True,'truncated':False,'path_count':len(path),'path':path}}}
+        return edges,incidence,row
+    def test_same_physical_track_reverse_and_shared_categories_are_separate(self):
+        import bridge_route_set as rs
+        es,ns,row=self.data();a=row('a',[10,20]);b=row('b',[20,10],True)
+        p=rs.assess_route_set([a,b],es,ns)[0]
+        self.assertEqual(p['result'],'topology_overlap');self.assertEqual(p['shared_TRACK_edges'],[10,20]);self.assertEqual(p['opposite_traversal_edges'],[10,20])
+        self.assertEqual(p['shared_junction_nodes'],[2]);self.assertEqual(p['shared_endpoint_nodes'],[1,3]);self.assertTrue(p['both_paths_complete'])
+        self.assertEqual(a['junction_transitions'][0]['from_edge'],10)
+    def test_complete_disjoint_routes_not_operational_capacity(self):
+        import bridge_route_set as rs
+        es,ns,row=self.data();p=rs.assess_route_set([row('a',[10,20]),row('b',[30])],es,ns)[0]
+        self.assertEqual(p['result'],'topology_disjoint');self.assertEqual(p['conflicts_outside_shared_graph'],'unknown');self.assertEqual(p['simultaneous_operation'],'unprobed')
+    def test_unreachable_truncated_unqualified_or_missing_current_edges_are_unknown(self):
+        import bridge_route_set as rs
+        for kind in ('unreachable','truncated','unqualified','missing','incomplete_count','discontinuous'):
+            es,ns,row=self.data();a=row('a',[10,20]);b=row('b',[30]);v=a['response']['result']
+            if kind=='unreachable':v.update(native_path_found=False,path=[])
+            elif kind=='truncated':v.update(truncated=True,path=[])
+            elif kind=='unqualified':v['path'][0].pop('confirmed_TRACK')
+            elif kind=='missing':es.pop(10)
+            elif kind=='incomplete_count':v['path_count']=7
+            else:v['path'][1]['from']['index']=1
+            with self.subTest(kind=kind):self.assertEqual(rs.assess_route_set([a,b],es,ns)[0]['result'],'unknown');self.assertFalse(a['complete'])
+    def test_known_overlap_stays_visible_in_incomplete_path(self):
+        import bridge_route_set as rs
+        es,ns,row=self.data();a=row('a',[10,20]);b=row('b',[10]);a['response']['result']['requested_route_verified']=False
+        p=rs.assess_route_set([a,b],es,ns)[0];self.assertEqual(p['result'],'topology_overlap');self.assertFalse(p['both_paths_complete'])
+    def test_shared_endpoint_and_unknown_junction_classification_remain_separate(self):
+        import bridge_route_set as rs
+        es,ns,row=self.data();a=row('a',[10]);b=row('b',[10]);ns[1]={'complete':False}
+        p=rs.assess_route_set([a,b],es,ns)[0]
+        self.assertEqual(p['result'],'topology_overlap');self.assertEqual(p['shared_endpoint_nodes'],[1,2]);self.assertIn(1,p['junction_classification_unknown_nodes'])
+    def test_incidence_does_not_qualify_unobserved_branch_as_TRACK(self):
+        import bridge_route_set as rs
+        es,ns,row=self.data();record={'node_observations':[],'edge_observations':[]}
+        def discover(c,q):
+            n=min((1,2),key=lambda n:abs(q['region']['min'][0]+.1-(0 if n==1 else 10)))
+            return {'status':'ok','request_id':'read','result':{'complete':True,'candidates':[{'node_id':n,'incident_edges':[10] if n==1 else [10,90,91],'incidence_complete':True,'incident_output_truncated':False}]}}
+        with patch('bridge_live.discover',side_effect=discover),patch.object(self.client,'request',return_value={'status':'error','result':{'error':'not TRACK'}}):
+            seen=rs._incidence(self.client,{10:es[10]},record)
+        self.assertTrue(seen[1]['complete']);self.assertFalse(seen[2]['complete']);self.assertIsNone(seen[2]['degree'])
+    def test_shared_junction_without_shared_rail_is_visible(self):
+        import bridge_route_set as rs
+        es,ns,row=self.data();es[30].update(node0=2,node1=5);ns[2]['edges']=[10,20,30]
+        p=rs.assess_route_set([row('a',[10]),row('b',[30])],es,ns)[0]
+        self.assertEqual(p['shared_TRACK_edges'],[]);self.assertEqual(p['shared_junction_nodes'],[2]);self.assertEqual(p['result'],'topology_overlap')
+    def test_opaque_non_track_internals_block_disjoint_but_remain_explicit(self):
+        import bridge_route_set as rs
+        es,ns,row=self.data();a=row('a',[10,20]);b=row('b',[30])
+        internal={'edge':{'entity':99,'index':0},'from':{'entity':2,'index':0},'to':{'entity':2,'index':0},'forward':True,'confirmed_TRACK':False}
+        a['response']['result']['path'].insert(1,internal);a['response']['result']['path_count']=3
+        p=rs.assess_route_set([a,b],es,ns)[0];self.assertEqual(p['result'],'unknown');self.assertEqual(len(a['physical_tracks']),2)
+        self.assertEqual(a['non_TRACK_transport'][0]['classification'],'unresolved_transport_internal')
+        internal['edge']['entity']=2
+        self.assertEqual(rs.assess_route_set([a,b],es,ns)[0]['result'],'topology_disjoint')
+    def test_wrong_via_order_or_stale_binding_never_proves_disjoint(self):
+        import bridge_route_set as rs
+        es,ns,row=self.data();a=row('a',[10,20]);b=row('b',[30]);a['via_nodes']=[3,2]
+        self.assertEqual(rs.assess_route_set([a,b],es,ns)[0]['result'],'unknown')
+        a.pop('via_nodes');a['stale_binding']=True;b=row('b',[10,20])
+        self.assertEqual(rs.assess_route_set([a,b],es,ns)[0]['result'],'unknown')
+    def brief(self):return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/route_set_example.json').read_text())
+    def test_invalid_counts_names_hints_via_and_nonfinite_limits_rejected(self):
+        import bridge_route_set as rs
+        for kind in ('count','name','hint','via','length','duplicate'):
+            b=self.brief()
+            if kind=='count':b['movements']*=4
+            elif kind=='name':b['movements'][0]['from']='absent'
+            elif kind=='hint':b['endpoints']['A1']['position_tolerance']=0
+            elif kind=='via':b['movements'][0]['via']=['absent']
+            elif kind=='length':b['max_length']=float('nan')
+            else:b['movements'][1]['id']=b['movements'][0]['id']
+            with self.subTest(kind=kind),self.assertRaises(ValueError):rs.validate(b)
+    def test_read_only_workflow_rechecks_identity_and_captures_stale_change(self):
+        import bridge_route_set as rs
+        es,ns,row=self.data();b=self.brief();b['endpoints']={n:b['endpoints'][n] for n in ('A1','S1')};b['movements']=[{'id':'one','from':'A1','to':'S1'},{'id':'two','from':'S1','to':'A1'}]
+        calls=[];count=0
+        def endpoint(c,h):
+            nonlocal count
+            n=1 if h['guide_xyz']==b['endpoints']['A1']['guide_xyz'] else 3;count+=1
+            return {'node_id':n+100 if count==4 else n,'edge_id':10 if n==1 else 20,'edge_snapshot':es[10 if n==1 else 20],'pos':[0,0,0]},'discovery'
+        def request(op,q):
+            calls.append(op)
+            if op=='route':return row('x',[10,20])['response']
+            self.assertEqual(op,'inspect');return {'status':'ok','result':{'edges':[es[i] for i in q['edge_ids']]}}
+        with patch('bridge_route_set._endpoint',side_effect=endpoint),patch('bridge_route_set._incidence',return_value=ns),patch.object(self.client,'request',side_effect=request):r=rs.inspect_route_set(self.client,b)
+        saved=json.loads(Path(r['evidence']).read_text());self.assertEqual(saved['operations'],[]);self.assertEqual(saved['pairs'][0]['result'],'unknown');self.assertIn('S1',saved['stale_bindings'])
+        self.assertTrue(all(op in ('route','inspect') for op in calls));self.assertEqual(count,4)
+    def test_ambiguous_binding_is_unknown_without_issuing_route(self):
+        import bridge_route_set as rs
+        b=self.brief()
+        with patch('bridge_route_set._endpoint',side_effect=LiveError('ambiguous_attachment','two current ports')),patch.object(self.client,'request') as native:
+            r=rs.inspect_route_set(self.client,b)
+        native.assert_not_called();self.assertEqual(r['complete_paths'],0);self.assertEqual(r['pair_counts']['unknown'],10)
+    def test_external_failure_stops_instead_of_repeated_discovery(self):
+        import bridge_route_set as rs
+        with patch('bridge_route_set._endpoint',side_effect=LiveError('timeout','healthy adapter response unavailable')) as discovery:r=rs.inspect_route_set(self.client,self.brief())
+        discovery.assert_called_once();self.assertEqual(r['status'],'timeout')
+    def test_cli_compact_read_only_entry_and_matrix_exact_support(self):
+        import bridge_route_set as rs
+        p=self.root/'routes.json';p.write_text(json.dumps(self.brief()))
+        with patch('bridge_live.client_from_context',return_value=self.client),patch('bridge_route_set.inspect_route_set',return_value={'status':'ok','game_constructed':False}) as inspect,contextlib.redirect_stdout(io.StringIO()) as stdout:
+            self.assertEqual(main(['route-set-inspect','--context','dummy','--params',str(p)]),0)
+        inspect.assert_called_once();self.assertLess(len(stdout.getvalue().encode()),4096)
+        es,ns,row=self.data();rows=[row('a',[10,20]),row('b',[20,10],True)];pairs=rs.assess_route_set(rows,es,ns);s=rs._matrix(rows,pairs)
+        self.assertIn('TRACK [10, 20]',s);self.assertIn('reverse [10, 20]',s);self.assertIn('| a | — | O |',s)
+
 if __name__ == '__main__':
     unittest.main()
