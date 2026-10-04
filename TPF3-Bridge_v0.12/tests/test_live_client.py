@@ -122,6 +122,158 @@ class ScissorsTests(unittest.TestCase):
             self.assertEqual(summary['status'],'mutation_unverified');self.assertIs(summary['game_constructed'],True);self.assertEqual(call.call_count,2)
             record=json.loads(Path(summary['evidence']).read_text());self.assertEqual(record['operations'][-1]['response']['result']['returned_edges'],[20]);self.assertNotIn('complete_receipts',record)
 
+class PublicationTests(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup);self.root=Path(self.temp.name)
+        self.log=self.root/'stdout.txt';self.log.write_text('')
+        self.client=LiveClient(self.root/'mod',self.log,self.root/'evidence','test_session',.15)
+
+    def state(self):return json.loads(self.client.journal.read_text())
+
+    def append(self,request,*,ack=True,status='ok'):
+        response={k:request[k] for k in ('version','session','request_id','operation')};response.update(status=status,result={'game_constructed':False})
+        with self.log.open('a') as stream:
+            stream.write(MARKER+json.dumps(response)+'\n')
+            if ack:stream.write('TPF3_BRIDGE_LIVE_ACK '+json.dumps({'session':'test_session','request_id':request['request_id'],'success':True})+'\n')
+
+    def legacy_pair(self):
+        requests=[]
+        for seq in (70,71):
+            r={'version':1,'session':'test_session','sequence':seq,'request_id':'read'+str(seq),'operation':'discover_interior','params':{'max_edges':16}}
+            (self.client.evidence/(r['request_id']+'.request.json')).write_text(json.dumps(r));requests.append(r|{'log_offset':0})
+        second=requests[1]|{'unresolved_mutation':requests[0]}
+        self.client.journal.write_text(json.dumps({'session':'test_session','next_sequence':72,'pending':second}))
+        slot=self.client._slot(requests[1]);slot.parent.mkdir(parents=True);slot.write_bytes(self.client._request_body(requests[1]))
+        return requests
+
+    def test_permission_before_publication_preserves_identity_without_advancing(self):
+        original=Path.open
+        def denied(path,*args,**kwargs):
+            if path.suffix=='.pending':raise PermissionError('fake staging denied')
+            return original(path,*args,**kwargs)
+        for operation,params,kind in [('discover_interior',{},'read'),('build',{'fit_request':'f'},'mutation')]:
+            with self.subTest(operation=operation):
+                if self.client.journal.exists():self.client.journal.unlink()
+                with patch.object(Path,'open',denied),self.assertRaises(LiveError) as failed:self.client.request(operation,params,request_id=kind)
+                self.assertEqual(failed.exception.status,'request_publication_failed');s=self.state()
+                self.assertEqual(s['next_sequence'],1);self.assertEqual(s['pending']['operation_kind'],kind)
+                self.assertEqual(s['pending']['publication']['state'],'unpublished')
+                self.assertTrue((self.client.evidence/(kind+'.request.json')).exists())
+                with self.assertRaises(LiveError):self.client.request('inspect',{},request_id='must_not_skip_'+kind)
+                self.assertEqual(self.state()['next_sequence'],1);self.assertFalse(self.client._slot(s['pending']).exists())
+
+    def test_occupied_slot_or_temporary_is_not_overwritten(self):
+        for suffix in ('.lua','.pending'):
+            with self.subTest(suffix=suffix),tempfile.TemporaryDirectory() as d:
+                c=LiveClient(Path(d)/'mod',self.log,Path(d)/'evidence','test_session',.05)
+                slot=c.mod/'content/scripts/pif_live/test_session'/('000001'+suffix);slot.parent.mkdir(parents=True);slot.write_bytes(b'foreign')
+                with self.assertRaises(LiveError) as failed:c.request('inspect',{},request_id='conflict')
+                self.assertEqual(failed.exception.status,'request_slot_conflict');self.assertEqual(slot.read_bytes(),b'foreign')
+                self.assertEqual(json.loads(c.journal.read_text())['next_sequence'],1)
+
+    def test_partial_temporary_write_remains_unpublished_and_is_preserved(self):
+        original=Path.open
+        class Partial:
+            def __init__(self,stream):self.stream=stream
+            def __enter__(self):return self
+            def __exit__(self,*args):self.stream.close()
+            def write(self,body):self.stream.write(body[:10]);raise OSError('partial write')
+        def interrupted(path,*args,**kwargs):
+            stream=original(path,*args,**kwargs)
+            return Partial(stream) if path.suffix=='.pending' else stream
+        with patch.object(Path,'open',interrupted),self.assertRaises(LiveError):self.client.request('inspect',{},request_id='partial')
+        p=self.state()['pending'];slot=self.client._slot(p);temp=slot.with_suffix('.pending');partial=temp.read_bytes()
+        self.assertEqual(len(partial),10);self.assertFalse(slot.exists());self.assertEqual(self.state()['next_sequence'],1)
+        self.assertEqual(p['publication']['state'],'unpublished')
+        with self.assertRaises(LiveError):self.client.reconcile_read_publications(['partial'])
+        self.assertEqual(temp.read_bytes(),partial);self.assertFalse(slot.exists())
+
+    def test_rename_error_without_slot_is_uncertain_and_cannot_be_restored(self):
+        with patch.object(self.client,'_publish_file',side_effect=OSError('rename ambiguous')),self.assertRaises(LiveError) as failed:
+            self.client.request('inspect',{},request_id='rename')
+        self.assertEqual(failed.exception.status,'request_publication_uncertain');self.assertEqual(self.state()['next_sequence'],1)
+        self.assertEqual(self.state()['pending']['publication']['state'],'uncertain')
+        with self.assertRaises(LiveError):self.client.reconcile_read_publications(['rename'])
+        self.assertFalse(self.client._slot(self.state()['pending']).exists())
+
+    def test_error_after_actual_publication_does_not_duplicate_request(self):
+        publish=self.client._publish_file
+        def failed_after(temp,path):publish(temp,path);raise OSError('failure after rename')
+        with patch.object(self.client,'_publish_file',side_effect=failed_after),self.assertRaises(LiveError):self.client.request('inspect',{},request_id='published')
+        pending=self.state()['pending'];self.assertEqual(self.state()['next_sequence'],2);self.assertEqual(pending['publication']['state'],'published')
+        before=self.client._slot(pending).read_bytes();self.append(pending)
+        with patch.object(self.client,'_publish_file') as again:r=self.client.reconcile_read_publications(['published'])
+        again.assert_not_called();self.assertEqual(r['status'],'ok');self.assertEqual(self.client._slot(pending).read_bytes(),before)
+        self.assertEqual(self.state()['next_sequence'],2);self.assertNotIn('pending',self.state())
+
+    def test_journal_failure_after_publication_retains_durable_intent(self):
+        import bridge_live as live
+        atomic=live.atomic_json;failed=[]
+        def once(path,value):
+            if path==self.client.journal and value.get('pending',{}).get('publication',{}).get('state')=='published' and not failed:
+                failed.append(True);raise OSError('journal publication update failed')
+            return atomic(path,value)
+        with patch('bridge_live.atomic_json',side_effect=once),self.assertRaises(LiveError):self.client.request('inspect',{},request_id='journal')
+        s=self.state();self.assertEqual(s['pending']['publication']['state'],'published');self.assertEqual(s['next_sequence'],2)
+        self.assertTrue(self.client._slot(s['pending']).exists())
+        with self.assertRaises(LiveError):self.client.request('inspect',{},request_id='skip')
+
+    def test_published_mutation_with_io_error_is_never_restored_or_repeated(self):
+        publish=self.client._publish_file
+        def failed_after(temp,path):publish(temp,path);raise OSError('after publication')
+        with patch.object(self.client,'_publish_file',side_effect=failed_after),self.assertRaises(LiveError):self.client.request('build',{},request_id='mutation')
+        original=self.client._slot(self.state()['pending']).read_bytes()
+        with self.assertRaises(LiveError):self.client.reconcile_read_publications(['mutation'])
+        with self.assertRaises(LiveError):self.client.request('build',{},request_id='repeat')
+        self.assertEqual(self.client._slot(self.state()['pending']).read_bytes(),original);self.assertEqual(self.state()['next_sequence'],2)
+
+    def test_legacy_unpublished_mutation_cannot_allocate_a_later_read(self):
+        self.client.timeout=.02
+        with self.assertRaises(LiveError):self.client.request('build',{},request_id='legacy')
+        s=self.state();self.client._slot(s['pending']).unlink();s['pending'].pop('publication');self.client.journal.write_text(json.dumps(s))
+        with self.assertRaises(LiveError):self.client.request('inspect',{},request_id='skip')
+        self.assertEqual(self.state(),s)
+
+    def test_exact_legacy_read_gap_is_restored_and_published_successor_consumed(self):
+        reqs=self.legacy_pair();self.client.require_ack=True;second=self.client._slot(reqs[1]).read_bytes()
+        def worker():
+            deadline=time.monotonic()+1
+            while not self.client._slot(reqs[0]).exists() and time.monotonic()<deadline:time.sleep(.005)
+            self.append(reqs[0]);self.append(reqs[1],status='error')
+        thread=threading.Thread(target=worker);thread.start()
+        with patch('bridge_live.discover_session',return_value='test_session'):result=self.client.reconcile_read_publications(['read70','read71'])
+        thread.join();self.assertEqual(result['status'],'ok');self.assertEqual(result['result']['responses'][1]['status'],'error')
+        self.assertEqual(self.client._slot(reqs[0]).read_bytes(),self.client._request_body(reqs[0]))
+        self.assertEqual(self.client._slot(reqs[1]).read_bytes(),second);self.assertEqual(self.state()['next_sequence'],72);self.assertNotIn('pending',self.state())
+        self.assertIn('unresolved_mutation',result['result']['original_pending']);self.assertFalse(result['result']['mutation_replay'])
+
+    def test_read_reconciliation_rejects_mismatch_mutation_and_stale_session_before_writes(self):
+        for defect in ('slot','saved_request','mutation','session','ids'):
+            with self.subTest(defect=defect),tempfile.TemporaryDirectory() as d:
+                old=self.client;self.client=LiveClient(Path(d)/'mod',self.log,Path(d)/'evidence','test_session',.05)
+                reqs=self.legacy_pair();state=self.state()
+                if defect=='slot':self.client._slot(reqs[1]).write_bytes(b'foreign')
+                if defect=='saved_request':(self.client.evidence/'read70.request.json').write_text('{}')
+                if defect=='mutation':state['pending']['unresolved_mutation'].update(operation='build',params={});self.client.journal.write_text(json.dumps(state))
+                if defect=='session':self.client.require_ack=True
+                ids=['wrong','read71'] if defect=='ids' else ['read70','read71']
+                with patch('bridge_live.discover_session',return_value='other'),self.assertRaises(LiveError):self.client.reconcile_read_publications(ids)
+                self.assertFalse(self.client._slot(reqs[0]).exists());self.assertEqual(self.state(),state);self.client=old
+
+    def test_missing_response_or_ack_keeps_read_history_and_never_republishes(self):
+        reqs=self.legacy_pair();self.client.require_ack=True;self.client.timeout=.02
+        self.append(reqs[0],ack=False) # A response already present forbids restoring absent70.
+        with patch('bridge_live.discover_session',return_value='test_session'),self.assertRaises(LiveError):self.client.reconcile_read_publications(['read70','read71'])
+        self.assertFalse(self.client._slot(reqs[0]).exists())
+        self.client._slot(reqs[0]).write_bytes(self.client._request_body(reqs[0]));self.append(reqs[1])
+        with patch('bridge_live.discover_session',return_value='test_session'),patch.object(self.client,'_publish_file') as again,self.assertRaises(LiveError):self.client.reconcile_read_publications(['read70','read71'])
+        again.assert_not_called();self.assertIn('pending',self.state());self.assertEqual(self.state()['next_sequence'],72)
+        self.append(reqs[0])
+        with patch('bridge_live.discover_session',return_value='test_session'),patch.object(self.client,'_publish_file') as again:r=self.client.reconcile_read_publications(['read70','read71'])
+        again.assert_not_called();self.assertEqual(r['status'],'ok');self.assertNotIn('pending',self.state())
+        attempts=[json.loads(p.read_text()) for p in self.client.evidence.glob('*.publication_reconciliation.json')]
+        self.assertEqual({p['status'] for p in attempts},{'incomplete','reconciled_reads'})
+
 class LiveClientTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

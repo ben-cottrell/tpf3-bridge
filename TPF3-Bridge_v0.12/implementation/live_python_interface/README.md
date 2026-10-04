@@ -96,6 +96,25 @@ another operation. This is in-session reconciliation, not crash recovery, automa
 resume or general idempotency across new journals/loads. No rollback guarantee;
 proposal placeholders/counts are not realised entities/effects.
 
+Request publication retains durable intent before touching staging. The sequence
+advances only after the complete slot is published exclusively. Write/permission
+failure returns `request_publication_failed`; ambiguous rename/post-publication
+failure returns `request_publication_uncertain`; occupied slots remain untouched.
+Failed publication or a pending read blocks new slot allocation. Published uncertain
+mutations still permit the existing read-only inspection/reconciliation operations.
+
+For an explicitly verified missing read slot, call
+`client.reconcile_read_publications([OLDEST_READ_ID, NEXT_READ_ID])` (one or two IDs).
+It checks current session, exact saved envelopes, slot/temporary contents and existing
+responses/ACKs. It publishes only a proven unpublished original read, retains any
+published successor, and consumes both responses without rewinding or filler calls.
+Mutations, mismatched/partial files and uncertain absent rename outcomes are refused.
+Each reconciliation attempt retains separate local evidence; errors do not become
+successful native observations. This repairs an in-session publication gap, not
+filesystem permissions, game/host recovery or automatic job continuation. Staging
+writes still require the host's appropriate tool permission.
+
+
 ## Connect two existing endpoints
 
 `bridge_live.connect(client, brief, execute=False)` and the live `connect` command

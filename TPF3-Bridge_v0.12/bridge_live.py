@@ -2359,6 +2359,50 @@ class LiveClient:
         self.evidence.mkdir(parents=True, exist_ok=True)
         self.journal = self.evidence / 'client_state.json'
 
+    def _request_body(self, request):
+        envelope={k:request[k] for k in ('version','session','sequence','request_id','operation','params')}
+        return ('return '+lua_literal(envelope)+'\n').encode('ascii')
+
+    def _slot(self, request):
+        return self.mod/'content/scripts/pif_live'/self.session/f"{request['sequence']:06d}.lua"
+
+    @staticmethod
+    def _existing_bytes(path):
+        # Permission/IO errors must never be mistaken for an absent publication.
+        try:return path.read_bytes()
+        except FileNotFoundError:return None
+
+    @staticmethod
+    def _publish_file(temporary, path):
+        # Windows rename refuses occupied destinations. POSIX link provides the
+        # same exclusive atomic publication without a partially readable module.
+        if os.name=='nt':os.rename(temporary,path)
+        else:os.link(temporary,path);temporary.unlink()
+
+    def _publish(self, state, body):
+        pending=state['pending'];path=self._slot(pending);temporary=path.with_suffix('.pending');phase='prepared'
+        try:
+            path.parent.mkdir(parents=True,exist_ok=True)
+            if self._existing_bytes(path) is not None:raise LiveError('request_slot_conflict',str(path),pending['request_id'])
+            with temporary.open('xb') as stream:stream.write(body)
+            phase='temporary_written';pending['publication']['phase']=phase;atomic_json(self.journal,state)
+            phase='rename_attempted';self._publish_file(temporary,path)
+            pending['publication'].update(state='published',phase='published')
+            state['next_sequence']=max(state['next_sequence'],pending['sequence']+1);atomic_json(self.journal,state)
+        except (OSError,LiveError) as exc:
+            try:actual=self._existing_bytes(path)
+            except OSError:actual=None;phase='slot_inspection_failed'
+            published=actual==body
+            kind=('published' if published else 'conflict' if actual is not None else
+                  'uncertain' if phase in ('rename_attempted','slot_inspection_failed') else 'unpublished')
+            pending['publication'].update(state=kind,phase=phase,error=str(exc)[:400])
+            if published:state['next_sequence']=max(state['next_sequence'],pending['sequence']+1)
+            try:atomic_json(self.journal,state)
+            except OSError:pass # Previously durable intent still protects this slot.
+            status=('request_slot_conflict' if kind=='conflict' or isinstance(exc,FileExistsError) else
+                    'request_publication_failed' if kind=='unpublished' else 'request_publication_uncertain')
+            raise LiveError(status,'publication retained for explicit reconciliation; '+str(exc)[:300],pending['request_id']) from exc
+
     def request(self, operation, params, *, request_id=None):
         if operation not in OPERATIONS or not isinstance(params, dict):
             raise ValueError('invalid operation/parameters')
@@ -2381,6 +2425,13 @@ class LiveClient:
         if state['session'] != self.session:
             raise LiveError('session_changed', 'use a new evidence directory for a new runtime session')
         unresolved = state.get('pending')
+        if unresolved and (unresolved.get('publication',{}).get('state') not in (None,'published')
+                           or not is_mutation(unresolved.get('operation'),unresolved.get('params',{}))):
+            raise LiveError('reconciliation_required','pending publication/read must be reconciled before allocating another slot',unresolved['request_id'])
+        if unresolved and 'publication' not in unresolved:
+            try:published=self._existing_bytes(self._slot(unresolved))==self._request_body(unresolved)
+            except (KeyError,ValueError,OSError):published=False
+            if not published:raise LiveError('reconciliation_required','legacy pending slot publication is not established',unresolved['request_id'])
         if unresolved and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'verify_adjacency', 'adjacent', 'remove_branch', 'crossover', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'scissors_candidate')):
             raise LiveError('reconciliation_required', 'previous request is unfinished; inspect its matching response/current world before any repeat', state['pending']['request_id'])
         if (self.evidence / (request_id + '.request.json')).exists():
@@ -2393,19 +2444,12 @@ class LiveClient:
             raise ValueError('request exceeds 32 KiB')
         offset = self.log.stat().st_size
         atomic_json(self.evidence / (request_id + '.request.json'), request)
-        state['pending'] = {**request, 'log_offset': offset}
+        state['pending'] = {**request, 'log_offset': offset,'operation_kind':'mutation' if is_mutation(operation,params) else 'read',
+            'publication':{'state':'prepared','phase':'prepared','sha256':hashlib.sha256(body).hexdigest()}}
         if unresolved:
             state['pending']['unresolved_mutation'] = unresolved
-        state['next_sequence'] += 1
         atomic_json(self.journal, state)
-        directory = self.mod / 'content/scripts/pif_live' / self.session
-        directory.mkdir(parents=True, exist_ok=True)
-        path = directory / f'{sequence:06d}.lua'
-        if path.exists():
-            raise LiveError('request_slot_conflict', str(path), request_id)
-        temporary = path.with_suffix('.pending')
-        temporary.write_bytes(body)
-        os.replace(temporary, path)
+        self._publish(state,body)
         deadline = time.monotonic() + self.timeout
         partial = b''
         received = None
@@ -2462,6 +2506,116 @@ class LiveClient:
         status = 'mutation_outcome_unknown' if is_mutation(operation, params) else 'request_timeout'
         raise LiveError(status, 'no matching response; request retained for reconciliation, never resubmitted automatically', request_id)
 
+    def reconcile_read_publications(self, request_ids):
+        """Explicitly restore <=2 proven unpublished reads; consume existing slots.
+
+        This does not retry mutations, allocate filler calls, rewind the sequence,
+        or recover a crashed host/game. A healthy current adapter is a precondition.
+        """
+        lock=self.evidence/'client.lock'
+        try:
+            with lock.open('x'):pass
+        except FileExistsError:raise LiveError('client_busy','one client reconciliation at a time') from None
+        try:return self._reconcile_read_publications(request_ids)
+        finally:lock.unlink()
+
+    def _reconcile_read_publications(self, request_ids):
+        state=json.loads(self.journal.read_text());pending=state.get('pending');chain=[]
+        if state.get('session')!=self.session or not pending:raise LiveError('reconciliation_required','no current pending read publication')
+        if self.require_ack and discover_session(self.log)!=self.session:raise LiveError('session_changed','adapter load changed; do not publish')
+        item=pending
+        while item:
+            if len(chain)==2 or is_mutation(item.get('operation'),item.get('params',{})):
+                raise LiveError('reconciliation_required','only one or two explicit pending reads may be reconciled')
+            chain.append(item)
+            if item.get('unresolved_mutation') and item.get('unresolved_read'):raise LiveError('reconciliation_required','ambiguous pending chain')
+            item=item.get('unresolved_read') or item.get('unresolved_mutation')
+        chain.reverse()
+        if not isinstance(request_ids,(list,tuple)) or list(request_ids)!=[p['request_id'] for p in chain]:
+            raise LiveError('reconciliation_required','exact oldest-first pending read IDs required')
+        prepared=[];observations=[]
+        with self.log.open('rb') as stream:
+            offset=min(p['log_offset'] for p in chain)
+            if stream.seek(0,2)<offset:raise LiveError('log_rotated','retained read baseline no longer available')
+            stream.seek(offset);baseline=stream.read().decode('utf-8','replace').splitlines()
+        for i,p in enumerate(chain):
+            envelope={k:p[k] for k in ('version','session','sequence','request_id','operation','params')}
+            if (p['session']!=self.session or p['operation'] not in OPERATIONS or type(p['sequence']) is not int or p['sequence']<1
+                    or i and p['sequence']!=chain[i-1]['sequence']+1):raise LiveError('reconciliation_required','invalid ordered read identity')
+            if json.loads((self.evidence/(p['request_id']+'.request.json')).read_text())!=envelope:
+                raise LiveError('reconciliation_required','saved request differs from pending identity',p['request_id'])
+            body=self._request_body(p);path=self._slot(p);actual=self._existing_bytes(path);temporary=path.with_suffix('.pending');temp=self._existing_bytes(temporary)
+            if actual is not None and actual!=body or temp is not None and temp!=body:
+                raise LiveError('request_slot_conflict','occupied slot/temporary differs from exact saved read',p['request_id'])
+            if actual is None:
+                if p.get('publication',{}).get('state')=='uncertain':raise LiveError('reconciliation_required','rename outcome remains uncertain; no republish',p['request_id'])
+                for line in baseline:
+                    if parse_response(line,p['request_id'],self.session,p['operation']) is not None:
+                        raise LiveError('reconciliation_required','response already exists for missing slot; no republish',p['request_id'])
+                    marker='TPF3_BRIDGE_LIVE_ACK '
+                    if marker in line:
+                        try:ack=json.loads(line.split(marker,1)[1])
+                        except ValueError:continue
+                        if isinstance(ack,dict) and ack.get('request_id')==p['request_id'] and ack.get('session')==self.session:
+                            raise LiveError('reconciliation_required','ACK already exists for missing slot; no republish',p['request_id'])
+            prepared.append((p,path,temporary,body,actual,temp))
+            observations.append({'request_id':p['request_id'],'sequence':p['sequence'],'operation_kind':'read',
+                'slot_present':actual is not None,'temporary_present':temp is not None,'sha256':hashlib.sha256(body).hexdigest()})
+        if state['next_sequence'] not in (chain[-1]['sequence'],chain[-1]['sequence']+1):
+            raise LiveError('reconciliation_required','sequence frontier does not match the retained reads')
+        record={'status':'prepared','session':self.session,'original_pending':json.loads(json.dumps(pending)),'slots':observations,'mutation_replay':False}
+        evidence=self.evidence/(pending['request_id']+'.'+uuid.uuid4().hex+'.publication_reconciliation.json');atomic_json(evidence,record)
+        for p,path,temporary,body,actual,temp in prepared:
+            if actual is None:
+                if self.require_ack and discover_session(self.log)!=self.session:raise LiveError('session_changed','adapter changed before restoring read')
+                path.parent.mkdir(parents=True,exist_ok=True)
+                if temp is None:
+                    with temporary.open('xb') as stream:stream.write(body)
+                self._publish_file(temporary,path)
+                assert self._existing_bytes(path)==body,'published read differs from saved identity'
+        # Preserve the frontier, including any previously published successor.
+        state['next_sequence']=max(state['next_sequence'],chain[-1]['sequence']+1)
+        for p in chain:
+            p['operation_kind']='read';p['publication']={'state':'published','phase':'explicit_read_reconciliation','sha256':hashlib.sha256(self._request_body(p)).hexdigest()}
+            if p.get('unresolved_mutation'):p['unresolved_read']=p.pop('unresolved_mutation')
+        atomic_json(self.journal,state)
+        record['status']='published_waiting_for_existing_responses';atomic_json(evidence,record)
+        deadline=time.monotonic()+self.timeout;responses={}
+        while time.monotonic()<deadline:
+            if self.require_ack and discover_session(self.log)!=self.session:raise LiveError('session_changed','adapter changed during read reconciliation')
+            with self.log.open('rb') as stream:
+                if stream.seek(0,2)<offset:raise LiveError('log_rotated','read reconciliation baseline unavailable')
+                stream.seek(offset);raw=stream.read()
+            lines=raw.decode('utf-8','replace').splitlines()
+            for p in chain:
+                received=None;acknowledged=not self.require_ack
+                for line in lines:
+                    marker='TPF3_BRIDGE_LIVE_ACK '
+                    if marker in line:
+                        try:ack=json.loads(line.split(marker,1)[1])
+                        except ValueError:ack={}
+                        if isinstance(ack,dict) and ack.get('request_id')==p['request_id'] and ack.get('session')==self.session:
+                            if ack.get('success') is not True:raise LiveError('command_completion_failed','existing read command ACK failed',p['request_id'])
+                            acknowledged=True
+                    response=parse_response(line,p['request_id'],self.session,p['operation'])
+                    if response is not None:received=response
+                if received and acknowledged:
+                    if received['status']=='mutation_unverified':raise LiveError('reconciliation_required','read response reports uncertainty',p['request_id'])
+                    responses[p['request_id']]=received;atomic_json(self.evidence/(p['request_id']+'.response.json'),received)
+            if len(responses)==len(chain):
+                latest=json.loads(self.journal.read_text())
+                if latest!=state:raise LiveError('reconciliation_required','journal changed during ordered read reconciliation')
+                record.update(status='reconciled_reads',responses=[responses[p['request_id']] for p in chain],next_sequence=state['next_sequence'])
+                evidence.with_suffix('.log').write_bytes(raw)
+                atomic_json(evidence,record)
+                state.setdefault('publication_reconciliations',{})[pending['request_id']]={'evidence':str(evidence.resolve()),'request_ids':list(request_ids),'mutation_replay':False}
+                state.pop('pending');atomic_json(self.journal,state)
+                return {'status':'ok','result':record,'evidence':str(evidence.resolve())}
+            time.sleep(.1)
+        record.update(status='incomplete',error='existing read responses/ACKs incomplete; no new slot allocated')
+        atomic_json(evidence,record)
+        raise LiveError('request_timeout',record['error'],pending['request_id'])
+
     def reconcile_pending(self):
         """Collect an existing late response only; never send another operation."""
         state = json.loads(self.journal.read_text())
@@ -2492,7 +2646,11 @@ class LiveClient:
                     is_mutation(pending['operation'], pending['params'])
                     and response.get('result', {}).get('game_constructed') == 'unknown')
                 if not uncertain:
-                    state.pop('pending');atomic_json(self.journal, state)
+                    previous=pending.get('unresolved_mutation') or pending.get('unresolved_read')
+                    if previous:state['pending']=previous
+                    else:state.pop('pending')
+                    state['next_sequence']=max(state['next_sequence'],pending['sequence']+1)
+                    atomic_json(self.journal, state)
                 return response
         raise LiveError('reconciliation_required', 'no matching late response; fresh readback may be requested, no automatic mutation replay', pending['request_id'])
 

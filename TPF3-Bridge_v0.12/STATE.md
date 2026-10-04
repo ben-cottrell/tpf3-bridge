@@ -1,3 +1,27 @@
+## P39 complete - ordered read publication gap repaired
+LiveClient retains intent before staging, advances sequence only after exclusive
+publication, distinguishes unpublished/uncertain/conflict outcomes and read/mutation.
+Failed publication/pending read blocks later allocation; no mutation replay or
+permission repair. Explicit reconcile_read_publications accepts<=2exact pending READ
+IDs, checks session/saved envelopes/slots/ACKs, restores only proven unpublished read,
+consumes published successors and preserves per-attempt history/frontier.
+Healthy build40408/session pif_1791121053_120602056: exact missing70 restored,
+existing71 reused, both original responses/ACKs ok. Fresh72 discovery returned
+one candidate TRACK103776; journal next73/pending clear. No fitting/construction,
+mod code change, restart, ACL change, crossover execution or topology decision.
+Original failure/journal and requests preserved. Evidence:
+.local_runs/live_python_interface/p39/publication_repair/:baseline.json,
+journal_before.json,reconciliation.json,journal_after_reconciliation.json,
+fresh_discovery.json,journal_after_fresh.json,result.json; p39/checks.json,HANDOFF.md,
+reviewed.diff,checkpoint.json. Correlated native records remain under p01/session.
+python tools/quiet_checks.py --suite live_client --label pif-p39-final-acceptance-v2:
+305passed/0fail/error/skip; .local_checks/pif-p39-final-acceptance-v2_s5h4zt0a/report.json.
+Prepublication denial/partial write, rename/postpublication ambiguity, occupied slots,
+read-vs-mutation, ordered identity/ACKs/stale session/history tested. Compile/diff pass.
+Local checkpoint revision in p39/checkpoint.json; no push. Hand control back to Astra
+direct reference operation; P38 native scissors remains unqualified. No blocker for
+this repaired read path; tool staging permissions still required. Usage unavailable.
+
 ## P38 continuation closed - tested connected proposals remain natively rejected
 Failed checkpoint2884ee8 preserved; no completed scissors capability claimed.
 scissors / scissors-inspect now prepare one connected pointwork proposal, preserve
