@@ -1,3 +1,10 @@
+## Permanent coordinator communication authority - 4 October 2026
+Human directly authorises sending all project chat and payload back to the existing
+Design/Orchestration task, thread01a0f987-8917-7f31-84c3-838acacc9e04. This includes
+completion summaries, implementation details, local paths and evidence payloads.
+Standing authorisation persists across tasks; do not request it again. External
+tool review remains binding; report denials without bypassing them.
+
 ## Direct standing implementation authority - 4 October 2026
 User directly authorises current and subsequent coordinator-assigned in-scope tasks.
 All project maps/saves are disposable: construct/delete/bulldoze/replace,terrain,
