@@ -1,3 +1,25 @@
+## P48 closed — useful partial, Astra-directed stop (4 October 2026)
+
+Exact-chain cleanup removed24 superseded edges; six entrance tracks span local300..500.
+Four native curves connect original leads0/1/14/15. First adjusted crossover104785
+connects junctions104779/104780; sampled native radius164.36711. Both actual rejected
+requests were reconciled as completed crossover absent/original through tracks intact;
+other effect history remains unknown. Second adjusted build: Construction Not Possible,
+cause unestablished. No further attempts; full access matrix remains incomplete.
+Build40408/sessionpif_1791139669_139218306; pending none. Fresh22directional routes pass;
+six entrance/four curve chains and12remaining free station ends: p48/native/bindings.json.
+python tools/quiet_checks.py --suite live_client --label pif-p48-chain:
+341passed/0fail/error/skip; .local_checks/pif-p48-chain_wsilgvpi/report.json.
+Tested Python/test hashes unchanged; staged/prepared native module hashes equal.
+Compile/diff passed; Lua standalone syntax unperformed; physical trains unprobed.
+Native closure: python .local_runs/live_python_interface/p48/final.py (22routes).
+Evidence .local_runs/live_python_interface/p48/{HANDOFF.md,checks.json,checkpoint.json,
+native/final_result.json,native/bindings.json,native/world_checkpoint.json}.
+Saved TPF3_Bridge_P48_Compact_PARTIAL_20261004.sav normally, not reloaded; SHA256
+30e13f95a183dd1db57fb705f6c4dc91cc042b67c88befc1bd8ea00bc94efc19.
+Local milestone revision: p48/checkpoint.json; no push. Usage unavailable.
+Next: Astra designs the entire integrated radius-led throat before more construction.
+
 ## P47 complete — exact compensation and corrected native connector verified
 
 Receipt-bound compensation removed only95579/95585/95602 after fresh checks,

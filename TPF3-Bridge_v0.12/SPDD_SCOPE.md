@@ -319,3 +319,7 @@ waive tool approval review, permit bypass, host recovery or original-save overwr
 For the pending C13 Resume action, allow one resume/pause cycle with at most10seconds
 advancement, pause promptly, observe actual state and recheck native construction
 preconditions before the existing single build. Preserve both earlier rejections.
+
+
+## Proven problems first — direct user principle, 4 October 2026
+Focus on proven problems rather than hypothetical ones. A validation discrepancy alone is an observation to record, not sufficient reason for investigation, reconstruction or a new implementation task. Investigate when evidence demonstrates a functional problem, a failed required operation, or violation of a genuine explicit user requirement. Coordinator-invented numeric thresholds must not turn incidental native modelling differences into mandatory repair work. If a bridge acceptance gate alone blocks progress, reassess that gate against the actual task requirement before treating the game geometry as defective. Preserve honest measurements, uncertainty and original outcomes; do not claim a discrepancy resolved merely because it is non-blocking. Verify intended new connections and relevant functionality proportionately, reuse existing evidence, and continue practical layout construction. This supersedes contrary coordinator task-card defaults; external tool review and actual scope boundaries remain binding.

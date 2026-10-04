@@ -4447,6 +4447,37 @@ class NativeAggregateTinyEvidenceTests(unittest.TestCase):
         self.assertLess(fit.index('assert(discardedlength<=.001'),fit.index('#controls>1 and straight_count==1 and arc_turn<=.1'))
         self.assertIn('geometry_bounds(cg,p.region,p.radius,maxgrade or math.abs(grade))',fit)
 
+class ExactChainRemovalTests(unittest.TestCase):
+    def test_named_chain_is_freshly_observed_before_exact_mutation(self):
+        with tempfile.TemporaryDirectory() as d:
+            c=LiveClient(Path(d)/'mod',Path(d)/'log',Path(d)/'evidence','current',.02)
+            rows=[{'id':2,'node0':3,'node1':2},{'id':1,'node0':1,'node1':2}]
+            answer={'status':'ok','result':{'removed_edges':[1,2]}}
+            with patch.object(c,'request',side_effect=[{'status':'ok','result':{'edges':rows}},answer]) as calls:
+                self.assertEqual(c.remove_exact_chain([1,2]),answer)
+            self.assertEqual(calls.call_args_list[0].args,('inspect',{'edge_ids':[1,2]}))
+            self.assertEqual(calls.call_args_list[1].args,('remove_branch',{'authorised':True,'exact_chain':True,'edges':[rows[1],rows[0]]}))
+            self.assertTrue(is_mutation('remove_branch',calls.call_args_list[1].args[1]))
+
+    def test_invalid_or_missing_identity_stops_before_removal(self):
+        with tempfile.TemporaryDirectory() as d:
+            c=LiveClient(Path(d)/'mod',Path(d)/'log',Path(d)/'evidence','current',.02)
+            for ids in ([],[1,1],[True],[-1],list(range(1,18))):
+                with patch.object(c,'request') as call,self.assertRaises(ValueError):c.remove_exact_chain(ids)
+                call.assert_not_called()
+            for response in ({'status':'error','result':{}},{'status':'ok','result':{'edges':[{'id':3}]}}):
+                with patch.object(c,'request',return_value=response) as call,self.assertRaises(LiveError):c.remove_exact_chain([1])
+                self.assertEqual(call.call_count,1)
+
+    def test_native_chain_mode_guards_and_unknown_outcome_are_preserved(self):
+        source=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text()
+        block=source[source.index('function M.remove_branch'):source.index('function M.verify_crossover')]
+        for guard in ('conflicting_chain_removal_modes','removal_chain_branched_or_disconnected','removal_chain_not_open','construction_owned_removal_node','unsupported_removal_edge','removal_endpoint_degree_unsupported','retained_chain_attachment_unverified','exact_chain_node_removal_unverified','mutation_unverified'):
+            self.assertIn(guard,block)
+        self.assertIn('assert_fresh(r.snapshot)',block)
+        self.assertIn('assert(not s.mutationPending,"unreconciled_mutation")',block)
+        self.assertLess(block.index('retained_chain_attachment_unverified'),block.index('exact_chain=true,removed_edges'))
+
 class CrossoverCompensationTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup);root=Path(self.tmp.name)

@@ -2374,6 +2374,20 @@ def parse_response(line, request_id, session, operation):
     return data
 
 class LiveClient:
+    def remove_exact_chain(self, edge_ids):
+        """Remove one explicitly named observed open chain; never select by region."""
+        if (type(edge_ids) is not list or not 1 <= len(edge_ids) <= 16
+                or any(type(x) is not int or x <= 0 for x in edge_ids)
+                or len(set(edge_ids)) != len(edge_ids)):
+            raise ValueError('exact chain requires 1..16 distinct native edge IDs')
+        observed = self.request('inspect', {'edge_ids': edge_ids})
+        rows = observed.get('result', {}).get('edges', [])
+        byid = {e['id']: e for e in rows}
+        if observed['status'] != 'ok' or set(byid) != set(edge_ids):
+            raise LiveError('reconciliation_required', 'exact chain observation unavailable')
+        return self.request('remove_branch', {'authorised': True, 'exact_chain': True,
+                                             'edges': [byid[x] for x in edge_ids]})
+
     def compensate_crossover(self, *, connector_ids, reason, authority, original_client=None):
         """Explicit exact-receipt connector removal, never acceptance or replay."""
         old=original_client or self;state=json.loads(old.journal.read_text());pending=state.get('pending')

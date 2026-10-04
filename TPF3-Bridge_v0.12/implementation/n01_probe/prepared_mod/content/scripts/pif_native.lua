@@ -1345,7 +1345,10 @@ end
 -- Bounded explicit removal of an observed failed test branch, not rollback.
 function M.remove_branch(p,s,state,request_id,respond)
  assert(p.free_ends==nil or type(p.free_ends)=="boolean","invalid_free_end_removal_option")
- assert(p.authorised==true and type(p.edges)=="table" and #p.edges>=1 and #p.edges<=(p.free_ends and 16 or 8),"invalid_branch_removal")
+ assert(p.exact_chain==nil or type(p.exact_chain)=="boolean","invalid_exact_chain_option")
+ local exact=p.exact_chain==true
+ assert(not exact or (not p.free_ends and not p.isolated_fixture and not p.compensation),"conflicting_chain_removal_modes")
+ assert(p.authorised==true and type(p.edges)=="table" and #p.edges>=1 and #p.edges<=((p.free_ends or exact) and 16 or 8),"invalid_branch_removal")
  local compensation=p.compensation
  if compensation then
   local r=compensation.original_response;local q=compensation.original_params
@@ -1371,17 +1374,39 @@ function M.remove_branch(p,s,state,request_id,respond)
   assert(p.edges[1].node0==x.junction_node and p.edges[#p.edges].node1==y.junction_node,"compensation_attachment_mismatch")
   for _,v in ipairs({x,y}) do for _,id in ipairs(v.replacement_edges) do for _,e in ipairs(p.edges) do assert(e.id~=id,"through_edge_removal_forbidden") end end end
  else assert(not s.mutationPending,"unreconciled_mutation") end
- local ids,expected={},{};local interior={}
+ local ids,expected={},{};local interior={};local selected_nodes={};local retained={}
  for i,snapshot in ipairs(p.edges) do
   local a=assert_fresh(snapshot);assert(not expected[a.id],"duplicate_removal_edge");expected[a.id]=true;ids[#ids+1]=a.id
   local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
   assert(base.type==E.BaseEdgeType.NORMAL and #base.objects==0,"unsupported_removal_edge")
   local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForEdge(a.id);assert(not (owner and owner>0),"construction_owned_removal")
-  if i>1 then assert(p.edges[i-1].node1==a.node0,"removal_chain_disconnected");interior[#interior+1]=a.node0 end
+  if exact then
+   assert(a.node0~=a.node1,"removal_chain_loop")
+   for _,node in ipairs({a.node0,a.node1}) do selected_nodes[node]=selected_nodes[node] or {};table.insert(selected_nodes[node],a.id) end
+  elseif i>1 then assert(p.edges[i-1].node1==a.node0,"removal_chain_disconnected");interior[#interior+1]=a.node0 end
  end
- for _,node in ipairs(interior) do local all,owner=incidence(node);assert(#all==2 and not(owner and owner>0),"removal_node_not_exclusive");for _,id in ipairs(all) do assert(expected[id],"removal_node_not_exclusive") end end
+ if exact then
+  local endpoints={};local visited={};local frontier={p.edges[1].node0}
+  while #frontier>0 do local node=table.remove(frontier)
+   if not visited[node] then visited[node]=true;for _,id in ipairs(selected_nodes[node]) do local e=edge(id);frontier[#frontier+1]=e.node0==node and e.node1 or e.node0 end end
+  end
+  for node,chosen in pairs(selected_nodes) do
+   assert(visited[node] and #chosen<=2,"removal_chain_branched_or_disconnected")
+   local all,owner=incidence(node);assert(not(owner and owner>0),"construction_owned_removal_node")
+   if #chosen==2 then assert(#all==2,"removal_node_not_exclusive");interior[#interior+1]=node
+   else
+    endpoints[#endpoints+1]=node;assert(#all==1 or #all==2,"removal_endpoint_degree_unsupported")
+    if #all==1 then interior[#interior+1]=node
+    else for _,id in ipairs(all) do if not expected[id] then retained[#retained+1]={node=node,snapshot=edge(id)} end end end
+   end
+  end
+  assert(#endpoints==2,"removal_chain_not_open")
+ end
+ for _,node in ipairs(interior) do local all,owner=incidence(node);assert((#all==2 or (exact and #all==1)) and not(owner and owner>0),"removal_node_not_exclusive");for _,id in ipairs(all) do assert(expected[id],"removal_node_not_exclusive") end end
  local isolated=p.isolated_fixture==true
- if isolated then
+ if exact then
+  -- Endpoint policy and exclusive nodes have already been established above.
+ elseif isolated then
   assert(#p.edges==1 and not p.free_ends,"isolated_fixture_needs_one_edge")
   for _,node in ipairs({p.edges[1].node0,p.edges[1].node1}) do local all,owner=incidence(node);assert(#all==1 and all[1]==ids[1] and not(owner and owner>0),"fixture_not_isolated");interior[#interior+1]=node end
  elseif p.free_ends then
@@ -1397,6 +1422,14 @@ function M.remove_branch(p,s,state,request_id,respond)
   local ok,value=pcall(function()
    assert(success==true,"native_removal_rejected")
    for _,id in ipairs(ids) do assert(not api.engine.entityExists(id) or api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)==nil,"branch_edge_removal_unverified") end
+   if exact then
+    for _,node in ipairs(interior) do assert(not api.engine.entityExists(node),"exact_chain_node_removal_unverified") end
+    local attachments={}
+    for _,r in ipairs(retained) do local a=assert_fresh(r.snapshot);local all=incidence(r.node)
+     assert(#all==1 and all[1]==a.id,"retained_chain_attachment_unverified");attachments[#attachments+1]={node=r.node,edge=a}
+    end
+    s.mutationPending=nil;return {game_constructed=true,exact_chain=true,removed_edges=ids,removed_nodes=interior,retained_attachments=attachments,native_effect_history_complete=false,rollback=false}
+   end
    if isolated then
     for _,node in ipairs(interior) do assert(not api.engine.entityExists(node),"isolated_fixture_node_removal_unverified") end
     s.mutationPending=nil;return {game_constructed=true,removed_edges=ids,removed_nodes=interior,isolated_fixture=true,native_effect_history_complete=false,rollback=false}

@@ -134,3 +134,7 @@ when shared changes warrant it. Review changed/staged source, update concise STA
 and stop at the acceptance boundary. No broad refactor or unrelated changes.
 Local handoffs/research/continuation records remain ignored; they are not shipped
 dependencies. Return compact changes/checks/blockers, normally about200words.
+
+
+## Proven problems first — direct user principle, 4 October 2026
+Focus on proven problems rather than hypothetical ones. A validation discrepancy alone is an observation to record, not sufficient reason for investigation, reconstruction or a new implementation task. Investigate when evidence demonstrates a functional problem, a failed required operation, or violation of a genuine explicit user requirement. Coordinator-invented numeric thresholds must not turn incidental native modelling differences into mandatory repair work. If a bridge acceptance gate alone blocks progress, reassess that gate against the actual task requirement before treating the game geometry as defective. Preserve honest measurements, uncertainty and original outcomes; do not claim a discrepancy resolved merely because it is non-blocking. Verify intended new connections and relevant functionality proportionately, reuse existing evidence, and continue practical layout construction. This supersedes contrary coordinator task-card defaults; external tool review and actual scope boundaries remain binding.
