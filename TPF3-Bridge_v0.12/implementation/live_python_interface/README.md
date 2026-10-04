@@ -1086,3 +1086,43 @@ new healthy session must still prove the reference. This is focused semantic
 reconciliation, not automatic resume or crash restoration. Other failures require
 focused inspection. Native incidental non-TRACK additions are recorded separately
 from connector identities. Unknown historical effects remain unknown.
+
+
+### Curved multitrack corridor (P25)
+
+`bridge_parallel.plan_multitrack_connection`, `publish_multitrack_connection`,
+`execute_multitrack_connection`, `inspect_multitrack_connection` support explicit
+ordered UD, UUDD and UDUD connections. Each track has a stable project ID, UP/DOWN
+intent and two named directed endpoint intents; `reference_up` declares increasing
+or decreasing UP traffic relative to construction. Track order advances along the
+selected normal side of that construction reference. Opposing traffic is never
+inferred from proximity or implemented by changing supplied travel tangents.
+
+```
+python bridge_live.py multitrack-connection --params implementation/live_python_interface/multitrack_connection_example.json --evidence .local_runs/multitrack_plans
+python bridge_live.py multitrack-connection --context CONTEXT.json --params MULTI.json --execute
+python bridge_live.py multitrack-connection-inspect --context CONTEXT.json --params MULTI.json --layout-record RECEIPT.json
+```
+
+P24's compatible level/equal-height/native-template-spacing5 boundary applies:
+1-3guides, explicit hard radius/grade/region/route and curved-section length.
+No graded or splayed transitions, stations, crossovers or train operations are
+provided by this corridor. First track uses the native corridor; subsequent tracks
+use successive native5m offsets. Fresh acceptance checks every exact attachment,
+separate track nodes, ordered connector chains, tangent joins and complete native
+routes in declared traffic direction. All neighboring tracks undergo signed-normal
+correspondence checks; outer tracks are also checked at10/15m against the original
+reference, with the same selected tolerance, to bound sampled cumulative drift.
+No Python curve fitting or independent curves labelled parallel.
+
+Spacing and clearance are sampled, not continuous/dynamic proofs. Curved-section
+chord length remains a conservative measure. Direction metadata is routing intent,
+not operational direction enforcement. Native demonstration is UUDD increasing-UP;
+UD/UDUD, reversed UP and other contract combinations have deterministic tests.
+Partial/unknown effects remain visible; inspection is read-only. An explicit
+`--execute --layout-record PREFIX.json` may continue only an exact acknowledged
+incomplete ordered prefix after fresh route/geometry/spacing/attachment inspection
+and confirmation that remaining ports are free. Pending journals, unfinished or
+unknown mutations, changed plans and completed runs reject. Completed tracks are
+not replayed; old records remain untouched. Unacknowledged effects require separate
+reconciliation and cannot be promoted to success by this continuation.

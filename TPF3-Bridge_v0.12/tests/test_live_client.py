@@ -2413,5 +2413,142 @@ class PairedConnectionTests(unittest.TestCase):
         with patch.object(self.client,'request') as native,self.assertRaises(LiveError):_recover_reference(self.client,p,{'chains':{}},old)
         native.assert_not_called()
 
+class MultitrackConnectionTests(unittest.TestCase):
+    setUp = LiveClientTests.setUp
+    response = LiveClientTests.response
+
+    def brief(self):
+        return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/multitrack_connection_example.json').read_text())
+
+    def state(self,plan):
+        ports={};chains={}
+        for i,t in enumerate(plan['tracks']):
+            ids=[100+i];nodes=[20+2*i,21+2*i];chains[t['id']]={'edges':ids,'nodes':nodes}
+            for j,end in enumerate(('start','end')):
+                key=t[end];p=plan['ports'][key]['endpoint']['guide_xyz'];d=plan['ports'][key]['endpoint']['travel_direction'];outer=[p[k]+(-1 if not j else 1)*20*(d[k] if k<2 else 0) for k in range(3)]
+                ports[key]={'edge_id':10+2*i+j,'node_id':nodes[j],'grade':0,'eligible':True,'incident_count':2,'incident_edges':[10+2*i+j,ids[0]],
+                    'edge_snapshot':{'p0':p,'p1':outer,'t0':[20,0,0],'t1':[20,0,0],'node0':nodes[j],'node1':200+2*i+j,'template':'track','style':'style'}}
+        return ports,chains
+
+    def chain(self,c,p,r,name):
+        return [{'edge':{'id':e,'t0':[100,0,0],'t1':[100,0,0],'resource':{'track_distance':5}},'forward':True} for e in r['chains'][name]['edges']]
+
+    def native_read(self,plan,record,op,q):
+        if op=='route':
+            t=next(t for t in plan['tracks'] if record['ports'][t['start'] if t['forward'] else t['end']]['edge_id']==q['source_edge'])
+            ids=record['chains'][t['id']]['edges'];ids=ids if t['forward'] else ids[::-1]
+            self.assertEqual(q['required_edges'],[q['source_edge']]+ids+[q['target_edge']])
+            return self.response(result={'requested_route_verified':True,'total_path_length':1000,'path':[{'edge':{'entity':e},'confirmed_TRACK':True,'forward':t['forward']} for e in q['required_edges']]})
+        self.assertEqual(op,'verify_adjacency')
+        self.assertIn(q['spacing'],(5,10,15))
+        return self.response(result={'sampled_verified':True,'correspondence':[{'signed_normal':q['spacing']}],'curved_reference_chord_length':500,'min_sampled_separation':abs(q['spacing'])-.01,'max_sampled_separation':abs(q['spacing'])+.01,'samples':17})
+
+    def test_orderings_reversed_reference_and_ud(self):
+        from bridge_parallel import plan_multitrack_connection
+        for directions in (['UP','UP','DOWN','DOWN'],['UP','DOWN','UP','DOWN'],['UP','DOWN']):
+            for up in ('increasing','decreasing'):
+                b=self.brief();b['tracks']=b['tracks'][:len(directions)];b['reference_up']=up
+                for i,t in enumerate(b['tracks']):
+                    desired=(directions[i]=='UP')==(up=='increasing');old=t['direction']=='UP'
+                    if desired!=old:
+                        t['source'],t['target']=t['target'],t['source']
+                        for k in ('source','target'):t[k]['endpoint']['travel_direction']=[-v for v in t[k]['endpoint']['travel_direction']]
+                    t['direction']=directions[i]
+                p=plan_multitrack_connection(b);self.assertEqual(p,plan_multitrack_connection(b));self.assertEqual([t['forward'] for t in p['tracks']],[(d=='UP')==(up=='increasing') for d in directions]);self.assertFalse(p['game_constructed'])
+
+    def test_bad_order_identity_height_spacing_and_direction(self):
+        from bridge_parallel import plan_multitrack_connection
+        for kind in ('order','id','port','height','spacing','direction','splay','missing'):
+            b=self.brief()
+            if kind=='order':b['tracks'][0]['direction']='DOWN'
+            elif kind=='id':b['tracks'][1]['id']=b['tracks'][0]['id']
+            elif kind=='port':b['tracks'][1]['source']['id']=b['tracks'][0]['source']['id']
+            elif kind=='height':b['tracks'][2]['target']['endpoint']['guide_xyz'][2]+=1
+            elif kind=='spacing':b['spacing']=4
+            elif kind=='direction':b['tracks'][1]['source']['endpoint']['travel_direction']=[-1,0]
+            elif kind=='splay':b['tracks'][3]['source']['endpoint']['guide_xyz'][0]+=1
+            else:b.pop('reference_up')
+            with self.subTest(kind=kind),self.assertRaises((ValueError,LiveError)):plan_multitrack_connection(b)
+
+    def test_four_routes_neighbor_and_cumulative_reference_checks(self):
+        from bridge_parallel import plan_multitrack_connection,_verify_multitrack
+        p=plan_multitrack_connection(self.brief());ports,chains=self.state(p);r={'ports':ports,'chains':chains}
+        with patch('bridge_parallel._multitrack_ports',return_value=ports),patch('bridge_parallel._read_chain',side_effect=self.chain),patch.object(self.client,'request',side_effect=lambda op,q:self.native_read(p,r,op,q)):
+            s=_verify_multitrack(self.client,p,r)
+        self.assertTrue(s['final_multitrack_verified']);self.assertEqual(s['routes_verified'],4);self.assertEqual(s['neighbor_pairs_verified'],3);self.assertEqual(s['shared_reference_checks'],2)
+        self.assertEqual([q['response']['result']['correspondence'][0]['signed_normal'] for q in r['spacing_checks']],[5,5,5,10,15])
+
+    def test_wrong_direction_cumulative_drift_and_shared_nodes_reject(self):
+        from bridge_parallel import plan_multitrack_connection,_verify_multitrack
+        p=plan_multitrack_connection(self.brief())
+        for kind in ('direction','drift','nodes'):
+            ports,chains=self.state(p);r={'ports':ports,'chains':chains}
+            if kind=='nodes':chains[p['tracks'][1]['id']]['nodes'][0]=chains[p['tracks'][0]['id']]['nodes'][0]
+            def request(op,q):
+                v=self.native_read(p,r,op,q)
+                if kind=='direction' and op=='route':v['result']['path'][1]['forward']=not v['result']['path'][1]['forward']
+                if kind=='drift' and op=='verify_adjacency' and q['spacing']==15:v['result']['sampled_verified']=False
+                return v
+            with self.subTest(kind=kind),patch('bridge_parallel._multitrack_ports',return_value=ports),patch('bridge_parallel._read_chain',side_effect=self.chain),patch.object(self.client,'request',side_effect=request),self.assertRaises(LiveError):_verify_multitrack(self.client,p,r)
+
+    def test_single_reference_three_native_offsets_and_partial_stop(self):
+        from bridge_parallel import plan_multitrack_connection,execute_multitrack_connection
+        p=plan_multitrack_connection(self.brief());ports,chains=self.state(p);t=p['tracks'][0]
+        first={'status':'ok','game_constructed':True,**chains[t['id']],'selected':{'source_edge':ports[t['start']]['edge_id'],'source_node':ports[t['start']]['node_id'],'target_edge':ports[t['end']]['edge_id'],'target_node':ports[t['end']]['node_id']}}
+        for fail in (False,True):
+            count=[0]
+            def request(op,q):
+                self.assertEqual(op,'adjacent');count[0]+=1
+                if fail and count[0]==2:return self.response(result={'game_constructed':'unknown','error':'lost ack'})|{'status':'mutation_unverified'}
+                chain=chains[p['tracks'][count[0]]['id']]
+                return self.response(result={'game_constructed':True,'readback':{'ordered_edges':chain['edges'],'ordered_nodes':chain['nodes']}})
+            with patch('bridge_parallel._multitrack_ports',return_value=ports),patch('bridge_live.connect_corridor',return_value=first) as build,patch('bridge_parallel._read_chain',side_effect=self.chain),patch('bridge_live._require_engineering_readback'),patch('bridge_parallel._verify_multitrack',return_value={'final_multitrack_verified':not fail}),patch.object(self.client,'request',side_effect=request):
+                s=execute_multitrack_connection(self.client,p);self.assertEqual(build.call_count,1);self.assertEqual(count[0],2 if fail else 3)
+                self.assertEqual(len(s['completed_connectors']),2 if fail else 4)
+                if fail:self.assertEqual(s['game_constructed'],'unknown');self.assertEqual(json.loads(Path(s['evidence']).read_text())['unfinished_step'],p['tracks'][2]['id'])
+                else:self.assertEqual(s['status'],'ok')
+
+    def test_pending_and_unacknowledged_continuation_never_build(self):
+        from bridge_parallel import plan_multitrack_connection,execute_multitrack_connection
+        p=plan_multitrack_connection(self.brief());self.client.journal.write_text(json.dumps({'pending':{'request_id':'unknown'}}))
+        with patch('bridge_live.connect_corridor') as build,patch.object(self.client,'request') as native:
+            s=execute_multitrack_connection(self.client,p);self.assertEqual(s['status'],'reconciliation_required');build.assert_not_called();native.assert_not_called()
+        self.client.journal.write_text('{}');old=self.root/'old.json';old.write_text(json.dumps({'plan':p,'summary':{'game_constructed':'unknown'},'chains':{},'unfinished_step':'U1'}))
+        with patch('bridge_live.connect_corridor') as build,patch.object(self.client,'request') as native:
+            s=execute_multitrack_connection(self.client,p,continuation_record=old);self.assertEqual(s['status'],'reconciliation_required');build.assert_not_called();native.assert_not_called()
+        old.write_text(json.dumps({'plan':p,'summary':{'game_constructed':False},'chains':{p['tracks'][0]['id']:{'edges':[100],'nodes':[20,21]}}}))
+        with patch('bridge_live.connect_corridor') as build,patch.object(self.client,'request') as native:
+            s=execute_multitrack_connection(self.client,p,continuation_record=old);self.assertEqual(s['status'],'reconciliation_required');build.assert_not_called();native.assert_not_called()
+
+    def test_read_only_partial_inspection_and_offline_cli(self):
+        from bridge_parallel import plan_multitrack_connection,inspect_multitrack_connection
+        p=plan_multitrack_connection(self.brief());ports,chains=self.state(p);path=self.root/'partial.json';path.write_text(json.dumps({'plan':p,'ports':ports,'chains':{p['tracks'][0]['id']:chains[p['tracks'][0]['id']]},'summary':{'game_constructed':'unknown'}}));before=path.read_bytes()
+        r={'ports':ports,'chains':chains}
+        with patch('bridge_parallel._multitrack_ports',return_value=ports),patch('bridge_parallel._read_chain',side_effect=self.chain),patch.object(self.client,'request',side_effect=lambda op,q:self.native_read(p,r,op,q)),patch('bridge_live.connect_corridor') as build:
+            s=inspect_multitrack_connection(self.client,path);self.assertEqual(s['status'],'multitrack_incomplete');self.assertEqual(s['routes_verified'],1);self.assertFalse(s['game_constructed']);build.assert_not_called()
+        self.assertEqual(path.read_bytes(),before)
+
+    def test_stale_named_port_and_unknown_saved_chain_reject(self):
+        from bridge_parallel import plan_multitrack_connection,_multitrack_ports,_verify_multitrack
+        p=plan_multitrack_connection(self.brief());ports,chains=self.state(p);old=json.loads(json.dumps(ports));first=next(iter(ports));ports[first]['node_id']+=500
+        with patch('bridge_live._select_throat_port',side_effect=lambda c,e,**kw:(next(v for k,v in ports.items() if e==p['ports'][k]['endpoint']),'current')),self.assertRaises(LiveError):_multitrack_ports(self.client,p,{'ports':old},connected=True)
+        with patch.object(self.client,'request') as native,self.assertRaises(ValueError):_verify_multitrack(self.client,p,{'ports':old,'chains':chains|{'unapproved':chains[p['tracks'][0]['id']]}})
+        native.assert_not_called()
+        b=self.root/'brief.json';b.write_text(json.dumps(self.brief()));stdout=io.StringIO()
+        with patch('bridge_live.client_from_context') as client,contextlib.redirect_stdout(stdout):
+            self.assertEqual(main(['multitrack-connection','--params',str(b),'--evidence',str(self.root/'plans')]),0);client.assert_not_called()
+        self.assertLess(len(stdout.getvalue().encode()),4096)
+
+    def test_explicit_acknowledged_prefix_continuation_skips_reference(self):
+        from bridge_parallel import plan_multitrack_connection,execute_multitrack_connection
+        p=plan_multitrack_connection(self.brief());ports,chains=self.state(p);first=p['tracks'][0]['id'];path=self.root/'prefix.json'
+        path.write_text(json.dumps({'plan':p,'ports':ports,'chains':{first:chains[first]},'summary':{'game_constructed':True,'status':'native_verification_failed'}}));before=path.read_bytes();count=[0]
+        def offset(op,q):
+            self.assertEqual(op,'adjacent');count[0]+=1;chain=chains[p['tracks'][count[0]]['id']]
+            return self.response(result={'game_constructed':True,'readback':{'ordered_edges':chain['edges'],'ordered_nodes':chain['nodes']}})
+        with patch('bridge_parallel._multitrack_ports',return_value=ports),patch('bridge_parallel._read_chain',side_effect=self.chain),patch('bridge_parallel._verify_multitrack',return_value={'final_multitrack_verified':False}),patch('bridge_live._require_engineering_readback'),patch.object(self.client,'request',side_effect=offset),patch('bridge_live.connect_corridor') as build:
+            s=execute_multitrack_connection(self.client,p,continuation_record=path);self.assertEqual(s['status'],'ok');self.assertEqual(count[0],3);build.assert_not_called()
+        self.assertEqual(path.read_bytes(),before)
+
 if __name__ == '__main__':
     unittest.main()

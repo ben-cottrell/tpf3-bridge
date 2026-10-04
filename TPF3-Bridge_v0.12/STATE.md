@@ -1,3 +1,30 @@
+## P25 complete - curved native four-track corridor (checkpoint in p25/checkpoint.json)
+bridge_parallel plan/publish/execute/inspect_multitrack_connection; bridge_live.py
+multitrack-connection [--execute], multitrack-connection-inspect --layout-record.
+Explicit ordered UD/UUDD/UDUD,stable track/eight endpoint IDs,UP increasing/decreasing;
+native construction orientation distinct from declared traffic. Level compatible
+equal-height endpoint pairs,template spacing5,left/right,1-3guides. No splayed/graded
+transitions or Python fitter. One reference plus successive native5m offsets;
+neighbor correspondence and10/15m original-reference checks bound sampled drift.
+Build40408 UUDD increasing-UP:24connector TRACK,28distinct connector nodes,
+8exact degree-two attachments,4complete directed native routes. Neighbor native
+spacing4.998945-5.001350;curved chord length455.862377>=300. Independent33samples:
+radius478.141446>=400,grade0,region/order/join/route passed. Normal neighboring
+spacing4.999918-5.001061;shared10/15m limits passed unchanged. Sampled,not continuous.
+All8fixtures+4builds succeeded;no mutation replay,site relocation or mod change.
+Partial/unknown/pending/stale workflows stop; read-only inspection retains completed
+tracks. Explicit same-plan acknowledged prefix continuation rechecks current state
+and free remaining ports;unfinished/unknown/read-only/completed records reject.
+python tools/quiet_checks.py --suite live_client --label pif-p25-reviewed-acceptance:169passed;
+.local_checks/pif-p25-reviewed-acceptance_0hrztl0_/report.json. py_compile/diff passed.
+Fresh-process inspection and independent_acceptance.py passed. Exact commands,
+source hashes and raw receipt pointers: .local_runs/live_python_interface/p25/checks.json,
+result.json,HANDOFF.md,checkpoint.json,fresh_inspection.json,independent_result.json.
+P24/native Lua/prior receipts,L01-L14 and runner preserved;no historical suites rerun.
+Native effect history incomplete;signals/reservations/direction enforcement,
+train traversal/save-load identity unprobed. No blocker;stop for coordinator review.
+Sandbox saved;paused/non-maximised. Local commit only,no push. Usage unavailable.
+
 ## P24 complete - native curved connected pair (local checkpoint in p24/checkpoint.json)
 Callable bridge_parallel plan/publish/execute/inspect_paired_connection; CLI
 bridge_live.py paired-connection [--execute], paired-connection-inspect --layout-record.
