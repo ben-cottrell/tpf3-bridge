@@ -1,9 +1,10 @@
-# PIF-P27 complete - portable complete curved branching layout
+# PIF-P28 - complete; acceptance boundary reached
 
-Delivered fresh-brief fixture/main-line/branch composition, bounded site assessment,
-durable inspection/explicit checked continuation and native six-route acceptance.
-197 affected tests pass; raw evidence and exact commands in
-.local_runs/live_python_interface/p27/HANDOFF.md,checks.json,result.json,checkpoint.json.
-No historical layout receipt prerequisite; current native seed/context still required.
-Level UUDD domain and native-first limitations retained. Local milestone commit only.
-Stop at P27 for coordinator review; no follow-on work launched.
+Native graded curved paired/multitrack connection implemented and demonstrated on
+build40408. Four UUDD routes, eight exact attachments, actual endpoint heights/grades,
+sampled radius/grade/region/normal spacing and fresh paired/multitrack readback passed.
+Normal save/load and original level native preflight passed. 205 application tests pass.
+Evidence: .local_runs/live_python_interface/p28/HANDOFF.md,checks.json,checkpoint.json.
+Task card retained: .local_runs/live_python_interface/p28/orchestrator/TASK.md.
+No follow-on launched. Graded branching,stations,signals,train traversal remain outside
+this task. Local milestone commit authorised; no push. Await coordinator decision.

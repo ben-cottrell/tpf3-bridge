@@ -1247,3 +1247,44 @@ resolve stale identities; saved geometry/proximity alone is not attachment proof
 Normal output stays compact. Full observations/native fit controls stay local.
 Route/direction/spacing/geometry checks do not demonstrate physical train traversal,
 signalling/reservation behaviour, continuous clearance or complete mutation history.
+
+
+## Graded curved paired and multitrack connection (P28)
+
+Existing paired-connection and multitrack-connection now accept explicit
+vertical_mode: native_shared_height_v1 and vertical_tolerance in native coordinate
+units, positive and <=min(0.05,spacing_tolerance). Omitting both retains the old
+level domain and receipts. Compatible normal-offset anchors share corresponding
+heights; reference guide heights/grades and actual attachment grades are binding.
+Offset guide grades are derived by the declared length conversion.
+UP/DOWN describes route intent, not native direction enforcement.
+
+Python supplies the brief and acceptance. The mod uses native fitted horizontal
+curves and CUBIC_OFFSET_SPLINE XY offsets. Spacing is horizontal signed normal,
+not constant3D distance or a map-axis translation. For nonlevel tracks it preserves
+reference piece-boundary heights and transfers grades using a bounded native-sampled
+reference/offset XY chain-length ratio. Actual fixed attachment grades take precedence.
+Native cubic height interpolation joins at those heights/grades; sampled interior Z
+may differ from the reference only within the explicitly selected vertical_tolerance.
+This is a bounded representation transfer, not an exact3D normal offset, new vertical
+optimiser or continuous proof. Incompatible joins, endpoints, radius, max_grade,
+region, normal spacing or height drift fail; constraints are never lowered.
+
+```
+python bridge_live.py multitrack-connection --params implementation/live_python_interface/graded_multitrack_connection_example.json --evidence .local_runs/graded_plans
+python bridge_live.py multitrack-connection --context CONTEXT.json --params BRIEF.json --execute
+python bridge_live.py multitrack-connection-inspect --context CONTEXT.json --params BRIEF.json --layout-record RESULT.json
+```
+
+The example describes four UUDD tracks rising33->39 with a36-height guide and
+0.012 reference guide grade. Adapt all endpoint boxes/native coordinates to actual
+free graded approaches; the example does not automatically create attachments.
+The paired API uses the same optional fields with its four explicit UP/DOWN roles.
+Inspection is fresh/read-only and includes current grade/height checks; it never fits
+or builds. Keep partial receipts; only explicitly reconciled acknowledged prefixes
+may continue. Pending/unknown effects must not be replayed.
+
+Native build40408 demonstrated the four-track composition and both directions.
+Level branching/complete-layout domains remain unchanged; graded branching is rejected.
+Train traversal, signalling, continuous clearance and general save/load identity are
+not established. Saved evidence integrity remains separate from native acceptance.

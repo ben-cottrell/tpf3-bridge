@@ -192,6 +192,10 @@ end
 function M.verify_adjacency(p)
  assert(finite(p.spacing) and math.abs(p.spacing)>0 and math.abs(p.spacing)<=20,"invalid_track_spacing")
  assert(finite(p.tolerance) and p.tolerance>0 and p.tolerance<=.5,"invalid_spacing_tolerance")
+ local graded=p.vertical_mode=="native_shared_height_v1";local ztol=graded and p.vertical_tolerance or .001
+ assert(p.vertical_mode==nil or graded,"unsupported_vertical_mode")
+ assert(finite(ztol) and ztol>0 and (not graded or ztol<=math.min(.05,p.tolerance)),"invalid_vertical_tolerance")
+ local maxheight=0
  local refs,refnodes=directed_rows(p.reference,false);local adjacent,adjnodes=directed_rows(p.adjacent,false)
  for node in pairs(adjnodes) do assert(not refnodes[node],"adjacent_tracks_share_node") end
  local maximum,minimum,maxdistance,maxheading,observations=0,math.huge,0,0,0
@@ -205,7 +209,7 @@ function M.verify_adjacency(p)
    local u=j/16;local pos,dir=sample(original,u);local expected,expected_dir=sample(wanted,u)
    local tangent=norm(dir);local dx,dy=expected[1]-pos[1],expected[2]-pos[2]
    local signed=-tangent[2]*dx+tangent[1]*dy
-   assert(math.abs(signed-p.spacing)<=p.tolerance and math.abs(tangent[1]*dx+tangent[2]*dy)<=p.tolerance,"native_offset_side_or_normal_mismatch")
+   assert(math.abs(signed-p.spacing)<=p.tolerance and math.abs(tangent[1]*dx+tangent[2]*dy)<=p.tolerance and math.abs(expected[3]-pos[3])<=.001,"native_offset_side_or_normal_mismatch")
    local best,bestdir,bestpos,bestid,bestu=math.huge,nil,nil,nil,nil
    for _,b in ipairs(adjacent) do
     assert(a.id~=b.id,"adjacent_tracks_share_edge")
@@ -217,6 +221,7 @@ function M.verify_adjacency(p)
     end
    end
    assert(best<=p.tolerance,"sampled_adjacent_alignment_failed")
+   local dz=math.abs(bestpos[3]-pos[3]);assert(dz<=ztol,"realised_height_transfer_exceeds_limit");maxheight=math.max(maxheight,dz)
    local heading=angle(expected_dir,bestdir);assert(heading<=1,"sampled_adjacent_heading_failed")
    local ax,ay=bestpos[1]-pos[1],bestpos[2]-pos[2]
    local actual_signed=-tangent[2]*ax+tangent[1]*ay;local along=tangent[1]*ax+tangent[2]*ay
@@ -231,6 +236,7 @@ function M.verify_adjacency(p)
  return {sampled_verified=true,independent_native_nodes=true,spacing=p.spacing,tolerance=p.tolerance,samples=observations,
   max_sampled_offset_error=maximum,min_sampled_separation=minimum,max_sampled_separation=maxdistance,max_heading_error=maxheading,
   correspondence=correspondence,curved_reference_chord_length=curved_length,
+  spacing_convention="horizontal_signed_normal",vertical_tolerance=ztol,max_sampled_height_difference=maxheight,
   continuous_clearance_proof=false,vehicle_clearance="unprobed",game_constructed=false}
 end
 function M.adjacent(p,s,state,request_id,respond)
@@ -240,19 +246,50 @@ function M.adjacent(p,s,state,request_id,respond)
   local template=api.res.streetTemplateRep.findAndGet(refs[1].template)
   assert(finite(template.trackDistance) and template.trackDistance>0 and template.trackDistance<=20,"native_track_distance_unavailable")
   assert(math.abs(math.abs(p.spacing)-template.trackDistance)<=.001,"spacing_must_match_native_template")
+  local graded=p.vertical_mode=="native_shared_height_v1"
+  assert(p.vertical_mode==nil or graded,"unsupported_vertical_mode")
+  local ztol=graded and p.vertical_tolerance or .001
+  assert(finite(ztol) and ztol>0 and (not graded or ztol<=math.min(.05,p.tolerance)),"invalid_vertical_tolerance")
+  local reference_length,offset_length=0,0;local geometries={}
   for i,e in ipairs(refs) do
+   if not graded then assert(math.abs(e.p1[3]-e.p0[3])<=.001 and math.abs(slope(e.t0))<=.000001 and math.abs(slope(e.t1))<=.000001,"vertical_mode_required") end
    local base=api.engine.getComponent(e.id,api.type.ComponentType.BASE_EDGE)
    assert(base.type==E.BaseEdgeType.NORMAL and #base.objects==0,"unsupported_adjacent_reference")
    local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForEdge(e.id);assert(not(owner and owner>0),"construction_owned_reference")
    assert(e.template==refs[1].template and e.style==refs[1].style,"incompatible_reference_resources")
-   assert(math.abs(slope(e.t0))<.000001 and math.abs(slope(e.t1))<.000001 and math.abs(e.p0[3]-e.p1[3])<.001,"adjacent_level_only")
+   local original=cubic({p0=e.p0,p1=e.p1,t0=e.t0,t1=e.t1,length=distance(e.p0,e.p1)})
+   geometry_bounds(original,p.region,p.radius,p.max_grade)
    local g=offset_geometry(e,p.spacing);local p0,t0=sample(g,0);local p1,t1=sample(g,1)
-   local c={p0=p0,p1=p1,t0=t0,t1=t1,length=g.length};controls[i]=c;samples[i]={}
-   if i>1 then assert(near(p0,controls[i-1].p1,.001) and angle(t0,controls[i-1].t1)<=.1,"native_offset_join_failed") end
+   controls[i]={p0=p0,p1=p1,t0=t0,t1=t1,length=distance(p0,p1)};geometries[i]=g;samples[i]={}
+   -- Bounded native samples estimate each chain's XY length. This is a height
+   -- representation transfer, not a fitter or a continuous length proof.
+   local rp,op=sample(original,0),p0
+   for j=1,32 do local rq=sample(original,j/32);local oq=sample(g,j/32)
+    reference_length=reference_length+distance(rp,rq);offset_length=offset_length+distance(op,oq);rp,op=rq,oq
+   end
+  end
+  assert(reference_length>0 and offset_length>0,"offset_length_unavailable")
+  local grade_scale=reference_length/offset_length
+  if graded then
+   -- One shared length conversion keeps internal grades continuous across the
+   -- native piece joins. Heights at every reference boundary remain exact;
+   -- native cubic interpolation must stay within the explicit interior Z budget.
+   -- Fixed real attachment grades take precedence at the two outer boundaries.
+   for i,c in ipairs(controls) do
+    local first,last=slope(refs[i].t0)*grade_scale,slope(refs[i].t1)*grade_scale
+    if p.attachments and i==1 then local _,_,_,g=anchor(p.attachments.source);first=g end
+    if p.attachments and i==#controls then local _,_,_,g=anchor(p.attachments.target);last=-g end
+    c.t0[3]=first*math.sqrt(c.t0[1]^2+c.t0[2]^2);c.t1[3]=last*math.sqrt(c.t1[1]^2+c.t1[2]^2)
+   end
+  end
+  local max_height_error=0
+  for i,c in ipairs(controls) do
+   if i>1 then assert(near(c.p0,controls[i-1].p1,.001) and angle(c.t0,controls[i-1].t1)<=.1 and math.abs(slope(c.t0)-slope(controls[i-1].t1))<=.000001,"native_offset_join_failed") end
    geometry_bounds(cubic(c),p.region,p.radius,p.max_grade)
-   for _,u in ipairs({0,.25,.5,.75,1}) do local pos,dir=sample(g,u);local q,d=sample(cubic(c),u)
-    assert(distance(pos,q)<=p.tolerance and angle(dir,d)<=1,"native_offset_conversion_failed")
-    samples[i][#samples[i]+1]={u=u,pos=pos,dir=dir,base_pos=q}
+   for j=0,32 do local u=j/32;local pos,dir=sample(geometries[i],u);local q,d=sample(cubic(c),u)
+    local dz=math.abs(pos[3]-q[3]);max_height_error=math.max(max_height_error,dz)
+    assert(distance(pos,q)<=p.tolerance and dz<=ztol and angle(dir,d)<=1,"native_offset_conversion_failed")
+    samples[i][#samples[i]+1]={u=u,pos=graded and q or pos,dir=graded and d or dir,base_pos=q}
    end
   end
   local attachment=nil
@@ -267,12 +304,14 @@ function M.adjacent(p,s,state,request_id,respond)
    local first,last=controls[1],controls[#controls]
    assert(near(pos,first.p0,.001) and near(zpos,last.p1,.001),"offset_boundary_position_incompatible")
    assert(angle(dir,first.t0)<=.1 and angle({-zdir[1],-zdir[2],0},last.t1)<=.1,"offset_boundary_direction_incompatible")
-   assert(math.abs(grade)<.000001 and math.abs(zgrade)<.000001,"adjacent_level_only")
+   assert(math.abs(grade-slope(first.t0))<=.000001 and math.abs(-zgrade-slope(last.t1))<=.000001,"offset_boundary_grade_incompatible")
    attachment={anchor=a,node=p.attachments.source.anchor_node,target={edge=z,node=p.attachments.target.anchor_node,direction={-zdir[1],-zdir[2],0}}}
   end
   stage="preflight"
   local value={game_constructed=false,controls=controls,native_track_distance=template.trackDistance,spacing=p.spacing,
-   native_geometry="CUBIC_OFFSET_SPLINE",sampled_only=true}
+   native_geometry="CUBIC_OFFSET_SPLINE",spacing_convention="horizontal_signed_normal",vertical_mode=p.vertical_mode,vertical_tolerance=ztol,
+   height_transfer=graded and "native_cubic_shared_boundary_heights_length_scaled_grades_fixed_attachments" or "level_native_offset",
+   reference_sampled_XY_length=reference_length,offset_sampled_XY_length=offset_length,grade_scale=grade_scale,max_sampled_height_transfer_error=max_height_error,sampled_only=true}
   if not p.execute then respond(request_id,"ok",value);return end
   assert(not s.mutationPending,"unreconciled_mutation");directed_rows(p.reference,true)
   local proposal=api.type.SimpleProposal.new();local nodes,segments={},{}
@@ -299,9 +338,9 @@ function M.adjacent(p,s,state,request_id,respond)
     value.other_added_segments=other_ids
     local first
     for _,id in ipairs(ids) do local e=edge(id);if near(e.p0,controls[1].p0,.001) then assert(not first,"ambiguous_adjacent_start");first=e.node0 end end
-    local f={anchor=attachment and attachment.anchor or refs[1],target=attachment and attachment.target or nil,node=first,ids=ids,controls=controls,samples=samples,region=p.region,grade=0,end_grade=0,max_grade=p.max_grade,min_radius=p.radius}
+    local f={anchor=attachment and attachment.anchor or refs[1],target=attachment and attachment.target or nil,node=first,ids=ids,controls=controls,samples=samples,region=p.region,grade=slope(controls[1].t0),end_grade=slope(controls[#controls].t1),max_grade=p.max_grade,min_radius=p.radius}
     local rb=M.readback(f);local paired={};for _,id in ipairs(rb.ordered_edges) do paired[#paired+1]={edge={id=id},forward=true} end
-    local checked=M.verify_adjacency({reference=p.reference,adjacent=paired,spacing=p.spacing,tolerance=p.tolerance,region=p.region,radius=p.radius,max_grade=p.max_grade})
+    local checked=M.verify_adjacency({reference=p.reference,adjacent=paired,spacing=p.spacing,tolerance=p.tolerance,region=p.region,radius=p.radius,max_grade=p.max_grade,vertical_mode=p.vertical_mode,vertical_tolerance=p.vertical_tolerance})
     directed_rows(p.reference,true);s.mutationPending=nil
     value.game_constructed=true;value.readback=rb;value.adjacency=checked;return value
    end)

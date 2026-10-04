@@ -1,3 +1,31 @@
+## P28 complete - native graded curved paired/multitrack connection
+Existing paired-connection/multitrack-connection and read-only inspect commands now
+accept explicit native_shared_height_v1 + vertical_tolerance<=min(.05,spacing_tolerance).
+Corresponding normal-offset anchors share heights; actual heights/grades, reference
+guide intent and per-track engineering limits bind. Old level briefs/hashes retained.
+Native XY CUBIC_OFFSET_SPLINE; native cubic boundary heights with shared sampled
+reference/offset length grade conversion; fixed attachment grades take precedence.
+Horizontal signed normal spacing; bounded interior Z transfer, not exact3D offset.
+Build40408: UUDD33->39,8exact attachments,4native TRAIN routes; paired U2/D3 fresh
+inspection also passed. Independent32TRACK edges/33samples: radius478.149895>=400,
+maxgrade.012143718<=.04; endpointgrades.005/.003; sampled5/10/15normal spacing;
+maxheightdifference.004996761<.05. Fresh summaries1312/1166bytes,read-only.
+Normal save/load retained exact current layout: post-load session
+pif_1791093799_93348377; fresh4routes/spacing/grade and old level native preflight pass.
+Original offset failure/partial reference receipt preserved; explicit changed-height
+contract reconciled/rechecked reference before three offsets,never rebuilt U1.
+python tools/quiet_checks.py --suite live_client --label pif-p28-final-acceptance:
+205passed; .local_checks/pif-p28-final-acceptance_5up_vife/report.json.
+Final source hashes/exact commands/results: .local_runs/live_python_interface/p28/checks.json;
+HANDOFF.md,result.json,checkpoint.json,fresh_inspection.json,fresh_pair_inspection.json,
+after_load_inspection.json,level_native_preflight.json,independent_graded_result.json.
+py_compile/diff passed; local checkpoint records revision after accepted9021dda. No push.
+Save TPF3_Bridge_P28_Graded_Complete_20261004_0858;paused/non-maximised2099x1284.
+Level branching unchanged; graded branching unsupported. No continuous clearance,
+train traversal/signals/direction enforcement,complete effect history or general
+save/load identity guarantee. Standalone Lua syntax unperformed; adapter runtime
+and final guard compatibility demonstrated. No blockers;usage unavailable. Stop P28.
+
 ## P27 complete - portable native curved UUDD layout from a fresh brief
 bridge_complete plan/publish/execute/inspect_complete_layout; CLI complete-layout
 [--execute [--layout-record PARTIAL]], complete-layout-inspect --layout-record.

@@ -2914,5 +2914,89 @@ class CompleteLayoutTests(unittest.TestCase):
         self.assertIn('fit.controls=all.controls',source)
         self.assertNotIn('controls=profile and controls or nil',source)
 
+class GradedParallelTests(unittest.TestCase):
+    setUp=LiveClientTests.setUp
+    response=LiveClientTests.response
+
+    def brief(self):return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/graded_multitrack_connection_example.json').read_text())
+
+    def test_explicit_shared_height_mode_composes_four_tracks_without_native_calls(self):
+        from bridge_parallel import plan_multitrack_connection
+        with patch('bridge_live.client_from_context') as native:p=plan_multitrack_connection(self.brief());native.assert_not_called()
+        self.assertEqual(p['pattern'],'UP-UP-DOWN-DOWN');self.assertEqual([t['forward'] for t in p['tracks']],[True,True,False,False])
+        self.assertEqual(p['reference']['source']['guide_xyz'][2],33);self.assertEqual(p['reference']['target']['guide_xyz'][2],39);self.assertEqual(p['reference']['guides'][0]['grade'],.012)
+
+    def test_nonlevel_mode_cannot_relax_normal_endpoints_or_grade_limits(self):
+        from bridge_parallel import plan_multitrack_connection
+        for bad in ('mode','height','grade','direction','tolerance','missing_tolerance'):
+            b=self.brief()
+            if bad=='mode':b['vertical_mode']='anything'
+            elif bad=='height':b['tracks'][1]['target']['endpoint']['guide_xyz'][2]+=.01
+            elif bad=='grade':b['guides'][0]['grade']=.041
+            elif bad=='tolerance':b['vertical_tolerance']=.051
+            elif bad=='missing_tolerance':b.pop('vertical_tolerance')
+            else:b['tracks'][2]['source']['endpoint']['travel_direction']=[1,0]
+            with self.subTest(bad=bad),self.assertRaises((ValueError,LiveError)):plan_multitrack_connection(b)
+
+    def test_pair_inherits_explicit_vertical_budget_and_default_level_stays_closed(self):
+        from bridge_parallel import plan_paired_connection,plan_multitrack_connection
+        b=self.brief();b['tracks']=b['tracks'][:2];b['tracks'][1]['direction']='DOWN';b['tracks'][1]['source'],b['tracks'][1]['target']=b['tracks'][1]['target'],b['tracks'][1]['source']
+        for key in ('source','target'):b['tracks'][1][key]['endpoint']['travel_direction']=[-x for x in b['tracks'][1][key]['endpoint']['travel_direction']]
+        p=plan_multitrack_connection(b);self.assertEqual(p['pattern'],'UP-DOWN')
+        pair={k:v for k,v in b.items() if k not in ('tracks','reference_up','layout')};pair.update(layout='native_offset_connection_v1',ports={'up_source':b['tracks'][0]['source'],'up_target':b['tracks'][0]['target'],'down_source':b['tracks'][1]['source'],'down_target':b['tracks'][1]['target']})
+        self.assertEqual(plan_paired_connection(pair)['brief']['vertical_tolerance'],.05)
+        pair.pop('vertical_mode');pair.pop('vertical_tolerance')
+        with self.assertRaises(LiveError):plan_paired_connection(pair)
+
+    def test_graded_parent_cannot_enter_level_branching_workflow(self):
+        from bridge_branching import plan_branching_corridor
+        b={'layout':'native_branching_corridor_v1','main_record':'unused','branches':[],'movements':[],'radius':400,'max_grade':.04,'region':{},'max_route_length':2000}
+        from bridge_branching import LAYOUT
+        b['layout']=LAYOUT
+        with patch('bridge_branching._parent',return_value=({'plan':{'tracks':[],'brief':{'vertical_mode':'native_shared_height_v1'}}},'hash')),self.assertRaises(LiveError):plan_branching_corridor(b)
+
+    def test_actual_endpoint_grades_are_checked_in_construction_frame(self):
+        from bridge_parallel import plan_multitrack_connection,_multitrack_ports
+        p=plan_multitrack_connection(self.brief())
+        def observed(c,e,**kw):
+            i=next(i for i,x in enumerate(p['ports'].values()) if x['endpoint']==e)
+            return {'edge_id':100+i,'node_id':200+i,'grade':.005*kw['outward_sign'],'edge_snapshot':{}},'current'
+        with patch('bridge_live._select_throat_port',side_effect=observed):r={};ports=_multitrack_ports(self.client,p,r,connected=False)
+        self.assertEqual(len(ports),8);self.assertTrue(any(c['grade']<0 for c in ports.values()))
+        with patch('bridge_live._select_throat_port',return_value=({'edge_id':1,'node_id':2,'grade':.041},'current')),self.assertRaises(LiveError):_multitrack_ports(self.client,p,{},connected=False)
+
+    def test_native_offset_keeps_height_grade_and_joins_binding(self):
+        source=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text();block=source.split('function M.adjacent',1)[1].split('local function region_check',1)[0]
+        self.assertNotIn('adjacent_level_only',block)
+        for required in ('offset_boundary_grade_incompatible','dz<=ztol','math.abs(slope(c.t0)-slope(controls[i-1].t1))<=.000001','grade=slope(controls[1].t0)','end_grade=slope(controls[#controls].t1)'):self.assertIn(required,block)
+        self.assertNotIn('region=p.region,grade=0,end_grade=0',block)
+
+    def test_current_readback_rejects_grade_join_and_real_attachment_mismatch(self):
+        from bridge_parallel import plan_multitrack_connection,_vertical_readback
+        p=plan_multitrack_connection(self.brief())
+        a={'p0':[0,0,33],'p1':[100,0,34],'t0':[100,0,.5],'t1':[100,0,1]}
+        b={'p0':[100,0,34],'p1':[200,0,35],'t0':[100,0,1],'t1':[100,0,.3]}
+        start={'grade':.005,'node_id':1,'edge_snapshot':{'node0':0,'p0':[-20,0,32.9],'p1':[0,0,33]}}
+        end={'grade':-.003,'node_id':2,'edge_snapshot':{'node0':2,'p0':[200,0,35],'p1':[220,0,35.06]}}
+        _vertical_readback(p,[{'edge':a},{'edge':b}],start,end)
+        for key in ('join','endpoint','height'):
+            altered=json.loads(json.dumps(b))
+            if key=='join':altered['t0'][2]+=.01
+            elif key=='endpoint':altered['t1'][2]+=.01
+            else:altered['p1'][2]+=.01
+            with self.subTest(key=key),self.assertRaises(LiveError):_vertical_readback(p,[{'edge':a},{'edge':altered}],start,end)
+
+    def test_graded_offset_failure_keeps_reference_and_does_not_retry(self):
+        from bridge_parallel import plan_multitrack_connection,execute_multitrack_connection
+        p=plan_multitrack_connection(self.brief());ports,chains=MultitrackConnectionTests.state(self,p);t=p['tracks'][0]
+        first={'status':'ok','game_constructed':True,**chains[t['id']],'selected':{'source_edge':ports[t['start']]['edge_id'],'source_node':ports[t['start']]['node_id'],'target_edge':ports[t['end']]['edge_id'],'target_node':ports[t['end']]['node_id']}}
+        def request(op,q):
+            self.assertEqual(op,'adjacent');self.assertEqual(q['vertical_mode'],'native_shared_height_v1');self.assertEqual(q['vertical_tolerance'],.05)
+            return self.response(result={'game_constructed':False,'error':'native_offset_conversion_failed'})|{'status':'error'}
+        with patch('bridge_parallel._multitrack_ports',return_value=ports),patch('bridge_live.connect_corridor',return_value=first),patch('bridge_parallel._read_chain',side_effect=lambda c,p,r,n:MultitrackConnectionTests.chain(self,c,p,r,n)),patch('bridge_parallel._verify_multitrack',return_value={'final_multitrack_verified':False}),patch.object(self.client,'request',side_effect=request) as calls:
+            result=execute_multitrack_connection(self.client,p)
+        self.assertEqual(calls.call_count,1);self.assertTrue(result['game_constructed']);self.assertEqual(result['completed_connectors'],['U1']);self.assertFalse(result['final_multitrack_verified'])
+        r=json.loads(Path(result['evidence']).read_text());self.assertEqual(r['unfinished_step'],'U2');self.assertEqual(r['operations'][-1]['response']['result']['game_constructed'],False)
+
 if __name__ == '__main__':
     unittest.main()

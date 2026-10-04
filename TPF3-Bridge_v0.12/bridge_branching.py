@@ -52,6 +52,7 @@ def plan_branching_corridor(brief):
     keys={'layout','main_record','branches','movements','radius','max_grade','region','max_route_length'}
     if not isinstance(brief,dict) or set(brief)!=keys or brief['layout']!=LAYOUT:raise ValueError('explicit curved main/branch brief required')
     parent,digest=_parent(brief['main_record']);main=parent['plan'];tracks=main['tracks']
+    if 'vertical_mode' in main['brief']:raise live.LiveError('unsupported_layout','graded main branching is outside the level junction domain')
     if main['pattern']!='UP-UP-DOWN-DOWN' or len(tracks)!=4:raise live.LiveError('unsupported_layout','initial branching corridor requires UUDD')
     if type(brief['radius']) not in (int,float) or not math.isfinite(brief['radius']) or brief['radius']<main['brief']['radius'] or type(brief['max_grade']) not in (int,float) or not math.isfinite(brief['max_grade']) or not 0<brief['max_grade']<=main['brief']['max_grade']:raise ValueError('main engineering limits cannot be lowered')
     if type(brief['max_route_length']) not in (int,float) or not math.isfinite(brief['max_route_length']) or not 0<brief['max_route_length']<=8000:raise ValueError('finite route bound <=8000 required')

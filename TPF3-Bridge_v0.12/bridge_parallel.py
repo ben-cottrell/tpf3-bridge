@@ -9,6 +9,24 @@ import bridge_live as live
 
 LAYOUT = 'native_offset_connection_v1'
 ROLES = ('up_source', 'up_target', 'down_source', 'down_target')
+VERTICAL_MODE = 'native_shared_height_v1'
+
+
+def _vertical_options(brief):
+    return {k:brief[k] for k in ('vertical_mode','vertical_tolerance') if k in brief}
+
+
+def _vertical_summary(plan,record):
+    if plan['brief'].get('vertical_mode')!=VERTICAL_MODE:return {}
+    grades={}
+    for name,chain in record.get('current_chains',{}).items():
+        values=[e.get('engineering_checks',{}).get('max_sampled_grade') for e in chain.get('inspection',{}).get('result',{}).get('edges',[])]
+        grades[name]=max(values) if values and all(type(v) in (int,float) and math.isfinite(v) for v in values) else None
+    rows=[r['response'].get('result',{}) for r in record.get('spacing_checks',[])]
+    if 'spacing_readback' in record:rows.append(record['spacing_readback'].get('result',{}))
+    heights=[r.get('max_sampled_height_difference') for r in rows]
+    return {'vertical_mode':VERTICAL_MODE,'vertical_tolerance':plan['brief']['vertical_tolerance'],'spacing_convention':'horizontal_signed_normal',
+            'sampled_max_grades':grades,'max_sampled_height_difference':max(heights) if heights and all(type(v) in (int,float) and math.isfinite(v) for v in heights) else None}
 
 
 def _common(brief):
@@ -21,8 +39,10 @@ def _reference(brief):
 
 def plan_paired_connection(brief):
     keys={'layout','ports','guides','side','spacing','spacing_tolerance','radius','max_grade','region','max_route_length','min_curved_length'}
-    if not isinstance(brief,dict) or set(brief)!=keys or brief['layout']!=LAYOUT:
+    if not isinstance(brief,dict) or set(brief)-{'vertical_mode','vertical_tolerance'}!=keys or brief['layout']!=LAYOUT:
         raise ValueError('explicit native_offset_connection_v1 brief required')
+    graded=brief.get('vertical_mode')==VERTICAL_MODE
+    if 'vertical_mode' in brief and not graded:raise ValueError('unsupported vertical_mode')
     if not isinstance(brief['ports'],dict) or set(brief['ports'])!=set(ROLES):
         raise ValueError('four explicit UP/DOWN source/target roles required')
     for role in brief['ports'].values():
@@ -35,6 +55,10 @@ def plan_paired_connection(brief):
         raise live.LiveError('unsupported_pair','initial domain is native nominal5 spacing with explicit side')
     tol=brief['spacing_tolerance']
     if type(tol) not in (int,float) or not math.isfinite(tol) or not 0<tol<=.1:raise ValueError('spacing tolerance within(0,.1] required')
+    ztol=brief.get('vertical_tolerance')
+    if graded:
+        if type(ztol) not in (int,float) or not math.isfinite(ztol) or not 0<ztol<=min(.05,tol):raise ValueError('explicit vertical_tolerance within(0,min(.05,spacing_tolerance)] required')
+    elif 'vertical_tolerance' in brief:raise ValueError('vertical_tolerance requires explicit vertical_mode')
     length=brief['min_curved_length']
     if type(length) not in (int,float) or not math.isfinite(length) or not 0<length<=3200:raise ValueError('finite positive curved section length <=3200 required')
     # Use existing corridor input validation without opening a native client.
@@ -46,17 +70,18 @@ def plan_paired_connection(brief):
         if not isinstance(g,dict) or set(g)!={'position','travel_direction','grade'}:raise ValueError('explicit guide position/direction/grade required')
         for k,n in (('position',3),('travel_direction',2)):
             if not isinstance(g[k],list) or len(g[k])!=n or any(type(v) not in (int,float) or not math.isfinite(v) for v in g[k]):raise ValueError('finite native guide coordinates required')
-        if math.hypot(*g['travel_direction'])<1e-9 or type(g['grade']) not in (int,float) or g['grade']!=0:raise live.LiveError('unsupported_pair','level guides only')
+        if math.hypot(*g['travel_direction'])<1e-9 or type(g['grade']) not in (int,float) or not math.isfinite(g['grade']) or abs(g['grade'])>brief['max_grade']:raise ValueError('guide direction/grade outside selected limit')
+        if not graded and g['grade']!=0:raise live.LiveError('unsupported_pair','level guides only; explicit vertical_mode required')
         if any(not brief['region']['min'][i]<=g['position'][i]<=brief['region']['max'][i] for i in range(3)):raise ValueError('guide outside authorised region')
     height=brief['ports']['up_source']['endpoint']['guide_xyz'][2]
-    if any(abs(p['endpoint']['guide_xyz'][2]-height)>.001 for p in brief['ports'].values()) or any(abs(g['position'][2]-height)>.001 for g in guides):
+    if not graded and (any(abs(p['endpoint']['guide_xyz'][2]-height)>.001 for p in brief['ports'].values()) or any(abs(g['position'][2]-height)>.001 for g in guides)):
         raise live.LiveError('unsupported_pair','initial native offset connection is level; actual heights retained')
     signed=5*(1 if brief['side']=='left' else -1)
     for up,down in (('up_source','down_target'),('up_target','down_source')):
         a,z=(brief['ports'][r]['endpoint'] for r in (up,down));d=a['travel_direction'];n=math.hypot(*d);d=[x/n for x in d]
         other=z['travel_direction'];m=math.hypot(*other)
         if math.hypot(d[0]+other[0]/m,d[1]+other[1]/m)>1e-6:raise live.LiveError('unsupported_pair','explicit opposing travel directions required')
-        expected=[a['guide_xyz'][0]-signed*d[1],a['guide_xyz'][1]+signed*d[0],height]
+        expected=[a['guide_xyz'][0]-signed*d[1],a['guide_xyz'][1]+signed*d[0],a['guide_xyz'][2]]
         if math.dist(expected,z['guide_xyz'])>.001:raise live.LiveError('unsupported_pair','compatible normal-offset endpoint pairs required; no splayed transitions in v1')
     plan={'version':1,'layout':LAYOUT,'brief':brief,'reference':with_guides,'signed_spacing':signed,'epoch':'DESIGN','game_constructed':False,
           'shared_section':'entire connector; native reference/offset correspondence','transitions':'none; compatible fixed normal-offset anchors','native_direction':'UP source to target; DOWN traffic reverses offset chain','continuous_clearance_proof':False}
@@ -80,7 +105,7 @@ def _ports(client,plan,record,*,connected=False):
             if (c['edge_id'],c['node_id'])!=(old['edge_id'],old['node_id']):raise live.LiveError('stale_pair_attachment','exact named attachment changed: '+name)
             a,z=old['edge_snapshot'],c['edge_snapshot']
             if any(math.dist(a[k],z[k])>.001 for k in ('p0','p1','t0','t1')) or any(a[k]!=z[k] for k in ('template','style')):raise live.LiveError('stale_pair_attachment','attachment geometry/resource changed: '+name)
-        if type(c.get('grade')) not in (int,float) or not math.isfinite(c['grade']) or abs(c['grade'])>1e-6:raise live.LiveError('unsupported_pair','actual endpoint grade must be level')
+        if type(c.get('grade')) not in (int,float) or not math.isfinite(c['grade']) or abs(c['grade'])>(plan['brief']['max_grade'] if plan['brief'].get('vertical_mode')==VERTICAL_MODE else 1e-6):raise live.LiveError('unsupported_pair','actual endpoint grade outside selected domain')
         ports[name]=c;record.setdefault('observations',[]).append(rid)
     if len({c['node_id'] for c in ports.values()})!=4 or len({c['edge_id'] for c in ports.values()})!=4:raise ValueError('four distinct actual attachments required')
     if not connected:record['ports']=ports
@@ -99,6 +124,21 @@ def _read_chain(client,plan,record,name):
     return [{'edge':rows[e],'forward':True} for e in ids]
 
 
+def _vertical_readback(plan,refs,start,end):
+    if plan['brief'].get('vertical_mode')!=VERTICAL_MODE:return
+    def grade(t):
+        n=math.hypot(*t[:2])
+        if n<=1e-9:raise live.LiveError('native_verification_failed','irregular current tangent')
+        return t[2]/n
+    for first,last in zip(refs,refs[1:]):
+        a,z=first['edge'],last['edge']
+        if abs(a['p1'][2]-z['p0'][2])>.001 or abs(grade(a['t1'])-grade(z['t0']))>1e-6:raise live.LiveError('native_verification_failed','current vertical join failed')
+    for e,k,p in ((refs[0]['edge'],'0',start),(refs[-1]['edge'],'1',end)):
+        boundary=p['edge_snapshot'];pos=boundary['p0'] if boundary['node0']==p['node_id'] else boundary['p1']
+        wanted=p['grade']*(1 if k=='0' else -1)
+        if abs(e['p'+k][2]-pos[2])>.001 or abs(grade(e['t'+k])-wanted)>1e-6:raise live.LiveError('native_verification_failed','current endpoint height/grade failed')
+
+
 def _verify(client,plan,record):
     ports=_ports(client,plan,record,connected=True);chains={}
     for name in ('UP','DOWN'):
@@ -107,6 +147,7 @@ def _verify(client,plan,record):
         ids=record['chains'][name]['edges'];nodes=record['chains'][name]['nodes']
         start,end=('up_source','up_target') if name=='UP' else ('down_target','down_source')
         a,z=ports[start],ports[end]
+        _vertical_readback(plan,refs,a,z)
         if nodes[0]!=a['node_id'] or nodes[-1]!=z['node_id']:raise live.LiveError('stale_pair_attachment','connector no longer meets exact named ports')
         for c,connector in ((a,ids[0]),(z,ids[-1])):
             if set(c.get('incident_edges',[]))!={c['edge_id'],connector} or c.get('incident_count')!=2:raise live.LiveError('native_verification_failed','exact degree-two connector attachment missing')
@@ -120,7 +161,7 @@ def _verify(client,plan,record):
         record.setdefault('routes',[]).append({'direction':name,'verified':ok,'response':r})
         if not ok:raise live.LiveError('native_verification_failed','complete intended '+name+' native route unverified')
     if len(chains)<2:return {'final_pair_verified':False,'routes_verified':len(chains),'spacing_verified':False}
-    p={'reference':chains['UP'],'adjacent':chains['DOWN'],'spacing':plan['signed_spacing'],'tolerance':plan['brief']['spacing_tolerance'],**{k:plan['brief'][k] for k in ('radius','max_grade','region')}}
+    p={'reference':chains['UP'],'adjacent':chains['DOWN'],'spacing':plan['signed_spacing'],'tolerance':plan['brief']['spacing_tolerance'],**_vertical_options(plan['brief']),**{k:plan['brief'][k] for k in ('radius','max_grade','region')}}
     r=client.request('verify_adjacency',p);record['spacing_readback']=r;v=r.get('result',{})
     if r['status']!='ok' or v.get('sampled_verified') is not True or not v.get('correspondence') or v.get('curved_reference_chord_length',0)<plan['brief']['min_curved_length']:
         raise live.LiveError('native_verification_failed','substantial curved normal-offset correspondence not established')
@@ -130,7 +171,7 @@ def _verify(client,plan,record):
 
 
 def _finish(record,exc=None):
-    s=record['summary']
+    s=record['summary'];s.update(_vertical_summary(record['plan'],record))
     if exc:s.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400],final_pair_verified=False)
     s['routes_verified']=sum(r['verified'] for r in record.get('routes',[]));s['route_lengths']={r['direction']:r['response']['result'].get('total_path_length') for r in record.get('routes',[]) if r['verified']}
     s['completed_connectors']=list(record.get('chains',{}));s['native_effect_history_complete']=False
@@ -205,7 +246,7 @@ def execute_paired_connection(client,plan,*,reference_record=None):
         live.atomic_json(path,record)
         reference=_read_chain(client,plan,record,'UP')
         if any(e['edge'].get('resource',{}).get('track_distance')!=plan['brief']['spacing'] for e in reference):raise live.LiveError('unsupported_pair','selected spacing differs from native trackDistance')
-        p={'reference':reference,'spacing':plan['signed_spacing'],'tolerance':plan['brief']['spacing_tolerance'],**{k:plan['brief'][k] for k in ('radius','max_grade','region')},'execute':True,
+        p={'reference':reference,'spacing':plan['signed_spacing'],'tolerance':plan['brief']['spacing_tolerance'],**_vertical_options(plan['brief']),**{k:plan['brief'][k] for k in ('radius','max_grade','region')},'execute':True,
            'attachments':{side:{'anchor_edge':ports[role]['edge_id'],'anchor_node':ports[role]['node_id']} for side,role in (('source','down_target'),('target','down_source'))}}
         r=perform('offset',lambda:client.request('adjacent',p));rb=r['result']['readback'];live._require_engineering_readback(rb,{'radius':plan['brief']['radius'],'vertical':{'max_grade':plan['brief']['max_grade']}})
         record['chains']['DOWN']={'edges':rb['ordered_edges'],'nodes':rb['ordered_nodes']};live.atomic_json(path,record)
@@ -231,9 +272,9 @@ MULTITRACK = 'native_multitrack_connection_v1'
 
 
 def plan_multitrack_connection(brief):
-    """Ordered level corridors, using the pair contract for every neighboring boundary."""
+    """Ordered corridors, using the pair contract for every neighboring boundary."""
     keys={'layout','tracks','reference_up','guides','side','spacing','spacing_tolerance','radius','max_grade','region','max_route_length','min_curved_length'}
-    if not isinstance(brief,dict) or set(brief)!=keys or brief['layout']!=MULTITRACK:raise ValueError('explicit multitrack connection brief required')
+    if not isinstance(brief,dict) or set(brief)-{'vertical_mode','vertical_tolerance'}!=keys or brief['layout']!=MULTITRACK:raise ValueError('explicit multitrack connection brief required')
     tracks=brief['tracks']
     if brief['reference_up'] not in ('increasing','decreasing'):raise ValueError('explicit UP reference orientation required')
     if not isinstance(tracks,list) or len(tracks) not in (2,4):raise ValueError('two or four ordered tracks required')
@@ -258,6 +299,7 @@ def plan_multitrack_connection(brief):
         normalized.append({'id':t['id'],'direction':t['direction'],'forward':forward,'start':pair['start']['id'],'end':pair['end']['id']})
     if len(ports)!=2*len(tracks):raise ValueError('all endpoint IDs must be distinct')
     common={k:brief[k] for k in keys-{'layout','tracks','reference_up'}}
+    common.update(_vertical_options(brief))
     pairs=[]
     for a,z in zip(normalized,normalized[1:]):
         def role(key,reverse=False):
@@ -291,7 +333,7 @@ def _multitrack_ports(client,plan,record,*,connected):
             if (c['edge_id'],c['node_id'])!=(old['edge_id'],old['node_id']):raise live.LiveError('stale_attachment','exact named endpoint changed: '+name)
             a,z=old['edge_snapshot'],c['edge_snapshot']
             if any(math.dist(a[k],z[k])>.001 for k in ('p0','p1','t0','t1')) or any(a[k]!=z[k] for k in ('template','style')):raise live.LiveError('stale_attachment','endpoint geometry/resource changed: '+name)
-        if type(c.get('grade')) not in (int,float) or not math.isfinite(c['grade']) or abs(c['grade'])>1e-6:raise live.LiveError('unsupported_multitrack','actual level endpoints required')
+        if type(c.get('grade')) not in (int,float) or not math.isfinite(c['grade']) or abs(c['grade'])>(plan['brief']['max_grade'] if plan['brief'].get('vertical_mode')==VERTICAL_MODE else 1e-6):raise live.LiveError('unsupported_multitrack','actual endpoint grade outside selected domain')
         ports[name]=c;record.setdefault('observations',[]).append(rid)
     if len({c['node_id'] for c in ports.values()})!=len(ports) or len({c['edge_id'] for c in ports.values()})!=len(ports):raise ValueError('distinct exact attachment nodes/edges required')
     record.setdefault('ports',ports);record['current_ports']=ports
@@ -311,6 +353,7 @@ def _verify_multitrack(client,plan,record):
         ids=record['chains'][name]['edges'];nodes=record['chains'][name]['nodes']
         if seen.intersection(nodes) or len(set(nodes))!=len(nodes):raise live.LiveError('native_verification_failed','tracks share/repeat exact nodes')
         seen.update(nodes);a,z=ports[t['start']],ports[t['end']]
+        _vertical_readback(plan,refs,a,z)
         if (nodes[0],nodes[-1])!=(a['node_id'],z['node_id']):raise live.LiveError('stale_attachment','chain does not meet named endpoints')
         for c,edge in ((a,ids[0]),(z,ids[-1])):
             if c.get('incident_count')!=2 or set(c.get('incident_edges',[]))!={c['edge_id'],edge}:raise live.LiveError('native_verification_failed','exact degree-two attachment missing')
@@ -328,7 +371,7 @@ def _verify_multitrack(client,plan,record):
     for a,z,m,kind in pairs:
         first,last=plan['tracks'][a]['id'],plan['tracks'][z]['id']
         if first not in chains or last not in chains:continue
-        p={'reference':chains[first],'adjacent':chains[last],'spacing':m*plan['signed_spacing'],'tolerance':plan['brief']['spacing_tolerance'],**{k:plan['brief'][k] for k in ('radius','max_grade','region')}}
+        p={'reference':chains[first],'adjacent':chains[last],'spacing':m*plan['signed_spacing'],'tolerance':plan['brief']['spacing_tolerance'],**_vertical_options(plan['brief']),**{k:plan['brief'][k] for k in ('radius','max_grade','region')}}
         r=client.request('verify_adjacency',p);v=r.get('result',{})
         good=r['status']=='ok' and v.get('sampled_verified') is True and bool(v.get('correspondence')) and v.get('curved_reference_chord_length',0)>=plan['brief']['min_curved_length']
         record['spacing_checks'].append({'from':first,'to':last,'kind':kind,'verified':good,'response':r})
@@ -341,7 +384,7 @@ def _verify_multitrack(client,plan,record):
 
 
 def _finish_multitrack(record,exc=None):
-    s=record['summary']
+    s=record['summary'];s.update(_vertical_summary(record['plan'],record))
     if exc:s.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:400],final_multitrack_verified=False)
     s['routes_verified']=sum(r['verified'] for r in record.get('routes',[]));s['route_lengths']={r['direction']:r['response']['result'].get('total_path_length') for r in record.get('routes',[]) if r['verified']}
     s['completed_connectors']=list(record['chains']);s['native_effect_history_complete']=False
@@ -374,7 +417,7 @@ def execute_multitrack_connection(client,plan,*,continuation_record=None):
             if i:
                 refs=_read_chain(client,plan,record,plan['tracks'][i-1]['id'])
                 if any(e['edge'].get('resource',{}).get('track_distance')!=plan['brief']['spacing'] for e in refs):raise live.LiveError('unsupported_multitrack','native trackDistance mismatch')
-                p={'reference':refs,'spacing':plan['signed_spacing'],'tolerance':plan['brief']['spacing_tolerance'],**{k:plan['brief'][k] for k in ('radius','max_grade','region')},'execute':True,
+                p={'reference':refs,'spacing':plan['signed_spacing'],'tolerance':plan['brief']['spacing_tolerance'],**_vertical_options(plan['brief']),**{k:plan['brief'][k] for k in ('radius','max_grade','region')},'execute':True,
                    'attachments':{side:{'anchor_edge':ports[t[k]]['edge_id'],'anchor_node':ports[t[k]]['node_id']} for side,k in (('source','start'),('target','end'))}}
             record['unfinished_step']=name;live.atomic_json(path,record)
             try:r=live.connect_corridor(client,plan['reference'],execute=True) if not i else client.request('adjacent',p)
