@@ -1,0 +1,124 @@
+{
+  "layout": "two_layout_network_v1",
+  "parents": {
+    "junction": "YOUR_COMPLETED_RECIPROCAL_RECEIPT.json",
+    "destination": "YOUR_COMPLETED_NEARBY_UD_RECEIPT.json"
+  },
+  "links": [
+    {
+      "direction": "UP",
+      "source": {
+        "layout": "junction",
+        "port": "branch_up"
+      },
+      "target": {
+        "layout": "destination",
+        "port": "U1:west"
+      },
+      "guides": [
+        {
+          "position": [
+            4650,
+            3370,
+            33
+          ],
+          "travel_direction": [
+            0.9396926207859084,
+            0.3420201433256687
+          ],
+          "grade": 0
+        }
+      ]
+    },
+    {
+      "direction": "DOWN",
+      "source": {
+        "layout": "destination",
+        "port": "D1:west"
+      },
+      "target": {
+        "layout": "junction",
+        "port": "branch_down"
+      },
+      "guides": [
+        {
+          "position": [
+            4800,
+            3740,
+            33
+          ],
+          "travel_direction": [
+            -0.9063077870366499,
+            0.4226182617406995
+          ],
+          "grade": 0
+        },
+        {
+          "position": [
+            4350,
+            4100,
+            33
+          ],
+          "travel_direction": [
+            -0.9063077870366499,
+            0.4226182617406995
+          ],
+          "grade": 0
+        },
+        {
+          "position": [
+            3950,
+            4220,
+            33
+          ],
+          "travel_direction": [
+            -0.9659258262890683,
+            -0.2588190451025208
+          ],
+          "grade": 0
+        }
+      ]
+    }
+  ],
+  "movements": [
+    {
+      "direction": "UP",
+      "source": {
+        "layout": "junction",
+        "port": "U1:west"
+      },
+      "target": {
+        "layout": "destination",
+        "port": "U1:east"
+      }
+    },
+    {
+      "direction": "DOWN",
+      "source": {
+        "layout": "destination",
+        "port": "D1:east"
+      },
+      "target": {
+        "layout": "junction",
+        "port": "D2:west"
+      }
+    }
+  ],
+  "radius": 120,
+  "max_grade": 0.04,
+  "region": {
+    "min": [
+      3500,
+      2900,
+      0
+    ],
+    "max": [
+      5500,
+      4350,
+      80
+    ]
+  },
+  "max_connection_length": 4000,
+  "max_route_length": 6000,
+  "min_sampled_link_separation": 4
+}

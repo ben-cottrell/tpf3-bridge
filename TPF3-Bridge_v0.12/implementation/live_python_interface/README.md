@@ -994,3 +994,49 @@ P19 base rather than constructing another duplicate site. P18/P19 brief hashes a
 receipt formats remain unchanged; older native evidence describes historical state.
 No physical traversal, signalling, reservation, direction enforcement or complete
 side-effect/save-load identity claim. Detailed evidence remains local under p20.
+
+
+### Connected layouts (P23)
+
+`bridge_network.plan_layout_network`, `execute_layout_network`, and
+`inspect_layout_network` compose two existing, completed parallel/reciprocal layout
+receipts. `layout_network_example.json` names explicit UP/DOWN ports and full
+movements. Replace its two receipt paths with your own local completed records;
+its coordinates describe the demonstrated P21 junction plus a nearby UD equivalent.
+For different sites, select compatible free ports and bounded native guide corridors.
+No layout is constructed by the network planner itself.
+
+```
+python bridge_live.py layout-network --params NETWORK.json --evidence .local_runs/network_plans
+python bridge_live.py layout-network --context CONTEXT.json --params NETWORK.json --execute
+python bridge_live.py layout-network-inspect --context CONTEXT.json --params NETWORK.json --layout-record RECEIPT.json
+```
+
+Offline planning binds canonical parent receipts and explicit direction/function roles.
+Execution freshly verifies every local movement and both free link endpoints before
+building the two native corridors serially. Inspection is read-only in a fresh process:
+it checks current degree-two attachment roles, exact connector chains, all prior local
+movements, and the complete ordered UP/DOWN paths through the intended components.
+Parent/connector receipts stay local and hash-bound; retain them for later inspection.
+Changed identities/receipts or partial/unknown effects stop acceptance; no automatic
+replay, resume, rollback or guessed proximity correspondence is provided. An explicit
+`layout-network --execute --layout-record PARTIAL_RECEIPT.json` first re-inspects
+completed connectors/local movements and builds only missing links. Reconcile pending
+native mutation before this command. Only guides for an uncompleted link may change;
+completed links, movements, parents and limits remain bound to their original intent.
+
+Supported initial domain: existing level layouts with compatible native endpoint
+grade/height, explicit UP/DOWN travel intent and 1–3 guides per link. Native fitting
+retains all radius/grade/region checks. Corridor proposals now use a 1.25× native
+radius margin to accommodate sampled ARC-to-cubic conversion; the selected minimum
+is still checked on realised geometry. This changes proposals, not acceptance limits.
+Each connection retains its 4,000-unit length envelope and existing native fit bounds.
+Combined route acceptance may select up to 8,000 native units (example:6,000), with
+the existing 64-row readback cap. Native pathfinder search itself is not length bounded;
+that number is a final acceptance limit, not a search-work guarantee.
+
+Connecting lines can widen and are not asserted to maintain constant parallel spacing.
+The selected 65-samples/edge pair-separation screen is a diagnostic/acceptance sample,
+not continuous clearance or dynamic gauging proof. Native collision checks still apply.
+Direction is declared routing intent, not signalling enforcement; train traversal,
+reservations, save/load identity and arbitrary versions remain unprobed.

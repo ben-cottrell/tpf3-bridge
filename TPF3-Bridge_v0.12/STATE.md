@@ -1,3 +1,34 @@
+## P23 complete - connected native layouts (local checkpoint in p23/checkpoint.json)
+Callable bridge_network plan_layout_network/execute_layout_network/inspect_layout_network;
+CLI bridge_live.py layout-network [--execute], layout-network-inspect --layout-record.
+Explicit checked --execute --layout-record continuation skips freshly verified completed
+links; only missing-link guides may change. Parent/connector receipts remain hash-bound.
+Current free roles reacquired with exact IDs; final degree-two roles prove both TRACK
+incidences. Native fit margin1.25 for corridors; realised radius/grade limits unchanged.
+Combined route acceptance finite <=8000, selected6000; native search itself unbounded.
+Practical equivalent:P21 reciprocal UUDD retained; nearby UD(5300,3600,33),heading20.
+UP junction:branch_up->destination:U1:west; DOWN destination:D1:west->junction:branch_down.
+Full UP U1:west->destination U1:east:3848.086341; DOWN destination D1:east->D2:west:4335.475323.
+Build40408:2complete intended TRACK paths,14local movements;18new connector TRACK edges,
+4exact degree-two attachments.33independent samples/edge:radius139.690578>=120,grade0,
+region/regularity/heading passed;65-sample link separation4.999974>=selected4.
+Connecting lines widen; no constant-parallel/continuous-clearance or train-traversal claim.
+Initial native fit rejection119.176<120 preserved; 1.25margin resolves without relaxation.
+First DOWN build rejected; exact read-only reconciliation proves complete corridor absent,
+other effects unknown. Partial inspection:UP full route+14local routes verified. Explicit
+rechecked continuation routed DOWN above the known fan and built only DOWN; no replay.
+python tools/quiet_checks.py --suite live_client --label pif-p23-final-source:152passed;
+.local_checks/pif-p23-final-source_aprtqh2i/report.json. py_compile/git diff --check passed.
+Fresh-process layout-network-inspect using p23/network_clear_brief.json and
+p23/network_continued_summary.json:passed; full command/source hashes in p23/checks.json.
+python .local_runs/live_python_interface/p23/independent_acceptance.py:passed.
+Evidence: .local_runs/live_python_interface/p23/HANDOFF.md,checks.json,result.json,
+network_fresh_inspection.json,independent_result.json; correlated raw records referenced.
+P18-P22 hashes/receipts and L01-L14/runner preserved. Native effect history incomplete;
+signals,reservations,direction enforcement,save/load identity/traversal unprobed.
+Disposable sandbox saved;paused/non-maximised. No blocker;stop P23 for coordinator.
+Actual usage unavailable;no credit estimate. Local milestone commit only,no push.
+
 # TPF3-Bridge milestone state — 4 October 2026
 
 ## Current task - P22 complete, ordered patterns/reversed UP verified

@@ -745,7 +745,7 @@ class LiveClientTests(unittest.TestCase):
             calls.assert_not_called()
 
     def test_route_invalid_input_never_sends(self):
-        for key,value in [('mode','CAR'),('max_length',float('inf')),('max_length',4001),
+        for key,value in [('mode','CAR'),('max_length',float('inf')),('max_length',8001),
                           ('source_node',True),('required_edges',[30,30]),('target_node',11)]:
             bad={**self.route_brief(),key:value}
             with patch.object(self.client,'request') as calls:
@@ -2164,6 +2164,141 @@ class LiveClientTests(unittest.TestCase):
             with patch.object(self.client,'request',return_value=observed) as worker:r=fn(self.client)
             operation,params=worker.call_args.args;self.assertEqual(operation,op);self.assertFalse(params['execute']);self.assertFalse(is_mutation(operation,params))
             self.assertEqual(worker.call_count,1);self.assertFalse(r['result']['automatic_replay']);self.assertNotIn('pending',json.loads(self.client.journal.read_text()));self.assertEqual(path.read_bytes(),before)
+
+class NetworkTests(unittest.TestCase):
+    setUp = LiveClientTests.setUp
+    response = LiveClientTests.response
+
+    def brief(self):
+        from bridge_live import plan_parallel_layout
+        from bridge_network import LAYOUT
+        base = json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/ud_layout_example.json').read_text())
+        base['route_reference']['up']='increasing'
+        base['movements']=[{'from':'U1:west','to':'U1:east'},{'from':'D1:east','to':'D1:west'},{'from':'U1:west','to':'branch_up'},{'from':'branch_down','to':'D1:west'}]
+        records={}
+        for i,name in enumerate(('first','second')):
+            b=json.loads(json.dumps(base));b['route_reference']['origin']=[i*2000,0,33];b['region']={'min':[-2000,-2000,0],'max':[5000,5000,80]}
+            plan=plan_parallel_layout(b);path=self.root/(name+'.json');path.write_text(json.dumps({'plan':plan,'summary':{'status':'ok'}}));records[name]=str(path)
+        return {'layout':LAYOUT,'parents':records,'links':[{'direction':'UP','source':{'layout':'first','port':'branch_up'},'target':{'layout':'second','port':'U1:west'},'guides':[{'position':[1500,0,33],'travel_direction':[1,0],'grade':0}]},{'direction':'DOWN','source':{'layout':'second','port':'D1:west'},'target':{'layout':'first','port':'branch_down'},'guides':[{'position':[1500,300,33],'travel_direction':[-1,0],'grade':0}]}],'movements':[{'direction':'UP','source':{'layout':'first','port':'U1:west'},'target':{'layout':'second','port':'U1:east'}},{'direction':'DOWN','source':{'layout':'second','port':'D1:east'},'target':{'layout':'first','port':'D1:west'}}],'radius':120,'max_grade':.04,'region':{'min':[-500,-500,0],'max':[2500,1500,80]},'max_connection_length':4000,'max_route_length':6000,'min_sampled_link_separation':4}
+
+    def test_network_plan_deterministic_explicit_directions_and_no_native_client(self):
+        from bridge_network import plan_layout_network
+        b=self.brief();b['movements'][1]['target']['port']='D1:west'
+        p=plan_layout_network(b);self.assertEqual(p,plan_layout_network(b));self.assertFalse(p['game_constructed'])
+        path=self.root/'network.json';path.write_text(json.dumps(b));out=io.StringIO()
+        with patch('bridge_live.client_from_context') as native,contextlib.redirect_stdout(out):
+            self.assertEqual(main(['layout-network','--params',str(path),'--evidence',str(self.root/'plans')]),0);native.assert_not_called()
+        self.assertLess(len(out.getvalue().encode()),4096)
+        for mutation in ('direction','bound','guide','parent'):
+            bad=json.loads(json.dumps(b))
+            if mutation=='direction':bad['links'][0]['target']['port']='D1:west'
+            elif mutation=='bound':bad['max_route_length']=8001
+            elif mutation=='guide':bad['links'][0]['guides'][0]['grade']=.1
+            else:bad['parents']['second']=bad['parents']['first']
+            with self.subTest(mutation=mutation),self.assertRaises((ValueError,LiveError,KeyError)):plan_layout_network(bad)
+
+    def test_attached_role_is_read_only_exact_two_track_incidence(self):
+        intent={'region':{'min':[0,0,0],'max':[2,2,2]},'max_edges':8,'guide_xyz':[1,1,1],'travel_direction':[1,0],'heading_tolerance_deg':2}
+        c={'eligible':False,'incident_count':2,'incidence_complete':True,'incident_output_truncated':False,'incident_edges':[10,11],'construction_owner':'none','outward_direction':[1,0],'pos':[1,1,1],'edge_id':10,'node_id':20}
+        found=self.response(result={'complete':True,'candidates':[c]})
+        exact=self.response(result={'edges':[{'id':i,'node0':20,'node1':i+30,'road_type':'TRACK'} for i in (10,11)]})
+        with patch('bridge_live.discover',return_value=found),patch.object(self.client,'request',return_value=exact) as read:
+            with self.assertRaises(LiveError):_select_throat_port(self.client,intent)
+            read.assert_not_called()
+            self.assertEqual(_select_throat_port(self.client,intent,connected=True)[0],c)
+            exact['result']['edges'][1]['node0']=99
+            with self.assertRaises(LiveError):_select_throat_port(self.client,intent,connected=True)
+            c['incidence_complete']=False
+            with self.assertRaises(LiveError):_select_throat_port(self.client,intent,connected=True)
+
+    def test_network_pending_partial_unknown_and_no_second_build_or_replay(self):
+        from bridge_network import plan_layout_network,execute_layout_network
+        p=plan_layout_network(self.brief());parents={name:{'current_ports':{port:{'eligible':True} for port in saved['plan']['ports']}} for name,saved in p['parents'].items()}
+        self.client.journal.write_text(json.dumps({'pending':{'request_id':'uncertain'}}))
+        with patch('bridge_network._parents') as inspect,patch('bridge_live.connect_corridor') as build:
+            r=execute_layout_network(self.client,p);self.assertEqual(r['status'],'reconciliation_required');inspect.assert_not_called();build.assert_not_called()
+        self.client.journal.write_text('{}')
+        with patch('bridge_network._parents',return_value=parents),patch('bridge_live.connect_corridor',return_value={'status':'mutation_outcome_unknown','game_constructed':'unknown'}) as build:
+            r=execute_layout_network(self.client,p);self.assertEqual(r['game_constructed'],'unknown');self.assertEqual(build.call_count,1)
+            saved=json.loads(Path(r['evidence']).read_text());self.assertEqual(saved['unfinished_step'],'UP');self.assertEqual(r['routes_verified'],0)
+        self.assertFalse((self.client.evidence/'network.lock').exists())
+        parents['first']['current_ports']['branch_up']['eligible']=False
+        with patch('bridge_network._parents',return_value=parents),patch('bridge_live.connect_corridor') as build:
+            r=execute_layout_network(self.client,p);self.assertEqual(r['status'],'attachment_not_free');build.assert_not_called()
+
+    def test_network_inspection_preserves_receipt_and_never_builds(self):
+        from bridge_network import plan_layout_network,inspect_layout_network
+        p=plan_layout_network(self.brief());path=self.root/'receipt.json';path.write_text(json.dumps({'plan':p,'summary':{'game_constructed':'unknown'},'links':{}}));before=path.read_bytes()
+        with patch('bridge_network._parents',return_value={}),patch('bridge_live.connect_corridor') as build,patch.object(self.client,'request') as native:
+            r=inspect_layout_network(self.client,path);self.assertEqual(r['status'],'network_incomplete');self.assertFalse(r['game_constructed']);build.assert_not_called();native.assert_not_called()
+        self.assertEqual(path.read_bytes(),before)
+        parent=Path(p['parents']['first']['record']);parent.write_text(parent.read_text()+' ')
+        # Harmless JSON whitespace preserves canonical record identity.
+        with patch('bridge_network._verify',return_value={'final_network_verified':True}),patch('bridge_live.connect_corridor') as build:
+            self.assertEqual(inspect_layout_network(self.client,path)['status'],'ok');build.assert_not_called()
+        data=json.loads(parent.read_text());data['summary']['status']='failed';parent.write_text(json.dumps(data))
+        with self.assertRaises(ValueError):inspect_layout_network(self.client,path)
+
+    def test_network_full_path_requires_connectors_and_each_local_movement(self):
+        from bridge_network import plan_layout_network,_corridor,_verify
+        import hashlib
+        p=plan_layout_network(self.brief());record={'summary':{'evidence':str(self.root/'verify.json')},'links':{},'routes':[]};parents={};connector={}
+        for i,name in enumerate(p['parents']):
+            ports={port:{'edge_id':100+i*20+j,'node_id':200+i*20+j} for j,port in enumerate(p['parents'][name]['plan']['ports'])}
+            parents[name]={'current_ports':ports,'routes':[]}
+        def path_response(ids):
+            return self.response(result={'requested_route_verified':True,'path':[{'confirmed_TRACK':True,'edge':{'entity':e}} for e in ids]})
+        for i,link in enumerate(p['brief']['links']):
+            a=parents[link['source']['layout']]['current_ports'][link['source']['port']]['node_id'];z=parents[link['target']['layout']]['current_ports'][link['target']['port']]['node_id'];edge=300+i
+            y=i*20;connector[edge]={'id':edge,'node0':a,'node1':z,'road_type':'TRACK','p0':[0,y,0],'p1':[100,y,0],'t0':[100,0,0],'t1':[100,0,0]}
+            receipt={'brief':_corridor(p,link),'summary':{'status':'ok','edges':[edge],'nodes':[a,z]}};f=self.root/(link['direction']+'.json');f.write_text(json.dumps(receipt));record['links'][link['direction']]={'record':str(f),'sha256':hashlib.sha256(f.read_bytes()).hexdigest()}
+            m=next(r for r in p['brief']['movements'] if r['direction']==link['direction'])
+            for side in ('source','target'):
+                x,y=(m[side]['port'],link[side]['port']) if side=='source' else (link[side]['port'],m[side]['port'])
+                local=[parents[m[side]['layout']]['current_ports'][x]['edge_id'],parents[m[side]['layout']]['current_ports'][y]['edge_id']]
+                parents[m[side]['layout']]['routes'].append({'from':x,'to':y,'response':path_response(local)})
+        def request(op,q):
+            if op=='inspect':return self.response(result={'edges':[connector[e] for e in q['edge_ids']]})
+            self.assertEqual(q['max_length'],6000)
+            m=next(m for m in p['brief']['movements'] if parents[m['source']['layout']]['current_ports'][m['source']['port']]['edge_id']==q['source_edge'])
+            link=next(l for l in p['brief']['links'] if l['direction']==m['direction']);ids=[]
+            for side in ('source','target'):
+                x,y=(m[side]['port'],link[side]['port']) if side=='source' else (link[side]['port'],m[side]['port'])
+                row=next(r for r in parents[m[side]['layout']]['routes'] if r['from']==x and r['to']==y)
+                if side=='target':ids += [300 if m['direction']=='UP' else 301]
+                ids += [e['edge']['entity'] for e in row['response']['result']['path']]
+            return path_response(ids)
+        with patch('bridge_network._parents',return_value=parents),patch.object(self.client,'request',side_effect=request):
+            result=_verify(self.client,p,record);self.assertTrue(result['final_network_verified']);self.assertEqual(len(record['routes']),2);self.assertFalse(result['constant_parallel_spacing'])
+        record['routes']=[]
+        def shortcut(op,q):
+            if op=='inspect':return self.response(result={'edges':[connector[e] for e in q['edge_ids']]})
+            return path_response(q['required_edges'])
+        with patch('bridge_network._parents',return_value=parents),patch.object(self.client,'request',side_effect=shortcut),self.assertRaises(LiveError):_verify(self.client,p,record)
+        self.assertFalse(record['routes'][0]['verified'])
+        connector[300]['node1']=999
+        with patch('bridge_network._parents',return_value=parents),patch.object(self.client,'request',side_effect=shortcut),self.assertRaises(LiveError):_verify(self.client,p,record)
+
+    def test_explicit_network_continuation_rechecks_and_skips_completed_link(self):
+        from bridge_network import plan_layout_network,execute_layout_network
+        import hashlib
+        p=plan_layout_network(self.brief());original=self.root/'partial_network.json';original.write_text(json.dumps({'plan':p,'links':{'UP':{'record':'kept','sha256':'kept'}},'summary':{'status':'error','game_constructed':'unknown'}}))
+        checked=self.root/'partial_readback.json';checked.write_text(json.dumps({'current_links':{'UP':{}},'summary':{'status':'network_incomplete'}}))
+        parents={name:{'current_ports':{port:{'eligible':True} for port in saved['plan']['ports']}} for name,saved in p['parents'].items()};parents['first']['current_ports']['branch_up']['eligible']=False
+        made=self.root/'down.json';made.write_text('{}')
+        with patch('bridge_network.inspect_layout_network',return_value={'status':'network_incomplete','evidence':str(checked)}) as inspect,patch('bridge_network._parents',return_value=parents),patch('bridge_live.connect_corridor',return_value={'status':'ok','game_constructed':True,'evidence':str(made)}) as build,patch('bridge_network._verify',return_value={'final_network_verified':True}):
+            r=execute_layout_network(self.client,p,continuation_record=original);self.assertEqual(r['status'],'ok');self.assertEqual(build.call_count,1);self.assertEqual(build.call_args.args[1]['source']['guide_xyz'],p['parents']['second']['plan']['ports']['D1:west']['position']);inspect.assert_called_once()
+            current=json.loads(Path(r['evidence']).read_text());self.assertEqual(current['links']['UP']['sha256'],'kept');self.assertEqual(current['recorded_prior_game_constructed'],'unknown')
+        bad=self.brief();bad['max_route_length']=7000;changed=plan_layout_network(bad)
+        with patch('bridge_network.inspect_layout_network') as inspect,patch('bridge_live.connect_corridor') as build:
+            r=execute_layout_network(self.client,changed,continuation_record=original);self.assertEqual(r['status'],'invalid_result');inspect.assert_not_called();build.assert_not_called()
+
+    def test_combined_route_finite_longer_bound(self):
+        b={'source_edge':1,'source_node':2,'target_edge':3,'target_node':4,'mode':'TRAIN','required_edges':[1,3],'max_length':6000}
+        with patch.object(self.client,'request',return_value=self.response()) as read:
+            route(self.client,b);self.assertEqual(read.call_args.args[1]['max_length'],6000)
+            for value in (8001,float('inf'),0):
+                with self.assertRaises(ValueError):route(self.client,b|{'max_length':value})
 
 if __name__ == '__main__':
     unittest.main()

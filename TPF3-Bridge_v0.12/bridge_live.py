@@ -1039,7 +1039,7 @@ def _verify_parallel_layout(client,plan,record,*,movement_edges=None,partial=Fal
     for name,p in plan['ports'].items():
         try:
             c,rid=_select_throat_port(client,_recipe_intent(plan,p['position'],p.get('construction_direction',d)),tolerance=.5,
-                                      outward_sign=-1 if p['end']=='west' else 1)
+                                      outward_sign=-1 if p['end']=='west' else 1,connected=True)
             ports[name]=c;observations.append(rid);states[name]='completed'
         except LiveError as exc:
             if not partial or exc.status!='no_eligible_candidates':raise
@@ -1501,14 +1501,16 @@ def continue_switching_layout(client,invocation):
     return summary
 
 
-def _select_throat_port(client,intent,*,interior=False,tolerance=None,outward_sign=1):
+def _select_throat_port(client,intent,*,interior=False,tolerance=None,outward_sign=1,connected=False):
     found=client.request('discover_interior',intent|{'placement_tolerance':tolerance}) if interior else discover(client,{k:intent[k] for k in ('region','max_edges')})
     if found['status']!='ok':raise LiveError(found['status'],found.get('result',{}).get('error','port_discovery_failed'),found['request_id'])
     value=found['result']
     if value.get('complete') is not True:raise LiveError('discovery_incomplete','bounded role discovery was truncated',found['request_id'])
     direction=intent['travel_direction'];size=math.hypot(*direction);ranked=[]
     for c in value['candidates']:
-        if (c.get('interior_eligible') if interior else c.get('eligible')) is not True:continue
+        eligible=(c.get('interior_eligible') if interior else c.get('eligible')) is True
+        attached=connected and not interior and c.get('incident_count')==2 and c.get('incidence_complete') is True and not c.get('incident_output_truncated') and c.get('construction_owner') in (None,'none',-1,0)
+        if not eligible and not attached:continue
         d=c['outward_direction'];heading=math.degrees(math.acos(max(-1,min(1,outward_sign*(d[0]*direction[0]+d[1]*direction[1])/size))))
         if heading>intent['heading_tolerance_deg']:continue
         distance=math.dist(c['pos'],intent['guide_xyz'])
@@ -1517,7 +1519,14 @@ def _select_throat_port(client,intent,*,interior=False,tolerance=None,outward_si
     ranked.sort(key=lambda x:x[:3])
     if not ranked:raise LiveError('no_eligible_candidates','no current native attachment for declared role',found['request_id'])
     if len(ranked)>1 and abs(ranked[0][0]-ranked[1][0])<.001:raise LiveError('ambiguous_attachment','declared role does not distinguish native attachments',found['request_id'])
-    return ranked[0][3],found['request_id']
+    selected=ranked[0][3]
+    if connected and not selected.get('eligible'):
+        ids=selected.get('incident_edges',[])
+        if len(ids)!=2 or len(set(ids))!=2 or selected['edge_id'] not in ids:raise LiveError('native_verification_failed','attached role incidence incomplete')
+        current=client.request('inspect',{'edge_ids':ids})
+        edges=current.get('result',{}).get('edges',[])
+        if current['status']!='ok' or {e['id'] for e in edges}!=set(ids) or any(e['road_type']!='TRACK' or selected['node_id'] not in (e['node0'],e['node1']) for e in edges):raise LiveError('native_verification_failed','attached role requires two exact current TRACK edges')
+    return selected,found['request_id']
 
 
 RECIPROCAL_LAYOUT = 'reciprocal_uudd_switching_v1'
@@ -2184,8 +2193,8 @@ def route(client, brief):
         raise ValueError('route requires distinct attachments')
     if brief['mode'] not in ('TRAIN', 'ELECTRIC_TRAIN'):
         raise ValueError('route mode must be TRAIN or ELECTRIC_TRAIN')
-    if type(brief['max_length']) not in (int, float) or not math.isfinite(brief['max_length']) or not 0 < brief['max_length'] <= 4000:
-        raise ValueError('route max_length must be finite and within (0,4000] native units')
+    if type(brief['max_length']) not in (int, float) or not math.isfinite(brief['max_length']) or not 0 < brief['max_length'] <= 8000:
+        raise ValueError('route max_length must be finite and within (0,8000] native units')
     ids = brief['required_edges']
     if not isinstance(ids, list) or not 1 <= len(ids) <= 32 or any(type(i) is not int or i <= 0 for i in ids) or len(set(ids)) != len(ids):
         raise ValueError('required_edges must contain 1–32 distinct exact native IDs')
@@ -2442,7 +2451,7 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'switching-layout', 'switching-layout-inspect', 'switching-layout-continue', 'reciprocal-layout', 'reciprocal-layout-inspect', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'layout-network', 'layout-network-inspect', 'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'switching-layout', 'switching-layout-inspect', 'switching-layout-continue', 'reciprocal-layout', 'reciprocal-layout-inspect', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--reconciled-crossover', type=Path, help='explicit verified crossover evidence for connect-throat; rechecks read-only, never rebuilds it')
     parser.add_argument('--recipe-plan',type=Path,help='optional reviewed junction-recipe plan; must match current brief exactly')
@@ -2460,11 +2469,14 @@ def main(argv=None):
     parser.add_argument('--session')
     parser.add_argument('--timeout', type=float, default=30)
     args = parser.parse_args(argv)
-    if args.operation in ('junction-recipe','parallel-layout','switching-layout','reciprocal-layout') and not args.execute:
+    if args.operation in ('junction-recipe','parallel-layout','switching-layout','reciprocal-layout','layout-network') and not args.execute:
         try:
             if args.base_layout_record or args.prepared_switching or args.layout_record or args.recipe_record or args.recipe_plan or args.prepared_recipe or args.discovery or args.reconciled_crossover:raise ValueError('planning accepts a brief, not native continuation records')
             brief=json.loads(args.params.read_text(encoding='utf-8-sig'))
-            if args.operation=='junction-recipe':response=publish_junction_recipe(plan_junction_recipe(brief),args.evidence or Path('.local_runs/junction_recipes'))
+            if args.operation=='layout-network':
+                from bridge_network import plan_layout_network,publish_layout_network
+                response=publish_layout_network(plan_layout_network(brief),args.evidence or Path('.local_runs/layout_networks'))
+            elif args.operation=='junction-recipe':response=publish_junction_recipe(plan_junction_recipe(brief),args.evidence or Path('.local_runs/junction_recipes'))
             elif args.operation=='parallel-layout':response=publish_parallel_layout(plan_parallel_layout(brief),args.evidence or Path('.local_runs/parallel_layouts'))
             elif args.operation=='reciprocal-layout':response=publish_reciprocal_layout(plan_reciprocal_layout(brief),args.evidence or Path('.local_runs/reciprocal_layouts'))
             else:response=publish_switching_layout(plan_switching_layout(brief),args.evidence or Path('.local_runs/switching_layouts'))
@@ -2483,7 +2495,7 @@ def main(argv=None):
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
         if args.base_layout_record and (args.operation!='reciprocal-layout' or not args.execute):raise ValueError('--base-layout-record requires reciprocal-layout --execute')
         if args.prepared_switching and (args.operation!='switching-layout' or not args.execute):raise ValueError('--prepared-switching requires switching-layout --execute')
-        if args.layout_record and args.operation not in ('parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect','reciprocal-layout'):raise ValueError('--layout-record requires parallel-layout-inspect')
+        if args.layout_record and args.operation not in ('layout-network','layout-network-inspect','parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect','reciprocal-layout'):raise ValueError('--layout-record requires parallel-layout-inspect')
         if args.recipe_record and args.operation not in ('junction-recipe-inspect','junction-recipe-continue'):raise ValueError('--recipe-record requires recipe inspect/continue')
         if args.operation=='junction-recipe-continue' and not args.execute:raise ValueError('recipe continuation requires --execute')
         if args.recipe_plan and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--recipe-plan requires junction-recipe --execute')
@@ -2492,9 +2504,18 @@ def main(argv=None):
             raise ValueError('--reconciled-crossover requires connect-throat --execute')
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout', 'switching-layout', 'switching-layout-continue', 'reciprocal-layout'):
+        if args.execute and args.operation not in ('layout-network', 'extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout', 'switching-layout', 'switching-layout-continue', 'reciprocal-layout'):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
-        if args.operation=='reciprocal-layout':
+        if args.operation=='layout-network':
+            if args.layout_record and not args.execute:raise ValueError('network continuation requires --execute')
+            from bridge_network import plan_layout_network,execute_layout_network
+            response=execute_layout_network(client,plan_layout_network(params),continuation_record=args.layout_record)
+        elif args.operation=='layout-network-inspect':
+            from bridge_network import plan_layout_network,inspect_layout_network
+            if not args.layout_record:raise ValueError('--layout-record is required')
+            if _load_layout_record(args.layout_record)['plan']!=plan_layout_network(params):raise ValueError('network record does not match brief')
+            response=inspect_layout_network(client,args.layout_record)
+        elif args.operation=='reciprocal-layout':
             response=execute_reciprocal_layout(client,plan_reciprocal_layout(params),base_layout_record=args.base_layout_record,continuation_record=args.layout_record)
         elif args.operation=='reciprocal-layout-inspect':
             if not args.layout_record:raise ValueError('--layout-record is required')

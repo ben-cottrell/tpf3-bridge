@@ -409,7 +409,7 @@ local function rail_lane(id,mode,junction_node,junction_nodes)
 end
 function M.route(p)
  assert(p.mode=="TRAIN" or p.mode=="ELECTRIC_TRAIN","unsupported_route_mode")
- assert(finite(p.max_length) and p.max_length>0 and p.max_length<=4000,"invalid_route_length_bound")
+ assert(finite(p.max_length) and p.max_length>0 and p.max_length<=8000,"invalid_route_length_bound")
  assert(type(p.required_edges)=="table" and #p.required_edges>=1 and #p.required_edges<=32,"route_required_edge_bound")
  local mode=E.TransportMode[p.mode]
  local a,start,index=rail_lane(p.source_edge,mode,p.junction_node,p.junction_nodes);local b,finish,target_index=rail_lane(p.target_edge,mode,p.junction_node,p.junction_nodes)
@@ -735,7 +735,7 @@ function M.corridor(p,s,state,request_id,respond)
   for i,goal in ipairs(goals) do
    local id=request_id.."_leg_"..i
    local leg=M.fit({anchor_edge=a.id,anchor_node=p.source.node_id,end_xy={goal.pos[1],goal.pos[2]},end_direction=goal.direction,
-    radius=p.radius,region=p.region,vertical={max_grade=p.vertical.max_grade}},s,id,goal,start)
+    radius=p.radius,fit_radius=p.radius*1.25,region=p.region,vertical={max_grade=p.vertical.max_grade}},s,id,goal,start)
    local f=s.fits[id];local first=#all.controls+1
    for j,c in ipairs(f.controls) do all.controls[#all.controls+1]=c;all.samples[#all.samples+1]=f.samples[j] end
    all.total_length=all.total_length+leg.total_length
