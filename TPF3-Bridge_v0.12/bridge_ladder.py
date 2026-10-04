@@ -21,7 +21,7 @@ def plan_ladder(brief):
     common={k:brief[k] for k in ('radius','region','vertical','max_route_length')}|{'max_fit_attempts':1}
     expected=[];used=[];steps=[]
     for g in groups:
-        if not isinstance(g,dict) or set(g)-{'spine_radius','junction_radii'}!={'id','inbound','outbound','destinations','spine_guides','arm_end','junctions'}:raise ValueError('explicit spine/arm/three-turnout group required')
+        if not isinstance(g,dict) or set(g)-{'spine_radius','junction_radii','fit_radii'}!={'id','inbound','outbound','destinations','spine_guides','arm_end','junctions'}:raise ValueError('explicit spine/arm/three-turnout group required')
         if not isinstance(g['id'],str) or not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]{0,30}',g['id']):raise ValueError('invalid group ID')
         ds=g['destinations']
         if not isinstance(ds,list) or len(ds)!=3:raise ValueError('three destinations per ladder required')
@@ -50,7 +50,11 @@ def plan_ladder(brief):
             target=g['arm_end'] if i==0 else roles[ds[3-i]]['endpoint']
             if i==0:target=target|{'travel_direction':[-v for v in target['travel_direction']]}
             b=common|{'source':q,'target':target,'radius':radii[i],'placement_tolerance':brief['placement_tolerance']}
-            live.validate_project_brief({k:v for k,v in b.items() if k!='placement_tolerance'},corridor=True)
+            if 'fit_radii' in g:
+                fr=g['fit_radii']
+                if not isinstance(fr,list) or len(fr)!=3 or any(type(v) not in (int,float) or not math.isfinite(v) or v<radii[j] for j,v in enumerate(fr)):raise ValueError('native fitting radii cannot lower hard limits')
+                b['fit_radius']=fr[i]
+            live.validate_project_brief({k:v for k,v in b.items() if k not in ('placement_tolerance','fit_radius')},corridor=True)
             steps.append({'name':g['id']+'_junction_'+str(i),'kind':'junction','brief':b})
         for i,n in enumerate(ds):
             via=[g['id']+'_junction_'+str(j) for j in range(3 if i!=2 else 2)]
@@ -160,8 +164,8 @@ def _arm_region(brief,source,target):
     if any(box['max'][k]-box['min'][k]>1000 for k in range(2)):raise live.LiveError('unsupported_ladder','widened arm exceeds existing native extension envelope')
     return box
 
-def _assess(client,plan,record):
-    ports=_roles(client,plan,record,True);junctions={}
+def _assess(client,plan,record,*,ports=None):
+    ports=_roles(client,plan,record,True) if ports is None else ports;junctions={}
     for step in plan['steps']:
         if step['kind']=='junction':
             node,ids=live._recipe_junction(client,step['brief']['source']);junctions[step['name']]=node;record.setdefault('observations',[]).extend(ids)

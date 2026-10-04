@@ -1,0 +1,223 @@
+{
+  "layout": "native_observed_height_ladder_v1",
+  "roles": {
+    "A1": {
+      "kind": "approach",
+      "position": [
+        -3200,
+        -4500,
+        9.5
+      ],
+      "travel_direction": [
+        1,
+        0
+      ]
+    },
+    "A2": {
+      "kind": "approach",
+      "position": [
+        -3200,
+        -4495,
+        9.5
+      ],
+      "travel_direction": [
+        1,
+        0
+      ]
+    },
+    "A3": {
+      "kind": "approach",
+      "position": [
+        -3200,
+        -4490,
+        9.5
+      ],
+      "travel_direction": [
+        1,
+        0
+      ]
+    },
+    "A4": {
+      "kind": "approach",
+      "position": [
+        -3200,
+        -4485,
+        9.5
+      ],
+      "travel_direction": [
+        1,
+        0
+      ]
+    },
+    "S3": {
+      "kind": "destination",
+      "position": [
+        -2400,
+        -4510,
+        13.75
+      ],
+      "travel_direction": [
+        1,
+        0
+      ]
+    },
+    "S2": {
+      "kind": "destination",
+      "position": [
+        -2400,
+        -4505,
+        13.75
+      ],
+      "travel_direction": [
+        1,
+        0
+      ]
+    },
+    "S1": {
+      "kind": "destination",
+      "position": [
+        -2400,
+        -4495,
+        13.75
+      ],
+      "travel_direction": [
+        1,
+        0
+      ]
+    },
+    "N1": {
+      "kind": "destination",
+      "position": [
+        -2400,
+        -4490,
+        13.75
+      ],
+      "travel_direction": [
+        1,
+        0
+      ]
+    },
+    "N2": {
+      "kind": "destination",
+      "position": [
+        -2400,
+        -4480,
+        13.75
+      ],
+      "travel_direction": [
+        1,
+        0
+      ]
+    },
+    "N3": {
+      "kind": "destination",
+      "position": [
+        -2400,
+        -4475,
+        13.75
+      ],
+      "travel_direction": [
+        1,
+        0
+      ]
+    }
+  },
+  "groups": [
+    {
+      "id": "south",
+      "inbound": "A2",
+      "outbound": "A1",
+      "destinations": [
+        "S1",
+        "S2",
+        "S3"
+      ]
+    },
+    {
+      "id": "north",
+      "inbound": "A3",
+      "outbound": "A4",
+      "destinations": [
+        "N1",
+        "N2",
+        "N3"
+      ]
+    }
+  ],
+  "movements": [
+    {
+      "from": "A2",
+      "to": "S1"
+    },
+    {
+      "from": "S1",
+      "to": "A1"
+    },
+    {
+      "from": "A2",
+      "to": "S2"
+    },
+    {
+      "from": "S2",
+      "to": "A1"
+    },
+    {
+      "from": "A2",
+      "to": "S3"
+    },
+    {
+      "from": "S3",
+      "to": "A1"
+    },
+    {
+      "from": "A3",
+      "to": "N1"
+    },
+    {
+      "from": "N1",
+      "to": "A4"
+    },
+    {
+      "from": "A3",
+      "to": "N2"
+    },
+    {
+      "from": "N2",
+      "to": "A4"
+    },
+    {
+      "from": "A3",
+      "to": "N3"
+    },
+    {
+      "from": "N3",
+      "to": "A4"
+    }
+  ],
+  "radius": 60,
+  "region": {
+    "min": [
+      -3250,
+      -4550,
+      -10
+    ],
+    "max": [
+      -2350,
+      -4420,
+      26
+    ]
+  },
+  "vertical": {
+    "max_grade": 0.04
+  },
+  "max_route_length": 1500,
+  "placement_tolerance": 0.5,
+  "spacing": 5,
+  "turnout_radii": {
+    "merge": 100,
+    "outer_fan": 200,
+    "inner_fan": 70
+  },
+  "throat_length": 450,
+  "endpoint_tolerance": 2
+}

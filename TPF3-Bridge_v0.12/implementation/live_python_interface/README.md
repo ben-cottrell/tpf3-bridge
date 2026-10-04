@@ -1447,3 +1447,10 @@ Explicit partial-receipt adoption and completed-record read-only checking use th
 existing guarded ladder mechanism. Report realised longitudinal/transverse footprint
 and bank span from native readback; an equal-scale diagram must not conceal spreading.
 Native paths prove selected connectivity/turnout traversal, not trains or signalling.
+
+## Observed destination heights and graded approaches (P33)
+
+See [height_ladder.md](height_ladder.md) and height_ladder_example.json for native
+read-only planning, construction, fresh inspection and checked-existing use. The
+compact pointwork uses observed destination height; four graded external leads
+add their own footprint. Current native geometry overrides bounded position hints.

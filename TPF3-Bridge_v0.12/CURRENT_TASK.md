@@ -1,28 +1,17 @@
-# PIF-P32 - COMPLETE: compact endpoint-derived native throat
+# PIF-P33 — compact throat at observed heights with graded approaches
 
-Reusable plan_compact_ladder over existing ladder primitives; same ladder-layout /
-ladder-layout-inspect CLI, concise compact_ladder_example.json. Input explicit fixed
-roles/positions/headings, group pairing, twelve directed movements and selected limits.
-Planner derives native guide/arm/turnout intents from actual banks/lateral offsets/radii;
-TPF3 fits curves. Canonical plan preserves input/derivation; old explicit P31 compatible.
+**COMPLETE — 4 October 2026.** Observed-height workflow implemented; native build40408
+demonstration and fresh read-only inspection verify twelve routes/six turnouts, four
+graded leads and level pointwork. Quiet suite247passed. Detailed receipts, terrain,
+equal-scale plan/profile, checkpoint and handoff: `.local_runs/live_python_interface/p33/`.
+No subsequent task adopted here; coordinator chooses the next bounded outcome.
 
-Build40408 demonstration: four5-unit approach centres and destination offsets
-0,5,15,20,30,35. Twelve directed native TRAIN routes, six exact successive turnouts,
-44TRACK; fresh-process inspection and completed-record execution passed, no rebuilding.
-Independent33samples/edge radius62.620096>=hard60,grade0,ports/joins/region/order.
-Selected merge100/outer200/inner60. Actual cubic footprint490x55 includingstubs,
-destination span35 vs P31 2240x400/span400. Equal-scale native overview and route matrix
-in .local_runs/live_python_interface/p32/. No globally minimal layout claim.
+P32 accepted1070114bebaa005beea13a79dcd100dcec4e5a76: endpoint-derived compact throat490x55, six destination bank span35, twelve routes/six turnouts. User now explicitly points out elevated test track and requires actual station connection elevation. Deliver reusable composition that binds the compact throat to current observed destination heights/tangents and connects external approach endpoints at differing elevations through native graded leads. Reuse P28/P29/P32 mechanisms; no replacement fitter or terrain optimiser.
 
-235affected quiet tests pass; exact report/commands/source hashes in p32/checks.json.
-Two rejected outer turnouts retained and independently reconciled as absent; matching
-three-stage prefix freshly proved before unbuilt-stage revisions. Unknown incidental
-effects remain. One useful compact native success; unchanged P31/engineering evidence
-reused, no broad historical tests. Final game checkpoint/cleanup in p32 records.
+Treat current native endpoint geometry as authoritative. Discover/select destinations by semantic intent, retain actual XYZ and tangents; report incompatible nonlevel/nonaligned destination banks explicitly rather than flattening existing track. Keep P32 pointwork level at the observed compatible destination-bank height, with native graded transitions outside that pointwork to four external approach roles. Reuse native height/grade fitting for those transitions and verify complete declared routes from/to external approaches through all intended turnouts to the six destinations. Expose a useful concise workflow/brief with planning, construction, fresh inspection and existing-record checks; no user-authored intermediate elevation coordinates or historical fixture IDs required. Preserve compact destination spacing and report the additional lead footprint separately from throat footprint.
 
-Local milestone commit recorded in p32/checkpoint.json; no remote push. Level aligned
-bank domain200..800units, outward grouped fans. No station assets,signals,train operation,
-continuous clearance,full effects/save-load identity guarantee or new fitter. No Lua,
-runner,dependencies,host recovery or blockers. Stop here; next task coordinator-assigned.
-One compact completion message to01a0f987-8917-7f31-84c3-838acacc9e04 directly authorized;
-local/final handoffs preserved; external review binding.
+Demonstrate one integrated station-free case: six destinations at0,5,15,20,30,35m offsets located at a sensible observed local ground height, four5m-centre approaches at a genuinely different suitable local elevation, native graded leads and all twelve intended inbound/outbound routes. Do not reuse arbitraryZ33 as a default or raise the entire site to hide the issue. Use native terrain observation to choose a suitable site and explain the selected endpoint heights. Report sampled track height relative to terrain before/after where available, distinctly from absoluteZ; document whether ordinary native cut/fill or structures occurred, without asserting unobserved effects. Small practical height changes are enough to prove integration; no elaborate grade research or repeat full parallel/variant matrices. Actual station assets/buildings remain out of scope.
+
+Native mechanics first, explicit selected radius/grade limits, current attachment identities, ordered junction paths, fixed destination geometry retained. Inspect uncertain effects before retry. Clear ordinary obstructions or choose suitable land under standing map authority. One useful native integrated success, affected deterministic checks, clear observed plan/profile with elevation labels, concise docs/example and local evidence are sufficient. Include routine repairs, cleanup of obsolete identified project saves retaining latest useful checkpoint, and local milestone commit. Reuse unaffected P32 evidence; no per-API handoffs. Report concrete limitations rather than claiming general terrain-optimal routing or train operation.
+
+Same worker, Sol Medium for integration of proven mechanisms; escalate only concrete geometry difficulty. All relevant disposable-map destruction/construction/terrain effects and normal save/load authorised without rollback; external tool review binding, no bypass. No stations/signals/trains, host recovery/restarts/services/dependencies, new agents/chats, remote push or PR. Send one compact completion message to coordinator01a0f987-8917-7f31-84c3-838acacc9e04 and retain local/final handoff. Completion messaging works;40minute polling is fallback.

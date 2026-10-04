@@ -1020,7 +1020,7 @@ function M.interior_junction(p,s,state,request_id,respond)
   assert(before.requested_route_verified,"existing_through_route_unverified")
   local splits=interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade)
   stage="fit"
-  local fit_id=request_id.."_fit";fit=M.fit({end_xy={tp[1],tp[2]},end_direction=td,radius=p.radius,fit_radius=p.radius*1.05,region=p.region,vertical=p.vertical},s,fit_id,
+  local fit_id=request_id.."_fit";fit=M.fit({end_xy={tp[1],tp[2]},end_direction=td,radius=p.radius,fit_radius=p.fit_radius or p.radius*1.05,region=p.region,vertical=p.vertical},s,fit_id,
    {edge=te,node=target.node_id,pos=tp,direction=td,grade=tg},{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
   fit.start_node=nil;fit.requested_min_radius=p.radius
   local f=s.fits[fit_id];f.node=-100;f.junction_node=-100;f.min_radius=p.radius

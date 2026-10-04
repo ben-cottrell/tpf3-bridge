@@ -3313,5 +3313,134 @@ class CompactLadderTests(unittest.TestCase):
         with patch('bridge_live.connect_corridor') as native,self.assertRaises(ValueError):ladder.execute_ladder(self.client,p)
         native.assert_not_called()
 
+
+class HeightLadderTests(unittest.TestCase):
+    setUp=LiveClientTests.setUp
+    def brief(self):return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/height_ladder_example.json').read_text())
+    def ports(self,b):
+        out={}
+        for i,(n,r) in enumerate(b['roles'].items()):
+            p=list(r['position']);p[2]+=.4;d=r['travel_direction'];a=r['kind']=='approach';node=2*i+1
+            out[n]={'eligible':True,'pos':p,'outward_direction':(d if a else [-x for x in d])+[0],'node_id':node,'edge_id':i+100,'edge_snapshot':{'id':i+100,'node0':node-1 if a else node,'node1':node if a else node+1,'road_type':'TRACK','t0':[20*d[0],20*d[1],0],'t1':[20*d[0],20*d[1],0],'p0':[p[0]-20*d[0],p[1]-20*d[1],p[2]] if a else p,'p1':p if a else [p[0]+20*d[0],p[1]+20*d[1],p[2]]}}
+        return out
+    def test_actual_destination_height_and_current_tangents_drive_plan_not_hint_z(self):
+        import bridge_height_ladder as h
+        b=self.brief();ports=self.ports(b);p=h.derive(b,ports)
+        self.assertEqual(p['destination_height'],b['roles']['S1']['position'][2]+.4);self.assertEqual(len(p['leads']),4)
+        self.assertTrue(all(q['target'][2]==b['roles']['S1']['position'][2]+.4 and q['brief']['vertical']['end_grade']==0 for q in p['leads']))
+        self.assertEqual(len(p['core_plan']['movements']),12)
+        self.assertEqual(p['observed_roles']['A1']['position'][2],b['roles']['A1']['position'][2]+.4)
+        ports['A1']['edge_snapshot']['t1'][2]=.2
+        self.assertAlmostEqual(h.derive(b,ports)['leads'][0]['source_grade'],.01)
+    def test_nonlevel_nonparallel_nonaligned_destinations_rejected_without_flattening(self):
+        import bridge_height_ladder as h
+        for kind in ('height','grade','heading','bank'):
+            b=self.brief();ports=self.ports(b);p=ports['N3']
+            if kind=='height':p['pos'][2]+=.1
+            elif kind=='grade':p['edge_snapshot']['t0'][2]=.1
+            elif kind=='heading':p['outward_direction']=[0,-1]
+            else:p['pos'][0]+=.1
+            before=json.dumps(ports,sort_keys=True)
+            with self.subTest(kind=kind),self.assertRaises(LiveError):h.derive(b,ports)
+            self.assertEqual(json.dumps(ports,sort_keys=True),before)
+    def test_rotated_translated_observed_banks_and_hard_limits_remain_supported(self):
+        import bridge_height_ladder as h
+        import math
+        b=self.brief();a=.3;c,z=math.cos(a),math.sin(a)
+        def pos(p):return [c*p[0]-z*p[1]+200,z*p[0]+c*p[1]-100,p[2]]
+        for r in b['roles'].values():r['position']=pos(r['position']);r['travel_direction']=[c,z]
+        points=[pos([x,y,v]) for x in (b['region']['min'][0],b['region']['max'][0]) for y in (b['region']['min'][1],b['region']['max'][1]) for v in (b['region']['min'][2],b['region']['max'][2])]
+        b['region']={'min':[min(p[k] for p in points) for k in range(3)],'max':[max(p[k] for p in points) for k in range(3)]}
+        p=h.derive(b,self.ports(b));self.assertEqual(p['core_plan']['brief']['radius'],60)
+        b['throat_length']=790
+        with self.assertRaises(LiveError):h.derive(b,self.ports(b))
+    def test_observed_planning_is_read_only_and_rejects_tampered_binding(self):
+        import bridge_height_ladder as h
+        b=self.brief();ports=self.ports(b)
+        with patch('bridge_height_ladder._ports',return_value=(ports,['read'])),patch('bridge_live.extend') as build:
+            r=h.plan_height_ladder(self.client,b)
+        build.assert_not_called();self.assertFalse(r['game_constructed'])
+        p=json.loads(Path(r['evidence']).read_text())['plan'];h._canonical(p)
+        p['initial_ports']['N3']['pos'][2]+=.1
+        with self.assertRaises((ValueError,LiveError)):h._canonical(p)
+    def test_four_graded_leads_before_pointwork_and_failure_stops_with_partial_effects(self):
+        import bridge_height_ladder as h
+        b=self.brief();ports=self.ports(b);calls=[]
+        def extend(*a,**k):
+            calls.append(a[1]);return {'status':'mutation_unverified' if len(calls)==2 else 'ok','game_constructed':'unknown' if len(calls)==2 else True,'edges':[1000]}
+        with patch('bridge_height_ladder._ports',return_value=(ports,[])),patch('bridge_live.extend',side_effect=extend),patch('bridge_ladder.execute_ladder') as core:
+            r=h.execute_height_ladder(self.client,b)
+        core.assert_not_called();self.assertEqual(len(calls),2);self.assertEqual(r['game_constructed'],'unknown')
+        saved=json.loads(Path(r['evidence']).read_text());self.assertEqual(saved['unfinished_step'],'lead_A2')
+        with patch('bridge_live.extend') as build,self.assertRaises(LiveError):h.execute_height_ladder(self.client,b,layout_record=r['evidence'])
+        build.assert_not_called()
+        calls.clear()
+        with patch('bridge_height_ladder._ports',return_value=(ports,[])),patch('bridge_live.extend',side_effect=lambda *a,**k:(calls.append('lead') or {'status':'ok','game_constructed':True,'edges':[1000]})),patch('bridge_ladder.execute_ladder',side_effect=lambda *a,**k:(calls.append('core') or {'status':'ok','game_constructed':True,'evidence':'core.json'})),patch('bridge_height_ladder._assess',return_value={'status':'ok','routes_verified':12}):
+            r=h.execute_height_ladder(self.client,b)
+        self.assertEqual(calls,['lead']*4+['core']);self.assertEqual(r['routes_verified'],12)
+    def test_completed_receipt_checks_freshly_without_construction_and_changed_brief_stops(self):
+        import bridge_height_ladder as h
+        b=self.brief();p=h.derive(b,self.ports(b));path=self.root/'height_complete.json'
+        path.write_text(json.dumps({'plan':p,'core_record':'core.json','lead_edges':[1000],'summary':{'status':'ok','game_constructed':True}}))
+        with patch('bridge_height_ladder._assess',return_value={'status':'ok','routes_verified':12}),patch('bridge_live.extend') as build,patch('bridge_ladder.execute_ladder') as core:
+            r=h.execute_height_ladder(self.client,b,layout_record=path)
+        build.assert_not_called();core.assert_not_called();self.assertFalse(r['game_constructed']);self.assertTrue(r['checked_existing'])
+        b['radius']=61
+        with self.assertRaises(ValueError):h.execute_height_ladder(self.client,b,layout_record=path)
+    def test_fixed_native_identity_and_destination_tangent_change_stop_readback(self):
+        import bridge_height_ladder as h
+        b=self.brief();ports=self.ports(b)
+        def select(client,e,**kw):
+            name=min(ports,key=lambda n:__import__('math').dist(ports[n]['pos'],e['guide_xyz']))
+            return ports[name],'fresh'
+        old=json.loads(json.dumps(ports));ports['N3']['node_id']+=100
+        with patch('bridge_live._select_throat_port',side_effect=select),self.assertRaises(LiveError):h._ports(self.client,b,old=old,connected=True)
+    def test_fitting_radius_is_separate_from_unchanged_project_acceptance_radius(self):
+        import bridge_height_ladder as h
+        b=self.brief();p=h.derive(b,self.ports(b));steps=[s for s in p['core_plan']['steps'] if s['kind']=='junction']
+        self.assertTrue(all(s['brief']['radius']==60 and s['brief']['fit_radius']>=60 for s in steps))
+        q=steps[0]['brief']
+        with patch('bridge_live._connect_project',return_value={'status':'ok'}) as native:
+            connect_junction_at(self.client,q,junction_nodes=[])
+        self.assertEqual(native.call_args.args[1]['fit_radius'],105)
+        q=q|{'fit_radius':59}
+        with patch('bridge_live._connect_project') as native,self.assertRaises(ValueError):connect_junction_at(self.client,q,junction_nodes=[])
+        native.assert_not_called()
+    def test_current_graded_port_uses_horizontal_heading_and_retains_vertical_tangent(self):
+        import bridge_ladder as l
+        b=self.brief();c=self.ports(b)['A1'];c.update(incidence_complete=True)
+        c['outward_direction']=[.9998,0,.019996];c['edge_snapshot']['t1'][2]=.4
+        with patch('bridge_live.discover',return_value={'status':'ok','request_id':'read','result':{'complete':True,'candidates':[c]}}):
+            chosen,_=_select_throat_port(self.client,l.intent(c['pos'],[1,0]),tolerance=.001)
+        self.assertEqual(chosen['node_id'],c['node_id']);self.assertEqual(chosen['edge_snapshot']['t1'][2],.4)
+    def test_level_pointwork_requires_actual_native_height_not_merely_allowed_grade(self):
+        import bridge_height_ladder as h
+        b=self.brief();p=h.derive(b,self.ports(b));height=p['destination_height']
+        edge={'id':900,'p0':[0,0,height],'p1':[1,0,height],'t0':[1,0,0],'t1':[1,0,0],'movement_geometry':{'samples':[{'pos':[.5,0,height],'direction':[1,0,0]}]}}
+        r={'plan':p,'lead_edges':[800],'routes':[{'response':{'result':{'path':[{'edge':{'entity':800},'confirmed_TRACK':True},{'edge':{'entity':900},'confirmed_TRACK':True}]}}}]}
+        def observed(op,q):
+            if q['edge_ids']==[900]:return {'status':'ok','result':{'edges':[edge]}}
+            return {'status':'ok','result':{'edges':[{'id':i,'movement_geometry':{'samples':[{'pos':[0,0,height+.53],'direction':[1,0,0]}]}} for i in q['edge_ids']]}}
+        edge['movement_geometry']['samples'][0]['pos'][2]=height+.53
+        with patch.object(self.client,'request',side_effect=observed) as read:
+            self.assertEqual(h._level_pointwork(self.client,r),1)
+            self.assertEqual(r['native_movement_height'],height+.53)
+            self.assertEqual(read.call_args.args[1]['edge_ids'],[900])
+            edge['movement_geometry']['samples'][0]['pos'][2]+=.05
+            with self.assertRaises(LiveError):h._level_pointwork(self.client,r)
+    def test_partial_core_without_absence_proof_does_not_replay_leads_or_throat(self):
+        import bridge_height_ladder as h
+        b=self.brief();p=h.derive(b,self.ports(b));failed=self.root/'failed_workflow.json';failed.write_text(json.dumps({'attempts':[{'request_id':'rejected'}]}))
+        core=self.root/'failed_core.json';core.write_text(json.dumps({'plan':p['core_plan'],'operations':[{'name':p['core_plan']['steps'][0]['name'],'response':{'status':'error','evidence':str(failed)}}]}))
+        old=self.root/'partial_height.json';old.write_text(json.dumps({'plan':p,'unfinished_step':'level_throat','core_record':str(core),'operations':[{'name':'lead_'+q['role'],'response':{'status':'ok','edges':[900+i]}} for i,q in enumerate(p['leads'])]+[{'name':'level_throat','response':{'status':'error'}}],'summary':{'status':'error'}}))
+        with patch('bridge_live.extend') as lead,patch('bridge_ladder.execute_ladder') as throat,self.assertRaises(LiveError):h.execute_height_ladder(self.client,b,layout_record=old)
+        lead.assert_not_called();throat.assert_not_called()
+    def test_cli_default_observes_and_inspect_does_not_execute(self):
+        b=self.brief();path=self.root/'brief.json';path.write_text(json.dumps(b))
+        args=['height-ladder','--params',str(path),'--context','dummy']
+        with patch('bridge_live.client_from_context',return_value=self.client),patch('bridge_height_ladder.plan_height_ladder',return_value={'status':'ok','game_constructed':False}) as plan,patch('bridge_height_ladder.execute_height_ladder') as build,contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(main(args),0)
+        plan.assert_called_once();build.assert_not_called();self.assertLess(len(out.getvalue().encode()),4096)
+
 if __name__ == '__main__':
     unittest.main()

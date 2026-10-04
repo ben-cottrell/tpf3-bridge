@@ -1,3 +1,36 @@
+## P33 complete - observed-height throat and four graded leads
+bridge_height_ladder.py plus bridge_live.py height-ladder/height-ladder-inspect:
+read-only observed plan, explicit execution, fresh inspection/checked-existing.
+Ten bounded endpoint hints bind exact current TRACK nodes/XYZ/tangents; six level,
+aligned parallel destinations determine core height. Four native graded leads retain
+external endpoints. Unsupported destination banks stop, never flatten. P32 retained.
+Build40408/session pif_1791105680_105229692: approach Z9.5, core/destination Z13.75,
+native movement Z14.279999733 independently read from destinations; separate height
+representations, unchanged tolerances. Twelve external TRAIN paths/six ordered forks,
+34level pointwork edges; independent48TRACK/33samples radius62.620096>=hard60,
+maximum grade0.018214286<=0.04, exact ports/joins/region passed. No train operation.
+Four350-unit leads plus450-unit throat: inclstubs leads370x15/core470x55/total840x55;
+destination bank35. Equal-scale plan/profile/route matrix under p33.
+Eight same-XY terrain before/after readings show native fill and cutting (mid-lead
+cut9.85); original terrain is not a conformity gate. NORMAL proposals used; no full
+structure/effects inventory. Heights selected from local ground, not default Z33.
+Native fit-radius forwarding separated from hard acceptance radius; horizontal port
+heading normalized without dropping observed grade. Rejecting trials/partial effects
+and ordinary checkpoint reloads retained locally. Final build receipt preserves its
+initial representation-check failure; corrected fresh inspection/checked-existing
+passed read-only, operations=[], no construction replay or hard-limit relaxation.
+python tools/quiet_checks.py --suite live_client --label pif-p33-acceptance:
+247passed,0fail/error/skip; .local_checks/pif-p33-acceptance_ruqhstav/report.json.
+py_compile/diff checks passed; exact commands/hashes/native receipts:
+.local_runs/live_python_interface/p33/checks.json,verification_commands.json,build.json,
+fresh_inspection.json,checked_existing.json,independent_ladder_result.json,
+terrain_comparison.json,footprint_comparison.json,observed_ladder.svg,observed_profile.svg.
+Save TPF3_Bridge_P33_Observed_Height_Complete_20261004; game_checkpoint.json and
+save_cleanup_result.json under p33; local milestone revision in checkpoint.json.
+No blockers, push, runner/station/signals/train changes. No continuous clearance,
+terrain optimum, comprehensive incidental history or cross-load identity guarantee.
+Actual usage unavailable. HANDOFF.md/result.json; stop P33 at accepted boundary.
+
 ## P32 complete - compact endpoint-derived native ladder
 plan_compact_ladder and existing ladder-layout/ladder-layout-inspect accept compact
 named positions/headings/groups/12explicit movements/selected limits, derive guides,

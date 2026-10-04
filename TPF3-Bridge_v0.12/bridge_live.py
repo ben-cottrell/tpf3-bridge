@@ -227,7 +227,10 @@ def connect_junction_at(client, brief, *, execute=False, junction_nodes=None):
     tolerance=brief['placement_tolerance']
     if type(tolerance) not in (int,float) or not math.isfinite(tolerance) or not 0<tolerance<=10:
         raise ValueError('placement_tolerance must be within(0,10] native units')
-    validate_project_brief({k:v for k,v in brief.items() if k!='placement_tolerance'},corridor=junction_nodes is not None)
+    if 'fit_radius' in brief:
+        v=brief['fit_radius']
+        if type(v) not in (int,float) or not math.isfinite(v) or v<brief['radius']:raise ValueError('fit_radius cannot lower the hard radius')
+    validate_project_brief({k:v for k,v in brief.items() if k not in ('placement_tolerance','fit_radius')},corridor=junction_nodes is not None)
     return _connect_project(client,brief,execute,junction=True,interior=True,junction_nodes=junction_nodes)
 
 def connect_corridor(client, brief, *, execute=False):
@@ -310,6 +313,7 @@ def _connect_project(client, brief, execute, guides=None, *, junction=False, int
                     raise ValueError('candidate is not a fully verified free endpoint')
                 params={k:brief[k] for k in ('radius','region','vertical')}
                 params.update(source=source,target=target,location=brief['source']|{'placement_tolerance':brief['placement_tolerance']},execute=execute,junction_nodes=junction_nodes or [])
+                if 'fit_radius' in brief:params['fit_radius']=brief['fit_radius']
             else:
                 params=_selected_parameters(client,records,selection,junction=junction);params['execute']=execute
             if junction:params['max_route_length']=brief['max_route_length']
@@ -1511,7 +1515,9 @@ def _select_throat_port(client,intent,*,interior=False,tolerance=None,outward_si
         eligible=(c.get('interior_eligible') if interior else c.get('eligible')) is True
         attached=connected and not interior and c.get('incident_count')==2 and c.get('incidence_complete') is True and not c.get('incident_output_truncated') and c.get('construction_owner') in (None,'none',-1,0)
         if not eligible and not attached:continue
-        d=c['outward_direction'];heading=math.degrees(math.acos(max(-1,min(1,outward_sign*(d[0]*direction[0]+d[1]*direction[1])/size))))
+        d=c['outward_direction'];horizontal=math.hypot(*d[:2])
+        if horizontal<=0:continue
+        heading=math.degrees(math.acos(max(-1,min(1,outward_sign*(d[0]*direction[0]+d[1]*direction[1])/(size*horizontal)))))
         if heading>intent['heading_tolerance_deg']:continue
         distance=math.dist(c['pos'],intent['guide_xyz'])
         if distance>(tolerance if tolerance is not None else (.5 if interior else 10)):continue
@@ -2461,7 +2467,7 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'ladder-layout', 'ladder-layout-inspect', 'complete-layout', 'complete-layout-inspect', 'branching-corridor', 'branching-corridor-inspect', 'multitrack-connection', 'multitrack-connection-inspect', 'paired-connection', 'paired-connection-inspect', 'layout-network', 'layout-network-inspect', 'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'switching-layout', 'switching-layout-inspect', 'switching-layout-continue', 'reciprocal-layout', 'reciprocal-layout-inspect', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'height-ladder','height-ladder-inspect','ladder-layout', 'ladder-layout-inspect', 'complete-layout', 'complete-layout-inspect', 'branching-corridor', 'branching-corridor-inspect', 'multitrack-connection', 'multitrack-connection-inspect', 'paired-connection', 'paired-connection-inspect', 'layout-network', 'layout-network-inspect', 'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'switching-layout', 'switching-layout-inspect', 'switching-layout-continue', 'reciprocal-layout', 'reciprocal-layout-inspect', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--reconciled-crossover', type=Path, help='explicit verified crossover evidence for connect-throat; rechecks read-only, never rebuilds it')
     parser.add_argument('--recipe-plan',type=Path,help='optional reviewed junction-recipe plan; must match current brief exactly')
@@ -2520,7 +2526,7 @@ def main(argv=None):
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
         if args.base_layout_record and (args.operation!='reciprocal-layout' or not args.execute):raise ValueError('--base-layout-record requires reciprocal-layout --execute')
         if args.prepared_switching and (args.operation!='switching-layout' or not args.execute):raise ValueError('--prepared-switching requires switching-layout --execute')
-        if args.layout_record and args.operation not in ('ladder-layout','ladder-layout-inspect','complete-layout','complete-layout-inspect','branching-corridor','branching-corridor-inspect','multitrack-connection','multitrack-connection-inspect','paired-connection','paired-connection-inspect','layout-network','layout-network-inspect','parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect','reciprocal-layout'):raise ValueError('--layout-record requires a supported layout operation')
+        if args.layout_record and args.operation not in ('height-ladder','height-ladder-inspect','ladder-layout','ladder-layout-inspect','complete-layout','complete-layout-inspect','branching-corridor','branching-corridor-inspect','multitrack-connection','multitrack-connection-inspect','paired-connection','paired-connection-inspect','layout-network','layout-network-inspect','parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect','reciprocal-layout'):raise ValueError('--layout-record requires a supported layout operation')
         if args.recipe_record and args.operation not in ('junction-recipe-inspect','junction-recipe-continue'):raise ValueError('--recipe-record requires recipe inspect/continue')
         if args.operation=='junction-recipe-continue' and not args.execute:raise ValueError('recipe continuation requires --execute')
         if args.recipe_plan and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--recipe-plan requires junction-recipe --execute')
@@ -2529,9 +2535,18 @@ def main(argv=None):
             raise ValueError('--reconciled-crossover requires connect-throat --execute')
         if args.discovery and args.operation not in ('connect-selected','reconcile-fixture'):
             raise ValueError('--discovery is only for connect-selected/reconcile-fixture')
-        if args.execute and args.operation not in ('ladder-layout', 'complete-layout', 'branching-corridor', 'multitrack-connection', 'paired-connection', 'layout-network', 'extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout', 'switching-layout', 'switching-layout-continue', 'reciprocal-layout'):
+        if args.execute and args.operation not in ('height-ladder','ladder-layout', 'complete-layout', 'branching-corridor', 'multitrack-connection', 'paired-connection', 'layout-network', 'extend', 'connect', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-continue', 'parallel-layout', 'switching-layout', 'switching-layout-continue', 'reciprocal-layout'):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
-        if args.operation=='ladder-layout':
+        if args.operation=='height-ladder':
+            from bridge_height_ladder import plan_height_ladder,execute_height_ladder
+            if not args.execute and args.layout_record:raise ValueError('observed planning accepts a brief, not a continuation record')
+            response=execute_height_ladder(client,params,layout_record=args.layout_record) if args.execute else plan_height_ladder(client,params)
+        elif args.operation=='height-ladder-inspect':
+            from bridge_height_ladder import inspect_height_ladder
+            if not args.layout_record:raise ValueError('--layout-record is required')
+            if _load_layout_record(args.layout_record)['plan']['brief']!=params:raise ValueError('height-ladder record differs from brief')
+            response=inspect_height_ladder(client,args.layout_record)
+        elif args.operation=='ladder-layout':
             from bridge_ladder import plan_ladder_input,execute_ladder
             response=execute_ladder(client,plan_ladder_input(params),layout_record=args.layout_record)
         elif args.operation=='ladder-layout-inspect':
