@@ -1,3 +1,26 @@
+## P43 complete — rotated near-straight lowering and Wickham connections
+
+Native float quantisation made two 0.003154-unit ARC fragments lower to invalid
+cubics. Bounded one-cubic near-straight conversion preserves native originals,
+exact attachments and existing conversion/engineering limits; no radius bypass.
+Build40408/session pif_1791130766_130315674: specified physical leads8,9,12,13
+extended through30-unit grade transitions to150, crossovers8@50→9@120 and
+13@50→12@120 accepted. Fresh readback verifies12 directional TRAIN routes,
+16 original user leads and station-owned snapshots unchanged. Sampled route
+minimum radius164.2678>=150; maximum grade0.002819964<=.01; connectors level.
+New save TPF3_Bridge_P43_Wickham_Leads_20261004.sav; exact path/hash in
+.local_runs/live_python_interface/p43/native/world_checkpoint.json (not reloaded).
+python tools/quiet_checks.py --suite live_client --label pif-p43-pre-native:
+323passed/0fail/error/skip; .local_checks/pif-p43-pre-native_wx1x2c92/report.json.
+Changed native pif_native.lua, test_live_client.py, actual regression fixture,
+NEARSTRAIGHT_FITTING.md and task/state notes. Native evidence: p43/native/
+final_result_verified.json, prefit.json, extensions/, crossovers/, verification02/;
+p43/checks.json, HANDOFF.md, checkpoint.json. Original failures preserved.
+No standalone Lua checker; staged Lua exercised successfully in game. Geometry
+sampled, snapshot sequential; platform association/save GUID unknown, physical
+train traversal unprobed. Local milestone only, no push; usage unavailable.
+Return topology decisions to Astra; no further connections authorised by P43.
+
 ## P42 complete — Wickham Station named read-only survey
 
 New save/checkpoint `TPF3_Bridge_P42_Wickham_20261004.sav` (SHA-256 in

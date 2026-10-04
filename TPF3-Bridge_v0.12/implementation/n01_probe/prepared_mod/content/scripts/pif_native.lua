@@ -706,7 +706,7 @@ function M.route(p)
  if not out.requested_route_verified then out.reason=length>p.max_length+.001 and "native_path_exceeds_requested_length" or "native_path_does_not_establish_requested_route" end
  return out
 end
-function M.fit(p,s,request_id,target,start)
+function M.fit(p,s,request_id,target,start,diagnostics)
  vector(p.end_xy);vector(p.end_direction)
  assert(finite(p.radius) and p.radius>0,"invalid_radius")
  local fitradius=p.fit_radius or p.radius*1.05
@@ -725,6 +725,13 @@ function M.fit(p,s,request_id,target,start)
  local t1=norm(p.end_direction)
  local result=api.engine.util.pathfinding.findDubinsPath(v({pos[1],pos[2],0}),v(t0),v({p.end_xy[1],p.end_xy[2],0}),v(t1),fitradius)
  assert(type(result)=="table" and #result>0 and #result<=8,"no_supported_bounded_fit")
+ local native_parts={}
+ for i,row in ipairs(result) do
+  local g=row[1];local p0,d0=sample(g,0,row[2]);local p1,d1=sample(g,1,row[2])
+  native_parts[i]={type=tostring(g.type),length=g.length,forward=row[2],start=p0,finish=p1,
+   tangent_start=d0,tangent_finish=d1,radius=g.type==api.type.EdgeGeometry.Type.ARC and g.arc.radius or nil}
+ end
+ if diagnostics then diagnostics.native_parts=native_parts;diagnostics.native_fit_radius=fitradius end
  -- Native float precision can emit sub-millimetre ARC parts on a straight leg.
  -- Remove only collectively <=the existing0.001 endpoint tolerance, with equally
  -- tiny heading changes. All remaining joins/endpoints and hard bounds still apply.
@@ -744,6 +751,7 @@ function M.fit(p,s,request_id,target,start)
  end
  assert(discardedlength<=.001 and #filtered>0,"unsupported_degenerate_native_fit")
  result=filtered
+ if diagnostics then diagnostics.discarded_native_tiny_parts=discarded;diagnostics.discarded_native_total_length=discardedlength end
  local controls,samples,total,maxerr,maxheading={}, {},0,0,0
  local orientation={forward_parts=0,backward_parametrised_parts=0};local orientation_evidence={}
  for i,row in ipairs(result) do
@@ -775,6 +783,43 @@ function M.fit(p,s,request_id,target,start)
  end
  assert(total<=800,"fit_length_bound")
  local last=controls[#controls];assert(distance(last.p1,p.end_xy)<=.001 and angle(last.t1,t1)<=.1,"fit_end_mismatch")
+ -- A nearly straight native ARC/STRAIGHT/ARC path can have millimetre ARC
+ -- pieces whose endpoints lose the transverse displacement at map float scale.
+ -- Lower that native path as one cubic, rather than construct invalid fragments.
+ -- This neither discards longer parts nor changes any engineering/conversion bound.
+ local original_controls=controls;local nearstraight=nil
+ local straight_count,arc_turn=0,0
+ for _,row in ipairs(result) do
+  local g=row[1]
+  if g.type==api.type.EdgeGeometry.Type.STRAIGHT then straight_count=straight_count+1
+  else arc_turn=arc_turn+g.length/math.abs(g.arc.radius)*180/math.pi end
+ end
+ local function sample_path(at)
+  local offset=0
+  for i,row in ipairs(result) do
+   local length=row[1].length
+   if at<=offset+length or i==#result then return sample(row[1],math.max(0,math.min(1,(at-offset)/length)),row[2]) end
+   offset=offset+length
+  end
+ end
+ if #controls>1 and straight_count==1 and arc_turn<=.1 then
+  local first=controls[1];local a,b=norm(first.t0),norm(last.t1)
+  local c={p0={first.p0[1],first.p0[2],first.p0[3]},p1={last.p1[1],last.p1[2],last.p1[3]},
+   t0={a[1]*total,a[2]*total,grade*total},t1={b[1]*total,b[2]*total,grade*total},length=total}
+  local g=cubic(c);local offset,count=0,0
+  -- Check every original native part, including both ends of short fragments.
+  for _,row in ipairs(result) do
+   for j=0,16 do
+    local u=j/16;local np=sample(row[1],u,row[2]);local cp=sample(g,(offset+u*row[1].length)/total)
+    maxerr=math.max(maxerr,distance(np,cp));count=count+1
+   end
+   offset=offset+row[1].length
+  end
+  assert(maxerr<=.1,"sampled_conversion_outside_tolerance")
+  nearstraight={original_pieces=#controls,proposal_pieces=1,arc_turn_deg=arc_turn,sample_count=count,sampled_XY_error=maxerr,sampled_only=true}
+  controls={c};last=c
+ end
+ if diagnostics then diagnostics.original_converted_controls=original_controls;diagnostics.nearstraight_repartition=nearstraight end
  local endgrade=target and target.grade or grade
  local endheight=target and target.pos[3] or last.p1[3]
  local profile,maxgrade=nil,nil
@@ -800,6 +845,7 @@ function M.fit(p,s,request_id,target,start)
  end
  local offset,maxsampledgrade,maxzerr,minsampledradius=0,0,0,math.huge
  local vertical_samples={}
+ if diagnostics then diagnostics.converted_controls=controls end
  for i,c in ipairs(controls) do
   if profile then
    local p0,d0=sample(profile,offset/total);local p1,d1=sample(profile,(offset+c.length)/total)
@@ -808,10 +854,13 @@ function M.fit(p,s,request_id,target,start)
    c.t1[3]=slope(d1)*math.sqrt(c.t1[1]^2+c.t1[2]^2)
   end
   local cg=cubic(c);samples[i]={};vertical_samples[i]={}
+  if diagnostics then diagnostics.checking_piece=i end
   local checkedradius=geometry_bounds(cg,p.region,p.radius,maxgrade or math.abs(grade))
   minsampledradius=math.min(minsampledradius,checkedradius)
   for _,u in ipairs({0,.25,.5,.75,1}) do
-   local np,nd=sample(result[i][1],u,result[i][2]);local cp,cd=sample(cg,u)
+   local np,nd
+   if nearstraight then np,nd=sample_path(offset+u*c.length) else np,nd=sample(result[i][1],u,result[i][2]) end
+   local cp,cd=sample(cg,u)
    maxerr=math.max(maxerr,distance(np,cp));if u==0 or u==1 then maxheading=math.max(maxheading,angle(nd,cd)) end
    local grade_here=slope(cd);maxsampledgrade=math.max(maxsampledgrade,math.abs(grade_here))
    if maxgrade then assert(math.abs(grade_here)<=maxgrade+.000001,"sampled_grade_exceeds_limit") end
@@ -828,6 +877,7 @@ function M.fit(p,s,request_id,target,start)
  assert(math.abs(slope(controls[1].t0)-grade)<=.000001 and math.abs(slope(last.t1)-endgrade)<=.000001,"endpoint_grade_mismatch")
  s.fits[request_id]={anchor=a,node=p.anchor_node,target=target,controls=controls,samples=samples,region=p.region,total_length=total,grade=grade,end_grade=endgrade,max_grade=maxgrade,min_radius=p.radius,built=false}
  return {fit_request=request_id,pieces=#controls,total_length=total,start_node=p.anchor_node,target_node=target and target.node or nil,start=pos,finish=last.p1,radius=p.radius,grade=grade,end_grade=endgrade,
+  native_parts=native_parts,original_native_controls=nearstraight and original_controls or nil,nearstraight_repartition=nearstraight,
   discarded_native_tiny_parts=discarded,discarded_native_total_length=discardedlength,
   vertical_domain=profile and "native_cubic_endpoint_height_grade" or "constant_grade_compatible_endpoints",max_grade=maxgrade,max_sampled_grade=maxsampledgrade,sampled_Z_error=maxzerr,
   vertical_samples=profile and vertical_samples or nil,controls=controls,sampled_XY_error=maxerr,endpoint_heading_error=maxheading,
@@ -1006,8 +1056,10 @@ function M.corridor(p,s,state,request_id,respond)
 end
 function M.extension(p,s,state,request_id,respond,connect_mode,junction_context)
  local stage,stages,fit="inspect",{},nil
+ local fit_diagnostics={}
  local function reply(status,value)
   value.stage=stage;value.stages=stages;value.fit=fit
+  if stage=="fit" and status~="ok" then value.fit_diagnostics=fit_diagnostics end
   respond(request_id,status,value)
  end
  local ok,err=pcall(function()
@@ -1028,7 +1080,7 @@ function M.extension(p,s,state,request_id,respond,connect_mode,junction_context)
   -- A small explicit native-fit margin accommodates ARC-to-cubic conversion;
   -- the requested minimum remains binding on sampled realised branch geometry.
   if junction_context then b.fit_radius=junction_context.radius*1.05 end
-  local fit_id=request_id.."_fit";fit=M.fit(b,s,fit_id,target)
+  local fit_id=request_id.."_fit";fit=M.fit(b,s,fit_id,target,nil,fit_diagnostics)
   local fitted=s.fits[fit_id] -- retain invocation-local data across command callback
   if junction_context then
    fitted.junction_node=junction_context.node;fitted.min_radius=junction_context.radius

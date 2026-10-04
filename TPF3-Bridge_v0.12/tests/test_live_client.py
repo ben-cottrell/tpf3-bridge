@@ -4277,5 +4277,76 @@ class StationSurveyTests(unittest.TestCase):
             self.assertEqual(main(['station-survey','--context','dummy','--params',str(p)]),0)
         inspect.assert_called_once()
 
+class NativeNearstraightEvidenceTests(unittest.TestCase):
+    """Independent Bezier checks of the actual native regression record.
+
+    These do not execute Lua; runtime acceptance also exercises the native repair.
+    """
+    def fixture(self):
+        return json.loads((Path(__file__).parent/'fixtures/live_rotated_nearstraight.json').read_text())
+
+    def observe(self,c,u):
+        import math
+        # Convert the recorded Hermite handles to Bezier control points, then use
+        # de Casteljau derivatives independently of the native bound implementation.
+        points=[c['p0'],[c['p0'][k]+c['t0'][k]/3 for k in range(3)],
+                [c['p1'][k]-c['t1'][k]/3 for k in range(3)],c['p1']]
+        def lerp(a,b):return [(1-u)*x+u*y for x,y in zip(a,b)]
+        d=[[3*(b[k]-a[k]) for k in range(3)] for a,b in zip(points,points[1:])]
+        dd=[[2*(b[k]-a[k]) for k in range(3)] for a,b in zip(d,d[1:])]
+        speed=lerp(lerp(d[0],d[1]),lerp(d[1],d[2]));accel=lerp(dd[0],dd[1])
+        horizontal=math.hypot(*speed[:2]);self.assertGreater(horizontal,1e-9)
+        cross=abs(speed[0]*accel[1]-speed[1]*accel[0])
+        radius=horizontal**3/cross if cross else math.inf
+        return radius,abs(speed[2])/horizontal
+
+    def test_captured_native_arc_is_valid_but_fragment_cubic_is_not(self):
+        f=self.fixture();parts=f['failed_native_parts']
+        self.assertEqual(len(parts),3);self.assertAlmostEqual(parts[0]['length'],.003154277801513672)
+        self.assertEqual(parts[0]['radius'],157.5);self.assertEqual(parts[0]['start'][1],parts[0]['finish'][1])
+        self.assertNotEqual(parts[0]['tangent_start'][1],0)
+        radius=min(self.observe(f['failed_controls'][0],j/256)[0] for j in range(257))
+        self.assertLess(radius,.01)  # Rejecting these fragments is still correct.
+
+    def test_actual_repartition_meets_hard_radius_and_grade_at_finer_samples(self):
+        f=self.fixture();fit=f['accepted_fit'];c=fit['controls'][0]
+        self.assertEqual(fit['pieces'],1);self.assertEqual(len(fit['original_native_controls']),3)
+        self.assertEqual(fit['requested_min_radius'],150);self.assertEqual(fit['max_grade'],.01)
+        samples=[self.observe(c,j/256) for j in range(257)]
+        self.assertGreaterEqual(min(x[0] for x in samples),150)
+        self.assertLessEqual(max(x[1] for x in samples),.01)
+        self.assertLessEqual(fit['nearstraight_repartition']['sampled_XY_error'],.1)
+        self.assertEqual(c['p0'],f['failed_controls'][0]['p0'])
+        self.assertLess(abs(c['p1'][0]-f['brief']['end_xy'][0]),.001)
+        self.assertLess(abs(c['p1'][1]-f['brief']['end_xy'][1]),.001)
+        self.assertEqual(c['p1'][2],f['brief']['vertical']['end_height'])
+        self.assertAlmostEqual(c['t0'][2]/(c['t0'][0]**2+c['t0'][1]**2)**.5,fit['grade'],places=7)
+        self.assertEqual(c['t1'][2],0)
+
+    def test_radius_check_still_detects_material_curve_and_axes_straight(self):
+        curved={'p0':[0,0,0],'p1':[10,10,0],'t0':[15,0,0],'t1':[0,15,0]}
+        self.assertLess(min(self.observe(curved,j/256)[0] for j in range(257)),150)
+        straight={'p0':[0,0,0],'p1':[30,0,0],'t0':[30,0,0],'t1':[30,0,0]}
+        self.assertTrue(all(self.observe(straight,j/256)==(float('inf'),0) for j in range(257)))
+
+    def test_native_domain_and_hard_checks_remain_explicit(self):
+        source=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text()
+        fit=source.split('function M.fit(',1)[1].split('function M.readback',1)[0]
+        for guard in ('#controls>1 and straight_count==1 and arc_turn<=.1',
+                      'discardedlength<=.001','geometry_bounds(cg,p.region,p.radius,maxgrade or math.abs(grade))',
+                      'maxerr<=.1 and maxheading<=.1','maxzerr<=.001','endpoint_grade_mismatch'):
+            self.assertIn(guard,fit)
+
+    def test_native_diagnostics_remain_local_under_cli_output_target(self):
+        f=self.fixture();response={'status':'ok','session':'test_session','evidence':'local.workflow.json',
+                                  'fit':f['accepted_fit']}
+        with tempfile.TemporaryDirectory() as tmp:
+            params=Path(tmp)/'brief.json';params.write_text(json.dumps(f['brief']))
+            client=type('Client',(),{'session':'test_session'})()
+            stdout=io.StringIO()
+            with patch('bridge_live.client_from_context',return_value=client),patch('bridge_live.extend',return_value=response),contextlib.redirect_stdout(stdout):
+                self.assertEqual(main(['extend','--context','unused','--params',str(params)]),0)
+            self.assertLess(len(stdout.getvalue().encode()),4096)
+
 if __name__ == '__main__':
     unittest.main()
