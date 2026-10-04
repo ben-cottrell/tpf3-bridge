@@ -72,6 +72,28 @@ class LiveClientTests(unittest.TestCase):
         self.assertEqual(ctx.exception.status, 'reconciliation_required')
         self.assertEqual(len(list(self.client.mod.rglob('*.lua'))), 1)
 
+    def test_experimental_degree_four_tracks_explicit_mutation_and_unknown_effects(self):
+        self.assertFalse(is_mutation('degree_four_candidate', {'execute': False}))
+        self.assertTrue(is_mutation('degree_four_candidate', {'execute': True}))
+        self.assertFalse(is_mutation('inspect_degree_four', {'execute': True}))
+        self.client.timeout = .02
+        with self.assertRaises(LiveError) as failed:
+            self.client.request('degree_four_candidate', {'execute': True}, request_id='candidate')
+        self.assertEqual(failed.exception.status, 'mutation_outcome_unknown')
+        restarted = LiveClient(self.client.mod, self.log, self.client.evidence, 'test_session', .02)
+        with self.assertRaises(LiveError) as blocked:
+            restarted.request('degree_four_candidate', {'execute': True}, request_id='repeat')
+        self.assertEqual(blocked.exception.status, 'reconciliation_required')
+        self.assertEqual(len(list(self.client.mod.rglob('*.lua'))), 1)
+
+    def test_degree_four_preflight_and_inspection_are_read_only_cli_entries(self):
+        params = self.root / 'params.json'; params.write_text(json.dumps({'execute': False}))
+        for operation in ('degree_four_candidate', 'inspect_degree_four'):
+            with patch('bridge_live.client_from_context', return_value=self.client), patch.object(self.client, 'request', return_value={'status':'ok', 'game_constructed':False}) as request, contextlib.redirect_stdout(io.StringIO()) as out:
+                self.assertEqual(main([operation, '--context', 'dummy', '--params', str(params)]), 0)
+            request.assert_called_once_with(operation, {'execute':False})
+            self.assertLess(len(out.getvalue().encode()),4096)
+
     def test_late_rejection_with_unknown_effects_still_blocks_mutation(self):
         self.client.timeout = .02
         with self.assertRaises(LiveError):
@@ -3560,6 +3582,77 @@ class RouteSetTests(unittest.TestCase):
         inspect.assert_called_once();self.assertLess(len(stdout.getvalue().encode()),4096)
         es,ns,row=self.data();rows=[row('a',[10,20]),row('b',[20,10],True)];pairs=rs.assess_route_set(rows,es,ns);s=rs._matrix(rows,pairs)
         self.assertIn('TRACK [10, 20]',s);self.assertIn('reverse [10, 20]',s);self.assertIn('| a | — | O |',s)
+
+class PlainCrossingTests(unittest.TestCase):
+    def record(self):
+        import itertools
+        import bridge_crossing as bc
+        rows=[]
+        for a,b in itertools.permutations(bc.ARMS,2):
+            found=(a,b) in bc.STRAIGHT
+            rows.append({'from':a,'to':b,'status':'ok','result':{'native_path_found':found,'requested_route_verified':found,'transport_continuous':found,'truncated':False,'path_count':1 if found else 0,'path':[{}] if found else [],'reason':None if found else 'no_native_path_returned'}})
+        return {'arms':[{'id':i} for i in range(1,5)],'center_node':10,'transport_truncated':False,'routes':rows}
+
+    def test_four_straights_eight_observed_absences_qualify_without_global_claim(self):
+        from bridge_crossing import classify
+        r=classify(self.record())
+        self.assertTrue(r['qualified']);self.assertEqual(r['straight_verified'],4)
+        self.assertFalse(r['global_no_route_proof']);self.assertEqual(r['shared_physical_crossing_node'],10)
+
+    def test_native_turn_error_truncation_and_missing_observations_do_not_qualify(self):
+        from bridge_crossing import classify
+        r=self.record();r['routes'][1]['result']['native_path_found']=True
+        self.assertEqual(classify(r)['outcome'],'native_turn_movements_observed')
+        for field in ('status','truncated'):
+            r=self.record()
+            if field=='status':r['routes'][1]['status']='route_error'
+            else:r['routes'][1]['result']['truncated']=True
+            self.assertFalse(classify(r)['qualified'])
+        r=self.record();r['routes'].pop();self.assertFalse(classify(r)['qualified'])
+        r=self.record();r['routes'][0]['result']['transport_continuous']=False;self.assertFalse(classify(r)['qualified'])
+
+    def test_saved_inspection_is_read_only_and_rejects_stale_or_unfinished_records(self):
+        import bridge_crossing as bc
+        with tempfile.TemporaryDirectory() as tmp:
+            client=type('Client',(),{'session':'s','evidence':Path(tmp)})()
+            client.request=unittest.mock.Mock(return_value={'status':'ok','result':self.record()|{'game_constructed':False}})
+            h={'region':{'min':[-1,-1,-1],'max':[1,1,1]},'max_edges':2,'guide_xyz':[0,0,0],'position_tolerance':.01,'travel_direction':[1,0],'heading_tolerance_deg':.1}
+            brief={'version':1,'center':[0,0,0],'region':h['region'],'endpoints':{n:h for n in bc.ARMS}}
+            record={'version':1,'session':'s','brief':brief,'params':{'ports':{}},'response':{'result':{'game_constructed':True,'center_node':10,'arm_edges':[1,2,3,4]}}}
+            p=Path(tmp)/'saved.json';p.write_text(json.dumps(record))
+            r=bc.inspect_crossing(client,p);self.assertEqual(r['status'],'ok');self.assertFalse(r['game_constructed'])
+            client.request.assert_called_once();self.assertEqual(client.request.call_args.args[0],'inspect_degree_four')
+            record['session']='old';p.write_text(json.dumps(record))
+            with self.assertRaises(LiveError):bc.inspect_crossing(client,p)
+            record['session']='s';record['response']['result']['game_constructed']='unknown';p.write_text(json.dumps(record))
+            with self.assertRaises(ValueError):bc.inspect_crossing(client,p)
+            self.assertEqual(client.request.call_count,1)
+
+    def test_named_crossing_incidence_reacquires_exact_node_without_widening_query(self):
+        import bridge_route_set as rs
+        edges={i:{'id':i,'node0':10,'node1':20+i,'p0':[0,0,0],'p1':[i,0,0],'road_type':'TRACK'} for i in range(1,5)}
+        record={'junctions':{'crossing':{'node_id':10}},'brief':{'junctions':{'crossing':{'named_hint':True}}},'node_observations':[],'edge_observations':[]}
+        c={'node_id':10,'pos':[0,0,0],'incident_edges':[1,2,3,4]}
+        with patch('bridge_route_set.live.discover',return_value={'status':'ok','result':{'complete':True,'candidates':[]}}) as discovery,patch('bridge_route_set._junction',return_value=(c,'fresh')) as binding:
+            result=rs._incidence(None,edges,record)
+        self.assertTrue(result[10]['complete']);self.assertEqual(result[10]['degree'],4)
+        binding.assert_called_once_with(None,{'named_hint':True})
+        self.assertEqual(discovery.call_args_list[0].args[1]['region'],{'min':[-.1,-.1,-.1],'max':[.1,.1,.1]})
+        record['node_observations']=[]
+        with patch('bridge_route_set.live.discover',return_value={'status':'ok','result':{'complete':True,'candidates':[]}}),patch('bridge_route_set._junction',return_value=(c|{'node_id':999},'changed')):
+            self.assertFalse(rs._incidence(None,edges,record)[10]['complete'])
+
+    def test_construction_defaults_read_only_and_explicit_execution_is_forwarded(self):
+        import bridge_crossing as bc
+        with tempfile.TemporaryDirectory() as tmp:
+            client=type('Client',(),{'session':'s','evidence':Path(tmp)})()
+            client.request=unittest.mock.Mock(return_value={'status':'ok','result':{'game_constructed':False}})
+            h={'region':{'min':[-1,-1,-1],'max':[1,1,1]},'max_edges':2,'guide_xyz':[0,0,0],'position_tolerance':.01,'travel_direction':[1,0],'heading_tolerance_deg':.1}
+            b={'version':1,'center':[0,0,0],'region':h['region'],'endpoints':{n:h for n in bc.ARMS}}
+            with patch('bridge_crossing.live._select_throat_port',return_value=({'edge_snapshot':{'id':1},'node_id':2},'discovery')):
+                bc.crossing(client,b);self.assertIs(client.request.call_args.args[1]['execute'],False)
+                bc.crossing(client,b,execute=True);self.assertIs(client.request.call_args.args[1]['execute'],True)
+            self.assertEqual(client.request.call_count,2)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1281,4 +1281,104 @@ function M.test_approach(p,s,state,request_id,respond)
   respond(request_id,ok and "ok" or "mutation_unverified",ok and result or {error=tostring(result):sub(1,400),game_constructed="unknown",retry=false})
  end)
 end
+-- P35: experimental ordinary degree-four TRACK node. No crossing/slip enum,
+-- transport flags or presumed movement semantics are supplied.
+function M.inspect_degree_four(p)
+ local arms,ports={},{}
+ assert(type(p.ports)=="table" and p.ports.W and p.ports.E and p.ports.S and p.ports.N,"four_named_ports_required")
+ local center=api.engine.getComponent(p.center_node,api.type.ComponentType.BASE_NODE)
+ assert(center,"current_center_node_missing")
+ local center_position=arr(center.position)
+ if p.center then assert(near(center_position,p.center,.001),"center_position_changed") end
+ assert(type(p.arm_edges)=="table" and #p.arm_edges==4,"four_recorded_arms_required")
+ local ids=api.engine.system.streetSystem.getNodeSegments(p.center_node)
+ assert(#ids==4,"current_degree_four_incidence_missing")
+ local expected={};for _,id in ipairs(p.arm_edges) do expected[id]=true end
+ for _,id in ipairs(ids) do assert(expected[id],"current_crossing_incidence_changed");arms[#arms+1]=edge(id) end
+ for name,q in pairs(p.ports) do
+  local stub=assert_fresh(q.edge_snapshot);assert(q.node_id==stub.node0 or q.node_id==stub.node1,"attachment_changed")
+  local attached=nil
+  for _,a in ipairs(arms) do if a.node0==q.node_id or a.node1==q.node_id then assert(not attached,"ambiguous_arm_identity");attached=a end end
+  assert(attached and (attached.node0==p.center_node or attached.node1==p.center_node),"exact_arm_attachment_missing")
+  ports[name]={stub=stub,arm=attached,node=q.node_id}
+ end
+ local network=api.engine.getComponent(p.center_node,api.type.ComponentType.TRANSPORT_NETWORK)
+ local movements={};local truncated=false
+ if network and network.edges then for i,row in ipairs(network.edges) do
+  if i<=16 then
+   local connections={};for j,n in ipairs(row.conns) do if j<=4 then connections[#connections+1]=node_id(n) else truncated=true end end
+   movements[#movements+1]={index=i-1,TRAIN=row.transportModes[E.TransportMode.TRAIN]==true,connections=connections,length=row.geometry.length,forward_only=row.forwardOnly}
+  else truncated=true end
+ end end
+ local cfg=api.engine.getComponent(p.center_node,api.type.ComponentType.BASE_NODE_CONFIG)
+ local node_config={available=cfg~=nil,double_slip_switch="unknown"}
+ if cfg then node_config.double_slip_switch=cfg.doubleSlipSwitch end
+ local result={experimental=true,game_constructed=false,center_node=p.center_node,center_position=center_position,arms=arms,ports=ports,
+  native_node_transport=movements,transport_truncated=truncated,base_node_config=node_config,routes={},
+  native_effect_history_complete=false,train_traversal="unprobed",reservation_availability="unprobed"}
+ for _,from in ipairs({"W","E","S","N"}) do for _,to in ipairs({"W","E","S","N"}) do if from~=to then
+  local a,z=ports[from].stub,ports[to].stub
+  local q={source_edge=a.id,source_node=a.node0==ports[from].node and a.node1 or a.node0,
+   target_edge=z.id,target_node=z.node0==ports[to].node and z.node1 or z.node0,
+   required_edges={a.id,z.id},mode="TRAIN",max_length=1000,junction_nodes={p.center_node}}
+  local ok,r=pcall(M.route,q);result.routes[#result.routes+1]={from=from,to=to,status=ok and "ok" or "route_error",result=ok and r or {error=tostring(r):sub(1,400)}}
+ end end end
+ return result
+end
+function M.degree_four_candidate(p,s,state,request_id,respond)
+ assert(type(p.execute)=="boolean" and type(p.ports)=="table","experimental_candidate_parameters_required")
+ vector(p.center);assert(#p.center==3,"center_XYZ_required");in_region(p.center,p.region)
+ local count=0;local nodes={};local segments={};local before={}
+ local centre=api.type.NodeAndEntity.new();centre.entity=-10;centre.comp.position=v(p.center);nodes[1]=centre
+ local resource,template,style
+ for i,name in ipairs({"W","E","S","N"}) do
+  local q=p.ports[name];assert(q,"named_arm_missing");count=count+1
+  local a=assert_fresh(q.edge_snapshot);local e,pos,direction,grade=anchor({anchor_edge=a.id,anchor_node=q.node_id})
+  local inc=api.engine.system.streetSystem.getNodeSegments(q.node_id);assert(#inc==1 and inc[1]==a.id,"candidate_attachment_not_free")
+  local dx,dy=p.center[1]-pos[1],p.center[2]-pos[2];local length=math.sqrt(dx*dx+dy*dy)
+  assert(length>=20 and length<=300 and math.abs(pos[3]-p.center[3])<=.001 and math.abs(grade)<=1e-6,"level_bounded_candidate_required")
+  -- The caller supplies one rotated/translated orthogonal experiment. Validate
+  -- its actual native arm directions, rather than imposing any transport edges.
+  assert(angle(direction,{dx,dy,0})<=.1,"arm_tangent_not_toward_center")
+  if not template then template=a.template;style=a.style;resource=api.res.streetTemplateRep.get(api.res.streetTemplateRep.find(template)) end
+  assert(a.template==template and a.style==style and resource and resource.laneConfigs,"incompatible_candidate_resources")
+  in_region(pos,p.region)
+  before[i]=M.route({source_edge=a.id,source_node=a.node0,target_edge=a.id,target_node=a.node1,single_edge=true,required_edges={a.id},mode="TRAIN",max_length=1000})
+  assert(before[i].requested_route_verified,"original_stub_route_unverified")
+  local seg=api.type.SegmentAndEntity.new();seg.entity=-i;seg.type=1
+  seg.comp.node0=q.node_id;seg.comp.node1=-10;seg.comp.position0=v(pos);seg.comp.position1=v(p.center)
+  seg.comp.tangent0=v({dx,dy,0});seg.comp.tangent1=seg.comp.tangent0
+  seg.comp.type=E.BaseEdgeType.NORMAL;seg.comp.typeIndex=1;seg.comp.laneConfigs=resource.laneConfigs
+  seg.comp.roadTemplate=template;seg.comp.roadStyle=style;seg.comp.roadType=E.RoadType.TRACK;segments[i]=seg
+ end
+ for _ in pairs(p.ports) do count=count-1 end;assert(count==0,"exactly_four_named_ports_required")
+ local function toward(q) local _,pos=anchor({anchor_edge=q.edge_snapshot.id,anchor_node=q.node_id});return norm({p.center[1]-pos[1],p.center[2]-pos[2]}) end
+ local w,e,n,ss=toward(p.ports.W),toward(p.ports.E),toward(p.ports.N),toward(p.ports.S)
+ assert(angle(w,{-e[1],-e[2]})<=.1 and angle(n,{-ss[1],-ss[2]})<=.1 and math.abs(w[1]*n[1]+w[2]*n[2])<=.001,"orthogonal_opposed_arm_domain_required")
+ local value={experimental=true,stage="preflight",game_constructed=false,through_before=before,
+  requested_representation="four_ordinary_TRACK_arms_one_BaseNode",crossing_semantics="unqualified",preview="no_existing_SimpleProposal_preview_exposed"}
+ if not p.execute then respond(request_id,"ok",value);return end
+ assert(p.authorised==true and not s.mutationPending,"explicit_authority_and_clear_journal_required")
+ local proposal=api.type.SimpleProposal.new();proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments
+ s.mutationPending=request_id;local root=state:get() or {};root.pifLive=s;state:set(root)
+ api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(res,success)
+  local ids={};value.stage="build";value.native_command_success=success==true
+  if success~=true then value.game_constructed="unknown";value.error="native_degree_four_candidate_rejected";value.retry=false;respond(request_id,"mutation_unverified",value);return end
+  local ok,out=pcall(function()
+   local receipt=res.proposal.proposal
+   value.effects={added_segments=#receipt.addedSegments,added_nodes=#receipt.addedNodes,removed_segments=#receipt.removedSegments,removed_nodes=#receipt.removedNodes}
+   for _,x in ipairs(receipt.addedSegments) do ids[#ids+1]=x.entity end;value.returned_edges=ids
+   assert(#ids==4,"candidate_receipt_not_four_TRACK_arms")
+   local centres={}
+   for _,id in ipairs(ids) do local a=edge(id)
+    for _,node in ipairs({a.node0,a.node1}) do local known=false;for _,q in pairs(p.ports) do if node==q.node_id then known=true end end;if not known then centres[node]=(centres[node] or 0)+1 end end
+   end
+   local center,count=nil,0;for node,c in pairs(centres) do assert(c==4,"new_shared_center_identity_unestablished");center=node;count=count+1 end;assert(count==1,"one_native_center_required")
+   value.readback=M.inspect_degree_four({center_node=center,center=p.center,arm_edges=ids,ports=p.ports})
+   value.center_node=center;value.arm_edges=ids;value.game_constructed=true;value.stage="readback";s.mutationPending=nil;return value
+  end)
+  if not ok then value.error=tostring(out):sub(1,400);value.game_constructed="unknown";value.retry=false end
+  respond(request_id,ok and "ok" or "mutation_unverified",ok and out or value)
+ end)
+end
 return M

@@ -142,6 +142,17 @@ def _incidence(client,edges,record):
         complete=q['status']=='ok' and v.get('complete') is True and len(sets)==1 and len(cs)>0 and all(c.get('incidence_complete') is True and not c.get('incident_output_truncated') for c in cs)
         ids=list(next(iter(sets))) if complete else []
         out[n]={'complete':complete,'edges':ids,'degree':len(ids) if complete else None,'evidence_request':q.get('request_id')}
+        # Native movement bounding volumes can omit the exact BaseNode position
+        # from a tiny spatial query. Reacquire a caller-named junction through its
+        # already authorised hint; exact node identity still decides correspondence.
+        # Do not enlarge every query or infer incidence from nearby track.
+        if not complete and q['status']=='ok' and v.get('complete') is True and not cs:
+            names=[name for name,c in record.get('junctions',{}).items() if c.get('node_id')==n]
+            if len(names)==1:
+                c,rid=_junction(client,record['brief']['junctions'][names[0]])
+                if c['node_id']==n and c['pos']==p:
+                    ids=c['incident_edges']
+                    out[n]={'complete':True,'edges':ids,'degree':len(ids),'evidence_request':rid,'source':'fresh_named_exact_junction'}
     extra=sorted({i for v in out.values() for i in v['edges']}-set(edges))
     if len(extra)+len(edges)>256:raise live.LiveError('observation_bound','route-set incidence exceeds256 TRACK observations')
     for i in range(0,len(extra),16):

@@ -1,12 +1,5 @@
 # PIF-P35 — native plain rail crossing capability
 
-**STOPPED — plain_crossing_construction_contract_unestablished, 4 October 2026.**
-Relevant native bindings/resources inspected; generic node/edge proposals, slips
-and road–rail crossings do not establish a plain straight-only rail diamond contract.
-No native trial, implementation stub or alternative topology. Source/check evidence
-in `.local_runs/live_python_interface/p35/`; concise finding in
-`implementation/live_python_interface/plain_crossing_capability.md`.
-
 P34 acceptedbf5f5b958f638aa5cd5554d55cd7521419763921. Coordinator design review for approved6approach/16destination8-12-8 reference found crossing treatment unresolved. Existing M.crossover constructs a connecting link with two turnouts; that is NOT a plain diamond crossing. Current construction paths force NORMAL and no plain crossing operation is exposed. Do not assume unsupported from this absence; first inspect relevant local native docs/examples and existing actual game mechanisms.
 
 Astra design choice: evaluate a SIMPLE AT-GRADE PLAIN CROSSING before adding grade separation or complex slips to the reference design. This is a reusable bridge primitive capability task, not a railway design delegation. Two independent continuous tracks intersect geometrically; intended movements are west<->east and south<->north, with no intended turning connection. A crossing can impose an operational conflict despite no shared rail segment; record that distinction explicitly. No capacity/signalling inference.
@@ -20,3 +13,22 @@ One native crossing qualification when feasible: prove both intended straight-th
 Include reusable API/CLI docs, affected deterministic checks, one useful native demonstration, compact handoff, ignored raw evidence and local milestone commit if meaningful implementation completed. Reuse unaffected fitting/grade tests. Existing native road/terrain clearance authorised; no need protect old disposable fixtures, no blind replay. No station buildings/signals/train operations, host recovery/restarts, dependencies/services, new chats/agents or remote push/PR. Do not rewrite existing templates.
 
 Sol Medium for narrow native capability integration. Astra retains all larger topology/independence/footprint decisions. Completion message to coordinator01a0f987-8917-7f31-84c3-838acacc9e04 permanently human authorised plus local/final handoff; external review binding, no bypass.40minute fallback.
+
+## Coordinator continuation — empirical native formation
+Source review accepted as incomplete qualification at415f6a3, not an external blocker. Previous demand for a documented plain-diamond producer was too restrictive: documented generic SimpleProposal TRACK/node insertion is enough to test an unknown native formation outcome. This explicitly supersedes the earlier source-contract prerequisite. No external tool denial is being overridden.
+
+Astra specifies the experiment: use the SAME orthogonal level four-endpoint geometry and documented ordinary native TRACK/node proposal fields. First test four straight arms incident on one centre BaseNode in a coherent native proposal, using native valid track resource/settings and standard endpoint attachment. This is an EXPERIMENTAL degree-four node candidate, not a pre-certified crossing or invented CROSSING enum. Let the native engine accept/reject/generate transport; record actual effects and native identities. Use available native proposal validation first if already exposed. Existing native map ownership covers candidate construction and clearance; lack of rollback is not a gate.
+
+If accepted, inspect physical incidence/native transport and all12ordered distinct-arm movements: four straight-through directions expected for a plain crossing, eight turn directions to test, no assumption of absence. Report route-search failure or bounded no-path only as supported by the actual native response, not universal no-route proof. Distinguish accepted geometry, observed generated node type/transport and verified intended/non-intended paths. A four-arm junction permitting turns is a different result, not a diamond success. Graph/resource overlap must reflect the crossing conflict. If ordinary shared-node construction is rejected or yields a different object, preserve that informative result and precise engine error; do not infer generic API unavailability from docs. A second candidate (two independent crossing curves) is only justified by documented proposal processing or concrete result suggesting automatic intersection formation, not random parameter search.
+
+Do not draw/fake a diamond or manually prescribe unsupported transport flags. Do not substitute slips/flyover/crossover or solve full station topology. Documented primitive insertion with unproven semantics is a legitimate native experiment; production crossing API is added only after actual qualification. Keep evidence/reconciliation honest, no blind replay. Reuse unaffected261tests; only affected implementation checks if code changes. Return compact finding and local commit if justified, same P35 attempt history retained. Sol Medium, same authority/exclusions/completion workflow.
+
+## P35 completed � observed native plain crossing
+One generic orthogonal four-arm candidate accepted on40408; exact centre103501,
+four straight native paths verified and eight turn queries returned no path.
+Reusable plain-crossing/inspection API+CLI and exact named crossing incidence
+support added.268affected quiet tests passed; fresh-process inspection and P34
+resource matrix show shared crossing node even without shared perpendicular TRACKs.
+Evidence: .local_runs/live_python_interface/p35/empirical/. Initial415f6a3 finding
+preserved; no global no-route, capacity, signalling or train-operation guarantee.
+Stop P35 at this boundary; larger topology belongs to coordinator. No push.

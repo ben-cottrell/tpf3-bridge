@@ -1,22 +1,28 @@
-## P35 qualification stopped - plain crossing contract unestablished
-Relevant installed build40408 native proposal/type/component bindings and bounded
-bundled helpers/menu metadata plus current official documentation inspected.
-Generic SimpleProposal TRACK/node insertion exists; no source-backed plain straight-
-only rail diamond formation/identity contract established. BaseEdgeType has only
-NORMAL/BRIDGE/TUNNEL; absence alone is not impossibility proof. Documented slip
-conversion false means single slip, not plain crossing. RailroadCrossing types are
-road-rail resources, not proof of rail-rail support; lane configs expose road/tram.
-No invented enum/API, fake crossing, alternate topology, native calls/mod edits,
-construction or save/load. Specified orthogonal experiment remains unperformed.
-Minimal missing capability: supported native plain rail crossing producer/formation
-contract with exact crossing identity and straight-through transport representation.
-No claim of global game/UI impossibility. P34 graph separation still leaves physical
-crossing/interlocking/clearance unknown; no capacity/signalling inference.
-implementation/live_python_interface/plain_crossing_capability.md; exact ranges/hashes
-and result/checks/handoff under .local_runs/live_python_interface/p35/.
-P34 261passed evidence reused: implementation/test source hashes unchanged; no rerun.
-No station/physics/runner changes or push. Actual usage unavailable. Coordinator decides
-next bounded action; no new topology selected. Documentation checkpoint in p35/checkpoint.json.
+## P35 complete - observed native level orthogonal plain crossing
+bridge_crossing.crossing/inspect_crossing and bridge_live.py plain-crossing /
+plain-crossing-inspect: default read-only current-port preflight; explicit execution,
+completed-record fresh readback, native rejection/unknown-effect journal guards.
+Four ordinary NORMAL TRACK arms/one centre, no fabricated enum/transport/slip.
+Level orthogonal opposed arms20..300native units with current free exact endpoints,
+inherited resources, authorised region; demonstrated120arms and no other domain claim.
+Build40408/session pif_1791110198_109747773: centre(-1800,-4700,2.25), node103501,
+TRACK103502/103705/103707/103708; receipt adds4segments/1node, removes0. Four straight
+TRAIN paths complete, eight turn queries no_native_path_returned (not global proof).
+Central native transport4bidirectional TRAIN rows/5indices; BaseNodeConfig unavailable.
+Fresh Python CLI inspection passed read-only. P34 matrix4complete paths/6overlap:
+perpendicular paths share node103501 but no TRACK/transport-row; no collision-free,
+capacity/signalling/reservation/train-traversal claim. Named exact junction reacquisition
+fixes missing tiny-box incidence without widening tolerances; failed initial evidence kept.
+python tools/quiet_checks.py --suite live_client --label pif-p35-final-acceptance:
+268passed,0fail/error/skip; .local_checks/pif-p35-final-acceptance_cvrtoukd/report.json.
+Original415f6a3 source-only finding/evidence preserved; coordinator permitted generic
+empirical formation. .local_runs/live_python_interface/p35/empirical/: build.json,
+fresh_inspection.json,qualification.json,completed_record.json,cli_inspection_stdout.json,
+route_set_stdout.json,movement_report.json,movement_matrix.md,checks.json,HANDOFF.md.
+No alternative topology, physics/stations/runner/restart/push. No blockers; bounded
+sequential observation, cross-load identity/acute crossings unqualified. Usage unknown.
+Milestone revision/checkpoint and useful game save recorded in empirical/checkpoint.json.
+Stop P35; Astra decides next design use.
 
 ## P34 complete - general read-only movement-set topology inspection
 bridge_route_set.inspect_route_set / bridge_live.py route-set-inspect accepts named
