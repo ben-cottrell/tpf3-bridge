@@ -15,7 +15,10 @@ import time
 import uuid
 
 MARKER = 'TPF3_BRIDGE_LIVE_RESPONSE '
+STATION_OPERATION = 'station_lookup'
 OPERATIONS = {'scissors_candidate', 'degree_four_candidate', 'inspect_degree_four', 'inspect', 'clear_obstructions', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'remove_branch', 'crossover', 'adjacent', 'verify_adjacency', 'junction', 'interior_junction', 'selected_connection', 'corridor'}
+
+OPERATIONS.add(STATION_OPERATION)
 
 def is_mutation(operation, params):
     return operation in ('build', 'test_approach', 'remove_branch', 'clear_obstructions') or (operation in ('scissors_candidate', 'extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover', 'adjacent', 'degree_four_candidate') and params.get('execute') is True)
@@ -2658,7 +2661,7 @@ class LiveClient:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=sorted(OPERATIONS | {'scissors','scissors-inspect','plain-crossing','plain-crossing-inspect','route-set-inspect','height-ladder','height-ladder-inspect','ladder-layout', 'ladder-layout-inspect', 'complete-layout', 'complete-layout-inspect', 'branching-corridor', 'branching-corridor-inspect', 'multitrack-connection', 'multitrack-connection-inspect', 'paired-connection', 'paired-connection-inspect', 'layout-network', 'layout-network-inspect', 'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'switching-layout', 'switching-layout-inspect', 'switching-layout-continue', 'reciprocal-layout', 'reciprocal-layout-inspect', 'reconcile-fixture'}))
+    parser.add_argument('operation', choices=sorted(OPERATIONS | {'station-survey','scissors','scissors-inspect','plain-crossing','plain-crossing-inspect','route-set-inspect','height-ladder','height-ladder-inspect','ladder-layout', 'ladder-layout-inspect', 'complete-layout', 'complete-layout-inspect', 'branching-corridor', 'branching-corridor-inspect', 'multitrack-connection', 'multitrack-connection-inspect', 'paired-connection', 'paired-connection-inspect', 'layout-network', 'layout-network-inspect', 'extend', 'connect', 'connect-selected', 'connect-brief', 'connect-corridor', 'connect-junction', 'connect-junction-at', 'connect-throat', 'connect-adjacent', 'junction-recipe', 'junction-recipe-inspect', 'junction-recipe-continue', 'parallel-layout', 'parallel-layout-inspect', 'switching-layout', 'switching-layout-inspect', 'switching-layout-continue', 'reciprocal-layout', 'reciprocal-layout-inspect', 'reconcile-fixture'}))
     parser.add_argument('--params', required=True, type=Path)
     parser.add_argument('--reconciled-crossover', type=Path, help='explicit verified crossover evidence for connect-throat; rechecks read-only, never rebuilds it')
     parser.add_argument('--recipe-plan',type=Path,help='optional reviewed junction-recipe plan; must match current brief exactly')
@@ -2745,6 +2748,9 @@ def main(argv=None):
             if not args.layout_record:raise ValueError('--layout-record is required')
             if json.loads(args.layout_record.read_text(encoding='utf-8-sig'))['brief']!=params:raise ValueError('crossing record differs from brief')
             response=inspect_crossing(client,args.layout_record)
+        elif args.operation=='station-survey':
+            from bridge_station import inspect_station
+            response=inspect_station(client,params)
         elif args.operation=='route-set-inspect':
             from bridge_route_set import inspect_route_set
             response=inspect_route_set(client,params)

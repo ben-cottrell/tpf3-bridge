@@ -4208,5 +4208,74 @@ class ReferenceRouteSetTests(unittest.TestCase):
         with patch('bridge_route_set.MAX_TRACKS',10),tempfile.TemporaryDirectory() as tmp:r,s,c,b=self.run_reference(tmp)
         self.assertEqual(r['status'],'observation_bound');self.assertEqual(r['pair_counts']['unknown'],1540)
 
+class StationSurveyTests(unittest.TestCase):
+    setUp=LiveClientTests.setUp
+    def station(self,count=16):
+        ports=[]
+        for i in range(count):
+            pos=[30,i*8+(i%2)*2,12+i*.01];e={'id':100+i,'node0':200+i,'node1':300+i,'p0':[0,pos[1],12],'p1':pos,'road_type':'TRACK'}
+            ports.append({'node_id':300+i,'edge_id':100+i,'pos':pos,'outward_direction':[1,0,0],'grade':.001,
+                'edge_snapshot':e,'incident_count':1,'incident_edges':[100+i],'incidence_complete':True,
+                'incident_output_truncated':False,'construction_owner':'none','eligible':True})
+        return {'outcome':'resolved','complete':True,'name':'Wickham Station','group_id':1,'group_revision':[1,2,3],
+                'constructions':[{'construction_id':2,'position':[0,0,12]}],
+                'stations':[{'station_id':3,'terminal_count':16}],'ports':ports,'game_constructed':False}
+    def test_observed_frame_spacing_count_and_grade_are_not_invented(self):
+        from bridge_station import mouth_groups
+        g=mouth_groups(self.station()['ports'])[0]
+        self.assertEqual(g['ordered_nodes'],list(range(300,316)));self.assertEqual(g['spacings'],[10,6]*7+[10])
+        self.assertEqual(g['span'],122);self.assertAlmostEqual(g['elevation_spread'],.15)
+        self.assertEqual(g['direction'],[1,0]);self.assertEqual(g['max_heading_deviation_deg'],0)
+    def test_lookup_outcomes_are_unavailable_without_site_or_second_lookup(self):
+        from bridge_station import inspect_station
+        for outcome in ('not_found','ambiguous_station','lookup_budget_exhausted','external_observation_incomplete'):
+            with self.subTest(outcome=outcome),patch.object(self.client,'request',return_value={'status':'ok','result':{'outcome':outcome,'complete':False,'matches':[{'group_id':1},{'group_id':2}]}}) as request:
+                r=inspect_station(self.client,{'name':'Wickham Station'})
+                self.assertEqual(r['status'],outcome);self.assertFalse(r['game_constructed']);request.assert_called_once()
+    def test_bad_brief_bounds_reject_before_native_calls(self):
+        from bridge_station import inspect_station
+        for b in ({},{'name':''},{'name':'x','max_groups':257},{'name':'x','max_external_edges':True},{'name':'x','max_lead_distance':801},{'name':'x','survey_depth':float('nan')},{'name':'x','execute':True}):
+            with self.subTest(b=b),patch.object(self.client,'request') as calls,self.assertRaises(ValueError):inspect_station(self.client,b)
+            calls.assert_not_called()
+    def test_exact_free_identity_rejected_without_site_reads(self):
+        from bridge_station import inspect_station
+        for bad in ('node','edge','incidence','position','owner'):
+            v=self.station();p=v['ports'][0]
+            if bad=='node':p['node_id']=999
+            elif bad=='edge':p['edge_id']=999
+            elif bad=='incidence':p['incident_edges']=[999]
+            elif bad=='position':p['pos']=[999,0,0]
+            else:p['construction_owner']=99
+            with patch.object(self.client,'request',return_value={'status':'ok','result':v}) as calls:r=inspect_station(self.client,{'name':'Wickham Station'})
+            self.assertEqual(r['status'],'invalid_result');calls.assert_called_once()
+    def test_integrated_read_only_survey_and_stale_final_identity(self):
+        from bridge_station import inspect_station
+        for stale in (False,True):
+            v=self.station();calls=[];lookups=0
+            def request(op,p):
+                nonlocal lookups
+                calls.append((op,p));self.assertFalse(is_mutation(op,p))
+                if op=='station_lookup':
+                    lookups+=1;result=v|{'group_revision':[9,9,9]} if stale and lookups==2 else v
+                else:
+                    self.assertEqual(op,'inspect');self.assertLessEqual(len(p['site']['positions']),8)
+                    result={'site':{'truncated':False,'terrain':[]}}
+                return {'status':'ok','session':self.client.session,'result':result}
+            with patch.object(self.client,'request',side_effect=request):r=inspect_station(self.client,{'name':'Wickham Station'})
+            self.assertEqual(r['status'],'stale_station' if stale else 'ok');self.assertFalse(r['game_constructed']);self.assertEqual(len(calls),4)
+            if not stale:self.assertEqual(r['free_connection_count'],16);self.assertLess(len(json.dumps(r).encode()),4096)
+    def test_does_not_manufacture_sixteen_and_compacts_large_inventory(self):
+        from bridge_station import inspect_station
+        for count in (3,32):
+            v=self.station(count)
+            with patch.object(self.client,'request',side_effect=lambda op,p:{'status':'ok','result':v if op=='station_lookup' else {'site':{'truncated':False}}}):r=inspect_station(self.client,{'name':'Wickham Station'})
+            self.assertEqual(r['status'],'ok');self.assertEqual(r['free_connection_count'],count);self.assertEqual(r['port_summary_truncated'],count>16)
+            self.assertLess(len(json.dumps(r).encode()),4096)
+    def test_cli_is_read_only_and_uses_public_station_survey(self):
+        p=self.root/'station.json';p.write_text('{"name":"Wickham Station"}')
+        with patch('bridge_live.client_from_context',return_value=self.client),patch('bridge_station.inspect_station',return_value={'status':'ok','game_constructed':False}) as inspect,contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(['station-survey','--context','dummy','--params',str(p)]),0)
+        inspect.assert_called_once()
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,12 +1,22 @@
-# PIF-P41 - complete; hand back to Astra direct operation
+# PIF-P42 — complete: locate Wickham Station and survey its 16 external track connections
 
-Actual live eight-movement route-set inspection repaired and verified without
-rebuild/reload. Free endpoints use selected nodes; connected boundaries retain
-reference-edge semantics. Fresh turnouts forwarded; wrong/stale kinds/identities
-cannot produce completeness. Eight complete paths,24overlap/4disjoint/0unknown pairs.
-W0_E0 / E1_W1 share no TRACK/junction resources. 311affected tests pass.
+Read-only survey accepted on TPF3 build 40408 and checkpoint `TPF3_Bridge_P42_Wickham_20261004.sav`. Exact native group 94473, station 94183, construction 94182 and 16 free TRACK ends were observed; all 16 native terminal vehicle-edge lists are empty, so individual platform-to-end association remains unknown. Full inventory: `.local_runs/live_python_interface/p42/native/final_result.json`. No throat design or construction was performed. Hand control back to Astra for the next bounded construction decision; do not start that work from this card.
 
-STATE.md and .local_runs/live_python_interface/p41/HANDOFF.md give exact evidence.
-Approved card preserved in p41/orchestrator/TASK.md; original operation02 records
-remain immutable. World live UNSAVED. No build replay, design sweep or train/capacity
-claim. Local milestone commit only, no push. Stop and hand back to coordinator.
+## Direct request and scope
+User created a NEW savegame with a16-platform station and16straight external tracks, named exactly Wickham Station, and asks us to try connecting to them. The previous wait-for-user instruction is lifted. The new station and tracks supersede hypothetical station-free endpoints. This authorises inspecting and connecting existing external tracks, NOT station construction/expansion/demolition. Preserve the user station and its intended platform connections as functional requirements. Disposable surrounding terrain/infrastructure remains under existing delegated map authority, but this task is READ-ONLY apart from ordinary adapter source staging if necessary.
+Coordinator read current handshake: pif_1791127739_127288716. Old P40/P41 native identities and coordinates are stale; do not load old P38 save, rebuildoldcell,or useoldIDs. Current baseline79f7b31a6ce036f07558084986781873b6228ef6. P41 accepted,workeridle.
+
+## Concrete missing capability
+Existing inspect(site) needs known XY (400m boxes,8height samples). Existing discover likewise needs a region. No exposed station-name/town-name/native location lookup was found. Screenshot alone cannot establish native coordinates. Add the smallest reusable bounded read-only station/landmark lookup and associated endpoint discovery needed to identify this named station and external track ends. Prefer existing actual documented native APIs/components; inspect installed/local API material and known probe data first. Do not invent TPF2 APIs or infer entity association from proximity alone. Native capability uncertainty should produce an honest unavailable result, not arbitrary entity-ID/world-region sweeps.
+Astra owns design and coordinate selection; do not design or build a throat. This task supplies current semantic map data for direct operation.
+
+## Required integrated outcome
+- Resolve Wickham Station by actual native name and ID, reporting duplicate/ambiguous/not-found cases clearly, fresh session and bounded output. Distinguish station/group/construction identities based on actual native contract.
+- Discover the16user external straight TRACK stubs and their FREE connection ends, preserving native endpoint IDs,XYZ,outward tangent,grade,template/style,incidence and construction ownership. Establish relationship to the station/platform tracks where native data supports it; explicitly mark unknown association, never assert16nearbyedges are16platformconnections merely by count. Report actual connection count without manufacturing16.
+- Produce a local coordinate frame/mouth ordering from observations,actual spacing/span, endpoint elevation spread and heading consistency. Do not force5/10m pitch,125mwidth,coincidentmouthline or arbitraryelevation onto user's actual geometry. Keep raw snapshots and mapping evidence.
+- Proportionately sample terrain and nearby infrastructure in front of the exposed track ends using existing bounded inspect/site tiles; actualsurveyreadsonly. No hostrestart,services,deps,stationmutation,train/signalling work. No broad new reconnaissanceframework.
+- Offer reusable public Python operation/CLI (whichever existinginterface fits) and concise documented output, scoped tests for lookup ambiguities,bounds,staleids,exactendpointidentity and nonmutation; native acceptance on the current new save. Return compact native anchor/16port inventory to Astra.
+
+Normal mod staging and save/reload is authorised if adapter needs native additions, but use THIS user-created save containingWickhamStation,never oldtestsave. Determine current save identity from actual available evidence. If a specific external step cannot be performed, report it accurately; do not invent another project approval gate. No game/Steam/OS restart or permissionrepair. Existing transport requires truthful sandbox escalation for stagedrequestwrites; external reviewbinding.
+
+Update STATE/usage,affectedtests,local milestone commit,clean tree,no push. Evidence/HANDOFFp42. Send compact completion to coordinator01a0f987-8917-7f31-84c3-838acacc9e04 under permanent direct human project/payload authority, then return control to Astra for physical design/connection. Do not expand topology or run unrelated native variants.

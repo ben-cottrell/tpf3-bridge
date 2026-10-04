@@ -1,3 +1,23 @@
+## P42 complete — Wickham Station named read-only survey
+
+New save/checkpoint `TPF3_Bridge_P42_Wickham_20261004.sav` (SHA-256 in
+`.local_runs/live_python_interface/p42/native/world_checkpoint.json`), build40408;
+current adapter session `pif_1791129181_128730030`. Public `station-survey` CLI and
+`bridge_station.inspect_station` resolve exact native name/group, frozen TRACKs and
+free-end identities, then make bounded site reads and recheck identity. No game build.
+Observed group94473, station94183, construction94182, 16terminals,192 frozen TRACKs,
+16external TRACKs and 16free ends in one mouth; span110.0043 native units,
+alternating ~5/~10 spacing, common mouth elevation and 0 heading spread. Two site
+tiles complete. Individual platform associations remain unknown: all 16 native
+terminal vehicle-edge lists were empty; platform routes, native save GUID and atomic
+snapshot unprobed. `python tools/quiet_checks.py --suite live_client --label pif-p42-final`:
+318passed/0fail; `.local_checks/pif-p42-final_pxwd16si/report.json`. Native terminal
+addendum passed a fresh live Wickham survey. Full inventory and raw evidence:
+`.local_runs/live_python_interface/p42/native/{final_result,terminal_lookup,terminal_survey}.json`;
+`p42/HANDOFF.md`, `p42/checks.json`, `p42/checkpoint.json`. Local milestone only;
+no push. Usage unavailable. Astra next chooses physical design; old P38/P40 IDs are
+not current-world anchors.
+
 ## P41 complete - actual assembled route-set inspection repaired
 Free endpoints query selected native nodes; connected two-edge boundaries retain
 opposite-end reference queries. Optional boundary_kind must match exact incidence;

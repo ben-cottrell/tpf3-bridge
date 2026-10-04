@@ -400,6 +400,111 @@ function M.discover(p,request_id)
   edge_count=#edges,candidate_count=#candidates,truncated=truncated,complete=not truncated,game_constructed=false,
   native_save_identity="unknown",load_epoch="unknown",identity_scope="current_adapter_session_only"}
 end
+-- Bounded named station catalogue followed by exact external TRACK incidence.
+function M.station_lookup(p)
+ assert(type(p.name)=="string" and #p.name>0 and #p.name<=120,"station_name_required")
+ assert(finite(p.max_groups) and p.max_groups%1==0 and p.max_groups>=1 and p.max_groups<=256,"station_group_bound")
+ assert(finite(p.max_external_edges) and p.max_external_edges%1==0 and p.max_external_edges>=1 and p.max_external_edges<=64,"external_track_bound")
+ assert(finite(p.max_lead_distance) and p.max_lead_distance>0 and p.max_lead_distance<=800,"external_distance_bound")
+ local out={name=p.name,matches={},ports={},external_edges={},game_constructed=false,native_save_identity="unknown",load_epoch="unknown",platform_route_association="unprobed"}
+ local groups=api.engine.getEntitiesWithComponent(api.type.ComponentType.STATION_GROUP)
+ out.group_count=#groups
+ if #groups>p.max_groups then out.outcome="lookup_budget_exhausted";out.complete=false;return out end
+ for _,id in ipairs(groups) do
+  local name=api.engine.getComponent(id,api.type.ComponentType.NAME)
+  if name and name.name==p.name then out.matches[#out.matches+1]={group_id=id,name=name.name} end
+ end
+ if #out.matches~=1 then out.outcome=#out.matches==0 and "not_found" or "ambiguous_station";out.complete=true;return out end
+ local id=out.matches[1].group_id;local group=api.engine.getComponent(id,api.type.ComponentType.STATION_GROUP)
+ assert(group and #group.stations<=32,"station_member_bound")
+ local function revision(eid) local r=api.engine.getRevision(eid);return {r.num[1],r.num[2],r.num[3]} end
+ out.group_id=id;out.group_revision=revision(id);out.stations={};out.constructions={}
+ local constructors,owned,frozen_nodes={},{},{}
+ for _,sid in ipairs(group.stations) do
+  local station=api.engine.getComponent(sid,api.type.ComponentType.STATION)
+  assert(station and #station.terminals<=64,"station_terminal_bound")
+  local cid=api.engine.system.streetConnectorSystem.getConstructionEntityForStation(sid)
+  assert(cid and cid>0,"station_construction_unavailable")
+  local terminals={}
+  for index,t in ipairs(station.terminals) do
+   assert(#t.vehicleEdges<=64,"station_terminal_edge_bound")
+   local edge_ids={}
+   for _,place in ipairs(t.vehicleEdges) do edge_ids[#edge_ids+1]=place.edgeId.entity end
+   terminals[#terminals+1]={index=index,vehicle_edges=edge_ids,vehicle_node={entity=t.vehicleNodeId.entity,index=t.vehicleNodeId.index}}
+  end
+  out.stations[#out.stations+1]={station_id=sid,construction_id=cid,terminal_count=#station.terminals,terminals=terminals}
+  constructors[cid]=true
+ end
+ local frozen_count,node_count=0,0;local seeds={}
+ for cid in pairs(constructors) do
+  local c=api.engine.getComponent(cid,api.type.ComponentType.CONSTRUCTION)
+  assert(c and #c.frozenEdges<=512,"station_frozen_track_bound")
+  local row={construction_id=cid,revision=revision(cid),resource=c.fileName,position=arr(c.transf:getTransl()),frozen_tracks={}}
+  for _,eid in ipairs(c.frozenEdges) do
+   local base=api.engine.getComponent(eid,api.type.ComponentType.BASE_EDGE)
+   if base and base.roadType==E.RoadType.TRACK then
+    frozen_count=frozen_count+1;assert(frozen_count<=512,"station_frozen_track_bound")
+    owned[eid]=cid;row.frozen_tracks[#row.frozen_tracks+1]={edge_id=eid,node0=base.node0,node1=base.node1}
+    for _,nid in ipairs({base.node0,base.node1}) do if not frozen_nodes[nid] then
+     node_count=node_count+1;assert(node_count<=1024,"station_node_bound")
+     frozen_nodes[nid]=true;seeds[#seeds+1]={node=nid,construction_id=cid,frozen_edge=eid}
+    end end
+   end
+  end
+  out.constructions[#out.constructions+1]=row
+ end
+ assert(#out.constructions>=1 and #out.constructions<=8,"station_construction_bound")
+ table.sort(out.constructions,function(a,b) return a.construction_id<b.construction_id end)
+ table.sort(seeds,function(a,b) return a.node<b.node end)
+ local seen,queue,ports={}, {},{};local truncated=false
+ local function extend(seed,path,origin)
+  local all=incidence(seed.node);assert(#all<=16,"station_node_incidence_bound")
+  for _,eid in ipairs(all) do if not owned[eid] and not seen[eid] then
+   local base=api.engine.getComponent(eid,api.type.ComponentType.BASE_EDGE)
+   local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForEdge(eid)
+   if base and base.roadType==E.RoadType.TRACK and not(owner and owner>0) then
+    if #out.external_edges>=p.max_external_edges then truncated=true
+    else
+     seen[eid]=true;local e=edge(eid);out.external_edges[#out.external_edges+1]=e
+     local nextnode=e.node0==seed.node and e.node1 or e.node0
+     local chain={};for _,k in ipairs(path) do chain[#chain+1]=k end;chain[#chain+1]=eid
+     local start=origin or arr(api.engine.getComponent(seed.node,api.type.ComponentType.BASE_NODE).position)
+     local _,pos,dir,grade=anchor({anchor_edge=eid,anchor_node=nextnode})
+     if math.sqrt((pos[1]-start[1])^2+(pos[2]-start[2])^2+(pos[3]-start[3])^2)>p.max_lead_distance then truncated=true
+     else
+      local incident,node_owner=incidence(nextnode)
+      if #incident==1 and incident[1]==eid and not(node_owner and node_owner>0) and not ports[nextnode] then
+       ports[nextnode]=true
+       out.ports[#out.ports+1]={edge_id=eid,node_id=nextnode,pos=pos,outward_direction=dir,grade=grade,template=e.template,style=e.style,edge_snapshot=e,
+        incident_count=1,incident_edges=incident,incidence_complete=true,incident_output_truncated=false,construction_owner=node_owner or "none",eligible=true,
+        association={kind="exact_TRACK_incidence_chain",construction_id=seed.construction_id,frozen_edge=seed.frozen_edge,edge_ids=chain,platform_terminal="unknown",native_TRAIN_route="unprobed"}}
+      else queue[#queue+1]={node=nextnode,construction_id=seed.construction_id,frozen_edge=seed.frozen_edge,path=chain,origin=start} end
+     end
+    end
+   end
+  end end
+ end
+ for _,seed in ipairs(seeds) do extend(seed,{}) end
+ local at=1;while at<=#queue do local q=queue[at];at=at+1;extend(q,q.path,q.origin) end
+ table.sort(out.ports,function(a,b) return a.node_id<b.node_id end)
+ for _,port in ipairs(out.ports) do
+  local matched={}
+  for _,station in ipairs(out.stations) do
+   for _,terminal in ipairs(station.terminals) do
+    for _,terminal_edge in ipairs(terminal.vehicle_edges) do
+     if terminal_edge==port.association.frozen_edge then
+      matched[#matched+1]={station_id=station.station_id,terminal_index=terminal.index,vehicle_edge=terminal_edge}
+     end
+    end
+   end
+  end
+  port.association.terminal_identity_matches=matched
+  port.association.platform_terminal=#matched==1 and matched[1] or "unknown"
+ end
+ out.complete=not truncated;out.truncated=truncated;out.outcome=truncated and "external_observation_incomplete" or "resolved"
+ out.free_connection_count=#out.ports;out.frozen_TRACK_count=frozen_count;out.processed_station_nodes=node_count
+ return out
+end
 local function interior_location(a,p)
  local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
  assert(base.type==E.BaseEdgeType.NORMAL and #base.objects==0,"unsupported_split_edge_type_or_objects")
