@@ -2526,7 +2526,7 @@ def main(argv=None):
         params = json.loads(args.params.read_text(encoding='utf-8-sig'))
         if args.base_layout_record and (args.operation!='reciprocal-layout' or not args.execute):raise ValueError('--base-layout-record requires reciprocal-layout --execute')
         if args.prepared_switching and (args.operation!='switching-layout' or not args.execute):raise ValueError('--prepared-switching requires switching-layout --execute')
-        if args.layout_record and args.operation not in ('plain-crossing-inspect','height-ladder','height-ladder-inspect','ladder-layout','ladder-layout-inspect','complete-layout','complete-layout-inspect','branching-corridor','branching-corridor-inspect','multitrack-connection','multitrack-connection-inspect','paired-connection','paired-connection-inspect','layout-network','layout-network-inspect','parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect','reciprocal-layout'):raise ValueError('--layout-record requires a supported layout operation')
+        if args.layout_record and args.operation not in ('plain-crossing','plain-crossing-inspect','height-ladder','height-ladder-inspect','ladder-layout','ladder-layout-inspect','complete-layout','complete-layout-inspect','branching-corridor','branching-corridor-inspect','multitrack-connection','multitrack-connection-inspect','paired-connection','paired-connection-inspect','layout-network','layout-network-inspect','parallel-layout-inspect','switching-layout-inspect','switching-layout-continue','reciprocal-layout-inspect','reciprocal-layout'):raise ValueError('--layout-record requires a supported layout operation')
         if args.recipe_record and args.operation not in ('junction-recipe-inspect','junction-recipe-continue'):raise ValueError('--recipe-record requires recipe inspect/continue')
         if args.operation=='junction-recipe-continue' and not args.execute:raise ValueError('recipe continuation requires --execute')
         if args.recipe_plan and (args.operation!='junction-recipe' or not args.execute):raise ValueError('--recipe-plan requires junction-recipe --execute')
@@ -2539,7 +2539,7 @@ def main(argv=None):
             raise ValueError('--execute is only for extend/connect/connect-brief/connect-corridor/connect-junction/connect-junction-at; low-level build uses explicit authorised parameter')
         if args.operation=='plain-crossing':
             from bridge_crossing import crossing
-            response=crossing(client,params,execute=args.execute)
+            response=crossing(client,params,execute=args.execute,prepared_record=args.layout_record)
         elif args.operation=='plain-crossing-inspect':
             from bridge_crossing import inspect_crossing
             if not args.layout_record:raise ValueError('--layout-record is required')

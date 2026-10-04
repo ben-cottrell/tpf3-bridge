@@ -1,3 +1,27 @@
+## P36 complete - caller-paired oblique crossing with fitted parallel interfaces
+Version2 bridge_crossing/bridge_live plain-crossing composes four native extensions
+and one paired four-arm proposal; read-only preparation, explicit execute, durable
+stage receipts and fresh plain-crossing-inspect. Version1 preserved. Free-port/current
+session checks stop replay; no automatic partial/cross-load resume. Native fit handles
+are transient: use existing invocation-local extension fit/build, not stored leases.
+Build40408/session pif_1791114344_113893262:300x30 inverted-order parallel boundaries,
+centre(-1450,-4385,10.75), node94033, arms94036..94039; four3-TRACK fitted leads.
+Actual angle29.999345deg,40half-arms,340x30 incl20stubs,30boundary spacing; minimum
+sampled radius61.484422>=60, grade0. BaseEdge10.75/movement11.279999733 distinct.
+Five same-XY terrain readings confirm native cut/fill; no envelope enlargement.
+Fresh Python:4complete through paths,8explicit no-returned-turn queries, no unknowns.
+Route-set4complete/6overlap; cross-corridor pairs share94033 but no TRACK/transport row.
+Intentional physical conflict, not capacity/independent-route/train-traversal proof.
+Two pre-mutation handle errors and initial tiny-box conflict failure preserved; corrected
+read-only arm-envelope discovery retains exact identity tolerance; no completed rebuild.
+python tools/quiet_checks.py --suite live_client --label pif-p36-final-acceptance:
+278passed,0fail/error/skip; .local_checks/pif-p36-final-acceptance_bfq39vy4/report.json.
+py_compile/diff passed; independent1001samples per16TRACKs also pass (not continuous
+radius/clearance proof). Evidence .local_runs/live_python_interface/p36/: brief.json,
+prepare.json,execute.json,inspect.json,independent_checks.json,checks.json,HANDOFF.md;
+checkpoint.json records revision and separate P36 game save. No blockers/push; usage
+unavailable. Stop P36; Astra decides next topology/use, not a complete16-track embedding.
+
 ## P35 complete - observed native level orthogonal plain crossing
 bridge_crossing.crossing/inspect_crossing and bridge_live.py plain-crossing /
 plain-crossing-inspect: default read-only current-port preflight; explicit execution,

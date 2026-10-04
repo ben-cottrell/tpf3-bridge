@@ -1,4 +1,57 @@
-# Native plain crossing — P35
+# Native plain crossing — P35/P36
+
+## P36 caller-paired connection with native fitted leads
+
+Version2 adds explicit `pairs` (two disjoint input/output role pairs), two native XY
+travel `axes`, `half_arm_length`, selected minimum `radius` and `max_route_length`.
+It retains `center`, authorised XYZ `region` and four bounded endpoint hints. Current
+free TRACK interfaces must be level at centre height. Pair order determines arm
+direction; pairing is never inferred from coordinates. Role/generated movement names
+use the existing bounded semantic-name domain. Translation/rotation is supported.
+Nondegenerate axes and half-arms20..300 are validated; native acceptance still governs
+each layout. This is not arbitrary-angle or unrestricted routing certification.
+
+`crossing(..., prepared_record=<path>, execute=True)` and the CLI compose four existing
+native extensions and the ordinary four-arm proposal. Default preparation binds exact
+ports and fits the leads read-only. Native fit handles are transient: execution uses
+each extension's invocation-local fit/build/readback, reusing the engineering brief.
+Durable receipts retain every stage/partial effect. Free-port rebinding prevents an
+unchanged preparation replaying already-connected or partial builds. There is no
+automatic partial/cross-load resume or transaction guarantee.
+
+```powershell
+python bridge_live.py plain-crossing --context <context.json> --params <version2.json>
+python bridge_live.py plain-crossing --context <context.json> --params <version2.json> --layout-record <prepared.composed_crossing.json> --execute
+python bridge_live.py plain-crossing-inspect --context <context.json> --params <version2.json> --layout-record <completed.composed_crossing.json>
+```
+
+Use the execution summary's `construction_record` for fresh-process inspection.
+Readback checks exact attachments, lead joins/tangents/resources, actual arms, selected
+sampled radius/grade and region. BaseEdge Hermite extrema determine footprint including
+caller attachment stubs; native movement height is separate. All12external directed
+queries must establish four complete through paths and eight explicit untruncated
+no-path turn responses. Existing route-set inspection must observe the shared crossing
+node and no cross-corridor shared TRACK stem. Its bounded junction search covers the
+known arm envelope; exact node-position tolerance remains unchanged.
+
+Demonstrated build40408: boundary300x30, parallel X interfaces with reversed transverse
+ordering; centre(-1450,-4385,10.75), actual angle29.999345degrees,40-unit half-arms,
+four fitted leads (three TRACKs each), centre node94033, arms94036/94037/94038/94039.
+Including20-unit stubs:340x30, spacing30 at both boundaries. Minimum sampled realised
+radius61.484422>=60, sampled grade0. Movement height11.279999733 differs from BaseEdge
+height10.75. Same-XY terrain readback records native cutting/fill. No arm/longitudinal
+enlargement needed. Four through routes and eight no-returned-turn queries passed;
+four cross-corridor path pairs share94033 but no TRACK/transport row. This is a deliberate
+physical conflict, not an independent-route witness or complete16-track embedding.
+Sampling is not continuous radius/clearance proof. Train traversal, signalling,
+reservations, simultaneous operation and capacity remain unprobed.
+
+Evidence: `.local_runs/live_python_interface/p36/`: brief/prepare/execute/inspect JSON,
+independent_checks.json,checks.json,HANDOFF.md. Two pre-mutation fit-handle failures and
+the first incomplete conflict inspection are preserved. The corrected inspection is
+read-only; completed construction was not repeated. Version1 remains compatible.
+
+## P35 version1 orthogonal observation
 
 **Qualified observation: level orthogonal straight-only crossing on build40408.**
 The native engine accepted one documented generic proposal: four ordinary NORMAL
@@ -22,7 +75,7 @@ may be translated/rotated. Current free TRACK endpoints, exact identities, inher
 compatible resource/style, level height and tangents toward the centre are checked.
 Arms must be orthogonal and20..300native units long.120-unit arms were demonstrated;
 other lengths/rotations remain subject to native legality, not blanket certification.
-No acute-angle, curved, graded, slip or unrestricted diamond domain is claimed.
+Version1 claims no acute-angle, curved, graded, slip or unrestricted diamond domain.
 
 Default command is read-only native preflight, not native preview or construction.
 `--execute` submits once. Every accepted build is inspected for four exact arms and
@@ -61,5 +114,5 @@ and [road–rail resources](https://wiki.transportfever3.com/doku.php?id=modding
 Raw original source qualification and empirical receipts/checks/CLI records/matrix:
 `.local_runs/live_python_interface/p35/` and its `empirical/` child. Existing unrelated
 engineering tests are reused; affected live-client/route-set regressions use the
-quiet runner. Larger topology, footprint, bottlenecks and acute crossings remain
+quiet runner. Larger topology, footprint, bottlenecks and further acute crossings remain
 Astra/design decisions; this primitive chooses no replacement railway layout.

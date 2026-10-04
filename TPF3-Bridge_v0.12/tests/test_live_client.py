@@ -3654,5 +3654,124 @@ class PlainCrossingTests(unittest.TestCase):
                 bc.crossing(client,b,execute=True);self.assertIs(client.request.call_args.args[1]['execute'],True)
             self.assertEqual(client.request.call_count,2)
 
+class ComposedCrossingTests(unittest.TestCase):
+    def brief(self):
+        import math
+        d=[math.cos(math.radians(15)),math.sin(math.radians(15))]
+        h=lambda p:{'region':{'min':[v-1 for v in p],'max':[v+1 for v in p]},'max_edges':4,'guide_xyz':p,'position_tolerance':.001,'travel_direction':[1,0],'heading_tolerance_deg':.1}
+        return {'version':2,'center':[150,15,2],'region':{'min':[-25,-5,1],'max':[325,35,3]},'endpoints':{n:h([x,y,2]) for n,x,y in [('a_in',0,0),('a_out',300,30),('b_in',0,30),('b_out',300,0)]},'pairs':[['a_in','a_out'],['b_in','b_out']],'axes':[d,[d[0],-d[1]]],'half_arm_length':40,'radius':60,'max_route_length':1000}
+
+    def test_explicit_pairing_tip_directions_and_nondegenerate_level_validation(self):
+        import bridge_crossing as bc
+        b=self.brief();bc.validate(b);tips=bc._tips(b)
+        self.assertLess(tips['a_in']['position'][0],150);self.assertLess(tips['a_in']['position'][1],15)
+        self.assertEqual(tips['a_in']['binding_sign'],1);self.assertEqual(tips['a_out']['binding_sign'],-1)
+        b['axes'][1]=b['axes'][0]
+        with self.assertRaises(ValueError):bc.validate(b)
+        b=self.brief();b['pairs'][1][0]='a_in'
+        with self.assertRaises(ValueError):bc.validate(b)
+        b=self.brief();b['endpoints']['b_in']['guide_xyz'][2]+=1
+        with self.assertRaises(ValueError):bc.validate(b)
+
+    def test_caller_named_pairing_qualifies_only_the_explicit_four_movements(self):
+        import bridge_crossing as bc
+        r=PlainCrossingTests().record();rename=dict(zip(bc.ARMS,['a_in','a_out','b_in','b_out']))
+        for row in r['routes']:row['from']=rename[row['from']];row['to']=rename[row['to']]
+        r['pairs']=[['a_in','a_out'],['b_in','b_out']]
+        self.assertTrue(bc.classify(r)['qualified'])
+        r['pairs']=[['a_in','b_out'],['b_in','a_out']]
+        self.assertFalse(bc.classify(r)['qualified'])
+
+    def test_read_only_preparation_and_partial_build_stop_preserve_receipt(self):
+        import bridge_crossing as bc
+        with tempfile.TemporaryDirectory() as tmp:
+            b=self.brief();client=type('Client',(),{'session':'s','evidence':Path(tmp)})();calls=[]
+            def binding(client,intent,**kwargs):
+                i=list(b['endpoints'].values()).index(next(h for h in b['endpoints'].values() if h['guide_xyz']==intent['guide_xyz']))
+                return {'node_id':i+10,'edge_id':i+1,'edge_snapshot':{'id':i+1},'pos':intent['guide_xyz'],'grade':0,'outward_direction':[kwargs['outward_sign'],0,0]},'discovery'
+            def request(op,p):
+                calls.append(op)
+                if op=='fit':return {'status':'ok','result':{'fit_request':str(len(calls))}}
+                return {'status':'mutation_unverified','result':{'game_constructed':'unknown','error':'native partial effects'}}
+            client.request=request
+            with patch('bridge_crossing.live._select_throat_port',side_effect=binding):
+                prepared=bc.crossing(client,b);self.assertEqual(prepared['stage'],'prepared');self.assertFalse(prepared['game_constructed']);self.assertEqual(calls,['fit']*4)
+                r=bc.crossing(client,b,execute=True,prepared_record=prepared['evidence'])
+                self.assertEqual(r['status'],'mutation_unverified');self.assertEqual(r['game_constructed'],'unknown');self.assertEqual(calls,['fit']*4+['extension'])
+                saved=json.loads(Path(r['evidence']).read_text());self.assertEqual(len(saved['operations']),1);self.assertIn('native partial effects',saved['operations'][0]['response']['result']['error'])
+
+    def test_execution_composes_four_native_extensions_before_exact_paired_crossing(self):
+        import bridge_crossing as bc
+        with tempfile.TemporaryDirectory() as tmp:
+            b=self.brief();client=type('Client',(),{'session':'s','evidence':Path(tmp)})();calls=[]
+            ports={n:{'edge_id':i+1,'node_id':i+10} for i,n in enumerate(b['endpoints'])}
+            prepared={'version':2,'brief':b,'session':'s','ports':ports,'leads':{n:{} for n in ports},'game_constructed':False,'operations':[],'summary':{'stage':'prepared'}}
+            p=Path(tmp)/'prepared.json';p.write_text(json.dumps(prepared))
+            def request(op,q):
+                calls.append((op,q))
+                if op=='extension':
+                    i=q['brief']['anchor_edge'];return {'status':'ok','result':{'readback':{'ordered_edges':[100+i],'ordered_nodes':[i+9,200+i]}}}
+                return {'status':'ok','result':{'center_node':500,'arm_edges':[501,502,503,504]}}
+            def observation(c,b,n,lead,port):lead['inspection']={'result':{'edges':[{'id':lead['edges'][-1]}]}}
+            client.request=request
+            with patch('bridge_crossing._bindings',return_value=ports),patch('bridge_crossing._lead_observation',side_effect=observation),patch('bridge_crossing._inspect_composed',return_value={'status':'ok','game_constructed':False}):
+                r=bc.crossing(client,b,execute=True,prepared_record=p)
+            self.assertEqual([op for op,q in calls],['extension']*4+['degree_four_candidate'])
+            self.assertTrue(all(q['execute'] is True and q['brief']['radius']==60 for op,q in calls[:4]))
+            self.assertEqual(calls[-1][1]['pairs'],b['pairs']);self.assertEqual(calls[-1][1]['center'],b['center'])
+            record=json.loads(Path(r['construction_record']).read_text());self.assertTrue(record['complete_receipts']);self.assertEqual(len(record['operations']),5)
+
+    def test_stale_or_incomplete_records_reject_without_native_operations(self):
+        import bridge_crossing as bc
+        with tempfile.TemporaryDirectory() as tmp:
+            client=type('Client',(),{'session':'current','evidence':Path(tmp)})();client.request=unittest.mock.Mock()
+            b=self.brief();p=Path(tmp)/'old.json';p.write_text(json.dumps({'brief':b,'session':'old','game_constructed':False,'summary':{'stage':'prepared'}}))
+            r=bc.crossing(client,b,execute=True,prepared_record=p);self.assertEqual(r['status'],'invalid_crossing_record')
+            with self.assertRaises(LiveError):bc.inspect_crossing(client,p)
+            p.write_text(json.dumps({'brief':b,'session':'current','complete_receipts':False}))
+            with self.assertRaises(LiveError):bc.inspect_crossing(client,p)
+            client.request.assert_not_called()
+
+    def test_cubic_footprint_includes_interior_extrema(self):
+        import bridge_crossing as bc
+        e={'p0':[0,0,2],'p1':[10,0,2],'t0':[10,20,0],'t1':[10,-20,0]}
+        points=bc._edge_extrema(e);self.assertAlmostEqual(max(p[1] for p in points),5)
+        self.assertEqual({p[2] for p in points},{2})
+
+    def test_changed_arm_tangents_do_not_pass_position_only_acceptance(self):
+        import bridge_crossing as bc
+        b=self.brief();ports={}
+        for i,(name,t) in enumerate(bc._tips(b).items()):
+            v=[b['center'][j]-t['position'][j] for j in range(3)]
+            ports[name]={'node':i+1,'arm':{'node0':i+1,'node1':100,'p0':t['position'],'p1':b['center'],'t0':v,'t1':v}}
+        inner={'ports':ports};self.assertTrue(all(abs(n-40)<1e-8 for n in bc._check_arms(b,inner)))
+        ports['a_in']['arm']['t0']=[1,0,0]
+        with self.assertRaises(LiveError):bc._check_arms(b,inner)
+
+    def test_cross_pair_shared_stem_or_unknown_incidence_does_not_pass(self):
+        import bridge_crossing as bc
+        b=self.brief();names=[a+'_to_'+z for pair in b['pairs'] for a,z in (pair,list(reversed(pair)))]
+        rows=[{'a':a,'b':z,'both_paths_complete':True,'shared_TRACK_edges':[],'shared_junction_nodes':[500]} for a in names[:2] for z in names[2:]]
+        self.assertTrue(bc._cross_pair_conflicts({'pairs':rows},b,500))
+        rows[0]['shared_TRACK_edges']=[1];self.assertFalse(bc._cross_pair_conflicts({'pairs':rows},b,500))
+        rows[0]['shared_TRACK_edges']=[];rows[0]['shared_junction_nodes']=[];self.assertFalse(bc._cross_pair_conflicts({'pairs':rows},b,500))
+
+    def test_malformed_pairing_and_semantic_names_reject_before_execution(self):
+        import bridge_crossing as bc
+        for value in (None,{},[None,None],[[1,'a_out'],['b_in','b_out']],[['bad name','a_out'],['b_in','b_out']]):
+            b=self.brief();b['pairs']=value
+            with self.assertRaises(ValueError):bc.validate(b)
+
+    def test_prepared_record_cannot_rebuild_already_connected_boundaries(self):
+        import bridge_crossing as bc
+        with tempfile.TemporaryDirectory() as tmp:
+            b=self.brief();client=type('Client',(),{'session':'s','evidence':Path(tmp)})();client.request=unittest.mock.Mock()
+            p=Path(tmp)/'prepared.json';p.write_text(json.dumps({'brief':b,'session':'s','ports':{},'game_constructed':False,'summary':{'stage':'prepared'}}))
+            def selected(*args,**kwargs):
+                self.assertIs(kwargs['connected'],False)
+                raise LiveError('no_eligible_candidates','boundary has an existing lead')
+            with patch('bridge_crossing.live._select_throat_port',side_effect=selected):r=bc.crossing(client,b,execute=True,prepared_record=p)
+            self.assertEqual(r['status'],'no_eligible_candidates');self.assertFalse(r['game_constructed']);client.request.assert_not_called()
+
 if __name__ == '__main__':
     unittest.main()
