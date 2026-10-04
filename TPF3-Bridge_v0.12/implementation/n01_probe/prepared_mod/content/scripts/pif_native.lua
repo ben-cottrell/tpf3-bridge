@@ -1385,7 +1385,7 @@ function M.remove_branch(p,s,state,request_id,respond)
   assert(p.edges[1].node0==x.junction_node and p.edges[#p.edges].node1==y.junction_node,"compensation_attachment_mismatch")
   for _,v in ipairs({x,y}) do for _,id in ipairs(v.replacement_edges) do for _,e in ipairs(p.edges) do assert(e.id~=id,"through_edge_removal_forbidden") end end end
  else assert(not s.mutationPending,"unreconciled_mutation") end
- local ids,expected={},{};local interior={};local selected_nodes={};local retained={}
+ local ids,expected={},{};local interior={};local selected_nodes={};local retained={};local retained_nodes={}
  for i,snapshot in ipairs(p.edges) do
   local a=assert_fresh(snapshot);assert(not expected[a.id],"duplicate_removal_edge");expected[a.id]=true;ids[#ids+1]=a.id
   local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
@@ -1406,9 +1406,15 @@ function M.remove_branch(p,s,state,request_id,respond)
    local all,owner=incidence(node);assert(not(owner and owner>0),"construction_owned_removal_node")
    if #chosen==2 then assert(#all==2,"removal_node_not_exclusive");interior[#interior+1]=node
    else
-    endpoints[#endpoints+1]=node;assert(#all==1 or #all==2,"removal_endpoint_degree_unsupported")
+    endpoints[#endpoints+1]=node;assert(#all>=1 and #all<=16,"removal_endpoint_degree_unsupported")
+    local selected_count=0;local remaining={}
+    for _,id in ipairs(all) do if expected[id] then selected_count=selected_count+1 else remaining[#remaining+1]=id end end
+    assert(selected_count==1,"removal_endpoint_chain_ambiguous")
     if #all==1 then interior[#interior+1]=node
-    else for _,id in ipairs(all) do if not expected[id] then retained[#retained+1]={node=node,snapshot=edge(id)} end end end
+    else
+     retained_nodes[node]=remaining
+     for _,id in ipairs(remaining) do retained[#retained+1]={node=node,snapshot=edge(id)} end
+    end
    end
   end
   assert(#endpoints==2,"removal_chain_not_open")
@@ -1436,8 +1442,14 @@ function M.remove_branch(p,s,state,request_id,respond)
    if exact then
     for _,node in ipairs(interior) do assert(not api.engine.entityExists(node),"exact_chain_node_removal_unverified") end
     local attachments={}
-    for _,r in ipairs(retained) do local a=assert_fresh(r.snapshot);local all=incidence(r.node)
-     assert(#all==1 and all[1]==a.id,"retained_chain_attachment_unverified");attachments[#attachments+1]={node=r.node,edge=a}
+    for node,remaining in pairs(retained_nodes) do local all,owner=incidence(node);local wanted={}
+     for _,id in ipairs(remaining) do wanted[id]=true end
+     assert(#all==#remaining and not(owner and owner>0),"retained_chain_incidence_unverified")
+     for _,id in ipairs(all) do assert(wanted[id],"retained_chain_incidence_unverified") end
+    end
+    for _,r in ipairs(retained) do local a=assert_fresh(r.snapshot)
+     assert(a.node0==r.node or a.node1==r.node,"retained_chain_attachment_unverified")
+     attachments[#attachments+1]={node=r.node,edge=a,incident_edges=retained_nodes[r.node]}
     end
     s.mutationPending=nil;return {game_constructed=true,exact_chain=true,removed_edges=ids,removed_nodes=interior,retained_attachments=attachments,native_effect_history_complete=false,rollback=false}
    end

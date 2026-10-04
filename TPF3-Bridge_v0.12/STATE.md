@@ -1,3 +1,28 @@
+## P51 complete — exact mixed-endpoint branch removal (4 October 2026)
+
+Exact-chain removal retains every unselected TRACK snapshot and complete endpoint
+incidence; exactly one selected incident at bounded endpoints1..16, exclusive internal
+nodes still required. Legacy modes unchanged. Build40408, current session
+pif_1791144583_144132436 after normal CURRENT-operation15 save/load and module staging.
+Removed only104888,104889,95689,95702,95712. Retained unchanged through104886/104887
+at104882 (incidence3→2) and original platform1 lead95517/node95514 (2→1).
+Four directional native TRAIN routes pass; shared-internal chain rejected before build,
+all eight observed TRACK snapshots unchanged after rejection. Pending none.
+python tools/quiet_checks.py --suite live_client --label pif-p51-chain-endpoints:
+348passed/0fail/error/skip; .local_checks/pif-p51-chain-endpoints_ir9ex_dk/report.json.
+Compile/diff passed. No standalone Lua check; actual loaded native patch passed.
+Native command: python .local_runs/live_python_interface/p51/remove.py.
+Latest save TPF3_Bridge_P51_BranchCleared_20261004.sav (95073084bytes), SHA256
+1cc61cc22274c06551f3b891489368af8373c9810d2603c6fe126128ab8c9522.
+Deleted only P50_FreeLead_PreRepair and P51_PreRepair .sav/.jpg pairs (192036850bytes);
+original16platforms/UKMap1 untouched. Exact filenames/hashes in p51/cleanup.json.
+Evidence .local_runs/live_python_interface/p51/{HANDOFF.md,checks.json,checkpoint.json,
+stage.json,before.json,shared_internal_rejected.json,removal.json,bindings.json,
+final_result.json,world_checkpoint.json,cleanup.json}. Revision: p51/checkpoint.json.
+Local milestone/no push. No new track construction; physical trains unprobed,
+effect history incomplete, full throat incomplete. Usage unavailable; repair blocker none.
+Return fresh platform1 free-end and through-junction bindings to Astra for redesign.
+
 ## P50 complete — constructed free-lead readback repaired (4 October 2026)
 
 Confirmed nil maxgrade: level free-lead fitting omitted positive-limit vertical option;

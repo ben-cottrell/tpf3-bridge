@@ -4611,6 +4611,23 @@ class RejectedExtensionTests(unittest.TestCase):
                 self.assertFalse((self.client.evidence/'rejected.reconciliation.json').exists())
 
 class ExactChainRemovalTests(unittest.TestCase):
+    def test_native_mixed_endpoint_retains_exact_incidence_and_rejects_shared_interior(self):
+        source=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text()
+        block=source[source.index('function M.remove_branch'):source.index('function M.verify_crossover')]
+        self.assertIn('assert(#all>=1 and #all<=16,"removal_endpoint_degree_unsupported")',block)
+        self.assertIn('assert(selected_count==1,"removal_endpoint_chain_ambiguous")',block)
+        self.assertIn('retained_nodes[node]=remaining',block)
+        self.assertIn('snapshot=edge(id)',block)
+        self.assertIn('assert(#all==#remaining and not(owner and owner>0),"retained_chain_incidence_unverified")',block)
+        self.assertIn('assert(wanted[id],"retained_chain_incidence_unverified")',block)
+        self.assertIn('incident_edges=retained_nodes[r.node]',block)
+        self.assertIn('if #chosen==2 then assert(#all==2,"removal_node_not_exclusive")',block)
+        self.assertLess(block.index('removal_node_not_exclusive'),block.index('local proposal='))
+        self.assertLess(block.index('retained_chain_incidence_unverified'),block.index('s.mutationPending=nil;return {game_constructed=true,exact_chain=true'))
+        # Legacy endpoint policies remain separate and unchanged.
+        self.assertIn('removal_endpoint_not_two_edge_attachment',block)
+        self.assertIn('#all==(p.free_ends==true and 1 or 2)',block)
+
     def test_named_chain_is_freshly_observed_before_exact_mutation(self):
         with tempfile.TemporaryDirectory() as d:
             c=LiveClient(Path(d)/'mod',Path(d)/'log',Path(d)/'evidence','current',.02)
