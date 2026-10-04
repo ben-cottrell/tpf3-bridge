@@ -1,17 +1,13 @@
-# PIF-P39 — complete: publication-gap client repair
+# PIF-P40 - complete; hand back to coordinator
 
-Durable intent precedes staging; sequence advances only on exclusive publication.
-Publication failures/pending reads block later slots; no automatic mutation replay.
-Explicit bounded read reconciliation checks current session/exact saved request IDs,
-slot/temporary contents and responses/ACKs, preserving history and sequence frontier.
-Live build40408/session pif_1791121053_120602056: missing read70 restored under its
-original ID, published71 reused; both responses/ACKs succeeded. Fresh read72 returned
-TRACK103776; journal next73/pending clear. No fitting, crossover or construction.
-305affected quiet tests pass; STATE.md gives exact command/report and evidence paths.
-Original failure/journal retained; no permission/restart/mod code changes.
+The coordinator-selected same-layout level crossover now builds with explicit
+single_cubic_level representation. Native-parts remains default. Exact endpoints,
+native headings,5spacing/140span/hard600 and existing combined0.1 conversion limit
+were retained. Build40408 fresh readback verifies both through routes and both
+crossover directions, five TRACKs and two degree3 turnouts. 308 affected tests pass.
 
-Finish scoped local checkpoint and send handoff to coordinator
-01a0f987-8917-7f31-84c3-838acacc9e04 under standing user communication authority.
-Then stop: Astra resumes direct reference use. No layout experiment, topology choice,
-task batch or remote push. Approved card preserved at
-.local_runs/live_python_interface/p39/orchestrator/TASK.md.
+Evidence and limitations: STATE.md and .local_runs/live_python_interface/p40/HANDOFF.md.
+Canonical approved card preserved at p40/orchestrator/TASK.md. Original operator
+rejection remains in .local_runs/design/terminal_16_8_12_8/operation01/.
+No automatic replay, topology change, sweep, full terminal/scissors claim or push.
+Return control to Astra's direct operation; await its next bounded instruction.

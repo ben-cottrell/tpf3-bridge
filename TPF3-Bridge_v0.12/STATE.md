@@ -1,3 +1,24 @@
+## P40 complete - same-layout crossover accepted after opt-in representation repair
+Native-parts remains default; optional single_cubic_level on crossover requests/throat
+steps retains native original controls/headings, exact endpoints, level-only bounded
+fit and combined0.1 sampled conversion tolerance. No hard constraints weakened.
+Build40408/session pif_1791125162_124711741 accepted request21e9957ca82540d4b123da01249aec83:
+same5spacing/140span/hard600, one connector94188, four through tracks94184-94187,
+degree3 turnouts94182/94183. Fresh-process exact readback: two through routes and both
+crossover directions verified; sampled minradius654.331318974, grade0, combined
+error0.082410539. Read-only hard660/unknown-option checks rejected before construction.
+Earlier native3part rejection retained; segmentation cause remains hypothesis.
+python tools/quiet_checks.py --suite live_client --label pif-p40-pre-native-v2:
+308passed; .local_checks/pif-p40-pre-native-v2_94zity6c/report.json. Matching current
+Python/test hashes reused; native staged hash matches. Compile/diff pass. Evidence:
+.local_runs/live_python_interface/p40/native/{prepare,execute,fresh_verification,
+fresh_reverse_route,fresh_tracks,fresh_result}.json; checks.json,HANDOFF.md,checkpoint.json.
+Normal existing-save load only, no process restart. Current built world is unsaved;
+hand back to Astra direct operation, no replay. Geometry sampled; physical train,
+reservations, save/load identity and full incidental effects unprobed. P38 scissors
+remains unqualified. No P40 blocker; local checkpoint in p40/checkpoint.json, no push.
+Usage unavailable. L01-L14 and task runner unchanged.
+
 ## P39 complete - ordered read publication gap repaired
 LiveClient retains intent before staging, advances sequence only after exclusive
 publication, distinguishes unpublished/uncertain/conflict outcomes and read/mutation.

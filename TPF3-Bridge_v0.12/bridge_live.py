@@ -483,7 +483,8 @@ def validate_throat_brief(brief):
     if not isinstance(steps,list) or not (1 if single else 2)<=len(steps)<=6:raise ValueError('throat steps outside bounded domain')
     names=[]
     for step in steps:
-        if not isinstance(step,dict) or set(step)!={'name','kind','source','target'} or step['kind'] not in ('crossover','branch'):raise ValueError('invalid throat step')
+        if not isinstance(step,dict) or set(step)-{'representation'}!={'name','kind','source','target'} or step['kind'] not in ('crossover','branch'):raise ValueError('invalid throat step')
+        if 'representation' in step and (step['kind']!='crossover' or step['representation'] not in ('native_parts','single_cubic_level')):raise ValueError('invalid crossover representation')
         if not isinstance(step['name'],str) or not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]{0,39}',step['name']) or step['name'] in names:raise ValueError('invalid/duplicate step name')
         names.append(step['name'])
         b={k:brief[k] for k in ('radius','region','vertical','max_fit_attempts','max_route_length')}
@@ -1841,10 +1842,11 @@ def connect_throat(client,brief,*,execute=False,reconciled_crossover=None):
                 params={k:brief[k] for k in ('radius','region','vertical','max_route_length')}
                 params.update(source=source,target=target,location=step['source']|{'placement_tolerance':brief['placement_tolerance']},
                     target_location=step['target']|{'placement_tolerance':brief['placement_tolerance']},junction_nodes=junctions,execute=execute)
+                if 'representation' in step:params['representation']=step['representation']
                 if reconciled_crossover is not None and step is brief['steps'][0]:
                     saved=json.loads(Path(reconciled_crossover).read_text())
                     old=saved.get('verification_params',{})
-                    if saved.get('status')!='reconciled_verified_crossover' or any(old.get(k)!=params[k] for k in ('location','target_location','radius','region','vertical','max_route_length')):
+                    if saved.get('status')!='reconciled_verified_crossover' or old.get('representation','native_parts')!=params.get('representation','native_parts') or any(old.get(k)!=params[k] for k in ('location','target_location','radius','region','vertical','max_route_length')):
                         raise ValueError('reconciled crossover does not match approved step/constraints')
                     response=client.request('verify_crossover',old|{'execute':False})
                 else:response=client.request('crossover',params)

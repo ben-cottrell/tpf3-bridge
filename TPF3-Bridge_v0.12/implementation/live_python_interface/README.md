@@ -1,3 +1,24 @@
+## P40: opt-in complete level crossover representation
+
+The public `crossover` request and a `connect_throat` crossover step accept optional
+`representation: "single_cubic_level"`. Omitted or `"native_parts"` retains the
+existing native-part lowering. This opt-in is not available on branch steps.
+It uses native endpoint headings and total fit length, retaining original controls.
+Level fits only: <=8 original parts, total length <=800 native units. Every part is
+compared at335 points; combined native conversion/repartition error must remain<=0.1.
+Exact endpoint positions/directions, authorised region, requested radius and level
+grade remain binding. All geometry evidence is sampled, not continuous proof.
+
+Build40408 accepted the coordinator's same5-spacing/140-span/hard600 crossover after
+the original three-part export was rejected. One connector94188, four replacement
+through tracks94184-94187 and degree3 turnout nodes94182/94183 were confirmed by
+fresh-process exact readback; both through routes and both crossover directions pass
+native TRAIN path checks. Sampled minimum radius654.331, grade0, combined fit error
+0.082411. Hardradius660 and an unknown representation fail read-only. This proves
+this case, not a general segmentation cause, engine minimum or full scissors layout.
+No train traversal/reservation proof or complete incidental effect history follows.
+Local evidence: `.local_runs/live_python_interface/p40/native/` and STATE.md.
+
 # Live Python development interface
 
 `bridge_live.py` supplies a standard-library callable/CLI boundary to an active

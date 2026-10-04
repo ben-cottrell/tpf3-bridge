@@ -1388,6 +1388,31 @@ class LiveClientTests(unittest.TestCase):
         self.assertEqual(r['status'],'ok');self.assertFalse(r['final_network_verified']);self.assertFalse(r['game_constructed'])
         self.assertEqual(len(self.throat_calls),1);self.assertFalse(is_mutation(*self.throat_calls[0]))
 
+    def test_crossover_representation_is_explicit_opt_in_and_forwarded(self):
+        for representation in (None,'native_parts','single_cubic_level'):
+            with self.subTest(representation=representation):
+                self.throat_calls=[];self.throat_epoch=0;self.throat_fail_route=False;b=self.throat_brief()
+                if representation is not None:b['steps'][0]['representation']=representation
+                with patch('bridge_live._select_throat_port',side_effect=self.throat_port),patch('bridge_live.connect_junction_at',side_effect=self.throat_branch),patch.object(self.client,'request',side_effect=self.throat_worker):r=connect_throat(self.client,b)
+                self.assertEqual(r['status'],'ok');self.assertFalse(r['game_constructed'])
+                self.assertEqual(self.throat_calls[0][1].get('representation'),representation)
+                self.assertFalse(self.throat_calls[0][1]['execute'])
+
+    def test_crossover_representation_domain_rejects_unapproved_options(self):
+        for value in (True,{},'approximate','single_cubic_graded'):
+            b=self.throat_brief();b['steps'][0]['representation']=value
+            with self.subTest(value=value),patch.object(self.client,'request') as calls,self.assertRaises(ValueError):connect_throat(self.client,b)
+            calls.assert_not_called()
+        b=self.throat_brief();b['steps'][1]['representation']='single_cubic_level'
+        with self.assertRaises(ValueError):validate_throat_brief(b)
+
+    def test_crossover_reconciliation_cannot_change_representation(self):
+        self.throat_epoch=1
+        b=self.throat_brief();saved=self.throat_reconciliation(b);b['steps'][0]['representation']='single_cubic_level'
+        with patch('bridge_live._select_throat_port',side_effect=self.throat_port),patch.object(self.client,'request') as calls:
+            result=connect_throat(self.client,b,execute=True,reconciled_crossover=saved)
+        self.assertEqual(result['status'],'invalid_result');calls.assert_not_called()
+
     def throat_reconciliation(self,brief):
         step=brief['steps'][0]
         params={k:brief[k] for k in ('radius','region','vertical','max_route_length')}

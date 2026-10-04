@@ -1118,11 +1118,13 @@ local function crossover_readback(a,b,c,d,splits,f,ids,p,before)
     return {game_constructed=true,placements=placements,readback=rb,through_before=before,through_after=routes,crossover_after=crossing,
      junction_nodes=junctions,native_effect_history_complete=false}
 end
+local repartition_native_fit
 function M.crossover(p,s,state,request_id,respond)
  local stage,fit="inspect",nil
  local function reply(status,value) value.stage=stage;value.fit=fit;respond(request_id,status,value) end
  local ok,err=pcall(function()
   assert(type(p.execute)=="boolean","invalid_execution_option")
+  assert(p.representation==nil or p.representation=="native_parts" or p.representation=="single_cubic_level","unsupported_crossover_representation")
   local a,b=assert_fresh(p.source.edge_snapshot),assert_fresh(p.target.edge_snapshot)
   assert(a.id~=b.id and a.node0~=b.node0 and a.node0~=b.node1 and a.node1~=b.node0 and a.node1~=b.node1,"distinct_through_tracks_required")
   assert(a.template==b.template and a.style==b.style,"incompatible_track_resources")
@@ -1141,6 +1143,7 @@ function M.crossover(p,s,state,request_id,respond)
    {edge=b,pos=d.pos,direction=d.outward_direction,grade=d.grade},{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
   fit.requested_min_radius=p.radius;fit.start_node=nil;fit.target_node=nil
   local f=s.fits[fitid];f.min_radius=p.radius
+  if p.representation=="single_cubic_level" then repartition_native_fit(f,fit,334) end
   for _,ctrl in ipairs(f.controls) do geometry_bounds(cubic(ctrl),p.region,p.radius,p.vertical.max_grade) end
   if not p.execute then reply("ok",{game_constructed=false,through_before=before});return end
   assert(not s.mutationPending,"unreconciled_mutation");assert_fresh(a);assert_fresh(b)
@@ -1412,15 +1415,21 @@ end
 -- P38: remove internal fit-part nodes only after checking a single native cubic
 -- against every original part. This is a sampled lowering approximation, not an
 -- engine minimum-segment rule or continuous equality proof.
-local function scissors_repartition(f,report)
+repartition_native_fit=function(f,report,divisions)
  local original=f.controls;local first,last=original[1],original[#original];local total=f.total_length
+ assert(#original>=1 and #original<=8 and total>0 and total<=800,"bounded_repartition_fit_required")
+ assert(math.abs(f.grade)<=.000001 and math.abs(f.end_grade)<=.000001 and math.abs(first.p0[3]-last.p1[3])<=.000001,"repartition_level_only")
+ for _,part in ipairs(original) do
+  assert(math.abs(part.p0[3]-first.p0[3])<=.000001 and math.abs(part.p1[3]-first.p0[3])<=.000001 and math.abs(part.t0[3])<=.000001 and math.abs(part.t1[3])<=.000001,"repartition_level_only")
+ end
+ divisions=divisions or 32
  local a,b=norm(first.t0),norm(last.t1)
  local c={p0=first.p0,p1=last.p1,t0={a[1]*total,a[2]*total,0},t1={b[1]*total,b[2]*total,0},length=total}
  local cg=cubic(c);local samples,offset,maxerr={},0,0
  for _,part in ipairs(original) do
   local source=cubic(part)
-  for j=0,32 do
-   local u=(offset+j/32*part.length)/total;local pos,dir=sample(source,j/32);local bp=sample(cg,u)
+  for j=0,divisions do
+   local u=(offset+j/divisions*part.length)/total;local pos,dir=sample(source,j/divisions);local bp=sample(cg,u)
    maxerr=math.max(maxerr,distance(pos,bp))
    samples[#samples+1]={u=u,pos=pos,dir=dir,base_pos=bp}
   end
@@ -1455,7 +1464,7 @@ function M.scissors_candidate(p,s,state,request_id,respond)
    fits[name]=M.fit({end_xy={q.end_xyz[1],q.end_xyz[2]},end_direction=q.end_direction,radius=p.radius,fit_radius=p.fit_radius,region=p.region},s,id,nil,
      {anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
    local f=s.fits[id];f.min_radius=p.radius;f.max_grade=0;fittings[name]=f
-   if p.repartition==true then scissors_repartition(f,fits[name]) end
+   if p.repartition==true then repartition_native_fit(f,fits[name]) end
   end
   for i=0,1 do
    local left,right=locations["L"..i],locations["R"..i]
