@@ -1,3 +1,29 @@
+## P53 diagnostic complete — first-turnout rejection unresolved (4 October 2026)
+
+Build40408 native SimpleProposal evaluation of both original operation19 fans:
+through split alone noncritical; first arc, longer prefix and complete branch reject
+Construction Not Possible. Reversed first edge and midpoint subdivision also reject.
+No collision entities reported; no general collision absence/native cause inferred.
+No reusable construction fault demonstrated; platform6 branch remains unbuilt.
+Added opt-in read-only proposal_diagnostics with bounded errors/comparisons; prohibited
+with execute=true. Default/explicit-false fits identical except per-request identity.
+Invalid options/execute guard reject before fitting; exact97537/97196/95212 snapshots
+unchanged. Sessionpif_1791149715_149264343,pending none. No railway mutation/build retry.
+Actual current manual/fan5 world saved/normal-loaded as P53_CurrentFans; historical
+world not loaded. .sav93217208bytes,SHA256
+a32b64c4c464b3fae65a3657713c8fc12cc3b961a6071cf11c99d566189d0dc4.
+python tools/quiet_checks.py --suite live_client --label pif-p53-proposal-final:
+351passed/0fail/error/skip; .local_checks/pif-p53-proposal-final_psjv9x7a/report.json.
+python -m py_compile .local_runs/live_python_interface/p53/diagnose.py
+.local_runs/live_python_interface/p53/check_native.py; git diff --check: pass.
+Native commands: python .local_runs/live_python_interface/p53/{diagnose,check_native}.py.
+Changed pif_native.lua,tests/test_live_client.py,CURRENT_TASK.md,STATE.md. Evidence
+.local_runs/live_python_interface/p53/{HANDOFF.md,checks.json,evaluations.json,
+native_checks.json,comparison.json,world_checkpoint.json,final_result.json,checkpoint.json}.
+Local milestone/no push; usage unavailable. Return first-turnout placement/geometry
+decision to Astra; later straight/platform attachment not required for this rejection.
+Full throat remains incomplete; no universal5degree/radius rule or train-motion claim.
+
 ## P52 complete — native node/edge observations separated (4 October 2026)
 
 Freshly reproduced read-only discover_interior endpoint_node_mismatch. Universal

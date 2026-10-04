@@ -1193,6 +1193,10 @@ function M.interior_junction(p,s,state,request_id,respond)
  local function reply(status,value) value.stage=stage;value.fit=fit;respond(request_id,status,value) end
  local ok,err=pcall(function()
   assert(type(p.execute)=="boolean","invalid_execution_option")
+  if p.proposal_diagnostics~=nil then
+   assert(type(p.proposal_diagnostics)=="boolean","invalid_proposal_diagnostics")
+   assert(not(p.proposal_diagnostics and p.execute),"proposal_diagnostics_read_only")
+  end
   local a=assert_fresh(p.source.edge_snapshot);local c=interior_location(a,p.location)
   assert(math.abs(c.parameter-p.source.parameter)<=.000001,"stale_interior_location")
   local target=p.target;local te,tp,td,tg
@@ -1225,7 +1229,7 @@ function M.interior_junction(p,s,state,request_id,respond)
   for _,ctrl in ipairs(f.controls) do geometry_bounds(cubic(ctrl),p.region,p.radius,p.vertical.max_grade) end
   local placement={original_edge=a.id,original_nodes={a.node0,a.node1},parameter=c.parameter,position=c.pos,
    canonical_forward=c.canonical_forward,subdivision_sampled_verified=true,game_constructed=false}
-  if not p.execute then reply("ok",{game_constructed=false,placement=placement,through_before=before});return end
+  if not p.execute and not p.proposal_diagnostics then reply("ok",{game_constructed=false,placement=placement,through_before=before});return end
   assert(not s.mutationPending,"unreconciled_mutation");assert_fresh(a);if te then assert_fresh(te) end
   stage="build";local proposal=api.type.SimpleProposal.new();local segments,nodes={},{}
   local n=api.type.NodeAndEntity.new();n.entity=-100;n.comp.position=v(c.pos);nodes[1]=n
@@ -1244,6 +1248,65 @@ function M.interior_junction(p,s,state,request_id,respond)
    segment(ctrl,-2-i,i==1 and -100 or -100-i+1,finish,false)
   end
   proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments;proposal.streetProposal.edgesToRemove={a.id}
+  if p.proposal_diagnostics then
+   -- Read-only native evaluation of the exact SimpleProposal sent by build.
+   -- Build40408 requires SimpleProposal here, despite the published declaration
+   -- naming Proposal. Neither evaluation nor its diagnostic result is a build.
+   stage="proposal_diagnostics"
+   local function bounded(values,convert)
+    local out,count={},0;for _,value in ipairs(values) do count=count+1;if count<=16 then out[#out+1]=convert(value) end end
+    return {values=out,count=count,truncated=count>#out}
+   end
+   local function evaluate(candidate)
+    local data=api.engine.util.proposal.makeProposalData(candidate,nil);local errors=data.errorState
+    return {
+     critical=errors.critical,messages=bounded(errors.messages,function(x)return tostring(x):sub(1,400) end),
+     warnings=bounded(errors.warnings,function(x)return tostring(x):sub(1,400) end),infos=bounded(errors.infos,function(x)return tostring(x):sub(1,400) end),
+     collision_entities=bounded(data.collisionInfo.collisionEntities,function(x)return x.entity end)}
+   end
+   local diagnostics=evaluate(proposal)
+   diagnostics.representation="same_SimpleProposal_as_build";diagnostics.build_acceptance="unestablished"
+   diagnostics.added_nodes=#nodes;diagnostics.added_segments=#segments;diagnostics.removed_edge=a.id
+   -- At most three read-only comparisons: the through split alone, first lead,
+   -- and all but the last branch segment. No fitting or constraint variation.
+   diagnostics.prefix_comparisons={};local seen={}
+   for _,count in ipairs({0,1,#f.controls-1}) do
+    if count<#f.controls and not seen[count] then
+     seen[count]=true;local prefix=api.type.SimpleProposal.new();local pn,pe={},{}
+     for i=1,count+1 do pn[i]=nodes[i] end
+     for i=1,count+2 do pe[i]=segments[i] end
+     prefix.streetProposal.nodesToAdd=pn;prefix.streetProposal.edgesToAdd=pe;prefix.streetProposal.edgesToRemove={a.id}
+     local result=evaluate(prefix);result.branch_segments=count;diagnostics.prefix_comparisons[#diagnostics.prefix_comparisons+1]=result
+    end
+   end
+   -- Two geometric-equivalence comparisons of the first rejected lead. These
+   -- change representation only, never radius, endpoints, placement or brief.
+   diagnostics.first_lead_representations={}
+   local reverse=api.type.SegmentAndEntity.new();reverse.entity=segments[3].entity;reverse.type=1;reverse.comp=segments[3].comp:clone()
+   reverse.comp.node0=segments[3].comp.node1;reverse.comp.node1=segments[3].comp.node0
+   reverse.comp.position0=v(f.controls[1].p1);reverse.comp.position1=v(f.controls[1].p0)
+   local ctrl=f.controls[1]
+   reverse.comp.tangent0=v({-ctrl.t1[1],-ctrl.t1[2],-ctrl.t1[3]});reverse.comp.tangent1=v({-ctrl.t0[1],-ctrl.t0[2],-ctrl.t0[3]})
+   local function compare(name,pn,pe)
+    local candidate=api.type.SimpleProposal.new();candidate.streetProposal.nodesToAdd=pn;candidate.streetProposal.edgesToAdd=pe;candidate.streetProposal.edgesToRemove={a.id}
+    local result=evaluate(candidate);result.representation=name;diagnostics.first_lead_representations[#diagnostics.first_lead_representations+1]=result
+   end
+   -- A one-piece branch may terminate at the existing target instead of a new node.
+   local lead_nodes={nodes[1]};if nodes[2] then lead_nodes[2]=nodes[2] end
+   compare("reversed_same_first_cubic",lead_nodes,{segments[1],segments[2],reverse})
+   local g=cubic(ctrl);local mid=g:calcPos(.5);local mn=api.type.NodeAndEntity.new();mn.entity=-1000;mn.comp.position=mid[1]
+   local halves={};local ends={{ctrl.p0,arr(mid[1]),ctrl.t0,arr(mid[2])},{arr(mid[1]),ctrl.p1,arr(mid[2]),ctrl.t1}}
+   for i,x in ipairs(ends) do
+    local part=api.type.SegmentAndEntity.new();part.entity=-1000-i;part.type=1;part.comp=segments[3].comp:clone()
+    part.comp.node0=i==1 and -100 or -1000;part.comp.node1=i==1 and -1000 or segments[3].comp.node1
+    part.comp.position0=v(x[1]);part.comp.position1=v(x[2]);part.comp.tangent0=v({x[3][1]*.5,x[3][2]*.5,x[3][3]*.5});part.comp.tangent1=v({x[4][1]*.5,x[4][2]*.5,x[4][3]*.5})
+    halves[i]=part
+   end
+   lead_nodes[#lead_nodes+1]=mn
+   compare("midpoint_subdivided_same_first_cubic",lead_nodes,{segments[1],segments[2],halves[1],halves[2]})
+   reply("ok",{game_constructed=false,placement=placement,through_before=before,proposal_diagnostics=diagnostics})
+   return
+  end
   f.built=true;f.build_request=request_id;s.mutationPending=request_id
   local root=state:get() or {};root.pifLive=s;state:set(root)
   api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(res,success)

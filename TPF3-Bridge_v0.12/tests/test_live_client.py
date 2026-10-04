@@ -413,6 +413,38 @@ class LiveClientTests(unittest.TestCase):
         self.assertEqual(blocked.exception.status, 'reconciliation_required')
         self.assertEqual(len(list(self.client.mod.rglob('*.lua'))), 1)
 
+    def test_rejected_interior_proposal_evaluation_is_a_read_not_a_build(self):
+        params = {'execute': False, 'proposal_diagnostics': True}
+        diagnostics = {'critical': True, 'build_acceptance': 'unestablished',
+                       'messages': {'values': ['Construction Not Possible'], 'count': 1}}
+        def worker():
+            slot = self.client.mod / 'content/scripts/pif_live/test_session/000001.lua'
+            deadline = time.monotonic() + 1
+            while not slot.exists() and time.monotonic() < deadline:
+                time.sleep(.005)
+            pending = json.loads(self.client.journal.read_text())['pending']
+            self.assertEqual(pending['operation_kind'], 'read')
+            self.assertEqual(pending['params'], params)
+            with self.log.open('a') as stream:
+                stream.write(MARKER + json.dumps(self.response('diagnostic', 'interior_junction',
+                    result={'game_constructed': False, 'proposal_diagnostics': diagnostics})) + '\n')
+        thread = threading.Thread(target=worker); thread.start()
+        result = self.client.request('interior_junction', params, request_id='diagnostic')
+        thread.join()
+        self.assertFalse(result['result']['game_constructed'])
+        self.assertEqual(result['result']['proposal_diagnostics'], diagnostics)
+        self.assertNotIn('pending', json.loads(self.client.journal.read_text()))
+        self.assertEqual(len(list(self.client.mod.rglob('*.lua'))), 1)
+
+    def test_interior_diagnostic_timeout_retains_read_for_reconciliation_without_retry(self):
+        self.client.timeout = .02
+        with self.assertRaises(LiveError):
+            self.client.request('interior_junction', {'execute': False, 'proposal_diagnostics': True}, request_id='diagnostic')
+        pending = json.loads(self.client.journal.read_text())['pending']
+        self.assertEqual(pending['operation_kind'], 'read')
+        self.assertFalse(is_mutation(pending['operation'], pending['params']))
+        self.assertEqual(len(list(self.client.mod.rglob('*.lua'))), 1)
+
     def test_degree_four_preflight_and_inspection_are_read_only_cli_entries(self):
         params = self.root / 'params.json'; params.write_text(json.dumps({'execute': False}))
         for operation in ('degree_four_candidate', 'inspect_degree_four'):
