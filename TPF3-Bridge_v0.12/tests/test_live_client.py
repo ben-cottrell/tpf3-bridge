@@ -4447,6 +4447,66 @@ class NativeAggregateTinyEvidenceTests(unittest.TestCase):
         self.assertLess(fit.index('assert(discardedlength<=.001'),fit.index('#controls>1 and straight_count==1 and arc_turn<=.1'))
         self.assertIn('geometry_bounds(cg,p.region,p.radius,maxgrade or math.abs(grade))',fit)
 
+class CrossoverCompensationTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup);root=Path(self.tmp.name)
+        self.client=LiveClient(root/'mod',root/'log',root/'evidence','current',.02);self.client.log.write_text('')
+        c={'p0':[0,0,0],'p1':[20,2,0],'t0':[20,0,0],'t1':[20,0,0]}
+        self.edges=[{'id':i,'node0':i*2,'node1':i*2+1,**c} for i in range(1,6)]
+        self.pending={'version':1,'session':'current','sequence':1,'request_id':'failed','operation':'crossover','params':{'execute':True,'radius':70},'publication':{'state':'published'},'log_offset':0}
+        self.response={'version':1,'session':'current','request_id':'failed','operation':'crossover','status':'mutation_unverified','result':{'game_constructed':True,'fit':{'pieces':1,'controls':[c]},'returned_edges':[1,2,3,4,5]}}
+        self.client.journal.write_text(json.dumps({'session':'current','next_sequence':2,'pending':self.pending}))
+        self.response_path=self.client.evidence/'failed.response.json';self.response_path.write_text(json.dumps(self.response));self.original=self.response_path.read_bytes()
+        (self.client.evidence/'failed.request.json').write_text(json.dumps({k:self.pending[k] for k in ('version','session','sequence','request_id','operation','params')}))
+        slot=self.client._slot(self.pending);slot.parent.mkdir(parents=True);slot.write_bytes(self.client._request_body(self.pending))
+        self.good={'session':'current','request_id':'removal','operation':'remove_branch','status':'ok','result':{'game_constructed':True,'removed_edges':[5],'compensated_request':'failed','remaining_through_verified':True,'remaining_endpoints':[{},{}]}}
+
+    def compensate(self):return self.client.compensate_crossover(connector_ids=[5],reason='P47 targeted correction',authority='Astra')
+
+    def test_verified_compensation_preserves_old_failure_and_never_accepts_it(self):
+        with patch.object(self.client,'request',side_effect=[{'status':'ok','request_id':'fresh','result':{'edges':self.edges}},self.good]) as calls:
+            r=self.compensate()
+        self.assertEqual([c.args[0] for c in calls.call_args_list],['inspect','remove_branch'])
+        self.assertFalse(r['result']['original_build_accepted']);self.assertEqual(r['result']['original_pending'],self.pending)
+        self.assertEqual(self.response_path.read_bytes(),self.original);self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+
+    def test_wrong_receipt_changed_geometry_or_unknown_removal_never_clears(self):
+        for defect in ('foreign','changed','unknown','stale'):
+            with self.subTest(defect=defect):
+                self.client.journal.write_text(json.dumps({'session':'current','next_sequence':2,'pending':self.pending}))
+                intent=self.client.evidence/'failed.compensation_intent.json'
+                if intent.exists():intent.unlink()
+                rows=json.loads(json.dumps(self.edges));answer=json.loads(json.dumps(self.good))
+                if defect=='foreign':self.response['result']['returned_edges']=[1,2,3,4,6];self.response_path.write_text(json.dumps(self.response))
+                else:self.response['result']['returned_edges']=[1,2,3,4,5];self.response_path.write_text(json.dumps(self.response))
+                if defect=='changed':rows[-1]['p1'][0]+=1
+                if defect=='unknown':answer['status']='mutation_unverified';answer['result']['game_constructed']='unknown'
+                if defect=='stale':answer['session']='other'
+                with patch.object(self.client,'request',side_effect=[{'status':'ok','request_id':'fresh','result':{'edges':rows}},answer]),self.assertRaises((LiveError,ValueError)):
+                    self.compensate()
+                self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+
+    def test_only_durable_exact_corrective_payload_can_cross_mutation_guard(self):
+        p={'authorised':True,'edges':[self.edges[-1]],'compensation':{'original_request':'failed'}}
+        with self.assertRaises(LiveError):self.client.request('remove_branch',p)
+        intent={'original_pending':self.pending,'removal_params':p};(self.client.evidence/'failed.compensation_intent.json').write_text(json.dumps(intent))
+        with self.assertRaises(LiveError):self.client.request('remove_branch',p|{'edges':[self.edges[0]]})
+        with self.assertRaises(LiveError):self.client.request('build',{'authorised':True})
+        def reply(state,body):
+            req=state['pending'];self.client._slot(req).write_bytes(body)
+            self.client.log.write_text(MARKER+json.dumps({'version':1,'session':'current','operation':'remove_branch','request_id':req['request_id'],'status':'mutation_unverified','result':{'game_constructed':'unknown'}})+'\n')
+        with patch.object(self.client,'_publish',side_effect=reply):self.client.request('remove_branch',p,request_id='unknown_remove')
+        pending=json.loads(self.client.journal.read_text())['pending'];self.assertEqual(pending['request_id'],'unknown_remove');self.assertEqual(pending['unresolved_mutation'],self.pending)
+
+    def test_native_lowering_and_compensation_keep_fixed_bounds(self):
+        source=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text()
+        block=source[source.index('local function repartition_two_piece_level'):source.index('function M.scissors_candidate')]
+        for guard in ('for j=0,200','for j=0,1000','maxerr+report.sampled_XY_error<=.1','v0>0 and v1>0','p.radius==q.radius','p.fit_radius==(q.fit_radius or q.radius*1.25)','comp.removal_request==p.compensation_request','geometry_constraints={all_path=true'):
+            self.assertIn(guard,block)
+        self.assertIn('math.min(minimum,(geometry_bounds(cg,f.region,f.min_radius,f.max_grade,1000)))',block)
+        remove=source[source.index('function M.remove_branch'):source.index('function M.verify_crossover')]
+        self.assertIn('through_edge_removal_forbidden',remove);self.assertIn('unrelated_mutation_pending',remove)
+
 class CrossoverAcceptanceRevisionTests(unittest.TestCase):
     """Native verifier stub models P44's measured 74.207 radius; no Lua execution."""
     def setUp(self):

@@ -19,9 +19,10 @@ STATION_OPERATION = 'station_lookup'
 OPERATIONS = {'scissors_candidate', 'degree_four_candidate', 'inspect_degree_four', 'inspect', 'clear_obstructions', 'fit', 'build', 'readback', 'extension', 'connection', 'test_approach', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'remove_branch', 'crossover', 'adjacent', 'verify_adjacency', 'junction', 'interior_junction', 'selected_connection', 'corridor'}
 
 OPERATIONS.add(STATION_OPERATION)
+OPERATIONS.add('repair_crossover')
 
 def is_mutation(operation, params):
-    return operation in ('build', 'test_approach', 'remove_branch', 'clear_obstructions') or (operation in ('scissors_candidate', 'extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover', 'adjacent', 'degree_four_candidate') and params.get('execute') is True)
+    return operation in ('build', 'test_approach', 'remove_branch', 'clear_obstructions') or (operation in ('repair_crossover', 'scissors_candidate', 'extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover', 'adjacent', 'degree_four_candidate') and params.get('execute') is True)
 
 def discover_session(log_path):
     """Read transport markers locally; a later request must still prove responsiveness."""
@@ -2373,6 +2374,50 @@ def parse_response(line, request_id, session, operation):
     return data
 
 class LiveClient:
+    def compensate_crossover(self, *, connector_ids, reason, authority, original_client=None):
+        """Explicit exact-receipt connector removal, never acceptance or replay."""
+        old=original_client or self;state=json.loads(old.journal.read_text());pending=state.get('pending')
+        if not pending or pending.get('operation')!='crossover' or pending['params'].get('execute') is not True:
+            raise LiveError('reconciliation_required','no unresolved constructed crossover')
+        rid=pending['request_id'];path=old.evidence/(rid+'.response.json');response=json.loads(path.read_text());r=response.get('result',{})
+        envelope={k:pending[k] for k in ('version','session','sequence','request_id','operation','params')}
+        if (pending.get('publication',{}).get('state') not in (None,'published')
+                or old._existing_bytes(old._slot(pending))!=old._request_body(pending)
+                or json.loads((old.evidence/(rid+'.request.json')).read_text())!=envelope):
+            raise LiveError('reconciliation_required','original crossover publication identity unproven')
+        if (response.get('session')!=pending['session'] or response.get('request_id')!=rid or response.get('operation')!='crossover'
+                or response.get('status')!='mutation_unverified' or r.get('game_constructed') is not True
+                or type(connector_ids) is not list or len(connector_ids)!=r.get('fit',{}).get('pieces')
+                or len(set(connector_ids))!=len(connector_ids) or any(type(x) is not int for x in connector_ids)
+                or any(x not in r.get('returned_edges',[]) for x in connector_ids)
+                or any(not isinstance(x,str) or not x.strip() or len(x)>500 for x in (reason,authority))):
+            raise ValueError('invalid explicit crossover compensation')
+        observed=self.request('inspect',{'edge_ids':r['returned_edges']});snapshots=observed.get('result',{}).get('edges',[])
+        byid={e['id']:e for e in snapshots}
+        if observed['status']!='ok' or set(byid)!=set(r['returned_edges']):raise LiveError('reconciliation_required','fresh exact receipt missing')
+        chosen=[byid[x] for x in connector_ids]
+        for e,c in zip(chosen,r['fit']['controls']):
+            if any(any(abs(e[k][j]-c[k][j])>.001 for j in range(3)) for k in ('p0','p1','t0','t1')):
+                raise LiveError('reconciliation_required','chosen connector differs from original fit')
+        params={'authorised':True,'edges':chosen,'compensation':{'original_request':rid,'original_response':response,'original_params':pending['params'],'reason':reason,'authority':authority}}
+        intent={'status':'explicit_compensation_intent','original_pending':pending,'original_response_path':str(path.resolve()),
+                'original_response_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'removal_params':params,'fresh_observation':observed['request_id'],'mutation_replay':False}
+        intent_path=self.evidence/(rid+'.compensation_intent.json')
+        if intent_path.exists():raise LiveError('reconciliation_required','compensation already recorded; reconcile its exact outcome')
+        atomic_json(intent_path,intent)
+        answer=self.request('remove_branch',params);v=answer.get('result',{})
+        if (answer['status']!='ok' or answer.get('session')!=self.session or answer.get('operation')!='remove_branch'
+                or v.get('game_constructed') is not True or v.get('compensated_request')!=rid or v.get('removed_edges')!=connector_ids
+                or v.get('remaining_through_verified') is not True or len(v.get('remaining_endpoints',[]))!=2):
+            raise LiveError('reconciliation_required','compensation outcome not verified',answer['request_id'])
+        latest=json.loads(old.journal.read_text())
+        if latest.get('pending')!=pending:raise LiveError('reconciliation_required','original pending changed during compensation')
+        record=intent|{'status':'compensated_noncompliant_crossover','removal_response':answer,'original_build_accepted':False,'rollback':False}
+        evidence=self.evidence/(rid+'.compensation.json');atomic_json(evidence,record)
+        latest.setdefault('compensated_constructions',{})[rid]={'evidence':str(evidence.resolve()),'original_build_accepted':False}
+        latest.pop('pending');atomic_json(old.journal,latest)
+        return {'status':'ok','result':record,'evidence':str(evidence.resolve())}
+
     def __init__(self, mod_directory, log_path, evidence_directory, session, timeout=30, *, require_ack=False):
         self.mod = Path(mod_directory)
         self.log = Path(log_path)
@@ -2459,7 +2504,12 @@ class LiveClient:
             try:published=self._existing_bytes(self._slot(unresolved))==self._request_body(unresolved)
             except (KeyError,ValueError,OSError):published=False
             if not published:raise LiveError('reconciliation_required','legacy pending slot publication is not established',unresolved['request_id'])
-        if unresolved and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'verify_adjacency', 'adjacent', 'remove_branch', 'crossover', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'scissors_candidate')):
+        corrective=False
+        if unresolved and operation=='remove_branch' and params.get('compensation',{}).get('original_request')==unresolved['request_id']:
+            intent=self.evidence/(unresolved['request_id']+'.compensation_intent.json')
+            if intent.exists():
+                saved=json.loads(intent.read_text());corrective=saved.get('original_pending')==unresolved and saved.get('removal_params')==params
+        if unresolved and not corrective and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'verify_adjacency', 'adjacent', 'remove_branch', 'crossover', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'scissors_candidate')):
             raise LiveError('reconciliation_required', 'previous request is unfinished; inspect its matching response/current world before any repeat', state['pending']['request_id'])
         if (self.evidence / (request_id + '.request.json')).exists():
             raise LiveError('request_id_reused', 'request ID already recorded', request_id)
@@ -2517,7 +2567,9 @@ class LiveClient:
                                             and operation == 'readback' and response['status'] == 'ok'
                                             and response.get('result', {}).get('connected') is True
                                             and params.get('fit_request') == unresolved['params'].get('fit_request'))
-                        if unresolved and not verified_pending:
+                        if corrective and (response['status']=='mutation_unverified' or response.get('result',{}).get('game_constructed')=='unknown'):
+                            state['pending']['outcome']='mutation_unverified'
+                        elif unresolved and not verified_pending:
                             state['pending'] = unresolved
                         elif response['status'] == 'mutation_unverified' or (
                                 is_mutation(operation, params)

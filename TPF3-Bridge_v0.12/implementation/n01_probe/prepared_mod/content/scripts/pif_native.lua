@@ -61,10 +61,11 @@ local function native_geometry(id)
 end
 -- Engineering checks on native geometry, not a replacement curve generator.
 -- Seventeen observations are a sampled check, not continuous curvature/clearance proof.
-local function geometry_bounds(g,region,minradius,maxgrade)
+local function geometry_bounds(g,region,minradius,maxgrade,divisions)
+ divisions=divisions or 16
  local minimum,maximum=math.huge,0
- for j=0,16 do
-  local u=j/16
+ for j=0,divisions do
+  local u=j/divisions
   local pos,dir=sample(g,u);in_region(pos,region)
   local grade=math.abs(slope(dir));assert(finite(grade) and grade<=maxgrade+.000001,"realised_sampled_grade_exceeds_limit");maximum=math.max(maximum,grade)
   local radius=math.huge
@@ -1345,7 +1346,31 @@ end
 function M.remove_branch(p,s,state,request_id,respond)
  assert(p.free_ends==nil or type(p.free_ends)=="boolean","invalid_free_end_removal_option")
  assert(p.authorised==true and type(p.edges)=="table" and #p.edges>=1 and #p.edges<=(p.free_ends and 16 or 8),"invalid_branch_removal")
- assert(not s.mutationPending,"unreconciled_mutation")
+ local compensation=p.compensation
+ if compensation then
+  local r=compensation.original_response;local q=compensation.original_params
+  assert(type(compensation.reason)=="string" and #compensation.reason>0 and type(compensation.authority)=="string" and #compensation.authority>0,"explicit_compensation_authority_required")
+  assert(r and r.request_id==compensation.original_request and r.operation=="crossover" and r.status=="mutation_unverified" and r.result.game_constructed==true and q.execute==true,"constructed_crossover_receipt_required")
+  local saved=s.requests[compensation.original_request]
+  if r.session==s.session then assert(saved and saved.response and saved.response.result.returned_edges and #saved.response.result.returned_edges==#r.result.returned_edges,"native_receipt_missing")
+   for i,id in ipairs(r.result.returned_edges) do assert(saved.response.result.returned_edges[i]==id,"native_receipt_mismatch") end
+  else assert(not s.mutationPending,"cross_session_compensation_guard_conflict") end
+  assert(not s.mutationPending or s.mutationPending==compensation.original_request,"unrelated_mutation_pending")
+  assert(not p.free_ends and not p.isolated_fixture and #p.edges==r.result.fit.pieces,"exact_crossover_compensation_only")
+  local controls=r.result.fit.controls;local ids=r.result.returned_edges;assert(#ids==#controls+4,"incomplete_original_receipt")
+  local seen={};for _,id in ipairs(ids) do assert(not seen[id],"duplicate_original_receipt");seen[id]=true;edge(id) end
+  for i,e in ipairs(p.edges) do assert(seen[e.id],"removal_outside_original_receipt")
+   for _,k in ipairs({"p0","p1","t0","t1"}) do assert(near(e[k],controls[i][k],.001),"removal_controls_not_original_fit") end
+  end
+  local f=r.result.fit
+  local c={parameter=q.source.parameter,pos=f.start,canonical_forward=q.source.canonical_forward}
+  local d={parameter=q.target.parameter,pos=f.finish,canonical_forward=q.target.canonical_forward}
+  local a,b=q.source.edge_snapshot,q.target.edge_snapshot
+  local x=reacquire_split(a,c,interior_splits(a,c.parameter,q.region,q.radius,q.vertical.max_grade),ids)
+  local y=reacquire_split(b,d,interior_splits(b,d.parameter,q.region,q.radius,q.vertical.max_grade),ids)
+  assert(p.edges[1].node0==x.junction_node and p.edges[#p.edges].node1==y.junction_node,"compensation_attachment_mismatch")
+  for _,v in ipairs({x,y}) do for _,id in ipairs(v.replacement_edges) do for _,e in ipairs(p.edges) do assert(e.id~=id,"through_edge_removal_forbidden") end end end
+ else assert(not s.mutationPending,"unreconciled_mutation") end
  local ids,expected={},{};local interior={}
  for i,snapshot in ipairs(p.edges) do
   local a=assert_fresh(snapshot);assert(not expected[a.id],"duplicate_removal_edge");expected[a.id]=true;ids[#ids+1]=a.id
@@ -1378,7 +1403,23 @@ function M.remove_branch(p,s,state,request_id,respond)
    end
    local endpoints={p.edges[1].node0,p.edges[#p.edges].node1};local observations={}
    for _,node in ipairs(endpoints) do local all=incidence(node);assert(#all==(p.free_ends==true and 1 or 2),"remaining_through_incidence_unverified");for _,id in ipairs(all) do edge(id) end;observations[#observations+1]={node=node,incident_edges=all} end
-   s.mutationPending=nil;return {game_constructed=true,removed_edges=ids,remaining_endpoints=observations,native_effect_history_complete=false,rollback=false}
+   local through={}
+   if compensation then
+    local q=compensation.original_params
+    for _,o in ipairs(observations) do
+     local a,b=edge(o.incident_edges[1]),edge(o.incident_edges[2])
+     local function other(e) return e.node0==o.node and e.node1 or e.node0 end
+     for _,reverse in ipairs({false,true}) do
+      local x,y=reverse and b or a,reverse and a or b
+      local check=M.route({source_edge=x.id,source_node=other(x),target_edge=y.id,target_node=other(y),junction_nodes=endpoints,mode="TRAIN",required_edges={a.id,b.id},max_length=q.max_route_length,
+       geometry_constraints={all_path=true,edge_ids={},region=q.region,radius=q.radius,max_grade=q.vertical.max_grade}})
+      assert(check.requested_route_verified,"compensated_through_function_unverified");through[#through+1]=check
+     end
+    end
+    s.compensated=s.compensated or {};s.compensated[compensation.original_request]={removal_request=request_id,original_build_accepted=false,original_params=compensation.original_params}
+   end
+   s.mutationPending=nil;return {game_constructed=true,removed_edges=ids,remaining_endpoints=observations,through_after=through,
+    compensated_request=compensation and compensation.original_request or nil,remaining_through_verified=compensation and true or nil,original_build_accepted=false,native_effect_history_complete=false,rollback=false}
   end)
   respond(request_id,ok and "ok" or "mutation_unverified",ok and value or {game_constructed="unknown",error=tostring(value):sub(1,400),retry=false})
  end)
@@ -1610,6 +1651,93 @@ repartition_native_fit=function(f,report,divisions)
  f.controls={c};f.samples={samples}
 end
 -- Complete connected pointwork avoids isolated near-parent free turnout stubs.
+local function repartition_two_piece_level(f,report)
+ local original=f.controls;local total=f.total_length;local height=original[1].p0[3]
+ assert(#original>=1 and #original<=8 and finite(total) and total>0 and total<=800,"bounded_two_piece_fit_required")
+ assert(math.abs(f.grade)<=1e-6 and math.abs(f.end_grade)<=1e-6,"two_piece_level_only")
+ for _,c in ipairs(original) do assert(math.abs(c.p0[3]-height)<=1e-6 and math.abs(c.p1[3]-height)<=1e-6 and math.abs(c.t0[3])<=1e-6 and math.abs(c.t1[3])<=1e-6,"two_piece_level_only") end
+ local function evaluate(c,u,derivative)
+  local weights=derivative and {6*u*u-6*u,-6*u*u+6*u,3*u*u-4*u+1,3*u*u-2*u}
+   or {2*u^3-3*u*u+1,-2*u^3+3*u*u,u^3-2*u*u+u,u^3-u*u}
+  local out={};for k=1,3 do out[k]=weights[1]*c.p0[k]+weights[2]*c.p1[k]+weights[3]*c.t0[k]+weights[4]*c.t1[k] end;return out
+ end
+ local function original_sample(s)
+  for i,c in ipairs(original) do if s<=c.length or i==#original then return evaluate(c,s/c.length),evaluate(c,s/c.length,true) end;s=s-c.length end
+ end
+ local controls,samples={},{};local maxerr,minimum=0,math.huge;local handles={}
+ for half=1,2 do
+  local start=(half-1)*total/2;local finish=half*total/2
+  local p0,d0=original_sample(start);local p1,d1=original_sample(finish);local a,b=norm(d0),norm(d1)
+  local aa,ab,bb,ar,br=0,0,0,0,0
+  for j=0,200 do
+   local u=j/200;local q=original_sample(start+(finish-start)*u)
+   local h0,h1,h2,h3=2*u^3-3*u*u+1,-2*u^3+3*u*u,u^3-2*u*u+u,u^3-u*u
+   for k=1,2 do local x,y,z=h2*a[k],h3*b[k],q[k]-h0*p0[k]-h1*p1[k]
+    aa=aa+x*x;ab=ab+x*y;bb=bb+y*y;ar=ar+x*z;br=br+y*z
+   end
+  end
+  local det=aa*bb-ab*ab;assert(finite(det) and det>1e-12,"two_piece_singular_handles")
+  local v0,v1=(ar*bb-br*ab)/det,(br*aa-ar*ab)/det
+  assert(finite(v0) and finite(v1) and v0>0 and v1>0,"two_piece_invalid_handles")
+  local c={p0=p0,p1=p1,t0={a[1]*v0,a[2]*v0,0},t1={b[1]*v1,b[2]*v1,0},length=finish-start}
+  local cg=cubic(c);samples[half]={};controls[half]=c;handles[half]={v0,v1}
+  for j=0,1000 do
+   local u=j/1000;local q,d=original_sample(start+(finish-start)*u);local pos=sample(cg,u)
+   maxerr=math.max(maxerr,distance(q,pos))
+   if j%5==0 then samples[half][#samples[half]+1]={u=u,pos=q,dir=d,base_pos=pos} end
+  end
+  minimum=math.min(minimum,(geometry_bounds(cg,f.region,f.min_radius,f.max_grade,1000)))
+  assert(angle(c.t0,d0)<=.1 and angle(c.t1,d1)<=.1,"two_piece_heading_mismatch")
+ end
+ assert(near(controls[1].p0,original[1].p0,.001) and near(controls[2].p1,original[#original].p1,.001) and near(controls[1].p1,controls[2].p0,.001),"two_piece_boundary_mismatch")
+ assert(angle(controls[1].t1,controls[2].t0)<=.1,"two_piece_join_heading_mismatch")
+ assert(maxerr+report.sampled_XY_error<=.1,"two_piece_outside_conversion_tolerance")
+ report.original_native_controls=report.original_native_controls or original;report.pre_two_piece_controls=original
+ report.repartition={method="two_piece_level_midpoint_ls201",original_pieces=#original,proposal_pieces=2,handles=handles,
+  check_samples_per_half=1001,sampled_XY_error=maxerr,sampled_combined_conversion_error=maxerr+report.sampled_XY_error,min_sampled_radius=minimum,sampled_only=true}
+ report.controls=controls;report.pieces=2;report.min_sampled_converted_radius=minimum;f.controls=controls;f.samples=samples
+end
+function M.repair_crossover(p,s,state,request_id,respond)
+ local comp=s.compensated and s.compensated[p.original_request]
+ assert(comp and comp.removal_request==p.compensation_request,"verified_compensation_required")
+ assert(type(p.execute)=="boolean" and p.representation=="two_piece_level_midpoint","explicit_two_piece_repair_required")
+ local q=comp.original_params
+ assert(p.radius==q.radius and p.fit_radius==(q.fit_radius or q.radius*1.25),"repair_criterion_changed")
+ for k=1,3 do assert(p.region.min[k]==q.region.min[k] and p.region.max[k]==q.region.max[k],"repair_region_changed") end
+ assert(p.vertical.max_grade==q.vertical.max_grade,"repair_grade_changed")
+ local removal=s.requests[p.compensation_request].response.result;local endpoints=removal.remaining_endpoints
+ assert(p.source.node_id==endpoints[1].node and p.target.node_id==endpoints[2].node,"repair_endpoint_identity_changed")
+ local a,b=assert_fresh(p.source.edge_snapshot),assert_fresh(p.target.edge_snapshot)
+ local function member(id,rows) for _,x in ipairs(rows) do if x==id then return true end end;return false end
+ assert(member(a.id,endpoints[1].incident_edges) and member(b.id,endpoints[2].incident_edges) and a.template==b.template and a.style==b.style,"repair_through_attachment_mismatch")
+ local _,pos,dir,grade=anchor({anchor_edge=a.id,anchor_node=p.source.node_id})
+ local _,tp,td,tg=anchor({anchor_edge=b.id,anchor_node=p.target.node_id});td={-td[1],-td[2],0};tg=-tg
+ local fitid=request_id.."_fit"
+ local fit=M.fit({end_xy={tp[1],tp[2]},end_direction=td,radius=p.radius,fit_radius=p.fit_radius,region=p.region,vertical=p.vertical},s,fitid,
+  {edge=b,node=p.target.node_id,pos=tp,direction=td,grade=tg},{anchor=a,pos=pos,direction=dir,grade=grade})
+ local f=s.fits[fitid];f.node=p.source.node_id;f.junction_node=f.node;repartition_two_piece_level(f,fit)
+ if not p.execute then respond(request_id,"ok",{fit=fit,game_constructed=false});return end
+ assert(not s.mutationPending,"unreconciled_mutation")
+ M.build({authorised=true,fit_request=fitid},s,state,request_id,function(rid,status,result)
+  result.fit=fit;result.original_compensated_request=p.original_request
+  if status=="ok" then
+   local ok,value=pcall(function()
+    local junctions={p.source.node_id,p.target.node_id};local routes={}
+    local function other(e,n) return e.node0==n and e.node1 or e.node0 end
+    for _,reverse in ipairs({false,true}) do
+     local x,y=reverse and b or a,reverse and a or b;local xn,yn=reverse and p.target.node_id or p.source.node_id,reverse and p.source.node_id or p.target.node_id
+     local required={a.id,b.id};for _,id in ipairs(result.ordered_edges) do required[#required+1]=id end
+     local route=M.route({source_edge=x.id,source_node=other(x,xn),target_edge=y.id,target_node=other(y,yn),junction_nodes=junctions,mode="TRAIN",required_edges=required,max_length=p.max_route_length,
+      geometry_constraints={all_path=true,edge_ids={},region=p.region,radius=p.radius,max_grade=p.vertical.max_grade}})
+     assert(route.requested_route_verified,"corrected_crossover_movement_unverified");routes[#routes+1]=route
+    end
+    result.routes=routes;s.mutationPending=nil;return result
+   end)
+   if not ok then status="mutation_unverified";result.error=tostring(value):sub(1,400) end
+  end
+  respond(rid,status,result)
+ end)
+end
 function M.scissors_candidate(p,s,state,request_id,respond)
  local stage="inspect";local names={"L0","L1","R0","R1"};local fittings,locations,originals,splits={},{},{},{}
  local function reply(status,value) value.stage=stage;value.assembly="connected_pointwork";respond(request_id,status,value) end

@@ -1,3 +1,30 @@
+## P47 complete — exact compensation and corrected native connector verified
+
+Receipt-bound compensation removed only95579/95585/95602 after fresh checks,
+preserving through rails95568/95571/95573/95578 and original failed evidence.
+Old request33dd9333f5e04b2ca0983ec45089024d is compensated, never accepted/replayed.
+Explicit level two-piece native-fit lowering uses fixed midpoint, LS201handles
+and1001checks/half; defaults and0.1conversion/radius/grade/region remain unchanged.
+Corrected TRACK104628/104629 connects95547→104627→95552, combined conversion
+0.0691432; both native movement directions sampled radius151.56465 pass70.
+Build40408; successful save normally reloaded, sessionpif_1791137219_136768880.
+20directional routes pass:12through/4prior/2first revised/2corrected. Station
+construction/station snapshot,192frozen TRACKs and16original leads unchanged;
+current pending none. Historical fit report zero minimum retained; Lua multiple
+return metadata bug fixed without geometry/acceptance changes. Corrected report
+path itself not rerun after fix; independent native readback/routes establish result.
+python tools/quiet_checks.py --suite live_client --label pif-p47-final:
+338passed/0fail/error/skip; .local_checks/pif-p47-final_k9hlo4oz/report.json.
+Compile/diff checks passed; unchanged tests reused at closure. Native final check:
+python .local_runs/live_python_interface/p47/verify.py (all20routes passed).
+Evidence .local_runs/live_python_interface/p47/{HANDOFF.md,checks.json,checkpoint.json,
+native/compensation.json,native/execute.json,native/final_result.json,native/final_reads/}.
+Saved TPF3_Bridge_P47_Wickham_Corrected_20261004.sav; SHA256
+e524a9651657eb6a73ef44ea8b45ba5a70b1f9bae284fdf4bf8f169a4adfcab2.
+Revision: p47/checkpoint.json. Local milestone only/no push. Sampled/non-atomic;
+physical train/speed/continuous proof unprobed, usage unavailable. No blockers.
+No more middle-out stages; next material design is Astra's outer-first fan priority.
+
 ## P46 complete — exact read recovered; native trimmed-curve failure localised
 
 LiveClient read-publication reconciliation now accepts up to2 exact pending reads
