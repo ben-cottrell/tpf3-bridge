@@ -32,7 +32,8 @@ def _name(s):
 def _hint(h,endpoint):
     keys={'region','max_edges','guide_xyz','position_tolerance'}
     if endpoint:keys|={'travel_direction','heading_tolerance_deg'}
-    if not isinstance(h,dict) or set(h)!=keys:raise ValueError('bounded named observation hint required')
+    if not isinstance(h,dict) or set(h)-({'boundary_kind'} if endpoint else set())!=keys:raise ValueError('bounded named observation hint required')
+    if endpoint and 'boundary_kind' in h and h['boundary_kind'] not in ('free_endpoint','connected_boundary'):raise ValueError('unsupported endpoint boundary kind')
     live.validate_brief({'anchor_edge':1,'anchor_node':2,'end_xy':[0,0],'end_direction':[1,0],'radius':1,'region':h['region']})
     if any(h['region']['max'][k]-h['region']['min'][k]>400 for k in range(3)):raise ValueError('observation region exceeds400')
     if type(h['max_edges']) is not int or not 1<=h['max_edges']<=16:raise ValueError('max_edges must be1..16')
@@ -68,7 +69,27 @@ def validate(brief):
 
 
 def _endpoint(client,h):
-    return live._select_throat_port(client,{k:v for k,v in h.items() if k!='position_tolerance'},tolerance=h['position_tolerance'],connected=True)
+    c,rid=live._select_throat_port(client,{k:v for k,v in h.items() if k not in ('position_tolerance','boundary_kind')},tolerance=h['position_tolerance'],connected=True)
+    kind,node=_boundary_query_node(c,h.get('boundary_kind'))
+    return c|{'boundary_kind':kind,'query_node':node},rid
+
+
+def _boundary_query_node(c,expected=None):
+    """Exact incidence decides free vs connected; coordinates never decide identity."""
+    e=c.get('edge_snapshot',{});node=c.get('node_id');ids=c.get('incident_edges',[])
+    if (type(node) is not int or node<=0 or type(c.get('edge_id')) is not int or c['edge_id']<=0
+            or e.get('id')!=c['edge_id'] or e.get('road_type')!='TRACK'
+            or node not in (e.get('node0'),e.get('node1')) or e.get('node0')==e.get('node1')
+            or any(type(e.get(k)) is not int or e[k]<=0 for k in ('node0','node1'))
+            or c.get('incidence_complete') is not True or c.get('incident_output_truncated')
+            or not isinstance(ids,list) or any(type(i) is not int or i<=0 for i in ids)
+            or c.get('incident_count') not in (1,2) or len(ids)!=c['incident_count']
+            or len(set(ids))!=len(ids) or c['edge_id'] not in ids):
+        raise live.LiveError('native_verification_failed','endpoint requires exact complete one/two-edge TRACK incidence')
+    kind='free_endpoint' if len(ids)==1 else 'connected_boundary'
+    if expected is not None and expected!=kind:raise live.LiveError('native_verification_failed','endpoint boundary kind does not match current incidence')
+    other=e['node1'] if node==e['node0'] else e['node0']
+    return kind,node if kind=='free_endpoint' else other
 
 
 def _junction(client,h):
@@ -76,7 +97,12 @@ def _junction(client,h):
     if r['status']!='ok' or v.get('complete') is not True:raise live.LiveError('discovery_incomplete','junction discovery incomplete')
     choices={c['node_id']:c for c in v['candidates'] if c.get('incident_count',0)>=3 and c.get('incidence_complete') is True and not c.get('incident_output_truncated') and math.dist(c['pos'],h['guide_xyz'])<=h['position_tolerance']}
     if len(choices)!=1:raise live.LiveError('ambiguous_junction' if choices else 'junction_unavailable','one current junction identity required')
-    c=next(iter(choices.values()));return c,r['request_id']
+    c=next(iter(choices.values()));ids=c.get('incident_edges',[])
+    if (type(c['node_id']) is not int or c['node_id']<=0 or not isinstance(ids,list)
+            or len(ids)!=c['incident_count'] or len(ids)>16 or len(set(ids))!=len(ids)
+            or any(type(i) is not int or i<=0 for i in ids)):
+        raise live.LiveError('discovery_incomplete','named junction incidence identities incomplete')
+    return c,r['request_id']
 
 
 def _transport_ref(v):
@@ -218,12 +244,12 @@ def inspect_route_set(client,brief):
         for index,m in enumerate(brief['movements']):
             if index%size==0:record['batches'].append({'start':index,'count':min(size,len(brief['movements'])-index),'observed':0})
             row=m|{'bindings':{n:record['bindings'][n] for n in (m['from'],m['to']) if n in record['bindings']}}
-            names=[m['from'],m['to'],*m.get('via',[])]
+            names=[m['from'],m['to'],*brief['junctions']]
             if any(n in record['binding_errors'] for n in names):row['binding_error']={n:record['binding_errors'][n] for n in names if n in record['binding_errors']}
             else:
-                a,z=(record['bindings'][m[k]] for k in ('from','to'));other=lambda c:c['edge_snapshot']['node1'] if c['node_id']==c['edge_snapshot']['node0'] else c['edge_snapshot']['node0']
+                a,z=(record['bindings'][m[k]] for k in ('from','to'))
                 row['via_nodes']=[record['junctions'][n]['node_id'] for n in m.get('via',[])]
-                q={'source_edge':a['edge_id'],'source_node':other(a),'target_edge':z['edge_id'],'target_node':other(z),'mode':brief['mode'],'max_length':brief['max_length'],'required_edges':sorted({a['edge_id'],z['edge_id']})}
+                q={'source_edge':a['edge_id'],'source_node':a['query_node'],'target_edge':z['edge_id'],'target_node':z['query_node'],'mode':brief['mode'],'max_length':brief['max_length'],'required_edges':sorted({a['edge_id'],z['edge_id']}),'junction_nodes':sorted({c['node_id'] for c in record['junctions'].values()})}
                 if a['edge_id']==z['edge_id']:q['single_edge']=True
                 row['query']=q;row['response']=client.request('route',q)
             record['movements'].append(row);record['batches'][-1]['observed']+=1;live.atomic_json(path,record)
@@ -253,12 +279,12 @@ def inspect_route_set(client,brief):
             if old is None:continue
             try:
                 c,rid=(_endpoint if n in brief['endpoints'] else _junction)(client,h);record['observations'].append(rid)
-                if any(c.get(k)!=old.get(k) for k in ('node_id','edge_id','pos','edge_snapshot','incident_edges')):raise live.LiveError('stale_binding','native endpoint/via identity or geometry changed')
+                if any(c.get(k)!=old.get(k) for k in ('node_id','edge_id','pos','edge_snapshot','incident_edges','boundary_kind','query_node')):raise live.LiveError('stale_binding','native endpoint/via identity or geometry changed')
             except live.LiveError as exc:
                 if exc.status not in ('no_eligible_candidates','ambiguous_attachment','discovery_incomplete','native_verification_failed','ambiguous_junction','junction_unavailable','stale_binding'):raise
                 record.setdefault('stale_bindings',{})[n]={'status':exc.status,'error':str(exc)}
                 for row in record['movements']:
-                    if n in (row['from'],row['to'],*row.get('via',[])):row['stale_binding']=True
+                    if n in (row['from'],row['to']) or n in brief['junctions']:row['stale_binding']=True
         status='ok';error=None
     except (live.LiveError,OSError,ValueError,KeyError,TypeError) as exc:
         status=getattr(exc,'status','invalid_result');error=str(exc)[:400]

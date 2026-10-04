@@ -1,3 +1,23 @@
+## P41 complete - actual assembled route-set inspection repaired
+Free endpoints query selected native nodes; connected two-edge boundaries retain
+opposite-end reference queries. Optional boundary_kind must match exact incidence;
+binding records query_node/kind. Fresh named junction IDs are forwarded; missing or
+stale forwarded identities remain unavailable. Required endpoint TRACK traversal,
+named-node/direction/resource checks and finite batching preserved. Python-only.
+Same live build40408/session pif_1791125162_124711741, no rebuild/save/load/simulation:
+eight external routes complete,28pairs=24overlap/4disjoint/0unknown,54native reads.
+W0_E0 / E1_W1 witness shares no TRACK/junction/endpoint/internal resources. Turnouts
+94182,94183,94202,94204 freshly bound. Other overlaps retained, no capacity guarantee.
+python tools/quiet_checks.py --suite live_client --label pif-p41-route-boundaries:
+311passed/0fail/error/skip; .local_checks/pif-p41-route-boundaries__3kiqogx/report.json.
+Free/connected both directions, trimmed turnout forwarding, wrong/stale identities,
+56movement reference/batching/budget regressions pass. Compile/diff pass. Evidence:
+.local_runs/live_python_interface/p41/native/{result,route_set,witness}.json,matrix.md;
+p41/checks.json,HANDOFF.md,checkpoint.json. Original operator failures preserved.
+World remains live UNSAVED; hand back to Astra direct operation. Train traversal,
+reservations, external conflicts/save identity unprobed; snapshot sequential/non-atomic.
+No P41 blocker; no Lua/runner/L01-L14 changes, no push. Usage unavailable.
+
 ## P40 complete - same-layout crossover accepted after opt-in representation repair
 Native-parts remains default; optional single_cubic_level on crossover requests/throat
 steps retains native original controls/headings, exact endpoints, level-only bounded

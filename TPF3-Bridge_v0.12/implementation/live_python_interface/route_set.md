@@ -13,17 +13,34 @@ are that example's observation hints, not a proposed design or historical handle
 Version1 brief names2..32 endpoints and1..64 explicit directed movements. Each
 endpoint has a bounded region (at most400 units per axis), max_edges1..16, native
 XYZ guide, XY travel_direction, heading_tolerance_deg and position_tolerance(0,10].
-The heading is the reference track's **outward direction toward the network**;
+The heading selects the native reference track's **outward direction at the named node**;
 it stays the same when a movement is reversed. Hints disambiguate exact current
 node/edge identities; proximity never establishes attachment. Supported endpoints
 are free or unowned two-edge TRACK attachments under the existing discovery
 contract. Construction-owned/ambiguous/truncated observations stay unavailable.
 
-The native route query includes each endpoint's selected reference track segment:
-it runs from the outer end of the source reference to the outer end of the target
-reference, passing through the named attachment nodes. These reference rails are
-explicitly part of the reported resource footprint. Reverse movements swap the
-query bindings; they do not manufacture a new rail identity.
+The native route query includes each endpoint's selected reference TRACK segment.
+Exact complete incidence determines its boundary semantics: a free endpoint (one
+incident TRACK) uses the selected node directly. A connected boundary (two incident
+TRACKs) retains the existing opposite-end query on the selected reference edge,
+passing through the named boundary. Optional endpoint `boundary_kind` is
+`free_endpoint` or `connected_boundary`; a mismatch with current incidence fails
+without routing. Omitted kind is resolved from exact current incidence, never
+coordinates. The binding records both `boundary_kind` and `query_node`. Reverse
+movements swap bindings; the selected native outward heading remains the same.
+Every named freshly bound junction ID is forwarded for native turnout orientation.
+Unavailable named junctions prevent the query; any changed forwarded junction
+invalidates affected paths, including when not listed as a movement's `via`.
+Required endpoint-edge traversal, named-node completeness and final freshness
+remain acceptance gates; no global node reversal or tolerance weakening.
+
+P41 build40408 verified the same live staggered two-crossover assembly with all eight
+external directed movements complete. Twenty-eight pairs:24overlap,4graph-disjoint,
+0unknown. W0_E0 / E1_W1 share no TRACK, junction, endpoint or internal transport
+resources. Other overlaps remain explicit in the local physical resource matrix.
+Evidence `.local_runs/live_python_interface/p41/native/`; 311affected tests pass.
+No construction, world reload or native code change was needed. This is current
+topology/readback evidence, not train traversal, reservations or capacity proof.
 
 Optional `junctions` names up to32 bounded XYZ observation hints with region/max_edges/
 guide_xyz/position_tolerance. Movement `via` lists these names in required order;

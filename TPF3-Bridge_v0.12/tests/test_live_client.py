@@ -3828,6 +3828,42 @@ class RouteSetTests(unittest.TestCase):
         a.pop('via_nodes');a['stale_binding']=True;b=row('b',[10,20])
         self.assertEqual(rs.assess_route_set([a,b],es,ns)[0]['result'],'unknown')
     def brief(self):return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/route_set_example.json').read_text())
+    def test_boundary_query_uses_exact_incidence_and_explicit_kind(self):
+        import bridge_route_set as rs
+        es,_,_=self.data()
+        for node in (1,2):
+            c={'node_id':node,'edge_id':10,'edge_snapshot':es[10],'incident_edges':[10],
+               'incident_count':1,'incidence_complete':True,'incident_output_truncated':False}
+            self.assertEqual(rs._boundary_query_node(c),('free_endpoint',node))
+            with self.assertRaises(LiveError):rs._boundary_query_node(c,'connected_boundary')
+            connected=c|{'incident_count':2,'incident_edges':[10,40]}
+            self.assertEqual(rs._boundary_query_node(connected,'connected_boundary'),('connected_boundary',3-node))
+            with self.assertRaises(LiveError):rs._boundary_query_node(connected,'free_endpoint')
+            for bad in (c|{'node_id':999},c|{'edge_id':999},c|{'incidence_complete':False},c|{'incident_edges':[99]},c|{'incident_output_truncated':True}):
+                with self.subTest(node=node,bad=bad),self.assertRaises(LiveError):rs._boundary_query_node(bad)
+        b=self.brief();b['endpoints']['A1']['boundary_kind']='free_endpoint';rs.validate(b)
+        b['endpoints']['A1']['boundary_kind']='guess'
+        with self.assertRaises(ValueError):rs.validate(b)
+
+    def test_free_trimmed_endpoint_queries_forward_fresh_junctions_and_staleness(self):
+        import bridge_route_set as rs
+        es,ns,row=self.data();b=self.brief();b['endpoints']={n:b['endpoints'][n] for n in ('A1','S1')}
+        b['movements']=[{'id':'one','from':'A1','to':'S1'},{'id':'two','from':'S1','to':'A1'}]
+        b['junctions']={'turnout':{k:v for k,v in b['endpoints']['A1'].items() if k not in ('travel_direction','heading_tolerance_deg')}}
+        def endpoint(c,h):
+            n=1 if h['guide_xyz']==b['endpoints']['A1']['guide_xyz'] else 3
+            return {'node_id':n,'query_node':n,'boundary_kind':'free_endpoint','edge_id':10 if n==1 else 20,'edge_snapshot':es[10 if n==1 else 20],'pos':[0,0,0]},'discovery'
+        def request(op,q):
+            if op=='route':
+                self.assertEqual(q['junction_nodes'],[2]);self.assertEqual(q['required_edges'],[10,20])
+                self.assertEqual((q['source_node'],q['target_node']),(1,3) if q['source_edge']==10 else (3,1))
+                return row('x',[10,20] if q['source_edge']==10 else [20,10],q['source_edge']==20)['response']
+            self.assertEqual(op,'inspect');return {'status':'ok','result':{'edges':[es[i] for i in q['edge_ids']]}}
+        for stale in (False,True):
+            c={'node_id':2,'pos':[10,0,0],'incident_edges':[10,20,40]}
+            with patch('bridge_route_set._endpoint',side_effect=endpoint),patch('bridge_route_set._junction',side_effect=[(c,'initial'),(c|{'node_id':999} if stale else c,'final')]),patch('bridge_route_set._incidence',return_value=ns),patch.object(self.client,'request',side_effect=request):r=rs.inspect_route_set(self.client,b)
+            self.assertEqual(r['complete_paths'],0 if stale else 2)
+            if stale:self.assertEqual(r['pair_counts']['unknown'],1)
     def test_invalid_counts_names_hints_via_and_nonfinite_limits_rejected(self):
         import bridge_route_set as rs
         for kind in ('count','name','hint','via','length','duplicate'):
@@ -3846,7 +3882,7 @@ class RouteSetTests(unittest.TestCase):
         def endpoint(c,h):
             nonlocal count
             n=1 if h['guide_xyz']==b['endpoints']['A1']['guide_xyz'] else 3;count+=1
-            return {'node_id':n+100 if count==4 else n,'edge_id':10 if n==1 else 20,'edge_snapshot':es[10 if n==1 else 20],'pos':[0,0,0]},'discovery'
+            return {'node_id':n+100 if count==4 else n,'query_node':n,'boundary_kind':'free_endpoint','edge_id':10 if n==1 else 20,'edge_snapshot':es[10 if n==1 else 20],'pos':[0,0,0]},'discovery'
         def request(op,q):
             calls.append(op)
             if op=='route':return row('x',[10,20])['response']
@@ -4065,7 +4101,7 @@ class ComposedCrossingTests(unittest.TestCase):
 
 class ReferenceRouteSetTests(unittest.TestCase):
     """Controlled native-shaped binary tree: no physical terminal demonstration."""
-    def run_reference(self,tmp,*,fault=None,batch_size=16):
+    def run_reference(self,tmp,*,fault=None,batch_size=16,free=False):
         import bridge_route_set as rs
         reference=json.loads((Path(__file__).parent/'fixtures/route_set_reference.json').read_text())
         names=reference['endpoints'];edges={};calls=[];route_index=0;inspect_counts={}
@@ -4073,6 +4109,8 @@ class ReferenceRouteSetTests(unittest.TestCase):
         for n in range(2,44):edges[n-1]=edge(n-1,n//2,n)
         for i,n in enumerate(names):edges[100+i]=edge(100+i,22+i,1000+i)
         hints={n:{'region':{'min':[21+i,-1,-1],'max':[23+i,1,1]},'max_edges':16,'guide_xyz':[22+i,0,0],'position_tolerance':.001,'travel_direction':[-1,0],'heading_tolerance_deg':.1} for i,n in enumerate(names)}
+        if free:
+            for i,h in enumerate(hints.values()):h.update(region={'min':[999+i,-1,-1],'max':[1001+i,1,1]},guide_xyz=[1000+i,0,0],travel_direction=[1,0],boundary_kind='free_endpoint')
         brief={'version':1,'endpoints':hints,'junctions':{},'movements':reference['movements'],'mode':'TRAIN','max_length':8000,'batch_size':batch_size}
         client=type('Client',(),{'session':'reference_session','evidence':Path(tmp)})()
         def request(op,q):
@@ -4124,6 +4162,15 @@ class ReferenceRouteSetTests(unittest.TestCase):
         guides={tuple(h['guide_xyz']) for h in b['endpoints'].values()}
         endpoint_reads=[q for op,q in c if op=='discover' and tuple(sum(q['region'][v][i] for v in ('min','max'))/2 for i in range(3)) in guides and q['region']['max'][1]==1]
         self.assertEqual(len(endpoint_reads),44)
+
+    def test_free_reference_endpoints_preserve_both_directions_and_full_footprint(self):
+        with tempfile.TemporaryDirectory() as tmp:r,s,c,b=self.run_reference(tmp,free=True)
+        self.assertEqual(r['complete_paths'],56);self.assertEqual(r['pairs_assessed'],1540)
+        for m in s['movements']:
+            a,z=(m['bindings'][m[k]] for k in ('from','to'))
+            self.assertEqual(m['query']['source_node'],a['node_id']);self.assertEqual(m['query']['target_node'],z['node_id'])
+            self.assertEqual(m['physical_tracks'][0]['edge_id'],a['edge_id']);self.assertEqual(m['physical_tracks'][-1]['edge_id'],z['edge_id'])
+        self.assertTrue(all(op in ('discover','inspect','route') for op,q in c))
 
     def test_cross_batch_native_errors_and_opaque_resources_remain_unknown(self):
         for fault in ('route_error','opaque'):

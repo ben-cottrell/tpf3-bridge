@@ -1,13 +1,12 @@
-# PIF-P40 - complete; hand back to coordinator
+# PIF-P41 - complete; hand back to Astra direct operation
 
-The coordinator-selected same-layout level crossover now builds with explicit
-single_cubic_level representation. Native-parts remains default. Exact endpoints,
-native headings,5spacing/140span/hard600 and existing combined0.1 conversion limit
-were retained. Build40408 fresh readback verifies both through routes and both
-crossover directions, five TRACKs and two degree3 turnouts. 308 affected tests pass.
+Actual live eight-movement route-set inspection repaired and verified without
+rebuild/reload. Free endpoints use selected nodes; connected boundaries retain
+reference-edge semantics. Fresh turnouts forwarded; wrong/stale kinds/identities
+cannot produce completeness. Eight complete paths,24overlap/4disjoint/0unknown pairs.
+W0_E0 / E1_W1 share no TRACK/junction resources. 311affected tests pass.
 
-Evidence and limitations: STATE.md and .local_runs/live_python_interface/p40/HANDOFF.md.
-Canonical approved card preserved at p40/orchestrator/TASK.md. Original operator
-rejection remains in .local_runs/design/terminal_16_8_12_8/operation01/.
-No automatic replay, topology change, sweep, full terminal/scissors claim or push.
-Return control to Astra's direct operation; await its next bounded instruction.
+STATE.md and .local_runs/live_python_interface/p41/HANDOFF.md give exact evidence.
+Approved card preserved in p41/orchestrator/TASK.md; original operation02 records
+remain immutable. World live UNSAVED. No build replay, design sweep or train/capacity
+claim. Local milestone commit only, no push. Stop and hand back to coordinator.
