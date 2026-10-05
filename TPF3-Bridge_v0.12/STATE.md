@@ -1,3 +1,34 @@
+## P56 complete — prepared-state ownership and platform12→13 fan (5 October 2026)
+
+Actual repeated engine state:get refreshed borrowed tables, losing new preparation
+handles/counters; compacting fit data was insufficient. GameScript now owns one
+plain root per request through native stores/callbacks. No refit/bypass/tolerance
+change. Separate Python prepare/inspect/build accepted and reused exact controls:
+build40408/sessionpif_1791189743_9368806, prepare0b969558cd6946738ce3ba67774b4ec3,
+build e1f48e0da2ab4e2b8330e5d5b6a74ff5. Replaced104794; junction105095;
+through105096/105097, branch105098→95736. Outer102295/104791 retained.
+Native12/13/10/11/9 TRAIN routes pass; retained snapshots unchanged; changed-input,
+consumed/stale guards pass. Branch sampled radius1377.2242429847545, no hard radius.
+Final owned-root source passed tests/native/test_game_script_state.lua inside TPF3:
+refreshing fake backend, original-failure negative control, preparation/counter/
+consume/replay guards. No standalone Lua checker; no native writes from fixture.
+Actual construction used the intermediate detached-state fix; final source validated
+by this stronger regression and clean current-world native readback/routes after load.
+python tools/quiet_checks.py --suite live_client --label pif-p56-owned-root-final:
+363passed/0fail/error/skip; .local_checks/pif-p56-owned-root-final_1knnbzn7/report.json.
+python .local_runs/live_python_interface/p56/check_native.py: passed (construction
+session; do not replay). python .local_runs/live_python_interface/p56/check_final_reload.py:
+passed, current sessionpif_1791190956_10581921, unchanged geometry/all five routes,
+old-session handle rejected, final source/stage equal, temporary hook removed, pending none.
+git diff --check passed. Current save TPF3_Bridge_P56_Connected12_20261005.sav,
+93523818bytes,SHA256 a183d490d45ce9f8d7004c22e2dd5d670c58631fb123dc4517ff891d7c366029.
+Evidence .local_runs/live_python_interface/p56/{HANDOFF.md,final_result.json,checks.json,
+native_checks.json,state_regression.json,final_reload_checks.json,world_checkpoint.json,
+checkpoint.json}. Changed GameScript,JUNCTION_PREPARATION.md,tests/native fixture,
+CURRENT_TASK/STATE. Local milestone only; guide/older saves/evidence preserved.
+No task blocker. Physical train/reservation/full throat and continuous clearance
+unprobed. Usage unavailable. Acceptance reached; next decision belongs to coordinator.
+
 ## P55 complete — prepared interior platform10→11 fan (5 October 2026)
 
 prepare_interior_junction/build_prepared_interior_junction: bounded complete through

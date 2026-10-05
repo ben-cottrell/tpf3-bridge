@@ -103,3 +103,25 @@ acceptance precedes single-use submission; changed inputs, stale attachments and
 consumed handles reject. After construction, exact realised identities, controls
 and native TRAIN routes verify the through and branch movements. Bounds are sampled;
 route verification does not demonstrate physical train traversal or reservation.
+
+## State ownership and separate client processes
+
+Prepare and consume may run in separate Python processes in the same live adapter
+session. Neither relies on Python process memory. The GameScript takes one deep,
+plain-table copy of its engine state at request entry; all stores and the command
+callback use that request-owned root. On build40408, repeated getters of borrowed
+engine state were observed to discard newly added preparation handles and restore
+an older counter. Smaller fit records alone did not fix that ownership defect.
+
+Accepted numeric controls, freshness checks and single-use consumption remain
+unchanged. Save/load starts a new adapter session; an old prepared handle cannot
+authorise a new build. No refitting or cross-session replay is provided.
+
+`tests/native/test_game_script_state.lua` runs the actual GameScript against a
+refreshing fake state backend. It checks prepare→intervening inspection→consume,
+counter persistence, consumed-handle rejection and cached-response replay without
+duplicate execution. Its negative control reinstates the former borrowed-state
+boundary and must detect preparation loss. It performs no native game commands.
+With an existing Lua interpreter, call its `run(source_text)` entry point; installation
+is not required by the bridge. P56 ran this fixture inside the existing TPF3 Lua
+runtime, separately from actual platform12 native construction/readback evidence.

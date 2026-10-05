@@ -7,6 +7,16 @@ local guiSession,lastPoll,nextSequence=nil,0,1
 local function emit(kind,value) debugPrint("TPF3_BRIDGE_LIVE_"..kind.." "..codec.json(value)) end
 local function store(state,s) local root=state:get() or {};root.pifLive=s;state:set(root) end
 local function identity(x) return type(x)=="string" and #x<=80 and x:match("^[%w_-]+$") end
+-- state:get() refreshes engine-backed tables in place on build40408. Native
+-- operations call it again while storing, so never mutate that borrowed tree.
+-- Work on ordinary Lua tables for the entire request, including its callback.
+local function detached(value,seen)
+ if type(value)~="table" then return value end
+ seen=seen or {};if seen[value] then return seen[value] end
+ local result={};seen[value]=result
+ for key,item in pairs(value) do result[key]=detached(item,seen) end
+ return result
+end
 function data()
  return {
  update=function(_params,state,_dt)
@@ -38,7 +48,12 @@ function data()
    emit("SESSION",{session=request.session,ready=true});return
   end
   if not identity(request.request_id) or not identity(request.session) then return end
-  local root=state:get() or {};local s=root.pifLive
+  local root=detached(state:get() or {})
+  local engineState=state
+  -- All native stores in this request share one detached tree. Only the setter
+  -- crosses back to the engine; repeated getters cannot refresh pending edits.
+  state={get=function() return root end,set=function(_,value) root=value;engineState:set(value) end}
+  local s=root.pifLive
   local function respond(request_id,status,result)
    local response={version=1,session=request.session,request_id=request_id,operation=request.operation,status=status,result=result,build=getBuildVersion()}
    if s then s.requests[request_id]={response=response};if status=="ok" and request.operation=="build" then s.mutationPending=nil end;store(state,s) end

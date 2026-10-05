@@ -1,3 +1,21 @@
+# PIF-P56 complete - reusable prepared interior persistence
+
+Authority: .local_runs/live_python_interface/p56/orchestrator/TASK.md.
+Fixed borrowed engine-state refresh losing preparation handles/counters by using
+one request-owned plain root through all stores/callbacks. Accepted geometry,
+freshness and single-use guards remain. Separate prepare/inspect/build processes
+built platform12 into13: junction105095, through105096/105097, branch105098→95736.
+Final source passed refreshing-state Lua regression including original-failure
+negative control;363 affected Python checks pass. Clean production reload of the
+saved P56 world: exact readback unchanged,12/13/10/11/9 TRAIN routes pass, old-session
+handle rejects, pending none. No physical train traversal/continuous clearance proof.
+Evidence: .local_runs/live_python_interface/p56/{HANDOFF.md,final_result.json,
+native_checks.json,state_regression.json,final_reload_checks.json,checkpoint.json}.
+Current save: TPF3_Bridge_P56_Connected12_20261005.sav. No restart/rollback/push.
+Acceptance reached; next layout decision belongs to coordinator.
+
+## Previous accepted milestone
+
 # PIF-P55 complete — platform10→11 prepared interior fan junction
 
 Authority: .local_runs/live_python_interface/p55/orchestrator/TASK.md and standing
