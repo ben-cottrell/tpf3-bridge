@@ -1,3 +1,23 @@
+# P59 complete — compact parallel packing and prepared rejection repair
+
+Authority .local_runs/live_python_interface/p59/orchestrator/TASK.md and compact02
+with authorised local group adjustments. Six approaches end550; original fans and
+ten functions retained. All connector/both-through and full56 directional TRAIN routes
+pass; extra access acceptable, no40absence checks or platform3 reparenting.
+Python prepared-rejection recovery now uses correlated saved intent and read-only
+original edges/routes/local observations; never executes consumed handle. Actual
+failure reconciled, unknown other effects retained honestly; pending none. 372affected
+quiet checks pass and source hashes match. No task-runner/native source changes.
+Current save TPF3_Wickham_P59_Compact_Complete_20261005.sav. Evidence p59/
+FINAL_HANDOFF.md,final_result.json,final_world_checkpoint.json,routes/summary.json,
+cleanup.json,checkpoint.json. Source/doc diff reviewed; local milestone commit.
+Overall view shown; paused/non-maximised. No physical train/capacity/clearance proof,
+final-save reload, global geometry minima, rollback or remote push claimed.
+Acceptance reached; next layout decision belongs to coordinator. Do not replay
+historical reconstruction/build scripts or clear journals to repeat operations.
+
+## Previous accepted milestone
+
 # P58 complete — compact Wickham reconstruction
 
 Authority .local_runs/live_python_interface/p58/orchestrator/TASK.md and compact01 plan.

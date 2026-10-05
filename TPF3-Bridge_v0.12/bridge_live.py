@@ -2232,13 +2232,67 @@ def reconcile_rejected_crossover(client):
     if (response.get('session')!=client.session or response.get('request_id')!=rid or response.get('operation')!='crossover'
             or response.get('status')!='error' or v.get('error')!='native_construction_rejected' or v.get('stage')!='build'):
         raise LiveError('reconciliation_required','no explicit native crossover rejection',rid)
-    observed=client.request('crossover',pending['params']|{'execute':False});r=observed.get('result',{})
-    if observed['status']!='ok' or r.get('game_constructed') is not False or len(r.get('through_before',[]))!=2 or any(x.get('requested_route_verified') is not True for x in r['through_before']):
-        raise LiveError('reconciliation_required','unchanged original through edges/routes not established',rid)
+    details={}
+    if 'prepared_request' in pending['params']:
+        # Prepared handles are consumed before build and are execution-only.
+        # Recover the original intent from correlated publication evidence, never
+        # send the consumed handle or create another preparation during recovery.
+        try:
+            pid=pending['params']['prepared_request']
+            assert isinstance(pid,str) and re.fullmatch(r'[A-Za-z0-9_-]{1,80}',pid)
+            assert state['session']==client.session and pending['session']==client.session
+            assert pending['params']=={'prepared_request':pid,'execute':True}
+            request=json.loads((client.evidence/(rid+'.request.json')).read_text())
+            prep_path=client.evidence/(pid+'.request.json');prepared_path=client.evidence/(pid+'.response.json')
+            prep=json.loads(prep_path.read_text());accepted=json.loads(prepared_path.read_text())
+            envelope={k:pending[k] for k in ('version','session','sequence','request_id','operation','params')}
+            assert request==envelope and client._existing_bytes(client._slot(request))==client._request_body(request)
+            assert prep['version']==1 and prep['session']==client.session and prep['request_id']==pid and prep['operation']=='crossover'
+            assert type(prep['sequence']) is int and 0<prep['sequence']<request['sequence']
+            assert client._existing_bytes(client._slot(prep))==client._request_body(prep)
+            assert accepted['version']==1 and accepted['session']==client.session and accepted['request_id']==pid and accepted['operation']=='crossover' and accepted['status']=='ok'
+            a=accepted['result'];assert a['prepared_request']==pid and a['native_proposal_evaluated'] is True and a['native_proposal_critical'] is False
+            intent=prep['params'];assert intent['prepare'] is True and intent['execute'] is False
+            snapshots=[intent[k]['edge_snapshot'] for k in ('source','target')]
+            ids=[e['id'] for e in snapshots];assert len(set(ids))==2
+            for k,e in zip(('source','target'),snapshots):
+                assert intent[k]['edge_id']==e['id'] and type(intent[k]['canonical_forward']) is bool
+                assert all(key in e for key in ('node0','node1','p0','p1','t0','t1','template','style'))
+        except (OSError,ValueError,KeyError,TypeError,AssertionError) as exc:
+            raise LiveError('reconciliation_required','prepared crossover evidence missing, stale or mismatched',rid) from exc
+        def read(operation,params):
+            answer=client.request(operation,params)
+            if answer.get('status')!='ok' or answer.get('session')!=client.session or answer.get('operation')!=operation:
+                raise LiveError('reconciliation_required','prepared crossover observation unavailable',rid)
+            return answer
+        observed=read('inspect',{'edge_ids':ids})
+        if {e['id']:e for e in observed.get('result',{}).get('edges',[])}!={e['id']:e for e in snapshots}:
+            raise LiveError('reconciliation_required','original prepared through edges changed',rid)
+        routes=[]
+        for k,e in zip(('source','target'),snapshots):
+            forward=intent[k]['canonical_forward']
+            answer=read('route',{'source_edge':e['id'],'source_node':e['node0'] if forward else e['node1'],
+                'target_edge':e['id'],'target_node':e['node1'] if forward else e['node0'],
+                'single_edge':True,'required_edges':[e['id']],'mode':'TRAIN','max_length':intent['max_route_length'],
+                'junction_nodes':intent.get('junction_nodes',[])})
+            if answer.get('result',{}).get('requested_route_verified') is not True:
+                raise LiveError('reconciliation_required','original prepared through route unverified',rid)
+            routes.append(answer['request_id'])
+        local=discover(client,{'region':intent['region'],'max_edges':16})
+        if local.get('status')!='ok' or local.get('session')!=client.session or local.get('operation')!='discover':
+            raise LiveError('reconciliation_required','local prepared-rejection observation unavailable',rid)
+        details={'prepared_request':pid,'preparation_request_sha256':hashlib.sha256(prep_path.read_bytes()).hexdigest(),
+            'preparation_response_sha256':hashlib.sha256(prepared_path.read_bytes()).hexdigest(),
+            'through_observations':routes,'local_effects_observation':local['request_id'],
+            'local_effects':local.get('result',{}),'native_effect_history_complete':False}
+    else:
+        observed=client.request('crossover',pending['params']|{'execute':False});r=observed.get('result',{})
+        if observed['status']!='ok' or r.get('game_constructed') is not False or len(r.get('through_before',[]))!=2 or any(x.get('requested_route_verified') is not True for x in r['through_before']):
+            raise LiveError('reconciliation_required','unchanged original through edges/routes not established',rid)
     latest=json.loads(client.journal.read_text())
     if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
     record={'status':'reconciled_rejected_crossover','original_pending':pending,'observation':observed['request_id'],
-            'completed_crossover_absent':True,'other_effects':'unknown','automatic_replay':False}
+            'completed_crossover_absent':True,'other_effects':'unknown','automatic_replay':False,**details}
     path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
     latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
     latest.pop('pending');atomic_json(client.journal,latest)

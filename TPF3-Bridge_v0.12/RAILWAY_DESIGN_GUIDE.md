@@ -100,6 +100,13 @@ fans. All56 required directional paths still pass natively. The40m spans/15m gap
 are accepted choices for this layout, not proven engine minima. No scissors or
 compulsory reduction of the six through tracks was required.
 
+P59 retained those ten functions and fans while packing the approach to550m.
+Separate neighbouring-strip crossovers can overlap longitudinally. After one close
+shared-rail placement rejected, the remaining junction group was repositioned
+together; all56 paths pass. Actual crossover spans39.671–49.880m are successful
+choices, not native minimum lengths or gaps. Do not freeze each local connection
+while leaving its neighbours without room.
+
 Classify the evidence: unsuitable layout, native construction rejection, bridge
 contract/implementation failure, or transport uncertainty. Do not infer a bridge bug
 from rejection alone, or dismiss a near-equivalent manual success as merely design.
@@ -120,6 +127,11 @@ tool's internal algorithm or cursor eligibility feedback without evidence.
   crossover placement within the bridge's interior-parameter domain; this is an
   interface condition, not a minimum game-scale throat length. A different native
   fit preference resolved one legacy micro-arc failure without enlarging the layout.
+- P59 exposed a prepared-build recovery gap: accepted preview can still reject at
+  construction, and its consumed handle cannot be used for a dry run. Reconcile
+  correlated preparation evidence against exact original tracks, native routes and
+  bounded local observations. Never replay the handle or call unchanged originals
+  a rollback guarantee; unrelated partial effects may remain unknown.
 - P54 rebuilt11 successfully at the intended junction by evaluating a distinct
   one-piece endpoint candidate, then building its prepared geometry without refitting.
   Native parts rejected at the same attachments. This supports representation-aware

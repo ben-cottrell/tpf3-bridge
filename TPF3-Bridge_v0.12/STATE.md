@@ -1,3 +1,29 @@
+## P59 complete — compact parallel packing and rejection repair (5 October 2026)
+
+Ten existing crossover functions and six continuous approaches now end550 instead
+of650; platform fans/platform3 retained, extra access acceptable. Parallel315–355
+links accepted. Remaining group adjusted together: AB_reverse330→380, BC_forward
+385→425, A_reverse405→445, AB_forward435→475, C_forward455→495, B_reverse410→450,
+B_forward500→540. Actual spans39.671–49.880; ends549.999828–550.000144. Directional
+ordering and all connector/both-through TRAIN checks pass; fresh fan snapshots unchanged.
+One full56 required arrival/departure route check passed. No engine minimum claim.
+Prepared-rejection recovery fixed in bridge_live.py/tests/test_live_client.py: exact
+same-session preparation/publication evidence, original edges/routes and bounded local
+read, then durable reconciliation. Consumed handle never replayed. Actual rejected
+request reconciled; originals unchanged, completed rejected crossover absent, other
+effects unknown; no rollback claim. Pending none. Original failures/evidence retained.
+Checks: python tools/quiet_checks.py --suite live_client --label pif-p59-prepared-rejection
+372passed; .local_checks/pif-p59-prepared-rejection_fvi4e7ug/report.json, current source
+hashes match. Native commands (not replay instructions): p59/continue_group.py and
+check_routes.py; record_final.py. Changed source/doc diff reviewed; git diff --check.
+Save TPF3_Wickham_P59_Compact_Complete_20261005.sav,94216368bytes,SHA256
+0c11d2d4b79d8926273ce132b08ae24af623717dc94f1dc26d4b01b45b0dd14d.
+Evidence .local_runs/live_python_interface/p59/{FINAL_HANDOFF.md,final_result.json,
+final_world_checkpoint.json,routes/summary.json,cleanup.json,checkpoint.json}.
+No physical train/capacity/continuous-clearance proof or final-save reload claimed.
+Game paused/non-maximised; no restart, runner/native source change or remote push.
+Local milestone complete; next design choice to coordinator. Actual usage unavailable.
+
 ## P58 complete — compact Wickham reconstruction (5 October 2026)
 
 Coordinator compact01/plan.json realised: six continuous approaches end650 instead

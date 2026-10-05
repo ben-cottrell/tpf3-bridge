@@ -2849,6 +2849,80 @@ class LiveClientTests(unittest.TestCase):
             operation,params=worker.call_args.args;self.assertEqual(operation,op);self.assertFalse(params['execute']);self.assertFalse(is_mutation(operation,params))
             self.assertEqual(worker.call_count,1);self.assertFalse(r['result']['automatic_replay']);self.assertNotIn('pending',json.loads(self.client.journal.read_text()));self.assertEqual(path.read_bytes(),before)
 
+    def prepared_crossover_rejection_evidence(self):
+        edges=[{'id':i,'node0':a,'node1':z,'p0':[0,y,0],'p1':[80,y,0],
+                't0':[80,0,0],'t1':[80,0,0],'template':'track','style':'normal'}
+               for i,a,z,y in ((10,11,12,0),(50,51,52,5))]
+        intent={'prepare':True,'execute':False,'source':{'edge_id':10,'edge_snapshot':edges[0],'canonical_forward':True},
+                'target':{'edge_id':50,'edge_snapshot':edges[1],'canonical_forward':False},
+                'max_route_length':800,'junction_nodes':[90],'region':{'min':[-1,-1,-1],'max':[81,6,1]}}
+        prep={'version':1,'session':self.client.session,'request_id':'prepared','sequence':20,'operation':'crossover','params':intent}
+        request={'version':1,'session':self.client.session,'request_id':'failed','sequence':21,'operation':'crossover',
+                 'params':{'prepared_request':'prepared','execute':True}}
+        pending=request|{'publication':{'state':'published'},'operation_kind':'mutation'}
+        accepted=self.response('prepared','crossover',result={'prepared_request':'prepared','native_proposal_evaluated':True,'native_proposal_critical':False})
+        rejected=self.response('failed','crossover',result={'stage':'build','error':'native_construction_rejected','game_constructed':'unknown'})|{'status':'error'}
+        self.client.journal.write_text(json.dumps({'session':self.client.session,'next_sequence':22,'pending':pending}))
+        for value in (prep,request):
+            (self.client.evidence/(value['request_id']+'.request.json')).write_text(json.dumps(value))
+            slot=self.client._slot(value);slot.parent.mkdir(parents=True,exist_ok=True);slot.write_bytes(self.client._request_body(value))
+        for value in (accepted,rejected):(self.client.evidence/(value['request_id']+'.response.json')).write_text(json.dumps(value))
+        return edges,pending
+
+    def test_prepared_native_rejection_uses_original_edges_routes_and_bounded_local_read_without_handle(self):
+        from bridge_live import reconcile_rejected_crossover
+        edges,pending=self.prepared_crossover_rejection_evidence();before=(self.client.evidence/'failed.response.json').read_bytes()
+        calls=[]
+        def observe(op,q):
+            calls.append((op,q));self.assertFalse(is_mutation(op,q));self.assertNotIn('prepared_request',q)
+            if op=='inspect':return self.response('inspect_originals',op,result={'edges':edges})
+            if op=='route':return self.response('through_'+str(q['source_edge']),op,result={'requested_route_verified':True})
+            if op=='discover':return self.response('local',op,result={'edges':edges,'complete':False,'truncated':True})
+            self.fail('recovery attempted native preparation/build')
+        with patch.object(self.client,'request',side_effect=observe):answer=reconcile_rejected_crossover(self.client)
+        self.assertEqual([x[0] for x in calls],['inspect','route','route','discover'])
+        self.assertEqual(calls[1][1]['source_node'],11);self.assertEqual(calls[2][1]['source_node'],52)
+        self.assertEqual(calls[-1][1]['max_edges'],16)
+        self.assertEqual(answer['result']['other_effects'],'unknown');self.assertFalse(answer['result']['automatic_replay'])
+        self.assertTrue(answer['result']['local_effects']['truncated']);self.assertEqual(answer['result']['original_pending'],pending)
+        self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+        self.assertEqual((self.client.evidence/'failed.response.json').read_bytes(),before)
+
+    def test_prepared_rejection_missing_corrupt_stale_and_mismatched_evidence_preserves_pending(self):
+        from bridge_live import reconcile_rejected_crossover
+        for defect in ('missing','corrupt','session','identity','unaccepted','changed_intent','changed_build_publication'):
+            with self.subTest(defect=defect):
+                _,pending=self.prepared_crossover_rejection_evidence()
+                path=self.client.evidence/'prepared.response.json'
+                value=json.loads(path.read_text())
+                if defect=='missing':path.unlink()
+                elif defect=='corrupt':path.write_text('{')
+                elif defect=='changed_intent':
+                    p=self.client.evidence/'prepared.request.json';v=json.loads(p.read_text());v['params']['source']['edge_id']=99;p.write_text(json.dumps(v))
+                elif defect=='changed_build_publication':self.client._slot(pending).write_bytes(b'return {}')
+                else:
+                    if defect=='session':value['session']='old_session'
+                    elif defect=='identity':value['result']['prepared_request']='another'
+                    else:value['result']['native_proposal_critical']=True
+                    path.write_text(json.dumps(value))
+                with patch.object(self.client,'request') as native,self.assertRaises(LiveError):reconcile_rejected_crossover(self.client)
+                native.assert_not_called();self.assertEqual(json.loads(self.client.journal.read_text())['pending'],pending)
+
+    def test_prepared_rejection_changed_geometry_failed_route_or_unavailable_local_read_keeps_guard(self):
+        from bridge_live import reconcile_rejected_crossover
+        for defect in ('geometry','route','local'):
+            with self.subTest(defect=defect):
+                edges,pending=self.prepared_crossover_rejection_evidence()
+                def observe(op,q):
+                    if op=='inspect':
+                        rows=json.loads(json.dumps(edges))
+                        if defect=='geometry':rows[0]['p1'][0]+=1
+                        return self.response('inspect_originals',op,result={'edges':rows})
+                    if op=='route':return self.response('through',op,result={'requested_route_verified':defect!='route'})
+                    return self.response('local',op,result={})|{'status':'error'}
+                with patch.object(self.client,'request',side_effect=observe),self.assertRaises(LiveError):reconcile_rejected_crossover(self.client)
+                self.assertEqual(json.loads(self.client.journal.read_text())['pending'],pending)
+
 class NetworkTests(unittest.TestCase):
     setUp = LiveClientTests.setUp
     response = LiveClientTests.response
