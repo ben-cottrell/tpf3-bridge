@@ -1,3 +1,28 @@
+## P58 complete — compact Wickham reconstruction (5 October 2026)
+
+Coordinator compact01/plan.json realised: six continuous approaches end650 instead
+of1250, ten ordinary single crossovers; actual longitudinal spans39.798–40.104.
+Fresh bounded observation/exact incidence at299–300; removed14old connectors and
+58approach edges, retained platform fans. Native full proposals accepted/stored
+controls built; each connector/both-through TRAIN check passes. Fresh retained fan
+boundary snapshots unchanged; all56 required arrivals/departures pass, checked once
+with saved-response reuse. No physical train/simultaneous capacity/continuous clearance
+proof. No scissors or new topology. Rail5 initial micro-arc fit failed before mutation;
+native fit preference100 succeeded. Rails0/4 segmented at450 for315 interior placements.
+Transient journal WinError5 during published reads reconciled through existing client;
+no resends, reset, ACL/host repair. Pending none. Partial/failed evidence preserved.
+Actual current world saved TPF3_Wickham_P58_Compact_Complete_20261005.sav,
+94971558bytes,SHA2566053cba22ce33dbeb4e15b8d9c6717ea3ffd7d62edb95307fca86c9f67f52909.
+Build40408/sessionpif_1791193452_13077535; overall view shown, game paused/non-maximised.
+Evidence .local_runs/live_python_interface/p58/{FINAL_HANDOFF.md,final_result.json,
+final_world_checkpoint.json,routes/summary.json,crossovers_complete.json}; local exact
+intents/receipts and reconciliation records preserved. Native commands (not replay
+instructions): crossovers.py; check_routes.py then continue_routes.py (same56 queries);
+record_final.py. No railway source/runner changes; unchanged369quiet P57 checks reused:
+.local_checks/pif-p57-prepared-final_p4rcnx4b/report.json. git diff --check passes.
+Only STATE/CURRENT_TASK/RAILWAY_DESIGN_GUIDE updated; local milestone, no remote push.
+No blocker; acceptance reached, next design decision belongs to coordinator. Usage unavailable.
+
 ## P57 complete — prepared middle3/4 single crossover (5 October 2026)
 
 prepare_crossover/build_prepared_crossover in bridge_live.py reuse interior candidate

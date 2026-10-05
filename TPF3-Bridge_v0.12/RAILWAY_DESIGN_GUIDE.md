@@ -94,10 +94,11 @@ A route must meet its next crossover ahead of it in its direction of travel. Mer
 connecting the undirected graph can leave a movement requiring reversal. Wickham's
 completed arrangement uses separate pair-to-pair exchange sections and selected
 upstream pair crossovers; all 56 requested directional paths were found natively.
-The price of the conservative spacing is a longer straight approach (1250m from
-the original lead mouths to its outer ends). This is a working arrangement, not a
-demonstrated minimum footprint. The compact curved platform fans remain unchanged.
-No scissors or compulsory reduction of the six through tracks was required.
+The initial conservative arrangement ended at1250m. P58 rebuilt the straight
+approach to650m with ten ordinary40m crossovers and retained the compact platform
+fans. All56 required directional paths still pass natively. The40m spans/15m gaps
+are accepted choices for this layout, not proven engine minima. No scissors or
+compulsory reduction of the six through tracks was required.
 
 Classify the evidence: unsuitable layout, native construction rejection, bridge
 contract/implementation failure, or transport uncertainty. Do not infer a bridge bug
@@ -114,6 +115,11 @@ tool's internal algorithm or cursor eligibility feedback without evidence.
 
 ## Evidence from Wickham
 
+- P58 accepted all ten compact single crossovers with full native proposal checks,
+  then built the prepared controls. Segmenting two approach rails allowed early
+  crossover placement within the bridge's interior-parameter domain; this is an
+  interface condition, not a minimum game-scale throat length. A different native
+  fit preference resolved one legacy micro-arc failure without enlarging the layout.
 - P54 rebuilt11 successfully at the intended junction by evaluating a distinct
   one-piece endpoint candidate, then building its prepared geometry without refitting.
   Native parts rejected at the same attachments. This supports representation-aware

@@ -1,3 +1,20 @@
+# P58 complete — compact Wickham reconstruction
+
+Authority .local_runs/live_python_interface/p58/orchestrator/TASK.md and compact01 plan.
+Six continuous approaches end650; original platform fans retained. Ten native single
+crossovers built from accepted prepared controls, longitudinal spans39.798–40.104.
+Each connector/both-through route verified; fresh fan snapshots unchanged; full56
+required arrival/departure TRAIN paths pass. No physical train/capacity proof.
+Transient published-read journal failures reconciled with existing client, no resends,
+reset or permission/host repair; pending none. Partial/failed evidence preserved.
+Current save TPF3_Wickham_P58_Compact_Complete_20261005.sav; final evidence
+.local_runs/live_python_interface/p58/{FINAL_HANDOFF.md,final_result.json,
+final_world_checkpoint.json,routes/summary.json}. Overall view shown; game paused.
+No railway source/runner changes, unchanged P57 checks reused. Local documentation
+milestone only; no remote push. Acceptance reached; next design choice to coordinator.
+
+## Previous accepted milestone
+
 # PIF-P57 complete - prepared connection-led single crossover
 
 Authority: .local_runs/live_python_interface/p57/orchestrator/TASK.md.
