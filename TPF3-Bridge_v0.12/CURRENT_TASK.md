@@ -1,3 +1,20 @@
+# PIF-P57 complete - prepared connection-led single crossover
+
+Authority: .local_runs/live_python_interface/p57/orchestrator/TASK.md.
+prepare_crossover/build_prepared_crossover reuse bounded connection-led candidate,
+native evaluation and P56 state ownership. Both through replacements and complete
+proposal accepted at380→460; separate Python process built exact stored controls.
+Junctions105109/105110; through105111–105114; connector105141. Crossing/both-through
+and retained9–15 TRAIN routes pass,32 retained snapshots unchanged; guards pass.
+369 affected quiet checks pass. Final source/current save reload readback/routes pass.
+Current save TPF3_Bridge_P57_Crossover34_20261005.sav includes14/15 additions.
+Evidence .local_runs/live_python_interface/p57/{HANDOFF.md,final_result.json,
+native_checks.json,final_reload_checks.json,world_checkpoint.json,checkpoint.json}.
+No restart/historical rollback/push. Guide preserved. No physical train/clearance/
+full56 allocation proof. Acceptance reached; next layout choice belongs to coordinator.
+
+## Previous accepted milestone
+
 # PIF-P56 complete - reusable prepared interior persistence
 
 Authority: .local_runs/live_python_interface/p56/orchestrator/TASK.md.

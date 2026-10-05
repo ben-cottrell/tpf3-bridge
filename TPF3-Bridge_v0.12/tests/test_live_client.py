@@ -879,6 +879,70 @@ class LiveClientTests(unittest.TestCase):
         self.assertEqual(call.call_args.args,('interior_junction',{**params,'radius':0,'execute':False,'prepare':True,'fit_candidates':candidates}))
         self.assertEqual(call.call_count,1)
 
+    def crossover_preparation_parameters(self):
+        p=self.interior_preparation_parameters()
+        p['target']=json.loads(json.dumps(p['source']))
+        p['target']['edge_id']=50;p['target']['edge_snapshot'].update(id=50,node0=51,node1=52)
+        p['target_location']=json.loads(json.dumps(p['location']))
+        return p
+
+    def test_prepared_crossover_uses_two_interiors_and_connection_led_candidates(self):
+        from bridge_live import prepare_crossover
+        p=self.crossover_preparation_parameters();c=[{'branch':'endpoint_cubic_level','through':'subdivide'}]
+        with patch.object(self.client,'request') as request:prepare_crossover(self.client,p,c)
+        self.assertEqual(request.call_args.args,('crossover',p|{'radius':0,'execute':False,'prepare':True,'fit_candidates':c}))
+        request.assert_called_once()
+
+    def test_prepared_crossover_keeps_named_hard_constraints_and_guides(self):
+        from bridge_live import prepare_crossover
+        p=self.crossover_preparation_parameters()|{'radius':150,'guides':[{'pos':[10,0,0],'direction':[1,0]}]}
+        c=[{'branch':'guided_cubic_level','through':'subdivide_fresh'}]
+        with patch.object(self.client,'request') as request:prepare_crossover(self.client,p,c)
+        self.assertEqual(request.call_args.args[1]['radius'],150)
+        self.assertEqual(request.call_args.args[1]['guides'],p['guides'])
+
+    def test_prepared_crossover_rejects_bad_attachment_and_unbounded_input_before_publication(self):
+        from bridge_live import prepare_crossover
+        p=self.crossover_preparation_parameters();c={'branch':'endpoint_cubic_level','through':'subdivide'}
+        for key,replacement in (('target',p['source']),('source',None),('target',{'edge_id':50}),
+                                ('radius',-1),('radius',float('nan')),('max_route_length',801),('guides',[{}])):
+            with self.subTest(key=key),patch.object(self.client,'request') as request,self.assertRaises(ValueError):
+                prepare_crossover(self.client,p|{key:replacement},[c])
+            request.assert_not_called()
+        for candidates in ([],[c]*9,[c|{'branch':'invented'}],[c|{'through':'extended_endpoint_cubic_level'}],
+                           [c|{'handle_scale':0}],[c|{'through_handle_scales':[1,1]}]):
+            with self.subTest(candidates=candidates),patch.object(self.client,'request') as request,self.assertRaises(ValueError):
+                prepare_crossover(self.client,p,candidates)
+            request.assert_not_called()
+
+    def test_prepared_crossover_build_only_publishes_handle_and_does_not_retry_uncertainty(self):
+        from bridge_live import build_prepared_crossover
+        p=self.response('prepare','crossover',result={'prepared_request':'prepare','native_proposal_evaluated':True,'native_proposal_critical':False})
+        failure=self.response('build','crossover',result={'game_constructed':'unknown'});failure['status']='mutation_unverified'
+        with patch.object(self.client,'request',return_value=failure) as request:
+            self.assertEqual(build_prepared_crossover(self.client,p),failure)
+        self.assertEqual(request.call_args.args,('crossover',{'prepared_request':'prepare','execute':True}))
+        request.assert_called_once()
+
+    def test_prepared_crossover_rejects_foreign_or_nonaccepted_handle(self):
+        from bridge_live import build_prepared_crossover
+        p=self.response('prepare','crossover',result={'prepared_request':'prepare','native_proposal_evaluated':True,'native_proposal_critical':False})
+        for defect in ('session','operation','status','critical','handle'):
+            bad=json.loads(json.dumps(p))
+            if defect=='critical':bad['result']['native_proposal_critical']=True
+            elif defect=='handle':bad['result']['prepared_request']='foreign'
+            else:bad[defect]='invalid'
+            with self.subTest(defect=defect),patch.object(self.client,'request') as request,self.assertRaises(ValueError):
+                build_prepared_crossover(self.client,bad)
+            request.assert_not_called()
+
+    def test_prepared_crossover_completed_rejection_is_read_only_not_success(self):
+        v=self.response('rejected','crossover',result={'game_constructed':False,'search_complete':True});v['status']='no_accepted_candidate'
+        self.assertEqual(parse_response(MARKER+json.dumps(v),'rejected','test_session','crossover'),v)
+        for key,replacement in (('game_constructed',True),('search_complete',False)):
+            bad=json.loads(json.dumps(v));bad['result'][key]=replacement
+            with self.assertRaises(LiveError):parse_response(MARKER+json.dumps(bad),'rejected','test_session','crossover')
+
     def test_prepared_interior_keeps_explicit_hard_radius_and_guides(self):
         from bridge_live import prepare_interior_junction
         params=self.interior_preparation_parameters()|{'radius':150,'guides':[{'pos':[10,0,0],'direction':[1,0]}]}

@@ -1450,7 +1450,8 @@ local function reacquire_split(a,c,splits,ids)
  end
  assert(not api.engine.entityExists(a.id) or api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)==nil,"old_split_edge_still_present")
  return {original_edge=a.id,original_nodes={a.node0,a.node1},parameter=c.parameter,position=c.pos,junction_node=left.node1,
-  original_removed=true,subdivision_sampled_verified=true,replacement_edges={left.id,right.id},
+  original_removed=true,through_representation=c.through_representation,
+  subdivision_sampled_verified=c.through_representation==nil or c.through_representation=="subdivide" or c.through_representation=="subdivide_fresh",replacement_edges={left.id,right.id},
   incoming=c.canonical_forward and left or right,through=c.canonical_forward and right or left}
 end
 local function crossover_readback(a,b,c,d,splits,f,ids,p,before)
@@ -1480,18 +1481,54 @@ local function crossover_readback(a,b,c,d,splits,f,ids,p,before)
      junction_nodes=junctions,native_effect_history_complete=false}
 end
 local repartition_native_fit
+-- Both through attachments and the connecting lead form one native proposal.
+-- Fresh lead components avoid copying parent edge-specific state into a new rail.
+local function crossover_proposal(a,b,c,d,splits,f,fresh,fresh_lead)
+ local proposal=api.type.SimpleProposal.new();local segments,nodes={},{}
+ for i,x in ipairs({c,d}) do local n=api.type.NodeAndEntity.new();n.entity=-100*i;n.comp.position=v(x.pos);nodes[i]=n end
+ local function add(ctrl,n0,n1,base,resource,clone)
+  local e=api.type.SegmentAndEntity.new();e.entity=-#segments-1;e.type=1
+  if clone then e.comp=base:clone() else
+   e.comp.type=E.BaseEdgeType.NORMAL;e.comp.typeIndex=1;e.comp.laneConfigs=base.laneConfigs
+   e.comp.roadType=E.RoadType.TRACK;e.comp.roadTemplate=resource.template;e.comp.roadStyle=resource.style
+  end
+  e.comp.node0=n0;e.comp.node1=n1;e.comp.position0=v(ctrl.p0);e.comp.position1=v(ctrl.p1);e.comp.tangent0=v(ctrl.t0);e.comp.tangent1=v(ctrl.t1)
+  segments[#segments+1]=e
+ end
+ for i,x in ipairs({a,b}) do local base=api.engine.getComponent(x.id,api.type.ComponentType.BASE_EDGE)
+  add(splits[i][1],x.node0,-100*i,base,x,not fresh);add(splits[i][2],-100*i,x.node1,base,x,not fresh)
+ end
+ local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
+ for i,ctrl in ipairs(f.controls) do
+  local finish=-200
+  if i<#f.controls then local n=api.type.NodeAndEntity.new();n.entity=-300-i;n.comp.position=v(ctrl.p1);nodes[#nodes+1]=n;finish=n.entity end
+  add(ctrl,i==1 and -100 or -300-i+1,finish,base,a,not fresh_lead)
+ end
+ proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments;proposal.streetProposal.edgesToRemove={a.id,b.id}
+ return proposal,nodes,segments
+end
 function M.crossover(p,s,state,request_id,respond)
  local stage,fit="inspect",nil
+ s.prepared_crossovers=s.prepared_crossovers or {}
  local function reply(status,value) value.stage=stage;value.fit=fit;respond(request_id,status,value) end
  local ok,err=pcall(function()
+  local prepared
+  if p.prepared_request then
+   for k in pairs(p) do assert(k=="prepared_request" or k=="execute","prepared_crossover_input_changed") end
+   assert(p.execute==true,"prepared_crossover_requires_execution")
+   prepared=s.prepared_crossovers[p.prepared_request]
+   assert(prepared and not prepared.used,"prepared_crossover_missing_or_consumed")
+   p={};for k,value in pairs(prepared.intent) do p[k]=value end;p.prepare=nil;p.execute=true
+  end
   assert(type(p.execute)=="boolean","invalid_execution_option")
+  if p.prepare~=nil then assert(type(p.prepare)=="boolean" and not(p.prepare and p.execute),"invalid_crossover_prepare_option") end
   assert(p.representation==nil or p.representation=="native_parts" or p.representation=="single_cubic_level","unsupported_crossover_representation")
   local a,b=assert_fresh(p.source.edge_snapshot),assert_fresh(p.target.edge_snapshot)
   assert(a.id~=b.id and a.node0~=b.node0 and a.node0~=b.node1 and a.node1~=b.node0 and a.node1~=b.node1,"distinct_through_tracks_required")
   assert(a.template==b.template and a.style==b.style,"incompatible_track_resources")
   local c,d=interior_location(a,p.location),interior_location(b,p.target_location)
   assert(math.abs(c.parameter-p.source.parameter)<=.000001 and math.abs(d.parameter-p.target.parameter)<=.000001,"stale_interior_location")
-  local splits={interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade),interior_splits(b,d.parameter,p.region,p.radius,p.vertical.max_grade)}
+  local splits=prepared and prepared.splits or {interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade),interior_splits(b,d.parameter,p.region,p.radius,p.vertical.max_grade)}
   local before={}
   for i,x in ipairs({{a,c},{b,d}}) do
    before[i]=M.route({source_edge=x[1].id,source_node=x[2].canonical_forward and x[1].node0 or x[1].node1,
@@ -1499,38 +1536,50 @@ function M.crossover(p,s,state,request_id,respond)
     junction_nodes=p.junction_nodes,mode="TRAIN",required_edges={x[1].id},max_length=p.max_route_length})
    assert(before[i].requested_route_verified,"existing_through_route_unverified")
   end
-  stage="fit";local fitid=request_id.."_fit"
-  fit=M.fit({end_xy={d.pos[1],d.pos[2]},end_direction=d.outward_direction,radius=p.radius,fit_radius=p.fit_radius or p.radius*1.25,region=p.region,vertical=p.vertical},s,fitid,
-   {edge=b,pos=d.pos,direction=d.outward_direction,grade=d.grade},{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
+  stage="fit";local fitid=request_id.."_fit";local f
+  if p.prepare then
+   stage="prepare"
+   local record,attempts=prepare_interior_fit(a,c,{edge_snapshot=b,node_id=-200},d.pos,d.outward_direction,d.grade,p,s,fitid,{edge=b,location=d})
+   if not record then reply("no_accepted_candidate",{game_constructed=false,candidate_rejections=attempts,search_complete=true});return end
+   local count=0;for _ in pairs(s.prepared_crossovers) do count=count+1 end;assert(count<16,"prepared_crossover_capacity")
+   s.fits[record.fit_id]=nil;record.fitted.samples=nil;record.intent=p;record.handle=request_id
+   s.prepared_crossovers[request_id]=record;fit=record.fit;fit.start_node=nil;fit.target_node=nil
+   local root=state:get() or {};root.pifLive=s;state:set(root)
+   reply("ok",{game_constructed=false,prepared_request=request_id,fit_request=record.fit_id,through_controls=record.splits,
+    native_proposal_evaluated=true,native_proposal_critical=false,candidate_rejections=attempts,selected_candidate=record.candidate,
+    prepared_lifetime="current_adapter_session_only",through_before=before});return
+  elseif prepared then
+   fitid=prepared.fit_id;fit=prepared.fit;f=prepared.fitted;f.samples={}
+   c.through_representation=prepared.candidate.through;d.through_representation=prepared.candidate.through
+   for i,ctrl in ipairs(f.controls) do local rows={};for j=0,16 do local u=j/16;local pos,dir=sample(cubic(ctrl),u);rows[#rows+1]={u=u,pos=pos,dir=dir,base_pos=pos} end;f.samples[i]=rows end
+   assert(not f.built,"prepared_crossover_fit_consumed");s.fits[fitid]=f
+  else
+   fit=M.fit({end_xy={d.pos[1],d.pos[2]},end_direction=d.outward_direction,radius=p.radius,fit_radius=p.fit_radius or p.radius*1.25,region=p.region,vertical=p.vertical},s,fitid,
+    {edge=b,pos=d.pos,direction=d.outward_direction,grade=d.grade},{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
+   f=s.fits[fitid]
+  end
   fit.requested_min_radius=p.radius;fit.start_node=nil;fit.target_node=nil
-  local f=s.fits[fitid];f.min_radius=p.radius
-  if p.representation=="single_cubic_level" then repartition_native_fit(f,fit,334) end
+  f.min_radius=p.radius
+  if not prepared and p.representation=="single_cubic_level" then repartition_native_fit(f,fit,334) end
   for _,ctrl in ipairs(f.controls) do geometry_bounds(cubic(ctrl),p.region,p.radius,p.vertical.max_grade) end
   if not p.execute then reply("ok",{game_constructed=false,through_before=before});return end
   assert(not s.mutationPending,"unreconciled_mutation");assert_fresh(a);assert_fresh(b)
-  stage="build";local proposal=api.type.SimpleProposal.new();local segments,nodes={},{}
-  for i,candidate in ipairs({c,d}) do local n=api.type.NodeAndEntity.new();n.entity=-100*i;n.comp.position=v(candidate.pos);nodes[#nodes+1]=n end
-  local function add(ctrl,n0,n1,base)
-   local e=api.type.SegmentAndEntity.new();e.entity=-#segments-1;e.type=1;e.comp=base:clone()
-   e.comp.node0=n0;e.comp.node1=n1;e.comp.position0=v(ctrl.p0);e.comp.position1=v(ctrl.p1);e.comp.tangent0=v(ctrl.t0);e.comp.tangent1=v(ctrl.t1)
-   segments[#segments+1]=e
+  stage="build";local proposal=crossover_proposal(a,b,c,d,splits,f,prepared and prepared.candidate.through~="subdivide",prepared~=nil)
+  if prepared then
+   local data=api.engine.util.proposal.makeProposalData(proposal,nil)
+   assert(not data.errorState.critical,"prepared_crossover_proposal_no_longer_accepted")
+   prepared.used=true;s.prepared_crossovers[prepared.handle]=nil
   end
-  for i,x in ipairs({a,b}) do local base=api.engine.getComponent(x.id,api.type.ComponentType.BASE_EDGE)
-   add(splits[i][1],x.node0,-100*i,base);add(splits[i][2],-100*i,x.node1,base)
-  end
-  local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
-  for i,ctrl in ipairs(f.controls) do
-   local finish=-200
-   if i<#f.controls then local n=api.type.NodeAndEntity.new();n.entity=-300-i;n.comp.position=v(ctrl.p1);nodes[#nodes+1]=n;finish=n.entity end
-   add(ctrl,i==1 and -100 or -300-i+1,finish,base)
-  end
-  proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments;proposal.streetProposal.edgesToRemove={a.id,b.id}
+  f.built=true;f.build_request=request_id
   s.mutationPending=request_id;local root=state:get() or {};root.pifLive=s;state:set(root)
   api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(res,success)
    if success~=true then s.mutationPending=nil;reply("error",{error="native_construction_rejected",game_constructed="unknown",retry=false});return end
    local ids={};for _,e in ipairs(res.proposal.proposal.addedSegments) do ids[#ids+1]=e.entity end
    local checked,value=pcall(function()
-    local value=crossover_readback(a,b,c,d,splits,f,ids,p,before);s.mutationPending=nil;return value
+    local value=crossover_readback(a,b,c,d,splits,f,ids,p,before)
+    value.prepared_geometry_reused=prepared~=nil;value.through_controls=splits
+    value.prepared_request=prepared and prepared.handle or nil;value.fit_request=fitid
+    s.mutationPending=nil;return value
    end)
    reply(checked and "ok" or "mutation_unverified",checked and value or {error=tostring(value):sub(1,400),returned_edges=ids,game_constructed=true,retry=false})
   end)
@@ -1993,7 +2042,7 @@ prepare_endpoint_fit=function(b,target,s,fit_id,context)
  return nil,attempts
 end
 -- Connection-led candidates bypass Dubins/radius fitting unless explicitly selected.
-prepare_interior_fit=function(a,c,target,tp,td,tg,p,s,fit_id)
+prepare_interior_fit=function(a,c,target,tp,td,tg,p,s,fit_id,second_interior)
  local extension,finish_node,finish_pos,finish_direction=through_extension(a,p)
  assert(target and a.template==target.edge_snapshot.template and a.style==target.edge_snapshot.style,"unsupported_attachment_resources")
  assert(finite(p.radius) and p.radius>=0 and finite(p.max_route_length) and p.max_route_length>0 and p.max_route_length<=800,"invalid_prepared_interior_bounds")
@@ -2055,10 +2104,28 @@ prepare_interior_fit=function(a,c,target,tp,td,tg,p,s,fit_id)
     s.fits[id]=fitted
    end
    fitted.node=-100;fitted.junction_node=-100
-   local proposal,nodes,segments=interior_proposal(a,c,splits,fitted,target,q.through~="subdivide",extension)
-   local through=api.type.SimpleProposal.new();through.streetProposal.nodesToAdd={nodes[1]};through.streetProposal.edgesToAdd={segments[1],segments[2]};through.streetProposal.edgesToRemove=proposal.streetProposal.edgesToRemove
-   if extension then through.streetProposal.nodesToRemove={a.node1} end
-   failure_stage="through_proposal";through_eval=evaluate(through)
+   local proposal,nodes,segments
+   if second_interior then
+    local b,d=second_interior.edge,second_interior.location
+    local second_splits=interior_splits(b,d.parameter,p.region,p.radius,p.vertical.max_grade)
+    if q.through=="endpoint_cubic_level" then
+     local hs=q.through_handle_scales or {1,1,1,1}
+     for j,x in ipairs(second_splits) do second_splits[j]=handles(x.p0,x.p1,x.t0,x.t1,hs[2*j-1],hs[2*j]);geometry_bounds(cubic(second_splits[j]),p.region,p.radius,p.vertical.max_grade,64) end
+    end
+    splits={splits,second_splits}
+    proposal,nodes,segments=crossover_proposal(a,b,c,d,splits,fitted,q.through~="subdivide",true)
+    through_eval={}
+    for j,x in ipairs({a,b}) do
+     local through=api.type.SimpleProposal.new();through.streetProposal.nodesToAdd={nodes[j]}
+     through.streetProposal.edgesToAdd={segments[j*2-1],segments[j*2]};through.streetProposal.edgesToRemove={x.id}
+     failure_stage="through_proposal_"..j;through_eval[j]=evaluate(through)
+    end
+   else
+    proposal,nodes,segments=interior_proposal(a,c,splits,fitted,target,q.through~="subdivide",extension)
+    local through=api.type.SimpleProposal.new();through.streetProposal.nodesToAdd={nodes[1]};through.streetProposal.edgesToAdd={segments[1],segments[2]};through.streetProposal.edgesToRemove=proposal.streetProposal.edgesToRemove
+    if extension then through.streetProposal.nodesToRemove={a.node1} end
+    failure_stage="through_proposal";through_eval=evaluate(through)
+   end
    failure_stage="complete_proposal";full_eval=evaluate(proposal)
   end)
   attempts[#attempts+1]={index=i,branch=q.branch,through=q.through,stage=failure_stage,status=not ok and "failed_check" or full_eval.critical and "native_proposal_rejected" or "accepted",

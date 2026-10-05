@@ -1,3 +1,36 @@
+## P57 complete — prepared middle3/4 single crossover (5 October 2026)
+
+prepare_crossover/build_prepared_crossover in bridge_live.py reuse interior candidate
+families, optional hard radius and P56 request-owned state. Up to8 meaningful candidates;
+two through evaluations plus full native proposal; exact stored controls/freshness/
+single-use guards. Legacy defaults retained. Prepared leads use fresh components;
+one endpoint cubic/subdivide candidate accepted at380→460. Previous native-parts
+rejections preserved; exact internal rejection cause remains opaque, not impossibility.
+Build40408/sessionpif_1791192898_12523394: prepare50d733d5baf54d68b6e6f7eeb2e46904,
+build d849788cf5574bbfa418891c3e0a8522, different Python processes/no refit.
+Replaced104661/104677, junction105109/105110, through105111/105112 and105113/105114,
+connector105141. Outer104654/104660/104671/104676 retained;32 snapshots unchanged.
+Independent crossing/both-through and9/10/11/12/13/14/15 TRAIN routes pass. Changed,
+consumed/stale guards reject without effects, pending none. Sampled radius214.09014574146482
+is feedback; no design hard minimum selected. Existing.001 control tolerance unchanged.
+Actual14/15 additions saved before reload as TPF3_Bridge_P57_AllFans_20261005.sav;
+current realised save TPF3_Bridge_P57_Crossover34_20261005.sav,93509658bytes,
+SHA25650b2de8f0716e97c1417d01d072edf47c312303ea1d0d68a6154021754a3b965.
+Final metadata cleanup omits temporary proposal IDs from preparation report only.
+Final staged/source equal; clean current-save load sessionpif_1791193452_13077535:
+exact readback/all10 routes pass, old-session handle rejected, pending none.
+python tools/quiet_checks.py --suite live_client --label pif-p57-prepared-final:
+369passed/0fail/error/skip; .local_checks/pif-p57-prepared-final_p4rcnx4b/report.json.
+Native commands: python .local_runs/live_python_interface/p57/{prepare.py,build.py,
+check_native.py,check_final_reload.py} (separate commands; do not replay builds).
+git diff --check pass; Lua loaded/executed, no standalone checker installed.
+Evidence .local_runs/live_python_interface/p57/{HANDOFF.md,final_result.json,checks.json,
+native_checks.json,final_reload_checks.json,world_checkpoint.json,checkpoint.json}.
+Changed bridge_live.py,pif_native.lua,tests/test_live_client.py,JUNCTION_PREPARATION.md,
+CURRENT_TASK/STATE. Local milestone only, guide/older evidence/saves preserved.
+No blocker. Physical train/reservation/continuous clearance/full56 allocation unprobed.
+Usage unavailable. Acceptance reached; next layout decision belongs to coordinator.
+
 ## P56 complete — prepared-state ownership and platform12→13 fan (5 October 2026)
 
 Actual repeated engine state:get refreshed borrowed tables, losing new preparation

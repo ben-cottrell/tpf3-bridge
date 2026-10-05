@@ -125,3 +125,26 @@ boundary and must detect preparation loss. It performs no native game commands.
 With an existing Lua interpreter, call its `run(source_text)` entry point; installation
 is not required by the bridge. P56 ran this fixture inside the existing TPF3 Lua
 runtime, separately from actual platform12 native construction/readback evidence.
+
+## Prepared single crossover
+
+`prepare_crossover(client, parameters, candidates)` uses two fresh exact interior
+ports, `location`/`target_location`, authorised `region`, `vertical` and
+`max_route_length`. Optional `radius` is a hard requirement; omission means no
+invented hard minimum. Optional shape guides/handle scales use the same bounded
+candidate families as interior preparation. There are at most eight candidates;
+each evaluates both through replacements separately and the complete proposal.
+Use `branch: endpoint_cubic_level, through: subdivide` for an ordinary level lead;
+`subdivide_fresh` or `endpoint_cubic_level` through representation is explicit.
+This does not design a ladder/scissors or infer new layout requirements.
+
+`build_prepared_crossover(client, prepared)` sends only the accepted session handle.
+It checks fresh through snapshots/location and native acceptance again, consumes
+the handle once, and builds stored branch/through controls without refitting.
+Prepared leads use fresh native segment components instead of parent edge-specific
+state. The legacy crossover representation/default remains available unchanged.
+Complete rejection is `no_accepted_candidate` for this bounded candidate list;
+native command rejection/partial effects remain honest and are never retried here.
+Current readback verifies exact junction/outer-node identity, selected geometry
+bounds and native TRAIN crossing/both-through routes. Physical traversal,
+reservation and continuous clearance remain separate, unprobed capabilities.
