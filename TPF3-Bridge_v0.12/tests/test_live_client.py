@@ -417,20 +417,24 @@ class LiveClientTests(unittest.TestCase):
         params = {'execute': False, 'proposal_diagnostics': True}
         diagnostics = {'critical': True, 'build_acceptance': 'unestablished',
                        'messages': {'values': ['Construction Not Possible'], 'count': 1}}
+        observed=[];publish=self.client._publish
+        def capture(state,body):
+            observed.append(json.loads(json.dumps(state['pending'])))
+            return publish(state,body)
         def worker():
             slot = self.client.mod / 'content/scripts/pif_live/test_session/000001.lua'
             deadline = time.monotonic() + 1
             while not slot.exists() and time.monotonic() < deadline:
                 time.sleep(.005)
-            pending = json.loads(self.client.journal.read_text())['pending']
-            self.assertEqual(pending['operation_kind'], 'read')
-            self.assertEqual(pending['params'], params)
             with self.log.open('a') as stream:
                 stream.write(MARKER + json.dumps(self.response('diagnostic', 'interior_junction',
                     result={'game_constructed': False, 'proposal_diagnostics': diagnostics})) + '\n')
         thread = threading.Thread(target=worker); thread.start()
-        result = self.client.request('interior_junction', params, request_id='diagnostic')
+        with patch.object(self.client,'_publish',side_effect=capture):
+            result = self.client.request('interior_junction', params, request_id='diagnostic')
         thread.join()
+        self.assertEqual(observed[0]['operation_kind'],'read')
+        self.assertEqual(observed[0]['params'],params)
         self.assertFalse(result['result']['game_constructed'])
         self.assertEqual(result['result']['proposal_diagnostics'], diagnostics)
         self.assertNotIn('pending', json.loads(self.client.journal.read_text()))
@@ -691,6 +695,64 @@ class LiveClientTests(unittest.TestCase):
         self.assertEqual(calls[2][1]['source']['outward_direction'],[1,0,0])
         self.assertEqual(calls[2][1]['target']['outward_direction'],[-1,0,0])
         self.assertFalse(v['game_constructed']);self.assertLessEqual(len(json.dumps(v).encode()),4096)
+
+    def test_endpoint_junction_passes_fit_preference_separately_from_hard_minimum(self):
+        query,calls=self.junction_query();brief=self.project_brief();brief['fit_radius']=500
+        with patch.object(self.client,'request',side_effect=query):connect_junction(self.client,brief)
+        params=next(p for op,p in calls if op=='junction')
+        self.assertEqual(params['radius'],brief['radius'])
+        self.assertEqual(params['fit_radius'],500)
+
+    def prepared_parameters(self):
+        query,calls=self.junction_query()
+        with patch.object(self.client,'request',side_effect=query):connect_junction(self.client,self.project_brief())
+        params=next(p for op,p in calls if op=='junction')
+        return {k:v for k,v in params.items() if k!='execute'}
+
+    def test_prepared_junction_build_uses_only_accepted_handle_without_refitting(self):
+        from bridge_live import prepare_junction,build_prepared_junction
+        params=self.prepared_parameters();candidates=[{'fit_radius':500,'representation':'endpoint_cubic_level'}]
+        prepared=self.response('prepared','junction',result={'prepared_request':'prepared',
+            'native_proposal_evaluated':True,'native_proposal_critical':False})
+        rejected=self.response('build','junction',result={'game_constructed':'unknown','error':'native_construction_rejected'});rejected['status']='error'
+        with patch.object(self.client,'request',side_effect=[prepared,rejected]) as request:
+            record=prepare_junction(self.client,params,candidates)
+            result=build_prepared_junction(self.client,record)
+        self.assertEqual(request.call_count,2)
+        self.assertEqual(request.call_args_list[0].args,('junction',{**params,'execute':False,'prepare':True,'fit_candidates':candidates}))
+        self.assertEqual(request.call_args_list[1].args,('junction',{'execute':True,'prepared_request':'prepared'}))
+        self.assertEqual(result,rejected)
+
+    def test_junction_preparation_rejects_unbounded_or_weakened_candidates_before_native_calls(self):
+        from bridge_live import prepare_junction
+        params=self.prepared_parameters();valid={'fit_radius':500,'representation':'native_parts'}
+        for candidates in ([],[valid]*9,[{**valid,'fit_radius':params['radius']/2}],
+                           [{**valid,'fit_radius':float('inf')}],[{**valid,'representation':'invented'}],[{**valid,'relax':True}]):
+            with self.subTest(candidates=candidates),patch.object(self.client,'request') as request,self.assertRaises(ValueError):
+                prepare_junction(self.client,params,candidates)
+            request.assert_not_called()
+
+    def test_prepared_junction_requires_current_session_and_noncritical_native_acceptance(self):
+        from bridge_live import build_prepared_junction
+        valid=self.response('prepared','junction',result={'prepared_request':'prepared',
+            'native_proposal_evaluated':True,'native_proposal_critical':False})
+        for defect in ('session','status','critical','handle'):
+            value=json.loads(json.dumps(valid))
+            if defect=='session':value['session']='old'
+            elif defect=='status':value['status']='no_accepted_candidate'
+            elif defect=='critical':value['result']['native_proposal_critical']=True
+            else:value['result']['prepared_request']='foreign'
+            with self.subTest(defect=defect),patch.object(self.client,'request') as request,self.assertRaises(ValueError):
+                build_prepared_junction(self.client,value)
+            request.assert_not_called()
+
+    def test_no_accepted_junction_candidate_is_not_automatically_built(self):
+        from bridge_live import prepare_junction,build_prepared_junction
+        params=self.prepared_parameters();rejected=self.response('rejected','junction',result={'game_constructed':False});rejected['status']='no_accepted_candidate'
+        with patch.object(self.client,'request',return_value=rejected) as request:
+            self.assertEqual(prepare_junction(self.client,params,[{'fit_radius':500,'representation':'native_parts'}]),rejected)
+            with self.assertRaises(ValueError):build_prepared_junction(self.client,rejected)
+        self.assertEqual(request.call_count,1)
 
     def junction_query(self, *, failure=None):
         base,_=self.project_query();calls=[]

@@ -142,7 +142,7 @@ def connect_selected(client, discovery, brief):
     return client.request('selected_connection', _selected_parameters(client, discovery, brief))
 
 def _selected_parameters(client, discovery, brief, *, junction=False):
-    if not isinstance(brief, dict) or set(brief) - {'vertical'} != {'source_ref','target_ref','radius','region'}:
+    if not isinstance(brief, dict) or set(brief) - {'vertical','fit_radius'} != {'source_ref','target_ref','radius','region'}:
         raise ValueError('selection requires source_ref, target_ref, radius and region')
     records=discovery if isinstance(discovery,list) else [discovery]
     if not 1<=len(records)<=2:raise ValueError('selection accepts one or two local discoveries')
@@ -173,19 +173,58 @@ def _selected_parameters(client, discovery, brief, *, junction=False):
         if not isinstance(c.get('edge_snapshot'),dict):raise ValueError('candidate snapshot missing')
         selected.append(c)
     source,target=selected
+    if 'fit_radius' in brief:
+        _validate_fit_radius(brief['fit_radius'], brief['radius'])
     vertical={'vertical':brief['vertical']} if 'vertical' in brief else {}
     validate_connection_brief({'anchor_edge':source['edge_id'],'anchor_node':source['node_id'],
         'target_edge':target['edge_id'],'target_node':target['node_id'],'radius':brief['radius'],'region':brief['region'],**vertical})
     return {'source':source,'target':target,
         'radius':brief['radius'],'region':brief['region'],'discovery_request':request_ids[0],
-        'discovery_requests':request_ids,**vertical}
+        'discovery_requests':request_ids,**vertical,
+        **({'fit_radius':brief['fit_radius']} if 'fit_radius' in brief else {})}
+
+def _validate_fit_radius(value, minimum):
+    if type(value) not in (int,float) or not math.isfinite(value) or value<minimum:
+        raise ValueError('fit_radius cannot lower the hard radius')
+
+def prepare_junction(client, parameters, candidates):
+    """Bounded native fitting/evaluation; no construction. Exact native bindings required."""
+    keys={'source','target','radius','region','vertical','max_route_length'}
+    if not isinstance(parameters,dict) or not keys<=parameters.keys() or parameters.keys()-keys-{'fit_radius','discovery_request','discovery_requests'}:
+        raise ValueError('junction preparation requires exact bindings, hard bounds and route limit')
+    validate_connection_brief({'anchor_edge':parameters['source']['edge_id'],'anchor_node':parameters['source']['node_id'],
+        'target_edge':parameters['target']['edge_id'],'target_node':parameters['target']['node_id'],
+        **{k:parameters[k] for k in ('radius','region','vertical')}})
+    if 'fit_radius' in parameters:_validate_fit_radius(parameters['fit_radius'],parameters['radius'])
+    length=parameters['max_route_length']
+    if type(length) not in (int,float) or not math.isfinite(length) or not 0<length<=800:
+        raise ValueError('junction route limit must be within(0,800]')
+    if not isinstance(candidates,list) or not 1<=len(candidates)<=8:
+        raise ValueError('junction candidates must be within1–8')
+    for candidate in candidates:
+        if not isinstance(candidate,dict) or set(candidate)!={'fit_radius','representation'}:
+            raise ValueError('candidate requires fit_radius and representation only')
+        _validate_fit_radius(candidate['fit_radius'],parameters['radius'])
+        if candidate['representation'] not in ('native_parts','single_cubic_level','two_piece_level','endpoint_cubic_level'):
+            raise ValueError('unsupported junction representation')
+    return client.request('junction',{**parameters,'execute':False,'prepare':True,'fit_candidates':candidates})
+
+def build_prepared_junction(client, prepared):
+    """Consume one current-session native proposal; never silently refit or replay."""
+    if (not isinstance(prepared,dict) or prepared.get('session')!=client.session or prepared.get('operation')!='junction'
+            or prepared.get('status')!='ok' or prepared.get('result',{}).get('native_proposal_evaluated') is not True
+            or prepared['result'].get('native_proposal_critical') is not False
+            or prepared['result'].get('prepared_request')!=prepared.get('request_id')):
+        raise ValueError('accepted current-session prepared junction required')
+    return client.request('junction',{'prepared_request':prepared['request_id'],'execute':True})
 
 def validate_project_brief(brief, *, corridor=False):
     keys={'source','target','radius','region','vertical','max_fit_attempts','max_route_length'}
-    if not isinstance(brief,dict) or set(brief)!=keys:
+    if not isinstance(brief,dict) or set(brief)-{'fit_radius'}!=keys:
         raise ValueError('connection project requires only '+', '.join(sorted(keys)))
     validate_connection_brief({'anchor_edge':1,'anchor_node':2,'target_edge':3,'target_node':4,
                               'radius':brief['radius'],'region':brief['region'],'vertical':brief['vertical']})
+    if 'fit_radius' in brief:_validate_fit_radius(brief['fit_radius'],brief['radius'])
     bound=3000 if corridor else 1000
     if any(brief['region']['max'][i]-brief['region']['min'][i]>bound for i in range(2)):
         raise ValueError(f'connection region spans at most{bound} native XY units per axis')
@@ -307,6 +346,7 @@ def _connect_project(client, brief, execute, guides=None, *, junction=False, int
         for _,_,source,target in pairs[:brief['max_fit_attempts']]:
             selection={k:brief[k] for k in ('radius','region','vertical')}
             selection.update(source_ref=source['ref'],target_ref=target['ref'])
+            if 'fit_radius' in brief:selection['fit_radius']=brief['fit_radius']
             if interior:
                 if records[0].get('operation')!='discover_interior' or records[0].get('session')!=client.session:
                     raise ValueError('interior selection requires current-session native discovery')

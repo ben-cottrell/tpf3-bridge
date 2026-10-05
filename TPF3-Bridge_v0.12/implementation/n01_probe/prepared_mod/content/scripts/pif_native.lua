@@ -1,5 +1,7 @@
 -- Focused live operations using C11 native fitting and C13 representation/proposal.
 local M={}
+-- Prepared geometry lives in GameScript state, scoped to its adapter session.
+local prepare_endpoint_fit
 local E=api.type["enum"]
 local function finite(x) return type(x)=="number" and x==x and math.abs(x)<math.huge end
 local function v(a) return api.type.Vec3f.new(a[1],a[2],a[3] or 0) end
@@ -582,6 +584,16 @@ local function selected_attachments(p,junction)
 end
 -- Existing two-edge through attachment only; native routing decides movement support.
 function M.junction(p,s,state,request_id,respond)
+ local prepared
+ s.prepared_junctions=s.prepared_junctions or {}
+ if p.prepared_request then
+  for k in pairs(p) do assert(k=="prepared_request" or k=="execute","prepared_junction_input_changed") end
+  assert(p.execute==true,"prepared_junction_requires_execution")
+  prepared=s.prepared_junctions[p.prepared_request]
+  assert(prepared and not prepared.used,"prepared_junction_missing_or_consumed")
+  p={};for k,vv in pairs(prepared.intent) do p[k]=vv end;p.prepare=nil;p.execute=true
+ end
+ if p.prepare~=nil then assert(type(p.prepare)=="boolean" and not(p.prepare and p.execute),"invalid_junction_prepare_option") end
  selected_attachments(p,true)
  local source=p.source;local through=source.through_snapshot;local incoming=source.edge_snapshot
  local function other(e) return e.node0==source.node_id and e.node1 or e.node0 end
@@ -590,7 +602,7 @@ function M.junction(p,s,state,request_id,respond)
  local before=M.route(route_params)
  assert(before.requested_route_verified,"existing_through_route_unverified")
  M.extension({execute=p.execute==true,brief={anchor_edge=source.edge_id,anchor_node=source.node_id,
-  target_edge=p.target.edge_id,target_node=p.target.node_id,radius=p.radius,region=p.region,vertical=p.vertical}},s,state,request_id,
+  target_edge=p.target.edge_id,target_node=p.target.node_id,radius=p.radius,fit_radius=p.fit_radius,region=p.region,vertical=p.vertical}},s,state,request_id,
   function(id,status,value)
    value.through_before=before
    if status=="ok" and p.execute then
@@ -617,13 +629,15 @@ function M.junction(p,s,state,request_id,respond)
     end)
     if not ok then status="mutation_unverified";value.error=tostring(err):sub(1,400);value.game_constructed=true;value.retry=false end
    end
+   if prepared then value.prepared_request=prepared.handle;value.prepared_geometry_reused=true end
    respond(id,status,value)
-  end,true,{node=source.node_id,radius=p.radius})
+  end,true,{node=source.node_id,radius=p.radius,prepared=prepared,
+   prepare=p.prepare,candidates=p.fit_candidates,intent=p})
 end
 function M.connect_selected(p,s,state,request_id,respond)
  selected_attachments(p)
  M.extension({execute=p.execute==true,brief={anchor_edge=p.source.edge_id,anchor_node=p.source.node_id,
-  target_edge=p.target.edge_id,target_node=p.target.node_id,radius=p.radius,region=p.region,vertical=p.vertical}},s,state,request_id,respond,true)
+  target_edge=p.target.edge_id,target_node=p.target.node_id,radius=p.radius,fit_radius=p.fit_radius,region=p.region,vertical=p.vertical}},s,state,request_id,respond,true)
 end
 local function node_id(n)
  assert(n and type(n.entity)=="number" and type(n.index)=="number","transport_node_identity_unavailable")
@@ -961,11 +975,7 @@ function M.readback(f)
  end
  return {ordered_edges=ordered,ordered_nodes=nodes,edges=observations,attachments=attachments,connected=true,realised_guides=guides,sampled_XY_error=maxerr,sampled_base_Z_error=maxzerr,max_sampled_grade=maxgrade,max_join_height_gap=maxjoinz,max_join_grade_gap=maxjoingrade,endpoint_heading_error=maxheading,engineering_checks_verified=true,straight_only=minradius==math.huge,requested_min_radius=f.min_radius,min_sampled_radius=minradius~=math.huge and minradius or nil,sampled_only=true,game_constructed=true,train_traversal="unprobed",native_effect_history_complete=false}
 end
-function M.build(p,s,state,request_id,respond)
- assert(p.authorised==true,"explicit_build_option_required")
- local f=s.fits[p.fit_request];assert(f and not f.built,"fit_missing_or_already_consumed")
- assert_fresh(f.anchor)
- if f.target then assert_fresh(f.target.edge) end
+local function build_proposal(f)
  local h=api.res.streetTemplateRep.find(f.anchor.template);local resource=api.res.streetTemplateRep.get(h)
  assert(resource and resource.laneConfigs and #resource.laneConfigs>0,"track_template_unavailable")
  local proposal=api.type.SimpleProposal.new();local segments,newnodes={},{};local count=#f.controls
@@ -983,6 +993,14 @@ function M.build(p,s,state,request_id,respond)
   segments[i]=e
  end
  proposal.streetProposal.nodesToAdd=newnodes;proposal.streetProposal.edgesToAdd=segments
+ return proposal
+end
+function M.build(p,s,state,request_id,respond,prepared_proposal)
+ assert(p.authorised==true,"explicit_build_option_required")
+ local f=s.fits[p.fit_request];assert(f and not f.built,"fit_missing_or_already_consumed")
+ assert_fresh(f.anchor)
+ if f.target then assert_fresh(f.target.edge) end
+ local proposal=prepared_proposal or build_proposal(f)
  local function callback(res,success,_entities)
   if success~=true then
    -- These are proposal placeholders, not realised identities or effects.
@@ -1038,7 +1056,7 @@ function M.corridor(p,s,state,request_id,respond)
   for i,goal in ipairs(goals) do
    local id=request_id.."_leg_"..i
    local leg=M.fit({anchor_edge=a.id,anchor_node=p.source.node_id,end_xy={goal.pos[1],goal.pos[2]},end_direction=goal.direction,
-    radius=p.radius,fit_radius=p.radius*1.25,region=p.region,vertical={max_grade=p.vertical.max_grade}},s,id,goal,start)
+    radius=p.radius,fit_radius=p.fit_radius or p.radius*1.25,region=p.region,vertical={max_grade=p.vertical.max_grade}},s,id,goal,start)
    local f=s.fits[id];local first=#all.controls+1
    for j,c in ipairs(f.controls) do all.controls[#all.controls+1]=c;all.samples[#all.samples+1]=f.samples[j] end
    all.total_length=all.total_length+leg.total_length
@@ -1090,15 +1108,35 @@ function M.extension(p,s,state,request_id,respond,connect_mode,junction_context)
    local t,pos,outward,grade=anchor({anchor_edge=b.target_edge,anchor_node=b.target_node})
    assert(a.template==t.template and a.style==t.style,"unsupported_attachment_resources")
    target={edge=t,node=b.target_node,pos=pos,direction={-outward[1],-outward[2],0},grade=-grade}
-   b={anchor_edge=b.anchor_edge,anchor_node=b.anchor_node,end_xy={pos[1],pos[2]},end_direction=target.direction,radius=b.radius,region=b.region,vertical=b.vertical}
+   b={anchor_edge=b.anchor_edge,anchor_node=b.anchor_node,end_xy={pos[1],pos[2]},end_direction=target.direction,radius=b.radius,fit_radius=b.fit_radius,region=b.region,vertical=b.vertical}
   end
   stages[#stages+1]={stage="inspect",status="ok"}
   stage="fit"
   -- A small explicit native-fit margin accommodates ARC-to-cubic conversion;
   -- the requested minimum remains binding on sampled realised branch geometry.
-  if junction_context then b.fit_radius=junction_context.radius*1.05 end
-  local fit_id=request_id.."_fit";fit=M.fit(b,s,fit_id,target,nil,fit_diagnostics)
-  local fitted=s.fits[fit_id] -- retain invocation-local data across command callback
+  if junction_context then b.fit_radius=b.fit_radius or junction_context.radius*1.05 end
+  local fit_id=request_id.."_fit";local fitted,prepared_proposal
+  if junction_context and junction_context.prepared then
+   local record=junction_context.prepared;fit_id=record.fit_id;fit=record.fit;fitted=record.fitted
+   assert(not fitted.built,"prepared_fit_missing_or_consumed");s.fits[fit_id]=fitted
+   prepared_proposal=build_proposal(fitted)
+   -- Reconstitute only the stored controls/resources; no fit call. Evaluate this
+   -- exact object against current native state, then pass the same object to build.
+   local current=api.engine.util.proposal.makeProposalData(prepared_proposal,nil)
+   assert(not current.errorState.critical,"prepared_proposal_no_longer_accepted")
+  elseif junction_context and junction_context.prepare then
+   local record,attempts=prepare_endpoint_fit(b,target,s,fit_id,junction_context)
+   if not record then reply("no_accepted_candidate",{game_constructed=false,candidate_rejections=attempts,search_complete=true});return end
+   local count=0;for _ in pairs(s.prepared_junctions) do count=count+1 end
+   assert(count<16,"prepared_junction_capacity")
+   record.intent=junction_context.intent;record.handle=request_id;s.prepared_junctions[request_id]=record
+   fit=record.fit
+   reply("ok",{game_constructed=false,prepared_request=request_id,fit_request=record.fit_id,
+    native_proposal_evaluated=true,native_proposal_critical=false,candidate_rejections=attempts,
+    selected_candidate=record.candidate,prepared_lifetime="current_adapter_session_only"});return
+  else
+   fit=M.fit(b,s,fit_id,target,nil,fit_diagnostics);fitted=s.fits[fit_id]
+  end
   if junction_context then
    fitted.junction_node=junction_context.node;fitted.min_radius=junction_context.radius
    fit.requested_min_radius=junction_context.radius
@@ -1107,6 +1145,9 @@ function M.extension(p,s,state,request_id,respond,connect_mode,junction_context)
   stages[#stages+1]={stage="fit",status="ok"}
   if not p.execute then reply("ok",{game_constructed=false});return end
   stage="build";assert(not s.mutationPending,"unreconciled_mutation")
+  if junction_context and junction_context.prepared then
+   junction_context.prepared.used=true;s.prepared_junctions[junction_context.prepared.handle]=nil
+  end
   M.build({fit_request=fit_id,authorised=true},s,state,request_id,function(_id,status,value)
    if status~="ok" then reply(status,value);return end
    stages[#stages+1]={stage="build",status="ok"}
@@ -1117,7 +1158,7 @@ function M.extension(p,s,state,request_id,respond,connect_mode,junction_context)
    stages[#stages+1]={stage="readback",status="ok"}
    s.mutationPending=nil
    reply("ok",{game_constructed=true,readback=result,effects=value.effects})
-  end)
+  end,prepared_proposal)
  end)
  if not ok then
   stages[#stages+1]={stage=stage,status="error"}
@@ -1834,6 +1875,50 @@ local function repartition_two_piece_level(f,report)
  report.repartition={method="two_piece_level_midpoint_ls201",original_pieces=#original,proposal_pieces=2,handles=handles,
   check_samples_per_half=1001,sampled_XY_error=maxerr,sampled_combined_conversion_error=maxerr+report.sampled_XY_error,min_sampled_radius=minimum,sampled_only=true}
  report.controls=controls;report.pieces=2;report.min_sampled_converted_radius=minimum;f.controls=controls;f.samples=samples
+end
+-- A designer-selected one-piece level candidate, not an equality claim against
+-- the Dubins sketch. Exact attachments/headings, corridor and hard bounds remain.
+local function endpoint_cubic_candidate(f,report)
+ local first,last=f.controls[1],f.controls[#f.controls];local height=first.p0[3]
+ assert(math.abs(f.grade)<=1e-6 and math.abs(f.end_grade)<=1e-6 and math.abs(last.p1[3]-height)<=.001,"endpoint_cubic_level_only")
+ local a,b=norm(first.t0),norm(last.t1);local length=f.total_length
+ local c={p0=first.p0,p1=last.p1,t0={a[1]*length,a[2]*length,0},t1={b[1]*length,b[2]*length,0},length=length}
+ local g=cubic(c);local minimum=geometry_bounds(g,f.region,f.min_radius,f.max_grade,64)
+ local samples={};for j=0,64 do local u=j/64;local pos,dir=sample(g,u);samples[#samples+1]={u=u,pos=pos,dir=dir,base_pos=pos} end
+ report.native_fit_controls=f.controls;report.controls={c};report.pieces=1
+ report.candidate_geometry={method="endpoint_cubic_level",handle_length=length,acceptance="attachments_headings_corridor_and_selected_hard_bounds",native_sketch_equality_required=false}
+ report.min_sampled_converted_radius=minimum;f.controls={c};f.samples={samples}
+end
+prepare_endpoint_fit=function(b,target,s,fit_id,context)
+ local candidates=context.candidates
+ assert(type(candidates)=="table" and #candidates>=1 and #candidates<=8,"junction_candidate_bound")
+ for _,q in ipairs(candidates) do
+  assert(type(q)=="table" and finite(q.fit_radius) and q.fit_radius>=b.radius,"invalid_junction_candidate_radius")
+  for k in pairs(q) do assert(k=="fit_radius" or k=="representation","invalid_junction_candidate_field") end
+  assert(q.representation=="native_parts" or q.representation=="single_cubic_level" or q.representation=="two_piece_level" or q.representation=="endpoint_cubic_level","unsupported_junction_representation")
+ end
+ local attempts={}
+ for i,q in ipairs(candidates) do
+  local id=fit_id.."_candidate_"..i;local report,fitted,proposal,evaluation
+  local ok,err=pcall(function()
+   b.fit_radius=q.fit_radius;report=M.fit(b,s,id,target)
+   fitted=s.fits[id];fitted.junction_node=context.node;fitted.min_radius=context.radius
+   if q.representation=="single_cubic_level" then repartition_native_fit(fitted,report,64)
+   elseif q.representation=="two_piece_level" then repartition_two_piece_level(fitted,report)
+   elseif q.representation=="endpoint_cubic_level" then endpoint_cubic_candidate(fitted,report) end
+   proposal=build_proposal(fitted)
+   local data=api.engine.util.proposal.makeProposalData(proposal,nil);local errors=data.errorState
+   local messages={};for j,x in ipairs(errors.messages) do if j<=4 then messages[#messages+1]=tostring(x):sub(1,240) end end
+   evaluation={critical=errors.critical,messages=messages}
+  end)
+  attempts[#attempts+1]={index=i,fit_radius=q.fit_radius,representation=q.representation,
+   status=not ok and "failed_check" or evaluation.critical and "native_proposal_rejected" or "accepted",error=not ok and tostring(err):sub(1,240) or nil,evaluation=evaluation}
+  if ok and not evaluation.critical then
+   return {fit_id=id,fit=report,fitted=fitted,candidate={index=i,fit_radius=q.fit_radius,representation=q.representation}},attempts
+  end
+  s.fits[id]=nil
+ end
+ return nil,attempts
 end
 function M.repair_crossover(p,s,state,request_id,respond)
  local comp=s.compensated and s.compensated[p.original_request]

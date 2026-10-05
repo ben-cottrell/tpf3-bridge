@@ -1,3 +1,33 @@
+## P54 complete — prepared native platform11 junction (5 October 2026)
+
+prepare_junction/build_prepared_junction: bounded native candidate evaluation,
+independent fit_radius preference/hard minimum, exact prepared controls consumed
+without refit, fresh snapshot/native acceptance and single-use session handle.
+Opt-in endpoint_cubic_level; existing conversion tolerances unchanged. Source docs:
+implementation/JUNCTION_PREPARATION.md, coordinator-owned RAILWAY_DESIGN_GUIDE.md.
+Build40408/sessionpif_1791183544_3169823: removed only105075, built105044 between
+104670/134924. Fresh platform11/through9 TRAIN routes pass; retained9/11 snapshots
+unchanged. Hard minimum70, fit preference735, realised sampled radius826.218049941376;
+these are experiment values, not global defaults. Changed-input/consumed-handle
+guards reject, readback unchanged, pending none. Module-local cache failed before
+build; serialisable GameScript-state repair succeeded. Failed evidence preserved.
+Actual current world saved TPF3_Bridge_P54_Connected11_20261005.sav,
+93445488bytes, SHA256 32768a60290d3008d47fadc5abf12cb9f041e8a5e03f108a3345ab79b9606b70.
+Only superseded two P54 .sav/.jpg pairs removed; no historical world loaded.
+python tools/quiet_checks.py --suite live_client --label pif-p54-prepared-final:
+356passed/0fail/error/skip; .local_checks/pif-p54-prepared-final_wwp8l5ew/report.json.
+python -m py_compile bridge_live.py .local_runs/live_python_interface/p54/native.py
+.local_runs/live_python_interface/p54/check_native.py; git diff --check: pass.
+Native commands: python .local_runs/live_python_interface/p54/native.py
+prepare_repaired|build_repaired; python .local_runs/live_python_interface/p54/check_native.py.
+Changed bridge_live.py,pif_native.lua,tests/test_live_client.py,
+implementation/JUNCTION_PREPARATION.md,CURRENT_TASK.md,STATE.md. Evidence
+.local_runs/live_python_interface/p54/{HANDOFF.md,final_result.json,checks.json,
+native_checks.json,world_checkpoint.json,cleanup.json,checkpoint.json}.
+Local milestone/no push; usage unavailable. No blocker; Astra resumes design.
+Sampled bounds/session-only preparation; physical train/reservation proof and whole
+throat remain incomplete. Untracked coordinator guide excluded from this commit.
+
 ## P53 diagnostic complete — first-turnout rejection unresolved (4 October 2026)
 
 Build40408 native SimpleProposal evaluation of both original operation19 fans:
