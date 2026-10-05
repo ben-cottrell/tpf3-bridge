@@ -218,6 +218,72 @@ def build_prepared_junction(client, prepared):
         raise ValueError('accepted current-session prepared junction required')
     return client.request('junction',{'prepared_request':prepared['request_id'],'execute':True})
 
+def prepare_interior_junction(client, parameters, candidates):
+    """Prepare through replacement and branch together from connection intent."""
+    required={'source','target','location','region','vertical','max_route_length'}
+    optional={'radius','guides','junction_nodes','through_extension'}
+    if not isinstance(parameters,dict) or not required<=parameters.keys() or parameters.keys()-required-optional:
+        raise ValueError('interior preparation requires exact attachments, location and bounds')
+    source,target=parameters['source'],parameters['target']
+    if (not isinstance(source,dict) or source.get('interior_eligible') is not True
+            or type(source.get('parameter')) not in (int,float) or not .05<=source['parameter']<=.95
+            or not isinstance(source.get('edge_snapshot'),dict) or source['edge_snapshot'].get('id')!=source.get('edge_id')):
+        raise ValueError('observed exact interior source required')
+    if not isinstance(target,dict) or not isinstance(target.get('edge_snapshot'),dict):
+        raise ValueError('observed exact target required')
+    if 'through_extension' in parameters:
+        extension=parameters['through_extension'];snapshot=source['edge_snapshot']
+        if (not isinstance(extension,dict) or type(extension.get('id')) is not int
+                or extension['id']==source['edge_id'] or source.get('canonical_forward') is not True
+                or snapshot['node1'] not in (extension.get('node0'),extension.get('node1'))
+                or not {'p0','p1','t0','t1','template','style'}<=extension.keys()):
+            raise ValueError('exact adjoining through snapshot and forward interior source required')
+    minimum=parameters.get('radius',0)
+    if type(minimum) not in (int,float) or not math.isfinite(minimum) or minimum<0:
+        raise ValueError('optional hard radius must be finite and nonnegative')
+    validate_connection_brief({'anchor_edge':source['edge_id'],'anchor_node':source['edge_snapshot']['node0'],
+        'target_edge':target['edge_id'],'target_node':target['node_id'],'radius':minimum or 1,
+        'region':parameters['region'],'vertical':parameters['vertical']})
+    length=parameters['max_route_length']
+    if type(length) not in (int,float) or not math.isfinite(length) or not 0<length<=800:
+        raise ValueError('interior route limit must be within(0,800]')
+    if not isinstance(candidates,list) or not 1<=len(candidates)<=8:
+        raise ValueError('interior candidates must be within1–8')
+    for candidate in candidates:
+        if (not isinstance(candidate,dict) or not {'branch','through'}<=candidate.keys()
+                or candidate.keys()-{'branch','through','fit_radius','handle_scale','through_handle_scales'}):
+            raise ValueError('invalid interior candidate fields')
+        if candidate['branch'] not in ('native_parts','endpoint_cubic_level','guided_cubic_level') or candidate['through'] not in ('subdivide','subdivide_fresh','endpoint_cubic_level','extended_endpoint_cubic_level'):
+            raise ValueError('unsupported interior candidate')
+        if ('through_extension' in parameters)!=(candidate['through']=='extended_endpoint_cubic_level'):
+            raise ValueError('adjoining replacement requires an explicit extended candidate and snapshot')
+        if 'fit_radius' in candidate:_validate_fit_radius(candidate['fit_radius'],minimum)
+        scales=[candidate.get('handle_scale',1)]+candidate.get('through_handle_scales',[1,1,1,1]) if isinstance(candidate.get('through_handle_scales',[]),list) else []
+        if len(scales)!=5 or any(type(x) not in (int,float) or not math.isfinite(x) or x<=0 or x>4 for x in scales):
+            raise ValueError('bounded positive control handle scales required')
+    guides=parameters.get('guides',[])
+    if not isinstance(guides,list) or len(guides)>2:
+        raise ValueError('at most two local shape guides')
+    for guide in guides:
+        if not isinstance(guide,dict) or set(guide)!={'pos','direction'}:
+            raise ValueError('shape guide requires position and direction')
+        for key,size in (('pos',3),('direction',2)):
+            value=guide[key]
+            if not isinstance(value,list) or len(value)!=size or any(type(x) not in (int,float) or not math.isfinite(x) for x in value):
+                raise ValueError('guide '+key+' requires finite native coordinates')
+        if math.hypot(*guide['direction'])<1e-9:raise ValueError('guide direction must be nonzero')
+    return client.request('interior_junction',{**parameters,'radius':minimum,'execute':False,'prepare':True,'fit_candidates':candidates})
+
+def build_prepared_interior_junction(client, prepared):
+    """Consume the accepted current-session through/branch geometry without refit."""
+    if (not isinstance(prepared,dict) or prepared.get('session')!=client.session
+            or prepared.get('operation')!='interior_junction' or prepared.get('status')!='ok'
+            or prepared.get('result',{}).get('native_proposal_evaluated') is not True
+            or prepared['result'].get('native_proposal_critical') is not False
+            or prepared['result'].get('prepared_request')!=prepared.get('request_id')):
+        raise ValueError('accepted current-session prepared interior junction required')
+    return client.request('interior_junction',{'prepared_request':prepared['request_id'],'execute':True})
+
 def validate_project_brief(brief, *, corridor=False):
     keys={'source','target','radius','region','vertical','max_fit_attempts','max_route_length'}
     if not isinstance(brief,dict) or set(brief)-{'fit_radius'}!=keys:
@@ -2479,7 +2545,10 @@ def parse_response(line, request_id, session, operation):
         return None
     if data.get('session') != session or data.get('operation') != operation or data.get('version') != 1:
         raise LiveError('protocol_error', 'matching ID has wrong session/operation/version', request_id)
-    if data.get('status') not in {'ok', 'error', 'mutation_unverified'}:
+    bounded_rejection=(data.get('status')=='no_accepted_candidate' and operation in ('junction','interior_junction')
+        and isinstance(data.get('result'),dict) and data['result'].get('search_complete') is True
+        and data['result'].get('game_constructed') is False)
+    if data.get('status') not in {'ok', 'error', 'mutation_unverified'} and not bounded_rejection:
         raise LiveError('protocol_error', 'invalid response status', request_id)
     return data
 

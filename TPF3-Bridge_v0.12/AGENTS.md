@@ -1,3 +1,13 @@
+## Connection-led native design - user clarification, 5 October 2026
+Use game capabilities to realise intended railway functions and visual relationships.
+Default to attachment points, directions, corridors and neighbouring curves, not fixed
+radii or distances. Radius is feedback/optional preference unless an explicit or proven
+requirement makes it a hard constraint. Do not distort a good design to accommodate one
+bridge fitter or classify a failed proposal as native impossibility. Learn from accepted
+manual geometry, evaluate full local proposals, build the prepared accepted geometry,
+and focus bridge work on demonstrated missing capabilities. Apply the updated
+NATIVE_FIRST_ARCHITECTURE.md and RAILWAY_DESIGN_GUIDE.md. No product scope expansion.
+
 ## Permanent coordinator communication authority - 4 October 2026
 Human directly authorises sending all project chat and payload back to the existing
 Design/Orchestration task, thread01a0f987-8917-7f31-84c3-838acacc9e04. This includes

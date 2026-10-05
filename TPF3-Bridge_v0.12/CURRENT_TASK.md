@@ -1,4 +1,26 @@
-# PIF-P54 complete — prepared platform11 junction built and verified
+# PIF-P55 complete — platform10→11 prepared interior fan junction
+
+Authority: .local_runs/live_python_interface/p55/orchestrator/TASK.md and standing
+human map/staging/current-world save-load/local commit/handoff authorisation.
+Extended prepared construction to curved through-track replacement plus branch.
+Connection intent/tangents/corridor and bounded shape candidates govern fitting;
+radius is optional hard constraint, distinct from shaping. Preserve existing APIs.
+Build40408: junction105055, through105059/105060, branch105061/105062/105063→95539.
+Replaced105044/134947 and redundant134924; exact outer104670/134923 retained.
+Accepted connection-led level guided candidate at native parameter.64990234375;
+radius is feedback, no invented hard minimum. Exact stored controls reused.
+Fresh full platform10/platform11/through9 TRAIN routes and changed/consumed/stale
+guards pass, pending none. 363affected quiet tests pass. Current world saved as
+TPF3_Bridge_P55_Connected10_20261005. Evidence .local_runs/live_python_interface/p55/
+{HANDOFF.md,final_result.json,native_checks.json,checks.json,world_checkpoint.json}.
+Compact control-only GameScript record persists; derived samples rebuilt without fit.
+Rejected placement/proposals and cache failures preserved. Sampled bounds only;
+physical train/reservation and platform12/remaining throat unprobed/unbuilt.
+Acceptance reached: return layout decisions to coordinator. No restart or push.
+
+## Previous accepted milestone
+
+P54 complete — prepared platform11 junction built and verified
 
 Authority: .local_runs/live_python_interface/p54/orchestrator/TASK.md and standing
 human construction/staging/current-world save-load/local commit/handoff authority.

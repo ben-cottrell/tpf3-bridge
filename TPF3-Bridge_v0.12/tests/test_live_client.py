@@ -864,6 +864,86 @@ class LiveClientTests(unittest.TestCase):
             else:self.assertNotIn('placement',v);self.assertNotIn('junction',v)
             self.assertLessEqual(len(json.dumps(v).encode()),4096)
 
+    def interior_preparation_parameters(self):
+        query,calls=self.interior_query()
+        with patch.object(self.client,'request',side_effect=query):connect_junction_at(self.client,self.project_brief()|{'placement_tolerance':1})
+        params=next(p for op,p in calls if op=='interior_junction')
+        return {k:v for k,v in params.items() if k not in ('execute','radius')}
+
+    def test_prepared_interior_is_connection_led_without_radius_or_dubins_call(self):
+        from bridge_live import prepare_interior_junction
+        params=self.interior_preparation_parameters()
+        candidates=[{'branch':'endpoint_cubic_level','through':'subdivide_fresh'}]
+        with patch.object(self.client,'request',return_value=self.response('prepare','interior_junction')) as call:
+            prepare_interior_junction(self.client,params,candidates)
+        self.assertEqual(call.call_args.args,('interior_junction',{**params,'radius':0,'execute':False,'prepare':True,'fit_candidates':candidates}))
+        self.assertEqual(call.call_count,1)
+
+    def test_prepared_interior_keeps_explicit_hard_radius_and_guides(self):
+        from bridge_live import prepare_interior_junction
+        params=self.interior_preparation_parameters()|{'radius':150,'guides':[{'pos':[10,0,0],'direction':[1,0]}]}
+        candidates=[{'branch':'guided_cubic_level','through':'endpoint_cubic_level','through_handle_scales':[.75,1,1,1]}]
+        with patch.object(self.client,'request') as call:prepare_interior_junction(self.client,params,candidates)
+        self.assertEqual(call.call_args.args[1]['radius'],150)
+        self.assertEqual(call.call_args.args[1]['guides'],params['guides'])
+
+    def test_prepared_interior_rejects_unbounded_candidate_inputs_before_native_call(self):
+        from bridge_live import prepare_interior_junction
+        params=self.interior_preparation_parameters();q={'branch':'endpoint_cubic_level','through':'subdivide_fresh'}
+        for candidates in ([],[q]*9,[q|{'relax':True}],[q|{'through':'invented'}],[q|{'handle_scale':0}],
+                           [q|{'through_handle_scales':[1,1]}],[q|{'through_handle_scales':'invalid'}],[q|{'handle_scale':float('nan')}],
+                           [q|{'fit_radius':-1}]):
+            with self.subTest(candidates=candidates),patch.object(self.client,'request') as call,self.assertRaises(ValueError):
+                prepare_interior_junction(self.client,params,candidates)
+            call.assert_not_called()
+
+    def test_prepared_interior_build_sends_only_handle_and_never_refits_failure(self):
+        from bridge_live import build_prepared_interior_junction
+        prepared=self.response('prepare','interior_junction',result={'prepared_request':'prepare','native_proposal_evaluated':True,'native_proposal_critical':False,'through_controls':[{},{}]})
+        failure=self.response('build','interior_junction',result={'game_constructed':'unknown'});failure['status']='mutation_unverified'
+        with patch.object(self.client,'request',return_value=failure) as call:
+            self.assertEqual(build_prepared_interior_junction(self.client,prepared),failure)
+        self.assertEqual(call.call_args.args,('interior_junction',{'prepared_request':'prepare','execute':True}))
+        self.assertEqual(call.call_count,1)
+
+    def test_prepared_interior_extension_requires_explicit_exact_adjoining_snapshot(self):
+        from bridge_live import prepare_interior_junction
+        params=self.interior_preparation_parameters()
+        params['source']['canonical_forward']=True
+        extension=dict(params['source']['edge_snapshot'])
+        extension.update(id=50,node0=extension['node1'],node1=51,p0=[0,0,0],p1=[10,0,0],
+                         t0=[10,0,0],t1=[10,0,0],template='track',style='plain')
+        params['through_extension']=extension
+        candidate={'branch':'endpoint_cubic_level','through':'extended_endpoint_cubic_level'}
+        with patch.object(self.client,'request') as call:prepare_interior_junction(self.client,params,[candidate])
+        self.assertEqual(call.call_args.args[1]['through_extension'],extension)
+        for changed,chosen in ((params,[candidate|{'through':'subdivide'}]),
+                               ({k:v for k,v in params.items() if k!='through_extension'},[candidate]),
+                               (params|{'through_extension':extension|{'node0':52}},[candidate]),
+                               (params|{'through_extension':None},[candidate])):
+            with self.subTest(changed=changed,chosen=chosen),patch.object(self.client,'request') as call,self.assertRaises(ValueError):
+                prepare_interior_junction(self.client,changed,chosen)
+            call.assert_not_called()
+
+    def test_prepared_interior_rejects_stale_and_nonaccepted_records(self):
+        from bridge_live import build_prepared_interior_junction
+        prepared=self.response('prepare','interior_junction',result={'prepared_request':'prepare','native_proposal_evaluated':True,'native_proposal_critical':False})
+        for defect in ('session','operation','status','critical','handle'):
+            value=json.loads(json.dumps(prepared))
+            if defect=='critical':value['result']['native_proposal_critical']=True
+            elif defect=='handle':value['result']['prepared_request']='foreign'
+            else:value[defect]='invalid'
+            with self.subTest(defect=defect),patch.object(self.client,'request') as call,self.assertRaises(ValueError):
+                build_prepared_interior_junction(self.client,value)
+            call.assert_not_called()
+
+    def test_bounded_native_candidate_rejection_is_a_completed_read_response(self):
+        value=self.response('rejected','interior_junction',result={'game_constructed':False,'search_complete':True});value['status']='no_accepted_candidate'
+        self.assertEqual(parse_response(MARKER+json.dumps(value),'rejected','test_session','interior_junction'),value)
+        for key,replacement in (('game_constructed',True),('search_complete',False)):
+            bad=json.loads(json.dumps(value));bad['result'][key]=replacement
+            with self.assertRaises(LiveError):parse_response(MARKER+json.dumps(bad),'rejected','test_session','interior_junction')
+
     def test_interior_bad_location_and_replacement_evidence_are_not_success(self):
         for defect,status in [('location','local_input_or_storage_error'),('removed','native_verification_failed'),('through','native_verification_failed')]:
             query,calls=self.interior_query(defect)

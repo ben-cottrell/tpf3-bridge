@@ -1,3 +1,34 @@
+## P55 complete — prepared interior platform10→11 fan (5 October 2026)
+
+prepare_interior_junction/build_prepared_interior_junction: bounded complete through
+replacement/branch candidates, optional hard radius, endpoint/direction/guide-led
+level geometry. Explicit compatible adjoining-edge replacement; exact outer nodes
+retained. Accepted numeric controls persist in compact GameScript state; derived
+readback samples rebuilt without fitting. Existing APIs and tolerances preserved.
+Build40408/sessionpif_1791188320_7945839: replaced105044/134947, removed134924,
+through105059/105060, branch105061/105062/105063 to95539, junction105055. Outer
+104670/134923 retained. Fresh full10/11/through9 TRAIN routes pass; exact retained
+snapshots unchanged, changed/consumed/stale guards pass, pending none. Native join
+parameter.64990234375; original guide placement rejected, nearby approved location
+accepted. Branch sampled radius1026.1272904659702 is feedback, no hard minimum.
+365sampled fan-envelope observations inside9/11;22near station end not covered by
+observed9boundary, no continuous clearance proof. Rejections/cache failures retained.
+python tools/quiet_checks.py --suite live_client --label pif-p55-prepared-final:
+363passed/0fail/error/skip; .local_checks/pif-p55-prepared-final_0_ah9cb3/report.json.
+Python compile and git diff --check pass; Lua loaded/executed, no standalone checker.
+Native commands: python .local_runs/live_python_interface/p55/placement.py compact_cache;
+python .local_runs/live_python_interface/p55/native.py build_compact_cache;
+python .local_runs/live_python_interface/p55/check_native.py. Do not replay builds.
+Current save TPF3_Bridge_P55_Connected10_20261005.sav,93470939bytes,SHA256
+44861102e6f322b4c3b03a796c36a08840506667e02483060fee81f088c9c787.
+Evidence .local_runs/live_python_interface/p55/{HANDOFF.md,final_result.json,
+checks.json,native_checks.json,world_checkpoint.json,cleanup.json,checkpoint.json}.
+Changed bridge_live.py,pif_native.lua,tests/test_live_client.py,JUNCTION_PREPARATION.md,
+CURRENT_TASK/STATE and coordinator-owned standing policy AGENTS/NATIVE_FIRST.
+Local milestone, no push; coordinator guide untracked, older evidence/saves preserved.
+Usage unavailable. No task blocker; physical train/reservation,12/rest of throat not
+demonstrated. Acceptance reached; next layout decision belongs to coordinator.
+
 ## P54 complete — prepared native platform11 junction (5 October 2026)
 
 prepare_junction/build_prepared_junction: bounded native candidate evaluation,

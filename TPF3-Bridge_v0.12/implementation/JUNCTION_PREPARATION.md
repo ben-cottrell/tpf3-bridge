@@ -1,4 +1,4 @@
-# Bounded endpoint-junction preparation
+# Bounded junction preparation
 
 Use the already-running adapter through `bridge_live.py`. The designer chooses
 attachments, corridor, hard constraints and a short ordered candidate list. Python
@@ -69,3 +69,37 @@ not physical train traversal, reservation availability or whole-throat capacity.
 Ordinary `connect_junction` fit-only/execute behaviour is preserved, with optional
 explicit `fit_radius` now propagated independently. The new prepare/consume API is
 the route for building an evaluated geometry without silently fitting again.
+
+## Interior connection preparation
+
+`prepare_interior_junction(client, parameters, candidates)` prepares the complete
+through-track replacement and branch. `build_prepared_interior_junction(client,
+prepared)` consumes that accepted record without fitting again. Parameters contain
+fresh `source` from interior discovery, fresh free-end `target`, the discovery
+`location`, `region`, `vertical` and `max_route_length` (at most800 native units).
+`radius` is optional here: omitted/zero means no hard minimum, while measured
+radius remains feedback. Existing endpoint APIs retain their contracts.
+
+Each of1–8 candidates specifies `branch` (`endpoint_cubic_level`,
+`guided_cubic_level`, or existing `native_parts`) and `through` (`subdivide`,
+`subdivide_fresh`, or `endpoint_cubic_level`). Level cubics use exact endpoints
+and travel directions; optional positive `handle_scale` and four
+`through_handle_scales` control shaping. Up to two `guides` contain native XYZ
+`pos` and XY `direction`; they are candidate controls, not new hard project anchors.
+`native_parts` requires explicit positive hard radius and `fit_radius`.
+
+For a forward interior attachment requiring local resegmentation, supply the exact
+adjoining `through_extension` snapshot and choose `extended_endpoint_cubic_level`.
+Only a compatible normal TRACK edge at an unowned exclusive two-edge join is
+supported. The proposal replaces both edges and removes that redundant join node;
+it retains the exact outer nodes/directions. This option must be explicit for every
+candidate. It does not authorise arbitrary topology reconstruction.
+
+Preparation reports separate through-only and complete native evaluations and
+bounded failure stages. Complete native acceptance governs selection. Failed lists
+are completed bounded searches, not global railway impossibility. Stored numeric
+through and branch controls live in the current GameScript session. Fresh native
+acceptance precedes single-use submission; changed inputs, stale attachments and
+consumed handles reject. After construction, exact realised identities, controls
+and native TRAIN routes verify the through and branch movements. Bounds are sampled;
+route verification does not demonstrate physical train traversal or reservation.

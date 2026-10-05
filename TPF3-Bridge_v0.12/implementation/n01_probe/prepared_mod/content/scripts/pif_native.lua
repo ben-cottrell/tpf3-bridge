@@ -1,7 +1,7 @@
 -- Focused live operations using C11 native fitting and C13 representation/proposal.
 local M={}
 -- Prepared geometry lives in GameScript state, scoped to its adapter session.
-local prepare_endpoint_fit
+local prepare_endpoint_fit,prepare_interior_fit
 local E=api.type["enum"]
 local function finite(x) return type(x)=="number" and x==x and math.abs(x)<math.huge end
 local function v(a) return api.type.Vec3f.new(a[1],a[2],a[3] or 0) end
@@ -919,7 +919,7 @@ function M.readback(f)
  assert(f.ids and #f.ids==#f.controls,"construction_receipt_incomplete")
  local remaining={};for _,id in ipairs(f.ids) do assert(not remaining[id],"duplicate_receipt_edge");remaining[id]=true end
  local current=f.node;local ordered,nodes,observations={},{current},{};local maxerr,maxheading,maxzerr,maxgrade,maxjoinz,maxjoingrade=0,0,0,0,0,0
- assert(finite(f.min_radius) and f.min_radius>0,"realised_radius_requirement_missing")
+ assert(finite(f.min_radius) and f.min_radius>=0,"realised_radius_requirement_missing")
  local minradius=math.huge
  for i,c in ipairs(f.controls) do
   local found,e=nil,nil
@@ -1189,17 +1189,60 @@ local function interior_splits(a,parameter,region,radius,max_grade,second_parame
   end
  return splits
 end
+local function through_extension(a,p)
+ if not p.through_extension then return nil,a.node1,a.p1,a.t1 end
+ assert(p.source.canonical_forward==true,"extended_forward_interior_only")
+ local e=assert_fresh(p.through_extension)
+ assert(e.id~=a.id and e.template==a.template and e.style==a.style,"unsupported_through_extension_resources")
+ local all,owner=incidence(a.node1);assert(#all==2 and not(owner and owner>0),"through_extension_join_not_exclusive")
+ for _,id in ipairs(all) do assert(id==a.id or id==e.id,"through_extension_incidence_mismatch") end
+ local base=api.engine.getComponent(e.id,api.type.ComponentType.BASE_EDGE)
+ assert(base.type==E.BaseEdgeType.NORMAL and #base.objects==0,"unsupported_through_extension_type_or_objects")
+ local ignored,pos,dir,grade=anchor({anchor_edge=e.id,anchor_node=a.node1})
+ assert(near(pos,a.p1,.001) and angle({-dir[1],-dir[2],0},a.t1)<=.1,"through_extension_join_mismatch")
+ if e.node0==a.node1 then return e,e.node1,e.p1,e.t1 end
+ return e,e.node0,e.p0,{-e.t0[1],-e.t0[2],-e.t0[3]}
+end
+local function interior_proposal(a,c,splits,f,target,fresh,extension)
+ local proposal=api.type.SimpleProposal.new();local segments,nodes={},{}
+ local n=api.type.NodeAndEntity.new();n.entity=-100;n.comp.position=v(c.pos);nodes[1]=n
+ local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
+ local function segment(ctrl,id,node0,node1,clone)
+  local e=api.type.SegmentAndEntity.new();e.entity=id;e.type=1
+  if clone then e.comp=base:clone() end
+  e.comp.node0=node0;e.comp.node1=node1;e.comp.position0=v(ctrl.p0);e.comp.position1=v(ctrl.p1);e.comp.tangent0=v(ctrl.t0);e.comp.tangent1=v(ctrl.t1)
+  if not clone then e.comp.type=E.BaseEdgeType.NORMAL;e.comp.typeIndex=1;e.comp.laneConfigs=base.laneConfigs;e.comp.roadType=E.RoadType.TRACK;e.comp.roadTemplate=a.template;e.comp.roadStyle=a.style end
+  segments[#segments+1]=e
+ end
+ local finish=extension and (extension.node0==a.node1 and extension.node1 or extension.node0) or a.node1
+ segment(splits[1],-1,a.node0,-100,not fresh);segment(splits[2],-2,-100,finish,not fresh)
+ for i,ctrl in ipairs(f.controls) do
+  local finish=target and target.node_id or nil
+  if i<#f.controls or not target then local nn=api.type.NodeAndEntity.new();nn.entity=-100-i;nn.comp.position=v(ctrl.p1);nodes[#nodes+1]=nn;finish=nn.entity end
+  segment(ctrl,-2-i,i==1 and -100 or -100-i+1,finish,false)
+ end
+ proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments;proposal.streetProposal.edgesToRemove={a.id}
+ if extension then proposal.streetProposal.edgesToRemove={a.id,extension.id};proposal.streetProposal.nodesToRemove={a.node1} end
+ return proposal,nodes,segments
+end
 local function interior_readback(a,c,splits,f,te,ids,p,before)
  local target=p.target
     assert(#ids==#f.controls+2,"split_receipt_incomplete")
-    local original_start=c.canonical_forward and a.node0 or a.node1;local original_finish=c.canonical_forward and a.node1 or a.node0
-    local placement={original_edge=a.id,original_nodes={a.node0,a.node1},parameter=c.parameter,position=c.pos,canonical_forward=c.canonical_forward,subdivision_sampled_verified=true}
+    local finish_node=p.through_extension and (p.through_extension.node0==a.node1 and p.through_extension.node1 or p.through_extension.node0) or a.node1
+    local original_start=c.canonical_forward and a.node0 or finish_node;local original_finish=c.canonical_forward and finish_node or a.node0
+    local placement={original_edge=a.id,original_nodes={a.node0,a.node1},parameter=c.parameter,position=c.pos,canonical_forward=c.canonical_forward,
+     through_representation=c.through_representation,subdivision_sampled_verified=c.through_representation==nil or c.through_representation=="subdivide" or c.through_representation=="subdivide_fresh"}
     local left,right=nil,nil
-    for _,eid in ipairs(ids) do local e=edge(eid);if e.node0==a.node0 then assert(not left,"ambiguous_split_left");left=e end;if e.node1==a.node1 then assert(not right,"ambiguous_split_right");right=e end end
+    for _,eid in ipairs(ids) do local e=edge(eid);if e.node0==a.node0 then assert(not left,"ambiguous_split_left");left=e end;if e.node1==finish_node then assert(not right,"ambiguous_split_right");right=e end end
     assert(left and right and left.node1==right.node0,"split_shared_identity_missing")
     local junction=left.node1;assert(junction~=a.node0 and junction~=a.node1 and near(left.p1,c.pos,.001),"realised_interior_location_mismatch")
     for i,e in ipairs({left,right}) do for _,k in ipairs({"p0","p1","t0","t1"}) do assert(near(e[k],splits[i][k],.001),"realised_through_controls_differ") end;assert(e.template==a.template and e.style==a.style,"through_resources_differ") end
     assert(not api.engine.entityExists(a.id) or api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)==nil,"old_split_edge_still_present")
+    if p.through_extension then
+     assert(not api.engine.entityExists(p.through_extension.id) or api.engine.getComponent(p.through_extension.id,api.type.ComponentType.BASE_EDGE)==nil,"old_through_extension_still_present")
+     assert(not api.engine.entityExists(a.node1),"old_through_join_still_present")
+     placement.original_extension=p.through_extension.id;placement.original_join_removed=a.node1;placement.retained_outer_nodes={a.node0,finish_node}
+    end
     local incoming,through=c.canonical_forward and left or right,c.canonical_forward and right or left
     f.node=junction;f.junction_node=junction;f.anchor=incoming;f.ids={}
     for _,eid in ipairs(ids) do if eid~=left.id and eid~=right.id then f.ids[#f.ids+1]=eid end end
@@ -1231,9 +1274,22 @@ local function interior_readback(a,c,splits,f,te,ids,p,before)
 end
 function M.interior_junction(p,s,state,request_id,respond)
  local stage,fit="inspect",nil
+ s.prepared_interiors=s.prepared_interiors or {}
  local function reply(status,value) value.stage=stage;value.fit=fit;respond(request_id,status,value) end
  local ok,err=pcall(function()
+  local prepared
+  if p.prepared_request then
+   for k in pairs(p) do assert(k=="prepared_request" or k=="execute","prepared_interior_input_changed") end
+   assert(p.execute==true,"prepared_interior_requires_execution")
+   prepared=s.prepared_interiors[p.prepared_request]
+   if not prepared or prepared.used then
+    local count=0;for _ in pairs(s.prepared_interiors) do count=count+1 end
+    error("prepared_interior_missing_or_consumed stored="..count.." fit_present="..tostring(s.fits[p.prepared_request.."_fit_candidate_1"]~=nil))
+   end
+   p={};for k,value in pairs(prepared.intent) do p[k]=value end;p.prepare=nil;p.execute=true
+  end
   assert(type(p.execute)=="boolean","invalid_execution_option")
+  if p.prepare~=nil then assert(type(p.prepare)=="boolean" and not(p.prepare and p.execute),"invalid_interior_prepare_option") end
   if p.proposal_diagnostics~=nil then
    assert(type(p.proposal_diagnostics)=="boolean","invalid_proposal_diagnostics")
    assert(not(p.proposal_diagnostics and p.execute),"proposal_diagnostics_read_only")
@@ -1254,16 +1310,42 @@ function M.interior_junction(p,s,state,request_id,respond)
    assert(p.vertical.max_grade==0 and math.abs(c.grade)<=.000001 and math.abs(p.end_xyz[3]-c.pos[3])<=.001,"level_free_lead_required")
    tp=p.end_xyz;td=p.end_direction;tg=0
   end
-  local original_start=c.canonical_forward and a.node0 or a.node1;local original_finish=c.canonical_forward and a.node1 or a.node0
-  local before=M.route({source_edge=a.id,source_node=original_start,target_edge=a.id,target_node=original_finish,
-   single_edge=true,junction_nodes=p.junction_nodes,mode="TRAIN",required_edges={a.id},max_length=p.max_route_length})
+  local extension,finish_node=through_extension(a,p)
+  assert(not extension or c.canonical_forward,"extended_forward_interior_only")
+  local original_start=c.canonical_forward and a.node0 or a.node1;local original_finish=c.canonical_forward and finish_node or a.node0
+  local before=M.route({source_edge=a.id,source_node=original_start,target_edge=extension and extension.id or a.id,target_node=original_finish,
+   single_edge=not extension,junction_nodes=p.junction_nodes,mode="TRAIN",required_edges=extension and {a.id,extension.id} or {a.id},max_length=p.max_route_length})
   assert(before.requested_route_verified,"existing_through_route_unverified")
-  local splits=interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade)
+  local splits=prepared and prepared.splits or interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade)
   stage="fit"
-  local fit_id=request_id.."_fit";fit=M.fit({end_xy={tp[1],tp[2]},end_direction=td,radius=p.radius,fit_radius=p.fit_radius or p.radius*1.05,region=p.region,vertical=te and p.vertical or nil},s,fit_id,
-   te and {edge=te,node=target.node_id,pos=tp,direction=td,grade=tg} or nil,{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
+  local fit_id=request_id.."_fit";local f
+  if p.prepare then
+   stage="prepare";local record,attempts=prepare_interior_fit(a,c,target,tp,td,tg,p,s,fit_id)
+   if not record then reply("no_accepted_candidate",{game_constructed=false,candidate_rejections=attempts,search_complete=true});return end
+   local count=0;for _ in pairs(s.prepared_interiors) do count=count+1 end;assert(count<16,"prepared_interior_capacity")
+   -- Persist only accepted controls/intent. Recreate sampled observations from
+   -- those controls at consume time; this is evaluation, never geometric fitting.
+   s.fits[record.fit_id]=nil;record.fitted.samples=nil
+   record.intent=p;record.handle=request_id;s.prepared_interiors[request_id]=record;fit=record.fit
+   local root=state:get() or {};root.pifLive=s;state:set(root)
+   reply("ok",{game_constructed=false,prepared_request=request_id,fit_request=record.fit_id,through_controls=record.splits,
+    native_proposal_evaluated=true,native_proposal_critical=false,candidate_rejections=attempts,selected_candidate=record.candidate,
+    prepared_lifetime="current_adapter_session_only",through_before=before});return
+  elseif prepared then
+   fit_id=prepared.fit_id;fit=prepared.fit;f=prepared.fitted
+   f.samples={}
+   for i,ctrl in ipairs(f.controls) do
+    local rows={};for j=0,16 do local u=j/16;local pos,dir=sample(cubic(ctrl),u);rows[#rows+1]={u=u,pos=pos,dir=dir,base_pos={pos[1],pos[2],pos[3]}} end
+    f.samples[i]=rows
+   end
+   assert(not f.built,"prepared_interior_fit_consumed");s.fits[fit_id]=f;c.through_representation=prepared.candidate.through
+  else
+   fit=M.fit({end_xy={tp[1],tp[2]},end_direction=td,radius=p.radius,fit_radius=p.fit_radius or p.radius*1.05,region=p.region,vertical=te and p.vertical or nil},s,fit_id,
+    te and {edge=te,node=target.node_id,pos=tp,direction=td,grade=tg} or nil,{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
+   f=s.fits[fit_id]
+  end
   fit.start_node=nil;fit.requested_min_radius=p.radius
-  local f=s.fits[fit_id];f.node=-100;f.junction_node=-100;f.min_radius=p.radius
+  f.node=-100;f.junction_node=-100;f.min_radius=p.radius
   -- Free leads use the already-validated level profile without M.fit's positive
   -- vertical option. Preserve the explicit zero limit for realised junction checks.
   f.max_grade=p.vertical.max_grade;fit.max_grade=p.vertical.max_grade
@@ -1272,23 +1354,11 @@ function M.interior_junction(p,s,state,request_id,respond)
    canonical_forward=c.canonical_forward,subdivision_sampled_verified=true,game_constructed=false}
   if not p.execute and not p.proposal_diagnostics then reply("ok",{game_constructed=false,placement=placement,through_before=before});return end
   assert(not s.mutationPending,"unreconciled_mutation");assert_fresh(a);if te then assert_fresh(te) end
-  stage="build";local proposal=api.type.SimpleProposal.new();local segments,nodes={},{}
-  local n=api.type.NodeAndEntity.new();n.entity=-100;n.comp.position=v(c.pos);nodes[1]=n
-  local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
-  local function segment(ctrl,id,node0,node1,clone)
-   local e=api.type.SegmentAndEntity.new();e.entity=id;e.type=1
-   if clone then e.comp=base:clone() end
-   e.comp.node0=node0;e.comp.node1=node1;e.comp.position0=v(ctrl.p0);e.comp.position1=v(ctrl.p1);e.comp.tangent0=v(ctrl.t0);e.comp.tangent1=v(ctrl.t1)
-   if not clone then e.comp.type=E.BaseEdgeType.NORMAL;e.comp.typeIndex=1;e.comp.laneConfigs=base.laneConfigs;e.comp.roadType=E.RoadType.TRACK;e.comp.roadTemplate=a.template;e.comp.roadStyle=a.style end
-   segments[#segments+1]=e
+  stage="build";local proposal,nodes,segments=interior_proposal(a,c,splits,f,target,prepared and prepared.candidate.through~="subdivide",extension)
+  if prepared then
+   local data=api.engine.util.proposal.makeProposalData(proposal,nil)
+   assert(not data.errorState.critical,"prepared_interior_proposal_no_longer_accepted")
   end
-  segment(splits[1],-1,a.node0,-100,true);segment(splits[2],-2,-100,a.node1,true)
-  for i,ctrl in ipairs(f.controls) do
-   local finish=target and target.node_id or nil
-   if i<#f.controls or not target then local nn=api.type.NodeAndEntity.new();nn.entity=-100-i;nn.comp.position=v(ctrl.p1);nodes[#nodes+1]=nn;finish=nn.entity end
-   segment(ctrl,-2-i,i==1 and -100 or -100-i+1,finish,false)
-  end
-  proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments;proposal.streetProposal.edgesToRemove={a.id}
   if p.proposal_diagnostics then
    -- Read-only native evaluation of the exact SimpleProposal sent by build.
    -- Build40408 requires SimpleProposal here, despite the published declaration
@@ -1348,6 +1418,7 @@ function M.interior_junction(p,s,state,request_id,respond)
    reply("ok",{game_constructed=false,placement=placement,through_before=before,proposal_diagnostics=diagnostics})
    return
   end
+  if prepared then prepared.used=true;s.prepared_interiors[prepared.handle]=nil end
   f.built=true;f.build_request=request_id;s.mutationPending=request_id
   local root=state:get() or {};root.pifLive=s;state:set(root)
   api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(res,success)
@@ -1355,7 +1426,8 @@ function M.interior_junction(p,s,state,request_id,respond)
    local receipt=res.proposal.proposal;local ids={};for _,e in ipairs(receipt.addedSegments) do ids[#ids+1]=e.entity end
    local checked,value=pcall(function()
     local value=interior_readback(a,c,splits,f,te,ids,p,before)
-    value.effects={receipt_added_segments=#ids,receipt_added_nodes=#receipt.addedNodes,receipt_removed_segments=#receipt.removedSegments,receipt_removed_nodes=#receipt.removedNodes,original_edge_removed=true}
+    value.effects={receipt_added_segments=#ids,receipt_added_nodes=#receipt.addedNodes,receipt_removed_segments=#receipt.removedSegments,receipt_removed_nodes=#receipt.removedNodes,original_edge_removed=true,adjoining_edge_removed=extension and extension.id or nil}
+    if prepared then value.prepared_request=prepared.handle;value.prepared_geometry_reused=true;value.through_controls=splits end
     s.mutationPending=nil;return value
    end)
    reply(checked and "ok" or "mutation_unverified",checked and value or {error=tostring(value):sub(1,400),returned_edges=ids,game_constructed=true,retry=false})
@@ -1916,6 +1988,82 @@ prepare_endpoint_fit=function(b,target,s,fit_id,context)
   if ok and not evaluation.critical then
    return {fit_id=id,fit=report,fitted=fitted,candidate={index=i,fit_radius=q.fit_radius,representation=q.representation}},attempts
   end
+  s.fits[id]=nil
+ end
+ return nil,attempts
+end
+-- Connection-led candidates bypass Dubins/radius fitting unless explicitly selected.
+prepare_interior_fit=function(a,c,target,tp,td,tg,p,s,fit_id)
+ local extension,finish_node,finish_pos,finish_direction=through_extension(a,p)
+ assert(target and a.template==target.edge_snapshot.template and a.style==target.edge_snapshot.style,"unsupported_attachment_resources")
+ assert(finite(p.radius) and p.radius>=0 and finite(p.max_route_length) and p.max_route_length>0 and p.max_route_length<=800,"invalid_prepared_interior_bounds")
+ local candidates=p.fit_candidates;assert(type(candidates)=="table" and #candidates>=1 and #candidates<=8,"interior_candidate_bound")
+ local guides=p.guides or {};assert(type(guides)=="table" and #guides<=2,"interior_guide_bound")
+ for _,guide in ipairs(guides) do vector(guide.pos);assert(#guide.pos==3,"guide_XYZ_required");vector(guide.direction);norm(guide.direction) end
+ local function scale(x) assert(finite(x) and x>0 and x<=4,"invalid_control_handle_scale");return x end
+ for _,q in ipairs(candidates) do
+  for k in pairs(q) do assert(k=="branch" or k=="through" or k=="handle_scale" or k=="through_handle_scales" or k=="fit_radius","invalid_interior_candidate_field") end
+  assert(q.branch=="native_parts" or q.branch=="endpoint_cubic_level" or q.branch=="guided_cubic_level","unsupported_interior_branch_candidate")
+  assert(q.through=="subdivide" or q.through=="subdivide_fresh" or q.through=="endpoint_cubic_level" or q.through=="extended_endpoint_cubic_level","unsupported_interior_through_candidate")
+  assert((extension~=nil)==(q.through=="extended_endpoint_cubic_level"),"explicit_extended_candidate_required")
+  scale(q.handle_scale or 1);local hs=q.through_handle_scales or {1,1,1,1};assert(type(hs)=="table" and #hs==4,"through_handle_scale_bound");for _,x in ipairs(hs) do scale(x) end
+  if q.fit_radius then assert(finite(q.fit_radius) and q.fit_radius>=p.radius and q.fit_radius>0,"invalid_interior_fit_radius") end
+ end
+ local function handles(p0,p1,t0,t1,s0,s1)
+  assert(math.abs(p0[3]-p1[3])<=.001 and math.abs(t0[3] or 0)<=.000001 and math.abs(t1[3] or 0)<=.000001,"level_endpoint_candidate_required")
+  local length=distance(p0,p1);assert(length>1e-6,"degenerate_endpoint_candidate")
+  local x,y=norm(t0),norm(t1)
+  return {p0=p0,p1=p1,t0={x[1]*length*s0,x[2]*length*s0,0},t1={y[1]*length*s1,y[2]*length*s1,0},length=length}
+ end
+ local function evaluate(proposal)
+  local data=api.engine.util.proposal.makeProposalData(proposal,nil);local errors=data.errorState;local messages={}
+  for i,x in ipairs(errors.messages) do if i<=4 then messages[#messages+1]=tostring(x):sub(1,240) end end
+  return {critical=errors.critical,messages=messages}
+ end
+ local attempts={}
+ for i,q in ipairs(candidates) do
+  local id=fit_id.."_candidate_"..i;local fitted,report,splits,through_eval,full_eval;local failure_stage="geometry"
+  local ok,err=pcall(function()
+   splits=interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade)
+   if q.through=="endpoint_cubic_level" or q.through=="extended_endpoint_cubic_level" then
+    local hs=q.through_handle_scales or {1,1,1,1}
+    if extension then splits[2].p1=finish_pos;splits[2].t1=finish_direction end
+    for j,x in ipairs(splits) do splits[j]=handles(x.p0,x.p1,x.t0,x.t1,hs[2*j-1],hs[2*j]);geometry_bounds(cubic(splits[j]),p.region,p.radius,p.vertical.max_grade,64) end
+   end
+   if q.branch=="native_parts" then
+    assert(p.radius>0 and q.fit_radius,"native_parts_require_explicit_radius_and_fit_radius")
+    report=M.fit({end_xy={tp[1],tp[2]},end_direction=td,radius=p.radius,fit_radius=q.fit_radius,region=p.region,vertical=p.vertical},s,id,
+     {edge=target.edge_snapshot,node=target.node_id,pos=tp,direction=td,grade=tg},{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
+    fitted=s.fits[id]
+   else
+    assert(math.abs(c.grade)<=.000001 and math.abs(tg)<=.000001,"level_endpoint_candidate_required")
+    local points={{pos=c.pos,direction=c.outward_direction}}
+    if q.branch=="guided_cubic_level" then assert(#guides>0,"shape_guides_required");for _,g in ipairs(guides) do points[#points+1]=g end end
+    points[#points+1]={pos=tp,direction=td};local controls,samples={},{};local total,minimum=0,math.huge
+    for j=1,#points-1 do
+     local x,y=points[j],points[j+1];local ctrl=handles(x.pos,y.pos,x.direction,y.direction,q.handle_scale or 1,q.handle_scale or 1)
+     local g=cubic(ctrl);minimum=math.min(minimum,geometry_bounds(g,p.region,p.radius,p.vertical.max_grade,64));local rows,last={},nil
+     for k=0,64 do local u=k/64;local pos,dir=sample(g,u);rows[#rows+1]={u=u,pos=pos,dir=dir,base_pos=pos};if last then total=total+distance(last,pos) end;last=pos end
+     controls[j]=ctrl;samples[j]=rows
+    end
+    assert(total<=p.max_route_length,"candidate_length_exceeds_limit")
+    fitted={anchor=a,node=-100,target={edge=target.edge_snapshot,node=target.node_id,pos=tp,direction=td,grade=tg},controls=controls,samples=samples,
+     region=p.region,total_length=total,grade=0,end_grade=0,max_grade=p.vertical.max_grade,min_radius=p.radius,built=false}
+    report={fit_request=id,pieces=#controls,controls=controls,total_length=total,start=c.pos,finish=tp,target_node=target.node_id,grade=0,end_grade=0,
+     radius=p.radius,requested_min_radius=p.radius,max_grade=p.vertical.max_grade,min_sampled_converted_radius=minimum~=math.huge and minimum or nil,
+     candidate_geometry={method=q.branch,handle_scale=q.handle_scale or 1,native_fit_invoked=false,guides_are_shape_controls_not_project_anchors=true},sampled_only=true,game_constructed=false}
+    s.fits[id]=fitted
+   end
+   fitted.node=-100;fitted.junction_node=-100
+   local proposal,nodes,segments=interior_proposal(a,c,splits,fitted,target,q.through~="subdivide",extension)
+   local through=api.type.SimpleProposal.new();through.streetProposal.nodesToAdd={nodes[1]};through.streetProposal.edgesToAdd={segments[1],segments[2]};through.streetProposal.edgesToRemove=proposal.streetProposal.edgesToRemove
+   if extension then through.streetProposal.nodesToRemove={a.node1} end
+   failure_stage="through_proposal";through_eval=evaluate(through)
+   failure_stage="complete_proposal";full_eval=evaluate(proposal)
+  end)
+  attempts[#attempts+1]={index=i,branch=q.branch,through=q.through,stage=failure_stage,status=not ok and "failed_check" or full_eval.critical and "native_proposal_rejected" or "accepted",
+   error=not ok and tostring(err):sub(1,240) or nil,through_evaluation=through_eval,evaluation=full_eval}
+  if ok and not full_eval.critical then return {fit_id=id,fitted=fitted,fit=report,splits=splits,candidate=q},attempts end
   s.fits[id]=nil
  end
  return nil,attempts

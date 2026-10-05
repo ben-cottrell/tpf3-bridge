@@ -1,5 +1,27 @@
 # Native-first production architecture
 
+## Connection-led design clarification — human direction, 5 October 2026
+
+The game's supported capabilities are the starting point for realising the intended
+railway. Designer intent describes functional connections, directions, corridors,
+neighbour relationships and visual character. Use practical native equivalents;
+do not force the game to reproduce an unnecessarily prescribed geometric solution.
+UK references inspire useful layouts, not universal dimensions or replica fidelity.
+
+Default fitting should be connection-led. Curvature and length are outcome measures
+and optional preferences; hard constraints require explicit user intent or demonstrated
+game/functional necessity. Earlier radius-led experiments do not establish global
+minimum radii, split angles or required distances. Distinguish our fitting or proposal
+limitations from native impossibility. Successful manual construction is concrete
+reference evidence, not proof that every bridge representation must be accepted.
+
+Python orchestrates intent and bounded candidates; Lua translates and evaluates native
+proposals; the game determines native acceptance. Evaluate complete local changes and
+build accepted prepared geometry without silently refitting. Keep attachment eligibility,
+fit success, native acceptance, route connectivity and visual quality distinct. See
+RAILWAY_DESIGN_GUIDE.md for the evolving evidence-based design procedure. This direction
+guides implementation; it does not assert that every required API already exists.
+
 ## Authority and status
 Use TPF3 as the authority for game-native behaviour, Python as the authority for
 UK railway engineering and orchestration, the mod as the semantic boundary between
