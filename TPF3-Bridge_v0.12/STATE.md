@@ -1,3 +1,18 @@
+# P68 — native GUI semantic placement contract unestablished (6 October 2026)
+
+Followed P67 builders into existing React GameContext/tool-stack ActionDescriptor.
+Resource/oneWay/height/rotation configuration is source-backed; no exact signal
+edge/parameter or depot transform input, programmatic apply or correlated result
+contract established. fireReactEvent selects resource tab only; constructionMenuQuit
+pops the existing tool, not an owned proposal API. onProposalApply refreshes menu
+cache; no completion identity contract demonstrated. Native builtin ConstructionAction
+is the precise boundary, not evidence of global API absence.
+No runtime/source changes, game commands, fixture placement or failed-call repeats.
+Evidence .local_runs/live_python_interface/p68/{result.json,source/sources.json}.
+Unchanged P66 390-pass baseline reused. Need a supported semantic input/apply
+contract or working current mod example before bridge-native placement; UI fixtures
+remain explicitly separate. Existing paused non-maximised world retained.
+
 # P67 — cleanup complete; native producer interface unresolved (6 October 2026)
 
 Computer Use recovered: healthy paused/non-maximised TPF3 observed. Removed12
