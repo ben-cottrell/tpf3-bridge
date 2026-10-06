@@ -2313,4 +2313,109 @@ function M.scissors_candidate(p,s,state,request_id,respond)
  end)
  if not ok then reply(s.mutationPending==request_id and "mutation_unverified" or "error",{error=tostring(err):sub(1,400),game_constructed=s.mutationPending==request_id and "unknown" or false,retry=false}) end
 end
+-- Rebuild one bounded simple rail chain from explicit accepted controls and
+-- structure resource names. This is new segment construction, not a skin swap.
+local function structured_proposal(record)
+ local proposal=api.type.SimpleProposal.new();local added,removed={},{}
+ for i,item in ipairs(record.segments) do
+  local old=assert_fresh(item.edge_snapshot)
+  local base=api.engine.getComponent(old.id,api.type.ComponentType.BASE_EDGE)
+  assert(#base.objects==0,"structured_chain_edge_objects_unsupported")
+  local observed=structure(base)
+  assert(observed.classification==item.original_structure.classification and observed.type_index==item.original_structure.type_index and observed.resource_name==item.original_structure.resource_name,"stale_structure_attachment")
+  local wanted=item.structure;local kind=wanted.classification
+  assert(kind=="NORMAL" or kind=="BRIDGE" or kind=="TUNNEL","unsupported_structure_classification")
+  local index=-1
+  if kind~="NORMAL" then
+   assert(type(wanted.resource_name)=="string" and #wanted.resource_name>0 and #wanted.resource_name<=256,"explicit_structure_resource_required")
+   local repo=kind=="BRIDGE" and api.res.bridgeTypeRep or api.res.tunnelTypeRep
+   index=repo.find(wanted.resource_name);assert(index>=0 and repo.getName(index)==wanted.resource_name,"structure_resource_unavailable")
+  else assert(wanted.resource_name==nil,"normal_structure_resource_not_applicable") end
+  local segment=api.type.SegmentAndEntity.new();segment.entity=-i;segment.type=1
+  segment.comp=base:clone()
+  segment.comp.type=E.BaseEdgeType[kind];segment.comp.typeIndex=index
+  local c=item.controls
+  segment.comp.position0=v(c.p0);segment.comp.position1=v(c.p1);segment.comp.tangent0=v(c.t0);segment.comp.tangent1=v(c.t1)
+  added[i]=segment;removed[i]=old.id
+ end
+ proposal.streetProposal.edgesToAdd=added;proposal.streetProposal.edgesToRemove=removed
+ return proposal
+end
+function M.structured_chain(p,s,state,request_id,respond)
+ assert(not s.mutationPending,"unreconciled_mutation")
+ s.prepared_structures=s.prepared_structures or {}
+ local record
+ if p.prepared_request then
+  for k in pairs(p) do assert(k=="prepared_request" or k=="execute","prepared_structure_input_changed") end
+  assert(p.execute==true,"prepared_structure_requires_execution")
+  record=s.prepared_structures[p.prepared_request];assert(record and not record.used,"prepared_structure_missing_or_consumed")
+ else
+  assert(p.prepare==true and p.execute~=true,"structure_preparation_required")
+  for k in pairs(p) do assert(k=="segments" or k=="prepare" or k=="execute" or k=="region","unsupported_structure_input") end
+  assert(type(p.segments)=="table" and #p.segments>=1 and #p.segments<=16,"structure_segment_bound")
+  assert(type(p.region)=="table","structure_region_required");vector(p.region.min);vector(p.region.max)
+  for i=1,3 do assert(p.region.min[i]<p.region.max[i],"invalid_structure_region") end
+  record={segments={},region=p.region,handle=request_id};local seen,adj={},{}
+  for i,item in ipairs(p.segments) do
+   assert(type(item)=="table" and type(item.edge_snapshot)=="table" and type(item.structure)=="table","structure_segment_contract")
+   local original=assert_fresh(item.edge_snapshot);assert(not seen[original.id],"duplicate_structure_source");seen[original.id]=true
+   local base=api.engine.getComponent(original.id,api.type.ComponentType.BASE_EDGE)
+   local observed=structure(base)
+   assert(item.edge_snapshot.structure and item.edge_snapshot.structure.classification==observed.classification and item.edge_snapshot.structure.resource_name==observed.resource_name,"stale_source_structure")
+   local controls=item.controls or {p0=original.p0,p1=original.p1,t0=original.t0,t1=original.t1}
+   for _,key in ipairs({"p0","p1","t0","t1"}) do vector(controls[key]);assert(#controls[key]==3,"structure_control_xyz_required") end
+   -- This slice keeps existing nodes fixed. A future new-alignment operation may
+   -- supply new nodes; changing existing node geometry is not silently supported.
+   assert(near(controls.p0,original.p0,.001) and near(controls.p1,original.p1,.001),"structured_chain_fixed_node_positions")
+   local geometry=cubic({p0=controls.p0,p1=controls.p1,t0=controls.t0,t1=controls.t1,length=distance(controls.p0,controls.p1)})
+   for _,u in ipairs({0,.25,.5,.75,1}) do local pos=sample(geometry,u);in_region(pos,p.region) end
+   record.segments[i]={edge_snapshot=original,original_structure=observed,controls=controls,structure=item.structure}
+   for _,node in ipairs({original.node0,original.node1}) do adj[node]=adj[node] or {};adj[node][#adj[node]+1]=original.id end
+  end
+  local ends={};for node,ids in pairs(adj) do
+   assert(#ids<=2,"structured_chain_branched")
+   local incident,owner=incidence(node);assert(owner==nil or owner<0,"structured_chain_construction_node_unsupported")
+   if #ids==1 then ends[#ends+1]=node else for _,id in ipairs(incident) do assert(seen[id],"structured_chain_internal_external_attachment") end end
+  end
+  assert(#ends==2,"structured_chain_requires_two_boundaries");table.sort(ends);record.boundary_nodes=ends
+  local visited,frontier={}, {ends[1]};while #frontier>0 do local node=table.remove(frontier)
+   if not visited[node] then visited[node]=true;for _,id in ipairs(adj[node]) do local e=edge(id);frontier[#frontier+1]=e.node0==node and e.node1 or e.node0 end end
+  end
+  for node in pairs(adj) do assert(visited[node],"structured_chain_disconnected") end
+ end
+ local proposal=structured_proposal(record)
+ local data=api.engine.util.proposal.makeProposalData(proposal,nil);local errors=data.errorState
+ if errors.critical then
+  respond(request_id,"no_accepted_candidate",{game_constructed=false,native_proposal_critical=true,messages=errors.messages,prepared_request=p.prepared_request,retry=false});return
+ end
+ if not p.prepared_request then
+  local count=0;for _ in pairs(s.prepared_structures) do count=count+1 end;assert(count<8,"prepared_structure_capacity")
+  s.prepared_structures[request_id]=record;local root=state:get() or {};root.pifLive=s;state:set(root)
+  respond(request_id,"ok",{game_constructed=false,prepared_request=request_id,segments=record.segments,boundary_nodes=record.boundary_nodes,native_proposal_evaluated=true,native_proposal_critical=false,prepared_lifetime="current_adapter_session_only",geometry_refitted=false});return
+ end
+ record.used=true;s.prepared_structures[p.prepared_request]=nil;s.mutationPending=request_id
+ local root=state:get() or {};root.pifLive=s;state:set(root)
+ api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(res,success)
+  if success~=true then respond(request_id,"mutation_unverified",{game_constructed="unknown",native_command_success=false,retry=false,prepared_request=p.prepared_request});return end
+  local receipt=res.proposal.proposal;local ids={}
+  for _,row in ipairs(receipt.addedSegments) do local e=api.engine.getComponent(row.entity,api.type.ComponentType.BASE_EDGE);if e and e.roadType==E.RoadType.TRACK then ids[#ids+1]=row.entity end end
+  local ok,value=pcall(function()
+   assert(#ids==#record.segments,"structured_chain_realised_segment_count_changed")
+   local result=M.inspect({edge_ids=ids,structures=true,geometry=true});local used={}
+   for _,item in ipairs(record.segments) do
+    local expected=item.edge_snapshot;local found
+    for _,actual in ipairs(result.edges) do if actual.node0==expected.node0 and actual.node1==expected.node1 then found=actual;break end end
+    assert(found and not used[found.id],"structured_chain_node_identity_mismatch");used[found.id]=true
+    assert(found.id~=expected.id,"structured_chain_source_not_replaced")
+    for _,key in ipairs({"p0","p1","t0","t1"}) do assert(near(found[key],item.controls[key],.001),"structured_chain_control_mismatch") end
+    assert(found.structure.classification==item.structure.classification and found.structure.resource_name==item.structure.resource_name,"structured_chain_resource_mismatch")
+    assert(not api.engine.entityExists(expected.id),"structured_chain_original_still_exists")
+   end
+   result.game_constructed=true;result.native_command_success=true;result.prepared_request=p.prepared_request;result.prepared_geometry_reused=true;result.geometry_refitted=false;result.boundary_nodes=record.boundary_nodes
+   result.effects={added_segments=#receipt.addedSegments,removed_segments=#receipt.removedSegments,added_nodes=#receipt.addedNodes,removed_nodes=#receipt.removedNodes};s.mutationPending=nil
+   return result
+  end)
+  respond(request_id,ok and "ok" or "mutation_unverified",ok and value or {game_constructed=true,error=tostring(value):sub(1,400),returned_edges=ids,retry=false,prepared_request=p.prepared_request})
+ end)
+end
 return M

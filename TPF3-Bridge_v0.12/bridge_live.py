@@ -20,9 +20,10 @@ OPERATIONS = {'scissors_candidate', 'degree_four_candidate', 'inspect_degree_fou
 
 OPERATIONS.add(STATION_OPERATION)
 OPERATIONS.add('repair_crossover')
+OPERATIONS.add('structured_chain')
 
 def is_mutation(operation, params):
-    return operation in ('build', 'test_approach', 'remove_branch', 'clear_obstructions') or (operation in ('repair_crossover', 'scissors_candidate', 'extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover', 'adjacent', 'degree_four_candidate') and params.get('execute') is True)
+    return operation in ('build', 'test_approach', 'remove_branch', 'clear_obstructions') or (operation in ('structured_chain', 'repair_crossover', 'scissors_candidate', 'extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover', 'adjacent', 'degree_four_candidate') and params.get('execute') is True)
 
 def discover_session(log_path):
     """Read transport markers locally; a later request must still prove responsiveness."""

@@ -480,6 +480,34 @@ class LiveClientTests(unittest.TestCase):
             self.client.request('inspect', {})
         self.assertEqual(ctx.exception.status, 'client_busy')
 
+    def test_structured_chain_prepare_timeout_is_unfinished_read(self):
+        self.client.timeout=.02
+        with self.assertRaises(LiveError):
+            self.client.request('structured_chain',{'prepare':True},request_id='structure_prepare')
+        pending=json.loads(self.client.journal.read_text())['pending']
+        self.assertEqual(pending['operation_kind'],'read')
+        with self.assertRaises(LiveError):
+            self.client.request('structured_chain',{'execute':True,'prepared_request':'structure_prepare'})
+        self.assertEqual(len(list(self.client.mod.rglob('*.lua'))),1)
+
+    def test_structured_chain_unknown_build_stops_repeat(self):
+        self.client.timeout=.02
+        with self.assertRaises(LiveError) as ctx:
+            self.client.request('structured_chain',{'execute':True,'prepared_request':'accepted'},request_id='structure_build')
+        self.assertEqual(ctx.exception.status,'mutation_outcome_unknown')
+        pending=json.loads(self.client.journal.read_text())['pending']
+        self.assertEqual(pending['operation_kind'],'mutation')
+        with self.assertRaises(LiveError):
+            self.client.request('structured_chain',{'execute':True,'prepared_request':'accepted'})
+        self.assertEqual(len(list(self.client.mod.rglob('*.lua'))),1)
+
+    def test_structured_chain_preparation_cli_preserves_explicit_read_intent(self):
+        params=self.root/'structure.json';params.write_text(json.dumps({'prepare':True,'segments':[]}))
+        with patch('bridge_live.client_from_context',return_value=self.client),patch.object(self.client,'request',return_value={'status':'ok'}) as request,contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(['structured_chain','--context','dummy','--params',str(params)]),0)
+        self.assertEqual(request.call_args.args,('structured_chain',{'prepare':True,'segments':[]}))
+        self.assertFalse(is_mutation(*request.call_args.args))
+
     def test_uncertain_compound_extension_cannot_replay_after_restart(self):
         self.client.timeout = .02
         with self.assertRaises(LiveError) as ctx:

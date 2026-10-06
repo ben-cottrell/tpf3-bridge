@@ -1,3 +1,24 @@
+# P62 complete — prepared native bridge/tunnel chain replacement (6 October 2026)
+
+structured_chain prepares bounded NORMAL/BRIDGE/TUNNEL chain replacement with explicit
+current resource names, fixed exact node attachments, stored controls, native proposal
+evaluation and consumed session-local handle. Native build40408 session
+pif_1791274544_8238475 replaced ten flyover edges N63410→67232 and seven tunnel edges
+N67223→63254 with new entities. Accepted controls/type/resources match fresh readback.
+Both directions through each pass native TRAIN paths; tunnel external approaches and
+companion/four trunk functions pass (14 final checks). Rendered deck/portals observed.
+379 affected quiet tests pass; .local_checks/pif-p62-structured-chain_g3k0sht2/report.json;
+independent tests/native/check_structured_chain.py passes saved native evidence.
+Stale source, missing resource and changed anchor rejected without construction.
+Evidence .local_runs/live_python_interface/p62/{HANDOFF.md,checks.json,native_checks.json,
+world_checkpoint.json,checkpoint.json}; actual current P62_Structures_20261006 save.
+Limits: existing-node simple chain only; region screening sampled, no continuous proof;
+train traversal/reservation/capacity/new-node structures unprobed. Native IDs can be
+reused after deletion: freshness geometry checks rejected old snapshots. No blanket
+preservation or UK numeric gates. No build repair/replay/restart/push; game paused.
+Scoped milestone in checkpoint.json; unrelated coordinator edits preserved. Next
+integrated topology/elevation decision remains Astra's responsibility.
+
 # P61 complete — native structure readback (6 October 2026)
 
 Opt-in inspect structures:true exports BaseEdge classification/typeIndex, selected
