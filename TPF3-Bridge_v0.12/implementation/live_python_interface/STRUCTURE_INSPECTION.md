@@ -42,3 +42,16 @@ python tools/quiet_checks.py --suite live_client --label pif-p61-structure-final
 Full local evidence and exact source references are in P61's HANDOFF.md and
 source_evidence.json. Native runtime reads exercise the Lua serializer; Python tests
 exercise semantic evidence acceptance. No standalone Lua checker is claimed.
+
+## Exact collision-entity diagnostics
+
+P64 adds optional `entity_ids` (1–8 exact current IDs) to `inspect`. It reports
+existence and applicable edge/node/construction fields without treating every
+entity as TRACK. Bounded generated-strip ranges (at most 16), model references
+and positions (at most 4), and native bounding boxes can identify which railway
+generated a collision object. Truncation is explicit. These diagnostic bounds
+are observations, not a clearance proof or authority to infer attachment.
+
+On build40408, exact generated strip ranges associated reported bridge-support
+collisions with the required P63 direct links. Local connector adjustment avoided
+them; no universal preservation policy or world-wide export was introduced.

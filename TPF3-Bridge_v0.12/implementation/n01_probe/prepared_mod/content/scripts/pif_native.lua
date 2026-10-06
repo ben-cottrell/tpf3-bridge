@@ -152,6 +152,52 @@ function M.inspect(p)
   end
  end
  local result={edges=out,game_constructed=false,native_save_identity="unknown",load_epoch="unknown"}
+ if p.entity_ids then
+  assert(type(p.entity_ids)=="table" and #p.entity_ids>=1 and #p.entity_ids<=8,"exact_entity_read_bound")
+  result.entities={}
+  for _,id in ipairs(p.entity_ids) do
+   assert(finite(id) and id>0 and id%1==0,"invalid_entity_id")
+   local row={entity=id,exists=api.engine.entityExists(id)}
+   if row.exists then
+    local base=api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)
+    local node=api.engine.getComponent(id,api.type.ComponentType.BASE_NODE)
+    local building=api.engine.getComponent(id,api.type.ComponentType.TOWN_BUILDING)
+    local construction=api.engine.getComponent(id,api.type.ComponentType.CONSTRUCTION)
+    row.base_edge=base~=nil;row.base_node=node~=nil;row.town_building=building~=nil;row.construction=construction~=nil
+    if node then row.position=arr(node.position) end
+    if base then
+     row.road_type=tostring(base.roadType);row.TRACK=base.roadType==E.RoadType.TRACK
+     row.node0=base.node0;row.node1=base.node1;row.p0=arr(base.position0);row.p1=arr(base.position1);row.t0=arr(base.tangent0);row.t1=arr(base.tangent1)
+     row.owner=api.engine.system.streetConnectorSystem.getConstructionEntityForEdge(id) or "none"
+     if p.structures==true then row.structure=structure(base) end
+    end
+    if construction then row.resource=construction.fileName;row.position=arr(construction.transf:getTransl()) end
+    local strip=api.engine.getComponent(id,api.type.ComponentType.BASE_PARALLEL_STRIP)
+    if strip then
+     row.strip_ranges={};row.strip_ranges_truncated=false
+     for _,group in ipairs(strip.rangeGroups) do for _,range in ipairs(group) do
+      if #row.strip_ranges<16 then row.strip_ranges[#row.strip_ranges+1]={edge=range.edge,bounds={range.bounds[1],range.bounds[2]}}
+      else row.strip_ranges_truncated=true end
+     end end
+    end
+    local bounds=api.engine.getComponent(id,api.type.ComponentType.BOUNDING_VOLUME)
+    if bounds then row.bounds={min=arr(bounds.bbox.min),max=arr(bounds.bbox.max)} end
+    local models=api.engine.getComponent(id,api.type.ComponentType.MODEL_INSTANCE_LIST)
+    if models then
+     row.models={};row.models_truncated=false
+     for _,model in ipairs(models.fatInstances) do
+      if #row.models<4 then row.models[#row.models+1]={resource=api.res.modelRep.getName(model.modelId),position=arr(model.transf:getTransl())}
+      else row.models_truncated=true end
+     end
+     for _,model in ipairs(models.thinInstances) do
+      if #row.models<4 then row.models[#row.models+1]={resource=api.res.modelRep.getName(model.modelId),position=arr(model.pos)}
+      else row.models_truncated=true end
+     end
+    end
+   end
+   result.entities[#result.entities+1]=row
+  end
+ end
  if p.site then
   local q=p.site;assert(type(q.region)=="table","site_region_required");vector(q.region.min);vector(q.region.max)
   assert(#q.region.min==3 and #q.region.max==3,"site_region_xyz_required")
@@ -814,6 +860,7 @@ function M.fit(p,s,request_id,target,start,diagnostics)
  result=filtered
  if diagnostics then diagnostics.discarded_native_tiny_parts=discarded;diagnostics.discarded_native_total_length=discardedlength end
  local controls,samples,total,maxerr,maxheading={}, {},0,0,0
+ local references={}
  local orientation={forward_parts=0,backward_parametrised_parts=0};local orientation_evidence={}
  for i,row in ipairs(result) do
   assert(type(row[2])=="boolean","native_direction_flag_unavailable")
@@ -836,13 +883,27 @@ function M.fit(p,s,request_id,target,start,diagnostics)
     travel_tangent_start={d0[1],d0[2],d0[3]},travel_tangent_finish={d1[1],d1[2],d1[3]}}
   end
   if i==1 then assert(distance(p0,pos)<=.001 and angle(d0,t0)<=.1,"fit_start_mismatch");p0[1]=pos[1];p0[2]=pos[2]
-  else assert(distance(p0,controls[i-1].p1)<=.001 and angle(d0,controls[i-1].t1)<=.1,"fit_join_mismatch");p0[1]=controls[i-1].p1[1];p0[2]=controls[i-1].p1[2] end
+  else assert(distance(p0,controls[#controls].p1)<=.001 and angle(d0,controls[#controls].t1)<=.1,"fit_join_mismatch");p0[1]=controls[#controls].p1[1];p0[2]=controls[#controls].p1[2] end
   p0[3]=pos[3]+grade*total;p1[3]=pos[3]+grade*(total+g.length)
   d0[3]=grade*g.length;d1[3]=grade*g.length
-  local c={p0=p0,p1=p1,t0=d0,t1=d1,length=g.length};controls[i]=c
+  -- Lower long native arcs in bounded pieces sampled from the same native
+  -- geometry. One Hermite segment per whole arc can exceed conversion fidelity;
+  -- subdivision preserves the native endpoints, travel tangents and path.
+  local count=g.type==api.type.EdgeGeometry.Type.ARC and math.max(1,math.ceil(g.length/math.abs(g.arc.radius)/(math.pi/4))) or 1
+  assert(#controls+count<=16,"native_conversion_piece_bound")
+  for j=1,count do
+   local u0,u1=(j-1)/count,j/count
+   local q0,h0=sample(g,u0,row[2]);local q1,h1=sample(g,u1,row[2]);local length=g.length/count
+   if j==1 then q0[1],q0[2]=p0[1],p0[2] end
+   q0[3]=pos[3]+grade*(total+u0*g.length);q1[3]=pos[3]+grade*(total+u1*g.length)
+   for axis=1,2 do h0[axis]=h0[axis]/count;h1[axis]=h1[axis]/count end
+   h0[3]=grade*length;h1[3]=grade*length
+   controls[#controls+1]={p0=q0,p1=q1,t0=h0,t1=h1,length=length}
+   references[#controls]={row=row,u0=u0,u1=u1}
+  end
   total=total+g.length
  end
- assert(total<=800,"fit_length_bound")
+ assert(total<=800,"fit_length_bound total="..total)
  local last=controls[#controls];assert(distance(last.p1,p.end_xy)<=.001 and angle(last.t1,t1)<=.1,"fit_end_mismatch")
  -- A nearly straight native ARC/STRAIGHT/ARC path can have millimetre ARC
  -- pieces whose endpoints lose the transverse displacement at map float scale.
@@ -920,7 +981,7 @@ function M.fit(p,s,request_id,target,start,diagnostics)
   minsampledradius=math.min(minsampledradius,checkedradius)
   for _,u in ipairs({0,.25,.5,.75,1}) do
    local np,nd
-   if nearstraight then np,nd=sample_path(offset+u*c.length) else np,nd=sample(result[i][1],u,result[i][2]) end
+   if nearstraight then np,nd=sample_path(offset+u*c.length) else local ref=references[i];np,nd=sample(ref.row[1],ref.u0+u*(ref.u1-ref.u0),ref.row[2]) end
    local cp,cd=sample(cg,u)
    maxerr=math.max(maxerr,distance(np,cp));if u==0 or u==1 then maxheading=math.max(maxheading,angle(nd,cd)) end
    local grade_here=slope(cd);maxsampledgrade=math.max(maxsampledgrade,math.abs(grade_here))
@@ -933,7 +994,7 @@ function M.fit(p,s,request_id,target,start,diagnostics)
   if i>1 then assert(math.abs(c.p0[3]-controls[i-1].p1[3])<=.001 and math.abs(slope(c.t0)-slope(controls[i-1].t1))<=.000001,"vertical_join_mismatch") end
   offset=offset+c.length
  end
- assert(maxerr<=.1 and maxheading<=.1,"sampled_conversion_outside_tolerance")
+ assert(maxerr<=.1 and maxheading<=.1,"sampled_conversion_outside_tolerance XY="..maxerr.." heading="..maxheading)
  assert(maxzerr<=.001,"native_vertical_subdivision_mismatch")
  assert(math.abs(slope(controls[1].t0)-grade)<=.000001 and math.abs(slope(last.t1)-endgrade)<=.000001,"endpoint_grade_mismatch")
  s.fits[request_id]={anchor=a,node=p.anchor_node,target=target,controls=controls,samples=samples,region=p.region,total_length=total,grade=grade,end_grade=endgrade,max_grade=maxgrade,min_radius=p.radius,built=false}
@@ -2327,46 +2388,114 @@ local function set_segment_structure(segment,wanted)
  segment.comp.type=E.BaseEdgeType[kind];segment.comp.typeIndex=index
 end
 local function prepare_new_structure(p,s,request_id)
- selected_attachments(p)
+ if not p.junctions then selected_attachments(p) end
  assert(type(p.guides)=="table" and #p.guides<=4,"structure_guide_bound")
  assert(type(p.structures)=="table" and #p.structures==#p.guides+1,"structure_leg_contract")
- local a,pos,direction,grade=anchor({anchor_edge=p.source.edge_id,anchor_node=p.source.node_id})
- local t,tp,td,tg=anchor({anchor_edge=p.target.edge_id,anchor_node=p.target.node_id})
+ local a,pos,direction,grade,t,tp,td,tg,c,d,splits
+ if p.junctions then
+  assert(p.junctions==true,"invalid_structure_junctions")
+  a=assert_fresh(p.source.edge_snapshot);t=assert_fresh(p.target.edge_snapshot)
+  assert(a.id~=t.id and a.node0~=t.node0 and a.node0~=t.node1 and a.node1~=t.node0 and a.node1~=t.node1,"distinct_through_tracks_required")
+  c=interior_location(a,p.source.location);d=interior_location(t,p.target.location)
+  pos,direction,grade=c.pos,c.outward_direction,c.grade
+  tp,td,tg=d.pos,{-d.outward_direction[1],-d.outward_direction[2],0},-d.grade
+  splits={interior_splits(a,c.parameter,p.region,p.radius or 0,p.vertical.max_grade),interior_splits(t,d.parameter,p.region,p.radius or 0,p.vertical.max_grade)}
+ else
+  a,pos,direction,grade=anchor({anchor_edge=p.source.edge_id,anchor_node=p.source.node_id})
+  t,tp,td,tg=anchor({anchor_edge=p.target.edge_id,anchor_node=p.target.node_id})
+ end
  assert(a.id~=t.id and a.template==t.template and a.style==t.style,"unsupported_structure_attachments")
- local target={edge=t,node=p.target.node_id,pos=tp,direction={-td[1],-td[2],0},grade=-tg}
+ local target={edge=t,node=p.junctions and -200 or p.target.node_id,pos=tp,direction={-td[1],-td[2],0},grade=-tg}
  local goals={};for _,g in ipairs(p.guides) do
   vector(g.position);assert(#g.position==3,"structure_guide_xyz");vector(g.travel_direction)
   assert(finite(g.grade),"structure_guide_grade");in_region(g.position,p.region)
   goals[#goals+1]={pos=g.position,direction=norm(g.travel_direction),grade=g.grade}
  end;goals[#goals+1]=target
- local fitted={anchor=a,node=p.source.node_id,target=target,controls={},region=p.region}
+ local fitted={anchor=a,node=p.junctions and -100 or p.source.node_id,target=target,controls={},region=p.region,min_radius=p.radius or 0,max_grade=p.vertical.max_grade}
  local record={new_alignment=true,source=p.source,target=p.target,fitted=fitted,segments={},region=p.region,handle=request_id,boundary_nodes={p.source.node_id,p.target.node_id},fit_legs={}}
+ if p.junctions then record.junctions={a=a,b=t,c=c,d=d,splits=splits,params=p};record.boundary_nodes=nil end
  local start={anchor=a,pos=pos,direction=direction,grade=grade}
  for i,goal in ipairs(goals) do
   local id=request_id.."_structure_leg_"..i
-  local report=M.fit({end_xy={goal.pos[1],goal.pos[2]},end_direction=goal.direction,radius=p.radius or 0,fit_radius=p.fit_radius,region=p.region,vertical=p.vertical},s,id,goal,start)
+  local report
+  if p.representation=="endpoint_cubic" then
+   local length=distance(start.pos,goal.pos);assert(length>0 and length<=800,"bounded_structure_cubic_leg")
+   local scale=p.handle_scale or 1;assert(finite(scale) and scale>0 and scale<=4,"invalid_control_handle_scale")
+   local h=length*scale;local d0,d1=norm(start.direction),norm(goal.direction)
+   local ctrl={p0=start.pos,p1=goal.pos,t0={h*d0[1],h*d0[2],h*start.grade},t1={h*d1[1],h*d1[2],h*goal.grade},length=length}
+   local g=cubic(ctrl);local minimum,maximum=geometry_bounds(g,p.region,p.radius or 0,p.vertical.max_grade,64)
+   local rows,total,last={},0,nil
+   for j=0,64 do local u=j/64;local pos,dir=sample(g,u);rows[#rows+1]={u=u,pos=pos,dir=dir,base_pos=pos};if last then total=total+distance(last,pos) end;last=pos end
+   assert(total<=800,"bounded_structure_cubic_leg")
+   s.fits[id]={controls={ctrl}}
+   report={pieces=1,total_length=total,max_sampled_grade=maximum,min_sampled_radius=minimum~=math.huge and minimum or nil,
+    controls={ctrl},samples=rows,representation="native_endpoint_cubic",sampled_only=true,native_dubins_fit_invoked=false,
+    guides_are_shape_controls_not_project_anchors=true}
+  else
+   assert(p.representation==nil or p.representation=="native_parts","unsupported_structure_representation")
+   local ok;ok,report=pcall(M.fit,{end_xy={goal.pos[1],goal.pos[2]},end_direction=goal.direction,radius=p.radius or 0,fit_radius=p.fit_radius,region=p.region,vertical=p.vertical},s,id,goal,start)
+   assert(ok,"structure_leg_"..i..": "..tostring(report))
+  end
   local f=s.fits[id];record.fit_legs[i]=report
-  for _,c in ipairs(f.controls) do
-   fitted.controls[#fitted.controls+1]=c;record.segments[#record.segments+1]={controls=c,structure=p.structures[i],leg=i}
+  local wanted=p.structures[i];local spans=wanted.spans
+  if spans then
+   assert(type(spans)=="table" and #spans>=1 and #spans<=3,"structure_span_bound")
+   assert(#f.controls==1,"structure_spans_require_single_cubic_leg")
+   local original=f.controls[1];local g=cubic(original);local previous=0
+   for _,span in ipairs(spans) do
+    assert(finite(span.until_u) and span.until_u>previous and span.until_u<=1,"ordered_structure_span_parameters")
+    local first,last=g:calcPos(previous),g:calcPos(span.until_u);local t0,t1=arr(first[2]),arr(last[2])
+    for k=1,3 do t0[k]=t0[k]*(span.until_u-previous);t1[k]=t1[k]*(span.until_u-previous) end
+    local ctrl={p0=arr(first[1]),p1=arr(last[1]),t0=t0,t1=t1,length=original.length*(span.until_u-previous)}
+    geometry_bounds(cubic(ctrl),p.region,p.radius or 0,p.vertical.max_grade,64)
+    for _,u in ipairs({0,.25,.5,.75,1}) do
+     local a=g:calcPos(previous+u*(span.until_u-previous));local b=cubic(ctrl):calcPos(u)
+     assert(near(arr(a[1]),arr(b[1]),.001) and angle(arr(a[2]),arr(b[2]))<=.1,"structure_span_subdivision_mismatch")
+    end
+    fitted.controls[#fitted.controls+1]=ctrl;record.segments[#record.segments+1]={controls=ctrl,structure=span,leg=i,parameter_interval={previous,span.until_u}}
+    previous=span.until_u
+   end
+   assert(previous==1,"structure_spans_must_cover_leg")
+  else
+   for _,c in ipairs(f.controls) do
+    fitted.controls[#fitted.controls+1]=c;record.segments[#record.segments+1]={controls=c,structure=wanted,leg=i}
+   end
   end;s.fits[id]=nil
   assert(#record.segments<=16,"new_structure_segment_bound")
   local last=f.controls[#f.controls];start={anchor=a,pos=last.p1,direction=norm(last.t1),grade=slope(last.t1)}
+ end
+ fitted.samples={};fitted.grade=grade;fitted.end_grade=target.grade;fitted.total_length=0
+ for i,ctrl in ipairs(fitted.controls) do
+  local rows={};for j=0,16 do local u=j/16;local pos,dir=sample(cubic(ctrl),u);rows[#rows+1]={u=u,pos=pos,dir=dir,base_pos=pos} end
+  fitted.samples[i]=rows;fitted.total_length=fitted.total_length+ctrl.length
  end
  return record
 end
 local function structured_proposal(record)
  if record.new_alignment then
-  selected_attachments({source=record.source,target=record.target})
-  local proposal=build_proposal(record.fitted)
+  local proposal,offset
+  if record.junctions then
+   local j=record.junctions
+   assert_fresh(j.a);assert_fresh(j.b)
+   local c=interior_location(j.a,j.params.source.location);local d=interior_location(j.b,j.params.target.location)
+   assert(math.abs(c.parameter-j.c.parameter)<.000001 and math.abs(d.parameter-j.d.parameter)<.000001,"stale_structure_junction")
+   local fresh=j.params.through_representation=="subdivide_fresh"
+   assert(j.params.through_representation==nil or j.params.through_representation=="subdivide" or fresh,"unsupported_structure_through_representation")
+   j.c.through_representation=fresh and "subdivide_fresh" or "subdivide";j.d.through_representation=j.c.through_representation
+   proposal=crossover_proposal(j.a,j.b,j.c,j.d,j.splits,record.fitted,fresh,true);offset=4
+  else
+   selected_attachments({source=record.source,target=record.target})
+   proposal=build_proposal(record.fitted);offset=0
+  end
   local segments={}
   for i,segment in ipairs(proposal.streetProposal.edgesToAdd) do
-   set_segment_structure(segment,record.segments[i].structure);segments[i]=segment
+   if i>offset then set_segment_structure(segment,record.segments[i-offset].structure) end;segments[i]=segment
   end
   -- Native container iteration may yield values: explicitly publish the edited
   -- segments rather than relying on mutation of an iterated container element.
   proposal.streetProposal.edgesToAdd=segments
   for i,segment in ipairs(proposal.streetProposal.edgesToAdd) do
-   assert(segment.comp.type==E.BaseEdgeType[record.segments[i].structure.classification],"proposal_structure_not_retained")
+   if i>offset then assert(segment.comp.type==E.BaseEdgeType[record.segments[i-offset].structure.classification],"proposal_structure_not_retained") end
   end
   return proposal
  end
@@ -2406,7 +2535,7 @@ function M.structured_chain(p,s,state,request_id,respond)
  else
   assert(p.prepare==true and p.execute~=true,"structure_preparation_required")
   if p.new_alignment==true then
-   for k in pairs(p) do assert(k=="new_alignment" or k=="prepare" or k=="execute" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical","unsupported_new_structure_input") end
+   for k in pairs(p) do assert(k=="new_alignment" or k=="junctions" or k=="max_route_length" or k=="through_representation" or k=="representation" or k=="handle_scale" or k=="prepare" or k=="execute" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical","unsupported_new_structure_input") end
    record=prepare_new_structure(p,s,request_id)
   else
   for k in pairs(p) do assert(k=="segments" or k=="prepare" or k=="execute" or k=="region","unsupported_structure_input") end
@@ -2444,8 +2573,27 @@ function M.structured_chain(p,s,state,request_id,respond)
  end
  local proposal=structured_proposal(record)
  local data=api.engine.util.proposal.makeProposalData(proposal,nil);local evaluation=structure_evaluation(data)
+ local through_evaluations,junction_approach_evaluations
+ if record.junctions and (evaluation.critical or evaluation.message_count>0) then
+  -- Isolate the two named through-track splits after a concrete full-proposal
+  -- rejection. This is bounded read-only evidence, never an accepted build.
+  through_evaluations={};junction_approach_evaluations={}
+  for i,a in ipairs({record.junctions.a,record.junctions.b}) do
+   local q=api.type.SimpleProposal.new();q.streetProposal.nodesToAdd={proposal.streetProposal.nodesToAdd[i]}
+   q.streetProposal.edgesToAdd={proposal.streetProposal.edgesToAdd[2*i-1],proposal.streetProposal.edgesToAdd[2*i]}
+   q.streetProposal.edgesToRemove={a.id}
+   through_evaluations[i]={original_edge=a.id,evaluation=structure_evaluation(api.engine.util.proposal.makeProposalData(q,nil))}
+   local branch=proposal.streetProposal.edgesToAdd[i==1 and 5 or #proposal.streetProposal.edgesToAdd]
+   local nodes={};for _,node in ipairs(proposal.streetProposal.nodesToAdd) do
+    if node.entity==branch.comp.node0 or node.entity==branch.comp.node1 then nodes[#nodes+1]=node end
+   end
+   q.streetProposal.nodesToAdd=nodes
+   q.streetProposal.edgesToAdd={proposal.streetProposal.edgesToAdd[2*i-1],proposal.streetProposal.edgesToAdd[2*i],branch}
+   junction_approach_evaluations[i]={original_edge=a.id,evaluation=structure_evaluation(api.engine.util.proposal.makeProposalData(q,nil))}
+  end
+ end
  if evaluation.critical or evaluation.message_count>0 then
-  respond(request_id,"no_accepted_candidate",{game_constructed=false,native_proposal_critical=evaluation.critical,evaluation=evaluation,messages=evaluation.messages,prepared_request=p.prepared_request,retry=false});return
+  respond(request_id,"no_accepted_candidate",{game_constructed=false,native_proposal_critical=evaluation.critical,evaluation=evaluation,messages=evaluation.messages,prepared_request=p.prepared_request,retry=false,segments=record.segments,fit_legs=record.fit_legs,through_evaluations=through_evaluations,junction_approach_evaluations=junction_approach_evaluations});return
  end
  if not p.prepared_request then
   local count=0;for _ in pairs(s.prepared_structures) do count=count+1 end;assert(count<8,"prepared_structure_capacity")
@@ -2463,6 +2611,14 @@ function M.structured_chain(p,s,state,request_id,respond)
   for _,row in ipairs(receipt.addedSegments) do local e=api.engine.getComponent(row.entity,api.type.ComponentType.BASE_EDGE);if e and e.roadType==E.RoadType.TRACK then ids[#ids+1]=row.entity end end
   local ok,value=pcall(function()
    if record.new_alignment then
+    if record.junctions then
+     local j=record.junctions;local result=crossover_readback(j.a,j.b,j.c,j.d,j.splits,record.fitted,ids,j.params,{})
+     local observed=M.inspect({edge_ids=result.readback.ordered_edges,structures=true,geometry=true})
+     result.structure_readback=observed;result.new_alignment=true;result.native_command_success=true
+     result.prepared_request=p.prepared_request;result.prepared_geometry_reused=true;result.geometry_refitted=false
+     result.effects={added_segments=#receipt.addedSegments,removed_segments=#receipt.removedSegments,added_nodes=#receipt.addedNodes,removed_nodes=#receipt.removedNodes};s.mutationPending=nil
+     return result
+    end
     assert(#ids>=1 and #ids<=16,"new_structure_readback_bound")
     local result=M.inspect({edge_ids=ids,structures=true,geometry=true});local remaining={}
     for _,e in ipairs(result.edges) do remaining[e.id]=e end

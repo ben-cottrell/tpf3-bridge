@@ -90,3 +90,34 @@ four trunk routes passed bidirectional native TRAIN checks. No physical vehicle
 traversal, capacity/reservation or continuous clearance proof is claimed.
 Evidence: `.local_runs/live_python_interface/p63/`. Offline check:
 `python tests/native/check_new_structured_chain.py .local_runs/live_python_interface/p63 4`.
+
+## Interior junctions and portal transitions
+
+P64 adds `junctions:true` to new-alignment preparation. Each attachment supplies a
+fresh `edge_snapshot` and `location` containing a native `guide_xyz`, explicit
+`travel_direction`, placement tolerance and heading tolerance. The guide selects
+a bounded position on that exact edge; proximity never selects another track.
+Both through-track replacements are included in the complete native proposal.
+`max_route_length` bounds the local native route acceptance, not the native search.
+
+The default `native_parts` fitting remains available. Optional
+`representation:"endpoint_cubic"` uses endpoint positions, directions and grades
+with a finite `handle_scale` in (0,4]. Guides are method-specific shape controls.
+`through_representation:"subdivide_fresh"` subdivides current native through
+geometry. Native proposal acceptance remains required; no radius/grade rule is
+inferred merely from a measured accepted curve.
+
+For a single-cubic leg, its structure entry may contain up to three ordered
+`spans`, each with `until_u`, `classification` and an applicable `resource_name`.
+The final `until_u` must be 1. Exact Hermite subdivision preserves the fitted
+shape while allowing NORMAL approaches outside TUNNEL portal spans. The whole
+connection remains limited to four guides and sixteen resulting segments.
+
+Build40408 demonstrated two independent far-side tunnel connections and two
+near-side ordinary connections using stored accepted controls. Fresh native
+readback and sixteen final TRAIN paths pass, including retained direct links
+and all four trunk lanes. This does not prove physical train traversal,
+reservation/capacity or continuous clearance. Evidence:
+`.local_runs/live_python_interface/p64/{final_routes,fresh_acceptance}`.
+Check each saved preparation/build with
+`python tests/native/check_structured_junction.py --prepared <record> --built <record>`.

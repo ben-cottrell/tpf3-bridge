@@ -520,6 +520,20 @@ class LiveClientTests(unittest.TestCase):
             self.assertEqual(main(['structured_chain','--context','dummy','--params',str(params)]),0)
         self.assertEqual(request.call_args.args,('structured_chain',payload))
 
+    def test_structured_junction_cli_preserves_explicit_attachment_roles(self):
+        payload={'prepare':True,'new_alignment':True,'junctions':True,
+                 'representation':'endpoint_cubic','through_representation':'subdivide_fresh',
+                 'source':{'edge_snapshot':{'id':10},'location':{'travel_direction':[1,0]}},
+                 'target':{'edge_snapshot':{'id':20},'location':{'travel_direction':[-1,0]}},
+                 'guides':[{'position':[40,20,-15],'travel_direction':[1,0],'grade':0}],
+                 'structures':[{'classification':'NORMAL'},{'spans':[{'until_u':.5,'classification':'TUNNEL','resource_name':'named'},{'until_u':1,'classification':'NORMAL'}]}]}
+        params=self.root/'structured_junction.json';params.write_text(json.dumps(payload))
+        with patch('bridge_live.client_from_context',return_value=self.client),patch.object(self.client,'request',return_value={'status':'ok'}) as request,contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(['structured_chain','--context','dummy','--params',str(params)]),0)
+        self.assertEqual(request.call_args.args,('structured_chain',payload))
+        self.assertFalse(is_mutation(*request.call_args.args))
+        self.assertTrue(is_mutation('structured_chain',{'prepared_request':'accepted','execute':True}))
+
     def test_uncertain_compound_extension_cannot_replay_after_restart(self):
         self.client.timeout = .02
         with self.assertRaises(LiveError) as ctx:

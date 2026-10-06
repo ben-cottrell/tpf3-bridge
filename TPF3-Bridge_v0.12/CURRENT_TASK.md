@@ -1,3 +1,23 @@
+# P64 complete - four slow-branch/trunk connections (6 October 2026)
+
+Native build40408: controlling E and deeper D underpasses built first, then D/E
+near-side connectors. Exact stored controls reused; NORMAL/TUNNEL portal spans,
+interior through-track junctions and bounded collision ownership readback demonstrated.
+Fresh branch geometry/resources match;16 directional native TRAIN checks pass:
+4trunks both directions, direct D/E pair both directions,4 required branch movements.
+No fast-track use/shared branch neck; A-to-B D then E junction order verified.
+D localized crossing baseZ-18.75; sampled grades are observations, not UK limits.
+386 quiet tests pass, unchanged evidence reused:
+.local_checks/pif-p64-collision-readback_mdfpargk/report.json. Independent saved
+junction checks pass; consumed/changed/deleted-source reject without construction.
+Evidence .local_runs/live_python_interface/p64/{HANDOFF.md,results.json,checks.json,
+final_routes/summary.json,fresh_acceptance/summary.json,world_checkpoint.json,checkpoint.json}.
+Actual save TPF3_Complex_Junction_P64_Complete_20261006.sav; paused/non-maximised.
+Transient read persistence collected via existing reconciliation without replay or
+host repair; pending none. No final-save reload, physical train/capacity/reservation,
+continuous-clearance or future C Y/all18-route proof. Scoped local milestone;
+coordinator edits preserved, no push. Acceptance reached; next topology belongs to Astra.
+
 # P63 complete — new direct D/E paired flyover (6 October 2026)
 
 structured_chain now prepares new internal nodes/alignment between exact free ports,
