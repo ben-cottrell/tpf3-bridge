@@ -7,6 +7,28 @@ operational capacity.
 
 ## Design the complete functional arrangement
 
+### Wickham conclusion — user review, 5 October 2026
+
+The user accepts the completed challenge as sufficient proof of the construction
+capabilities it was intended to exercise. The platform fans remain unnecessarily
+long for this slow terminal setting; do not describe their retained geometry as
+compact or optimal. Further fan compression is a possible design improvement, not
+unfinished acceptance work. Leave this demonstration in place and use a new useful
+challenge to drive the next bridge capability.
+
+- Choose the footprint for the actual game setting and intended movements. Slow
+  platform approaches can justify tighter, shorter sweeps; attractive curves need
+  not be long curves. Establish this envelope before filling in intermediate fans.
+- Required access is a minimum functional contract unless exclusions are explicit.
+  Incidental extra access is acceptable, but adding pointwork solely for extra access
+  is not a goal. Wickham requires pairs1/2/3 to serve1–8/3–14/9–16 respectively.
+- Pack compatible single crossovers alongside each other and coordinate junctions
+  on shared tracks. Fixed successive full-width exchange zones waste length.
+- Develop through concrete gameplay/construction challenges: define an observable
+  useful outcome, attempt it with existing capabilities, add reusable bridge support
+  for demonstrated gaps, and return to the challenge. Stop polishing the demonstration
+  once its purpose is met; carry transferable lessons into the next challenge.
+
 Start with game capabilities and the intended railway function. Express connections,
 directions, neighbouring-track relationships and the desired visual sweep; use the
 game's supported construction to realise a practical equivalent. Reference drawings
@@ -153,3 +175,35 @@ tool's internal algorithm or cursor eligibility feedback without evidence.
 Local evidence: `.local_runs/design/terminal_16_8_12_8/manual02`, `manual03`,
 `operation23` and `operation25`. Update this guide when another outcome supplies a
 transferable lesson; label hypotheses rather than turning them into hard rules.
+
+
+## Evidence from Complex Junction
+
+P60-P65 completed the construction challenge with 18 required native directed
+paths. These checks establish connectivity, not train operation, signalling,
+capacity or continuous clearance. The final footprint is a working demonstrator,
+not a proven minimum-size layout.
+
+- Start from native reference structures and actual attachment roles. Successful
+  reference heights and grades inform candidates; they are not universal limits.
+- Separate fitting sections from bridge/tunnel boundaries. Portal placement needs
+  appropriate terrain cover; marking an entire fitting leg as tunnel can put its
+  shell above ground. Preserve accepted curves while adjusting structure spans.
+- Plan the vertical crossing before fitting its approaches. Track centreline
+  separation alone omits bridge supports and tunnel shells. Observe the actual
+  collision entities before changing the design or blaming the bridge.
+- Allow local widening of the trunk when ramps need space. Preserve the four
+  ordered through functions rather than freezing their original coordinates.
+- A level run-in can resolve a graded turnout attachment. It is a useful candidate,
+  not a rule that every turnout must be level.
+- A true normal-offset curve is useful only where endpoint and grade constraints
+  permit it. Independent paired curves can retain the intended function when a
+  whole-route offset fails; do not claim constant spacing for those curves.
+- Reconsider an earlier structure when it obstructs a later required route. P65
+  repaired a shallow tunnel span and revised the slow approach under the fast
+  pair rather than preserving an unsuitable local choice.
+- Native proposal error messages matter even when a critical flag is false.
+  Distinguish errors from warnings, and build the exact accepted prepared controls.
+
+Evidence: `.local_runs/live_python_interface/p65/HANDOFF.md` and referenced
+P60-P65 records. Final save: `TPF3_Complex_Junction_P65_Complete_20261006.sav`.

@@ -1,3 +1,23 @@
+## Operating challenge authority — 6 October 2026
+User authorises bridge changes and construction for native signals, depot/test train
+and service setup, train observation, primary/alternative platform configuration
+and station-approach crossovers on Complex Junction. Native game logic owns routing
+and signalling. Ordinary waiting/queues are acceptable; capacity and waiting-clearance
+audits are excluded. This supersedes older construction-only scope for these specific
+operations, not detailed physics, tycoon management or station expansion. See
+DEVELOPMENT_ROADMAP.md and current P66 task card. Existing external-review and host
+boundaries remain binding.
+
+## Complex Junction challenge — human direction, 6 October 2026
+The new disposable Complex Junction map is the next native structures/graded junction
+challenge. User permits rebuilding all supplied infrastructure including trunk tracks.
+Stations/leads identify line roles; C slow tracks serve station and fast tracks bypass.
+Use actual native reference structures to inform game-scale dimensions. Reported15-unit
+rail and12-unit road crossing offsets and possible12–13percent grades are observations,
+not universal minima, maxima or verified UI units. No automatic UK gradient/radius gate.
+Concept specification topology guides design; physical vertical arrangements remain
+adaptable to native capabilities. Start with reference survey, then coordinator design.
+
 ## Connection-led native design - user clarification, 5 October 2026
 Use game capabilities to realise intended railway functions and visual relationships.
 Default to attachment points, directions, corridors and neighbouring curves, not fixed

@@ -1,4 +1,22 @@
-# P66 active â€” native D/E access and service configuration (6 October 2026)
+# P67 — cleanup complete; native producer interface unresolved (6 October 2026)
+
+Computer Use recovered: healthy paused/non-maximised TPF3 observed. Removed12
+obsolete P66 save/thumbnail pairs (499107226bytes) and1934814bytes of regenerable
+project bytecode; exact manifest .local_runs/live_python_interface/p67/cleanup.json.
+Retained P66 AlternativePlatform (hash verified), P65 Complete, Wickham final,
+user originals, journals and useful failure/manual/acceptance evidence.
+Narrow source trail: depot ConstructionBuilder and signal EdgeObjectBuilder feed
+native GUI ConstructionAction (construction_react_util.tl:3166/3266;
+gui/main/builtin.lua:201/206/218). No engine-callable new-asset producer established.
+Existing replace/refresh helpers do not create new assets. Prior SimpleProposal
+construction constructor Unknown exception remains unexplained; track-only overload
+works. No blind failed API retry, game change, new service or UI-as-bridge claim.
+Exact evidence/result and feasible next integration options: p67/result.json and
+p67/source/producer_boundary_sources.json. Reuse unchanged P66 390-pass evidence.
+Coordinator must choose supported producer evidence or bounded native GUI tool
+integration next; no broad installed-source search or speculative fields.
+
+# P66 completed â€” native D/E access and service configuration (6 October 2026)
 
 P66 operating demonstration accepted boundary: build40408, bridge purchase67414,
 assignment and physical E/D travel; D native alternative selection demonstrated.
