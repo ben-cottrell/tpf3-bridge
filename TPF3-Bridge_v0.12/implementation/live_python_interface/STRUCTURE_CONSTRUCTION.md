@@ -57,3 +57,36 @@ production rule for native geometry.
 
 Local evidence: `.local_runs/live_python_interface/p62/`. Offline evidence check:
 `python tests/native/check_structured_chain.py .local_runs/live_python_interface/p62`.
+
+## New alignment between existing free ports
+
+P63 adds `new_alignment:true` to the same `structured_chain` prepare operation.
+Supply `source` and `target` from fresh exact-port discovery, including current
+`edge_snapshot`, `edge_id` and `node_id`. Supply at most four `guides`, each with
+`position:[x,y,z]`, `travel_direction:[dx,dy]` and `grade`, plus one `structures`
+entry per leg (guides plus final target). Reuse the same region, resource names,
+session-local handle and two-step build contract above. Maximum sixteen fitted
+segments. Existing replacement payloads remain supported.
+
+`radius:0` is permitted with an explicit positive `fit_radius`: no hard engineering
+minimum is imposed, while the native fitter has a finite shape parameter. `vertical`
+uses existing bounded grade fitting. These are task choices, not universal UK gates.
+Guides express this selected method; exact source/target native identity remains
+binding. Build uses stored controls, creates internal nodes, and reacquires its
+receipt by exact incidence. Native resegmentation is not required to preserve
+temporary node IDs. Separate readback/route checks assess realised results.
+
+Native proposal error messages reject a preparation/build even when `critical`
+is false. The bounded evaluation includes error messages and exact collision
+entities; warnings alone do not reject. A rejected native execution remains
+`mutation_unverified`. `reconcile_rejected_structured_chain(client)` can establish
+the requested connection is absent using fresh exact free-port incidence, leaving
+other partial effects unknown. It never replays. Save the current world and reload
+normally before a changed structure proposal; the native session guard is retained.
+
+P63 build40408 demonstrated two separate D/E links, nine new edges each, seven
+stone bridge edges per link and level station-side reserves. Both links and all
+four trunk routes passed bidirectional native TRAIN checks. No physical vehicle
+traversal, capacity/reservation or continuous clearance proof is claimed.
+Evidence: `.local_runs/live_python_interface/p63/`. Offline check:
+`python tests/native/check_new_structured_chain.py .local_runs/live_python_interface/p63 4`.

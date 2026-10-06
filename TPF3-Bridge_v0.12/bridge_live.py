@@ -2202,6 +2202,43 @@ def reconcile_rejected_connection(client, discoveries=None):
     latest.pop('pending');atomic_json(client.journal,latest)
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
 
+def reconcile_rejected_structured_chain(client):
+    """Reconcile explicit rejected new alignment using fresh exact free ports.
+
+    Establishes only that the requested connection is absent; other partial
+    effects remain unknown. Never rebuilds or clears a different request.
+    """
+    state=json.loads(client.journal.read_text());pending=state.get('pending')
+    if not pending or pending.get('operation')!='structured_chain' or pending.get('params',{}).get('execute') is not True:
+        raise LiveError('reconciliation_required','no pending structured-chain execution')
+    rid=pending['request_id'];response_path=client.evidence/(rid+'.response.json')
+    response=json.loads(response_path.read_text())
+    if response.get('session')!=client.session or response.get('request_id')!=rid or response.get('operation')!='structured_chain' or response.get('status')!='mutation_unverified' or response.get('result',{}).get('native_command_success') is not False:
+        raise LiveError('reconciliation_required','no explicit native structured-chain rejection',rid)
+    handle=pending['params']['prepared_request'];prepared=json.loads((client.evidence/(handle+'.request.json')).read_text())
+    if prepared.get('session')!=client.session or prepared.get('request_id')!=handle or prepared.get('operation')!='structured_chain' or prepared.get('params',{}).get('new_alignment') is not True:
+        raise LiveError('reconciliation_required','current-session new-alignment preparation required',rid)
+    observations=[]
+    for key in ('source','target'):
+        port=prepared['params'][key];snapshot=port['edge_snapshot'];pos=snapshot['p0'] if snapshot['node0']==port['node_id'] else snapshot['p1']
+        observed=client.request('discover',{'region':{'min':[x-10 for x in pos],'max':[x+10 for x in pos]},'max_edges':16})
+        matches=[p for p in observed.get('result',{}).get('candidates',[]) if p['edge_id']==port['edge_id'] and p['node_id']==port['node_id']]
+        if observed['status']!='ok' or observed.get('session')!=client.session or observed.get('operation')!='discover' or observed['result'].get('complete') is not True or observed['result'].get('truncated') is not False or len(matches)!=1:
+            raise LiveError('reconciliation_required','exact attachment observation incomplete',rid)
+        current=matches[0]
+        if current.get('eligible') is not True or current.get('incidence_complete') is not True or current.get('incident_count')!=1 or current.get('incident_edges')!=[port['edge_id']] or current['edge_snapshot'].get('id')!=port['edge_id'] or current['edge_snapshot'].get('road_type')!='TRACK':
+            raise LiveError('reconciliation_required','requested connection absence not established',rid)
+        if any(current['edge_snapshot'].get(k)!=snapshot.get(k) for k in ('node0','node1','p0','p1','t0','t1','template','style')):
+            raise LiveError('reconciliation_required','source attachment changed',rid)
+        observations.append(observed['request_id'])
+    latest=json.loads(client.journal.read_text())
+    if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
+    record={'status':'reconciled_rejected_structured_chain','original_pending':pending,'original_response':str(response_path.resolve()),'observations':observations,'completed_connection_absent':True,'other_effects':'unknown','effects_history_complete':False,'automatic_replay':False,'native_guard':'requires normal session reload before another structure preparation'}
+    path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
+    latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(client.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
 def reconcile_rejected_corridor(client):
     """Explicit current free-attachment/native preflight check; never rebuild."""
     state=json.loads(client.journal.read_text());pending=state.get('pending')
@@ -2642,7 +2679,13 @@ def parse_response(line, request_id, session, operation):
     bounded_rejection=(data.get('status')=='no_accepted_candidate' and operation in ('junction','interior_junction','crossover')
         and isinstance(data.get('result'),dict) and data['result'].get('search_complete') is True
         and data['result'].get('game_constructed') is False)
-    if data.get('status') not in {'ok', 'error', 'mutation_unverified'} and not bounded_rejection:
+    structure_rejection=(data.get('status')=='no_accepted_candidate' and operation=='structured_chain'
+        and isinstance(data.get('result'),dict) and data['result'].get('game_constructed') is False
+        and isinstance(data['result'].get('evaluation'),dict)
+        and (data['result']['evaluation'].get('critical') is True
+             or type(data['result']['evaluation'].get('message_count')) is int
+             and data['result']['evaluation']['message_count']>0))
+    if data.get('status') not in {'ok', 'error', 'mutation_unverified'} and not (bounded_rejection or structure_rejection):
         raise LiveError('protocol_error', 'invalid response status', request_id)
     return data
 

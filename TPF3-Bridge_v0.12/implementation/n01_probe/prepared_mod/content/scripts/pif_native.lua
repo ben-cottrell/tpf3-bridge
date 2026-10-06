@@ -762,7 +762,7 @@ function M.route(p)
 end
 function M.fit(p,s,request_id,target,start,diagnostics)
  vector(p.end_xy);vector(p.end_direction)
- assert(finite(p.radius) and p.radius>0,"invalid_radius")
+ assert(finite(p.radius) and p.radius>=0 and (p.radius>0 or finite(p.fit_radius) and p.fit_radius>0),"invalid_radius")
  local fitradius=p.fit_radius or p.radius*1.05
  assert(finite(fitradius) and fitradius>=p.radius,"invalid_native_fit_radius")
  assert(type(p.region)=="table","region_required");vector(p.region.min);vector(p.region.max)
@@ -2315,7 +2315,61 @@ function M.scissors_candidate(p,s,state,request_id,respond)
 end
 -- Rebuild one bounded simple rail chain from explicit accepted controls and
 -- structure resource names. This is new segment construction, not a skin swap.
+local function set_segment_structure(segment,wanted)
+ local kind=wanted.classification
+ assert(kind=="NORMAL" or kind=="BRIDGE" or kind=="TUNNEL","unsupported_structure_classification")
+ local index=-1
+ if kind~="NORMAL" then
+  assert(type(wanted.resource_name)=="string" and #wanted.resource_name>0 and #wanted.resource_name<=256,"explicit_structure_resource_required")
+  local repo=kind=="BRIDGE" and api.res.bridgeTypeRep or api.res.tunnelTypeRep
+  index=repo.find(wanted.resource_name);assert(index>=0 and repo.getName(index)==wanted.resource_name,"structure_resource_unavailable")
+ else assert(wanted.resource_name==nil,"normal_structure_resource_not_applicable") end
+ segment.comp.type=E.BaseEdgeType[kind];segment.comp.typeIndex=index
+end
+local function prepare_new_structure(p,s,request_id)
+ selected_attachments(p)
+ assert(type(p.guides)=="table" and #p.guides<=4,"structure_guide_bound")
+ assert(type(p.structures)=="table" and #p.structures==#p.guides+1,"structure_leg_contract")
+ local a,pos,direction,grade=anchor({anchor_edge=p.source.edge_id,anchor_node=p.source.node_id})
+ local t,tp,td,tg=anchor({anchor_edge=p.target.edge_id,anchor_node=p.target.node_id})
+ assert(a.id~=t.id and a.template==t.template and a.style==t.style,"unsupported_structure_attachments")
+ local target={edge=t,node=p.target.node_id,pos=tp,direction={-td[1],-td[2],0},grade=-tg}
+ local goals={};for _,g in ipairs(p.guides) do
+  vector(g.position);assert(#g.position==3,"structure_guide_xyz");vector(g.travel_direction)
+  assert(finite(g.grade),"structure_guide_grade");in_region(g.position,p.region)
+  goals[#goals+1]={pos=g.position,direction=norm(g.travel_direction),grade=g.grade}
+ end;goals[#goals+1]=target
+ local fitted={anchor=a,node=p.source.node_id,target=target,controls={},region=p.region}
+ local record={new_alignment=true,source=p.source,target=p.target,fitted=fitted,segments={},region=p.region,handle=request_id,boundary_nodes={p.source.node_id,p.target.node_id},fit_legs={}}
+ local start={anchor=a,pos=pos,direction=direction,grade=grade}
+ for i,goal in ipairs(goals) do
+  local id=request_id.."_structure_leg_"..i
+  local report=M.fit({end_xy={goal.pos[1],goal.pos[2]},end_direction=goal.direction,radius=p.radius or 0,fit_radius=p.fit_radius,region=p.region,vertical=p.vertical},s,id,goal,start)
+  local f=s.fits[id];record.fit_legs[i]=report
+  for _,c in ipairs(f.controls) do
+   fitted.controls[#fitted.controls+1]=c;record.segments[#record.segments+1]={controls=c,structure=p.structures[i],leg=i}
+  end;s.fits[id]=nil
+  assert(#record.segments<=16,"new_structure_segment_bound")
+  local last=f.controls[#f.controls];start={anchor=a,pos=last.p1,direction=norm(last.t1),grade=slope(last.t1)}
+ end
+ return record
+end
 local function structured_proposal(record)
+ if record.new_alignment then
+  selected_attachments({source=record.source,target=record.target})
+  local proposal=build_proposal(record.fitted)
+  local segments={}
+  for i,segment in ipairs(proposal.streetProposal.edgesToAdd) do
+   set_segment_structure(segment,record.segments[i].structure);segments[i]=segment
+  end
+  -- Native container iteration may yield values: explicitly publish the edited
+  -- segments rather than relying on mutation of an iterated container element.
+  proposal.streetProposal.edgesToAdd=segments
+  for i,segment in ipairs(proposal.streetProposal.edgesToAdd) do
+   assert(segment.comp.type==E.BaseEdgeType[record.segments[i].structure.classification],"proposal_structure_not_retained")
+  end
+  return proposal
+ end
  local proposal=api.type.SimpleProposal.new();local added,removed={},{}
  for i,item in ipairs(record.segments) do
   local old=assert_fresh(item.edge_snapshot)
@@ -2323,23 +2377,23 @@ local function structured_proposal(record)
   assert(#base.objects==0,"structured_chain_edge_objects_unsupported")
   local observed=structure(base)
   assert(observed.classification==item.original_structure.classification and observed.type_index==item.original_structure.type_index and observed.resource_name==item.original_structure.resource_name,"stale_structure_attachment")
-  local wanted=item.structure;local kind=wanted.classification
-  assert(kind=="NORMAL" or kind=="BRIDGE" or kind=="TUNNEL","unsupported_structure_classification")
-  local index=-1
-  if kind~="NORMAL" then
-   assert(type(wanted.resource_name)=="string" and #wanted.resource_name>0 and #wanted.resource_name<=256,"explicit_structure_resource_required")
-   local repo=kind=="BRIDGE" and api.res.bridgeTypeRep or api.res.tunnelTypeRep
-   index=repo.find(wanted.resource_name);assert(index>=0 and repo.getName(index)==wanted.resource_name,"structure_resource_unavailable")
-  else assert(wanted.resource_name==nil,"normal_structure_resource_not_applicable") end
   local segment=api.type.SegmentAndEntity.new();segment.entity=-i;segment.type=1
   segment.comp=base:clone()
-  segment.comp.type=E.BaseEdgeType[kind];segment.comp.typeIndex=index
+  set_segment_structure(segment,item.structure)
   local c=item.controls
   segment.comp.position0=v(c.p0);segment.comp.position1=v(c.p1);segment.comp.tangent0=v(c.t0);segment.comp.tangent1=v(c.t1)
   added[i]=segment;removed[i]=old.id
  end
  proposal.streetProposal.edgesToAdd=added;proposal.streetProposal.edgesToRemove=removed
  return proposal
+end
+local function structure_evaluation(data)
+ local errors=data.errorState;local messages,warnings,collisions={},{},{}
+ for i,message in ipairs(errors.messages) do if i<=8 then messages[#messages+1]=tostring(message):sub(1,240) end end
+ for i,message in ipairs(errors.warnings) do if i<=8 then warnings[#warnings+1]=tostring(message):sub(1,240) end end
+ local rows=data.collisionInfo and data.collisionInfo.collisionEntities or {}
+ for i,row in ipairs(rows) do if i<=16 then collisions[#collisions+1]=row.entity end end
+ return {critical=errors.critical,messages=messages,message_count=#errors.messages,warnings=warnings,collision_entities=collisions,collision_count=#rows,collision_output_truncated=#rows>16}
 end
 function M.structured_chain(p,s,state,request_id,respond)
  assert(not s.mutationPending,"unreconciled_mutation")
@@ -2351,6 +2405,10 @@ function M.structured_chain(p,s,state,request_id,respond)
   record=s.prepared_structures[p.prepared_request];assert(record and not record.used,"prepared_structure_missing_or_consumed")
  else
   assert(p.prepare==true and p.execute~=true,"structure_preparation_required")
+  if p.new_alignment==true then
+   for k in pairs(p) do assert(k=="new_alignment" or k=="prepare" or k=="execute" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical","unsupported_new_structure_input") end
+   record=prepare_new_structure(p,s,request_id)
+  else
   for k in pairs(p) do assert(k=="segments" or k=="prepare" or k=="execute" or k=="region","unsupported_structure_input") end
   assert(type(p.segments)=="table" and #p.segments>=1 and #p.segments<=16,"structure_segment_bound")
   assert(type(p.region)=="table","structure_region_required");vector(p.region.min);vector(p.region.max)
@@ -2382,24 +2440,48 @@ function M.structured_chain(p,s,state,request_id,respond)
    if not visited[node] then visited[node]=true;for _,id in ipairs(adj[node]) do local e=edge(id);frontier[#frontier+1]=e.node0==node and e.node1 or e.node0 end end
   end
   for node in pairs(adj) do assert(visited[node],"structured_chain_disconnected") end
+  end
  end
  local proposal=structured_proposal(record)
- local data=api.engine.util.proposal.makeProposalData(proposal,nil);local errors=data.errorState
- if errors.critical then
-  respond(request_id,"no_accepted_candidate",{game_constructed=false,native_proposal_critical=true,messages=errors.messages,prepared_request=p.prepared_request,retry=false});return
+ local data=api.engine.util.proposal.makeProposalData(proposal,nil);local evaluation=structure_evaluation(data)
+ if evaluation.critical or evaluation.message_count>0 then
+  respond(request_id,"no_accepted_candidate",{game_constructed=false,native_proposal_critical=evaluation.critical,evaluation=evaluation,messages=evaluation.messages,prepared_request=p.prepared_request,retry=false});return
  end
  if not p.prepared_request then
   local count=0;for _ in pairs(s.prepared_structures) do count=count+1 end;assert(count<8,"prepared_structure_capacity")
   s.prepared_structures[request_id]=record;local root=state:get() or {};root.pifLive=s;state:set(root)
-  respond(request_id,"ok",{game_constructed=false,prepared_request=request_id,segments=record.segments,boundary_nodes=record.boundary_nodes,native_proposal_evaluated=true,native_proposal_critical=false,prepared_lifetime="current_adapter_session_only",geometry_refitted=false});return
+  respond(request_id,"ok",{game_constructed=false,prepared_request=request_id,segments=record.segments,boundary_nodes=record.boundary_nodes,fit_legs=record.fit_legs,new_alignment=record.new_alignment==true,evaluation=evaluation,native_proposal_evaluated=true,native_proposal_critical=false,prepared_lifetime="current_adapter_session_only",geometry_refitted=false});return
  end
  record.used=true;s.prepared_structures[p.prepared_request]=nil;s.mutationPending=request_id
  local root=state:get() or {};root.pifLive=s;state:set(root)
  api.cmd.sendCommand(api.cmd.makeWorldBuildProposalCmd(proposal,nil,false,false),function(res,success)
-  if success~=true then respond(request_id,"mutation_unverified",{game_constructed="unknown",native_command_success=false,retry=false,prepared_request=p.prepared_request});return end
+  if success~=true then
+   local checked,failed=pcall(function() return structure_evaluation(res.resultProposalData) end)
+   respond(request_id,"mutation_unverified",{game_constructed="unknown",native_command_success=false,retry=false,prepared_request=p.prepared_request,evaluation=checked and failed or nil});return
+  end
   local receipt=res.proposal.proposal;local ids={}
   for _,row in ipairs(receipt.addedSegments) do local e=api.engine.getComponent(row.entity,api.type.ComponentType.BASE_EDGE);if e and e.roadType==E.RoadType.TRACK then ids[#ids+1]=row.entity end end
   local ok,value=pcall(function()
+   if record.new_alignment then
+    assert(#ids>=1 and #ids<=16,"new_structure_readback_bound")
+    local result=M.inspect({edge_ids=ids,structures=true,geometry=true});local remaining={}
+    for _,e in ipairs(result.edges) do remaining[e.id]=e end
+    local ordered,nodes,current={}, {record.source.node_id},record.source.node_id
+    while next(remaining) do
+     local found;for id,e in pairs(remaining) do if e.node0==current or e.node1==current then assert(not found,"ambiguous_new_structure_chain");found=id end end
+     assert(found,"new_structure_attachment_missing");local e=remaining[found];remaining[found]=nil
+     ordered[#ordered+1]=found;current=e.node0==current and e.node1 or e.node0;nodes[#nodes+1]=current
+     assert(e.template==record.fitted.anchor.template and e.style==record.fitted.anchor.style,"new_structure_track_resource_mismatch")
+     local matched=false;for _,x in ipairs(record.segments) do if e.structure.classification==x.structure.classification and e.structure.resource_name==x.structure.resource_name then matched=true end end
+     assert(matched,"unexpected_new_structure_resource")
+    end
+    assert(current==record.target.node_id,"new_structure_target_attachment_missing")
+    assert_fresh(record.source.edge_snapshot);assert_fresh(record.target.edge_snapshot)
+    result.ordered_edges=ordered;result.ordered_nodes=nodes;result.exact_boundary_attachments=true
+    result.game_constructed=true;result.new_alignment=true;result.native_command_success=true;result.prepared_request=p.prepared_request;result.prepared_geometry_reused=true;result.geometry_refitted=false
+    result.effects={added_segments=#receipt.addedSegments,removed_segments=#receipt.removedSegments,added_nodes=#receipt.addedNodes,removed_nodes=#receipt.removedNodes};s.mutationPending=nil
+    return result
+   end
    assert(#ids==#record.segments,"structured_chain_realised_segment_count_changed")
    local result=M.inspect({edge_ids=ids,structures=true,geometry=true});local used={}
    for _,item in ipairs(record.segments) do

@@ -508,6 +508,18 @@ class LiveClientTests(unittest.TestCase):
         self.assertEqual(request.call_args.args,('structured_chain',{'prepare':True,'segments':[]}))
         self.assertFalse(is_mutation(*request.call_args.args))
 
+    def test_new_structure_alignment_is_read_until_explicit_execution(self):
+        payload={'prepare':True,'new_alignment':True,'source':{'node_id':1},'target':{'node_id':2},'guides':[]}
+        self.assertFalse(is_mutation('structured_chain',payload))
+        self.assertTrue(is_mutation('structured_chain',{'prepared_request':'new','execute':True}))
+
+    def test_new_structure_alignment_cli_keeps_roles_and_guides(self):
+        payload={'prepare':True,'new_alignment':True,'source':{'edge_id':10,'node_id':11},'target':{'edge_id':20,'node_id':21},'guides':[{'position':[1,2,3]}],'structures':[{'classification':'BRIDGE','resource_name':'named'}]}
+        params=self.root/'new_structure.json';params.write_text(json.dumps(payload))
+        with patch('bridge_live.client_from_context',return_value=self.client),patch.object(self.client,'request',return_value={'status':'ok'}) as request,contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(['structured_chain','--context','dummy','--params',str(params)]),0)
+        self.assertEqual(request.call_args.args,('structured_chain',payload))
+
     def test_uncertain_compound_extension_cannot_replay_after_restart(self):
         self.client.timeout = .02
         with self.assertRaises(LiveError) as ctx:
@@ -5170,6 +5182,79 @@ class NativeStructureEvidenceTests(unittest.TestCase):
         record={'classification':'NORMAL','type_index':-1,'instance_parameters':'not_exposed_by_BaseEdge',
                 'resource_state':'not_applicable','resource_name':'test_asset'}
         with self.assertRaises(ValueError):self.checker.check_structure(record,'NORMAL')
+
+class RejectedStructuredChainTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        root=Path(self.tmp.name)
+        self.client=LiveClient(root/'mod',root/'log',root/'evidence','current',.02)
+        self.client.evidence.mkdir(parents=True,exist_ok=True)
+        self.pending={'session':'current','request_id':'rejected','operation':'structured_chain',
+                      'params':{'execute':True,'prepared_request':'prepared'}}
+        self.response={'session':'current','request_id':'rejected','operation':'structured_chain',
+                       'status':'mutation_unverified','result':{'native_command_success':False}}
+        self.ports={}
+        self.observations=[]
+        for index,key in enumerate(('source','target')):
+            edge={'id':10+index,'node0':20+index,'node1':30+index,'p0':[index*100,0,0],
+                  'p1':[index*100+10,0,0],'t0':[10,0,0],'t1':[10,0,0],
+                  'road_type':'TRACK','template':'track','style':'style'}
+            port={'edge_id':edge['id'],'node_id':edge['node1'],'edge_snapshot':edge}
+            self.ports[key]=port
+            candidate=port|{'eligible':True,'incidence_complete':True,'incident_count':1,'incident_edges':[edge['id']]}
+            self.observations.append({'status':'ok','session':'current','operation':'discover',
+                'request_id':f'observed_{index}','result':{'complete':True,'truncated':False,'candidates':[candidate]}})
+        self.prepared={'session':'current','request_id':'prepared','operation':'structured_chain',
+                       'params':self.ports|{'new_alignment':True}}
+        self.persist()
+
+    def persist(self):
+        self.client.journal.write_text(json.dumps({'session':'current','pending':self.pending}))
+        (self.client.evidence/'rejected.response.json').write_text(json.dumps(self.response))
+        (self.client.evidence/'prepared.request.json').write_text(json.dumps(self.prepared))
+
+    def reconcile(self):
+        from bridge_live import reconcile_rejected_structured_chain
+        return reconcile_rejected_structured_chain(self.client)
+
+    def test_absent_link_reconciliation_retains_unknown_other_effects_and_never_replays(self):
+        with patch.object(self.client,'request',side_effect=self.observations) as native:
+            result=self.reconcile()['result']
+        self.assertTrue(result['completed_connection_absent'])
+        self.assertEqual(result['other_effects'],'unknown')
+        self.assertFalse(result['automatic_replay'])
+        self.assertEqual([call.args[0] for call in native.call_args_list],['discover','discover'])
+        self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+
+    def test_partial_stale_wrong_identity_or_incomplete_read_keeps_guard(self):
+        baseline=json.loads(json.dumps(self.observations))
+        for defect in ('occupied','stale','wrong_edge','not_rail','old_session','truncated','incomplete'):
+            with self.subTest(defect=defect):
+                rows=json.loads(json.dumps(baseline));r=rows[0];p=r['result']['candidates'][0]
+                if defect=='occupied':p['incident_count']=2;p['incident_edges'].append(99)
+                elif defect=='stale':p['edge_snapshot']['p1'][0]+=1
+                elif defect=='wrong_edge':p['edge_snapshot']['id']=99
+                elif defect=='not_rail':p['edge_snapshot']['road_type']='STREET'
+                elif defect=='old_session':r['session']='old'
+                elif defect=='truncated':r['result']['truncated']=True
+                elif defect=='incomplete':r['result']['complete']=False
+                self.persist()
+                with patch.object(self.client,'request',side_effect=rows),self.assertRaises(LiveError):self.reconcile()
+                self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+
+    def test_uncorrelated_failure_never_queries_or_clears(self):
+        self.response['operation']='other';self.persist()
+        with patch.object(self.client,'request') as native,self.assertRaises(LiveError):self.reconcile()
+        native.assert_not_called()
+        self.assertIn('pending',json.loads(self.client.journal.read_text()))
+
+    def test_native_error_messages_with_noncritical_state_are_honest_bounded_rejection(self):
+        record={'version':1,'session':'current','request_id':'r','operation':'structured_chain',
+                'status':'no_accepted_candidate','result':{'game_constructed':False,
+                  'evaluation':{'critical':False,'message_count':1,'messages':['Collision']}}}
+        self.assertEqual(parse_response(MARKER+json.dumps(record),'r','current','structured_chain'),record)
+        record['result']['evaluation']['message_count']=0
+        with self.assertRaises(LiveError):parse_response(MARKER+json.dumps(record),'r','current','structured_chain')
 
 if __name__ == '__main__':
     unittest.main()

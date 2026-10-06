@@ -1,3 +1,24 @@
+# P63 complete — new direct D/E paired flyover (6 October 2026)
+
+structured_chain now prepares new internal nodes/alignment between exact free ports,
+with <=4 guides, <=16 native-fitted segments and explicit structure resources.
+Stored accepted controls build without refit; replacement API remains compatible.
+Native build40408 session pif_1791276643_10337462 built D.US67203→E.DS63080 and
+E.US67231→D.DS63456, nine new edges/eight nodes each, seven stone bridge edges each.
+125-unit level reserves; deck movementZ31.880, offset15.1 above sampled trunk;
+observed max sampled grades .06150/.06143. Separate exact chains, no trunk attachment.
+Both links/four trunk routes pass both directions (12 native TRAIN checks); deck/
+supports observed. Pair ordering sampled, not continuous clearance/traversal proof.
+385 quiet tests pass: .local_checks/pif-p63-new-structure-final_9f7mhxf1/report.json.
+tests/native/check_new_structured_chain.py passes; fresh P62 replacement preview passes.
+Evidence .local_runs/live_python_interface/p63/{checks,native_checks,world_checkpoint}.json;
+actual completed save TPF3_Complex_Junction_P63_DE_Flyover_20261006.sav, no post-build reload.
+Initial Collision rejection retained/reconciled: requested link absent, other partial
+effects unknown; actual rejected world saved/reloaded. Fixed noncritical-error-message
+gate and native container structure writeback; no blind mutation replay. Original
+role bindings govern over opposite helper sorting. Scoped local checkpoint.json;
+coordinator edits preserved, no push. Next topology decision remains Astra's.
+
 # P62 complete — prepared native bridge/tunnel chain replacement (6 October 2026)
 
 structured_chain prepares bounded NORMAL/BRIDGE/TUNNEL chain replacement with explicit
