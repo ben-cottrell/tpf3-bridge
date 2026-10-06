@@ -1,3 +1,23 @@
+# P65 complete — four C connections and18-movement challenge (6 October 2026)
+
+Native build40408: C.UF/C.DF bridges, C.US NORMAL approach and C.DS underpass built;
+US/UF/DF through corridors spread locally. All eighteen required native TRAIN paths
+pass; sixteen retained-route regressions pass, including four trunks both directions.
+Slow paths use no fast edges; direct D/E paths avoid trunk running sections.
+Fresh exact controls/resources/attachments and four independent saved receipts pass.
+Mixed interior/free attachments, bounded named-chain replacement and per-leg fitting
+reuse accepted controls. Genuine-offset boundaries pass, but the whole paired offset
+ramp was rejected; accepted fast curves do not claim constant full-length spacing.
+387 quiet tests pass: python tools/quiet_checks.py --suite live_client --label pif-p65-refined-boundaries;
+report .local_checks/pif-p65-refined-boundaries__n9jo2x6/report.json (unchanged hashes checked).
+Evidence .local_runs/live_python_interface/p65/{HANDOFF.md,checks.json,full18_02/summary.json,
+P64_regression_routes_03/summary.json,fresh_final/summary.json,independent_checks.json,
+final_crossings.json,world_checkpoint.json,checkpoint.json}. Sampled crossings are diagnostics.
+Final save TPF3_Complex_Junction_P65_Complete_20261006.sav, paused/non-maximised;
+no final-save reload, physical train traversal, capacity/reservation or continuous-clearance proof.
+Prior failures/evidence retained; STATE encoding recovery recorded in state_recovery.json.
+Scoped local checkpoint preserves coordinator edits; no push or next task launched.
+
 # P64 complete - four slow-branch/trunk connections (6 October 2026)
 
 Native build40408: controlling E and deeper D underpasses built first, then D/E

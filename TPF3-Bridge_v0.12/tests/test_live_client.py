@@ -534,6 +534,20 @@ class LiveClientTests(unittest.TestCase):
         self.assertFalse(is_mutation(*request.call_args.args))
         self.assertTrue(is_mutation('structured_chain',{'prepared_request':'accepted','execute':True}))
 
+    def test_structured_mixed_attachments_preserve_request_direction(self):
+        free={'edge_snapshot':{'id':20},'edge_id':20,'node_id':21}
+        interior={'edge_snapshot':{'id':10},'location':{'travel_direction':[1,0]}}
+        for source,target in [(interior,free),(free,interior)]:
+            with self.subTest(source_is_free='node_id' in source):
+                payload={'prepare':True,'new_alignment':True,'junctions':True,
+                         'source':source,'target':target,'guides':[],
+                         'structures':[{'classification':'NORMAL'}]}
+                params=self.root/'mixed.json';params.write_text(json.dumps(payload))
+                with patch('bridge_live.client_from_context',return_value=self.client),patch.object(self.client,'request',return_value={'status':'ok'}) as request,contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(main(['structured_chain','--context','dummy','--params',str(params)]),0)
+                self.assertEqual(request.call_args.args,('structured_chain',payload))
+                self.assertFalse(is_mutation(*request.call_args.args))
+
     def test_uncertain_compound_extension_cannot_replay_after_restart(self):
         self.client.timeout = .02
         with self.assertRaises(LiveError) as ctx:

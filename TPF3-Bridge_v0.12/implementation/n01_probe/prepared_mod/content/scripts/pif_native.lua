@@ -604,7 +604,24 @@ local function interior_location(a,p)
  local g=cubic({p0=a.p0,p1=a.p1,t0=a.t0,t1=a.t1,length=1})
  local located=g:locate(v(p.guide_xyz),32,p.placement_tolerance)
  assert(located[2]==true and finite(located[1]) and located[1]>=.05 and located[1]<=.95,"no_supported_interior_location")
- local u=located[1];local at=g:calcPos(u)
+ local u=located[1]
+ -- Native locate may return a coarse point within the guide tolerance. An
+ -- offset attachment needs a precise point on this same named geometry;
+ -- refine its parameter, rather than weakening the boundary equality gate.
+ if p.refine_position then
+  local lo,hi=math.max(.05,u-1/32),math.min(.95,u+1/32)
+  local function squared(t)
+   local row=g:calcPos(t);local pos=arr(row[1]);local value=0
+   for axis=1,3 do value=value+(pos[axis]-p.guide_xyz[axis])^2 end
+   return value
+  end
+  for _=1,40 do
+   local x,y=lo+(hi-lo)/3,hi-(hi-lo)/3
+   if squared(x)<=squared(y) then hi=y else lo=x end
+  end
+  u=(lo+hi)/2
+ end
+ local at=g:calcPos(u)
  local pos,tangent=arr(at[1]),arr(at[2]);local d=norm(tangent);local forward=true
  if angle(d,p.travel_direction)>angle({-d[1],-d[2],0},p.travel_direction) then forward=false;d={-d[1],-d[2],0} end
  assert(angle(d,p.travel_direction)<=p.heading_tolerance_deg,"interior_direction_mismatch")
@@ -2387,12 +2404,65 @@ local function set_segment_structure(segment,wanted)
  else assert(wanted.resource_name==nil,"normal_structure_resource_not_applicable") end
  segment.comp.type=E.BaseEdgeType[kind];segment.comp.typeIndex=index
 end
+-- Replace only a named simple chain, keeping its two exact external attachments.
+-- Internal nodes are rebuilt; all external incident edges remain outside the plan.
+local function replacement_chain(p)
+ assert(not p.junctions and type(p.replace_chain)=="table" and #p.replace_chain>=1 and #p.replace_chain<=16,"replacement_chain_bound")
+ local originals,adj,seen={}, {}, {}
+ for _,snapshot in ipairs(p.replace_chain) do
+  local e=assert_fresh(snapshot);assert(not seen[e.id],"duplicate_replacement_edge");seen[e.id]=true;originals[#originals+1]=e
+  local base=api.engine.getComponent(e.id,api.type.ComponentType.BASE_EDGE)
+  assert(#base.objects==0,"replacement_edge_objects_unsupported")
+  for _,node in ipairs({e.node0,e.node1}) do adj[node]=adj[node] or {};adj[node][#adj[node]+1]=e.id end
+ end
+ local ports={[p.source.node_id]=p.source,[p.target.node_id]=p.target};assert(p.source.node_id~=p.target.node_id,"distinct_replacement_boundaries")
+ local internal={}
+ for node,ids in pairs(adj) do
+  local all,owner=incidence(node);assert(not(owner and owner>0),"replacement_construction_node_unsupported")
+  local port=ports[node]
+  if port then
+   local e=assert_fresh(port.edge_snapshot);assert(e.id==port.edge_id and not seen[e.id] and (e.node0==node or e.node1==node),"replacement_external_identity")
+   assert(#ids==1 and #all==2,"replacement_boundary_incidence")
+   for _,id in ipairs(all) do assert(id==e.id or id==ids[1],"replacement_external_attachment") end
+  else
+   assert(#ids==2 and #all==2,"replacement_internal_incidence")
+   for _,id in ipairs(all) do assert(seen[id],"replacement_internal_external_attachment") end;internal[#internal+1]=node
+  end
+ end
+ assert(adj[p.source.node_id] and adj[p.target.node_id],"replacement_boundaries_missing")
+ local reached,queue={}, {p.source.node_id}
+ while #queue>0 do local node=table.remove(queue);if not reached[node] then reached[node]=true
+  for _,id in ipairs(adj[node]) do local e=edge(id);queue[#queue+1]=e.node0==node and e.node1 or e.node0 end
+ end end
+ for node in pairs(adj) do assert(reached[node],"replacement_chain_disconnected") end
+ return {originals=originals,internal_nodes=internal,params=p}
+end
 local function prepare_new_structure(p,s,request_id)
- if not p.junctions then selected_attachments(p) end
+ local replacement=p.replace_chain and replacement_chain(p) or nil
+ if not p.junctions and not replacement then selected_attachments(p) end
  assert(type(p.guides)=="table" and #p.guides<=4,"structure_guide_bound")
  assert(type(p.structures)=="table" and #p.structures==#p.guides+1,"structure_leg_contract")
+ if p.leg_representations then
+  assert(type(p.leg_representations)=="table" and #p.leg_representations==#p.guides+1,"structure_leg_representation_contract")
+  for _,kind in ipairs(p.leg_representations) do assert(kind=="endpoint_cubic" or kind=="native_parts","unsupported_structure_leg_representation") end
+ end
  local a,pos,direction,grade,t,tp,td,tg,c,d,splits
- if p.junctions then
+ if p.junctions and (p.source.location==nil or p.target.location==nil) then
+  assert(p.junctions==true and ((p.source.location~=nil)~=(p.target.location~=nil)),"one_interior_one_free_attachment_required")
+  a=assert_fresh(p.source.edge_snapshot);t=assert_fresh(p.target.edge_snapshot)
+  assert(a.id~=t.id and a.node0~=t.node0 and a.node0~=t.node1 and a.node1~=t.node0 and a.node1~=t.node1,"distinct_structure_attachments_required")
+  local free=p.source.location and p.target or p.source
+  selected_attachments({source=free,target=free})
+  if p.source.location then
+   c=interior_location(a,p.source.location);pos,direction,grade=c.pos,c.outward_direction,c.grade
+   local ignored;ignored,tp,td,tg=anchor({anchor_edge=free.edge_id,anchor_node=free.node_id})
+   splits=interior_splits(a,c.parameter,p.region,p.radius or 0,p.vertical.max_grade)
+  else
+   local ignored;ignored,pos,direction,grade=anchor({anchor_edge=free.edge_id,anchor_node=free.node_id})
+   d=interior_location(t,p.target.location);tp,td,tg=d.pos,{-d.outward_direction[1],-d.outward_direction[2],0},-d.grade
+   splits=interior_splits(t,d.parameter,p.region,p.radius or 0,p.vertical.max_grade)
+  end
+ elseif p.junctions then
   assert(p.junctions==true,"invalid_structure_junctions")
   a=assert_fresh(p.source.edge_snapshot);t=assert_fresh(p.target.edge_snapshot)
   assert(a.id~=t.id and a.node0~=t.node0 and a.node0~=t.node1 and a.node1~=t.node0 and a.node1~=t.node1,"distinct_through_tracks_required")
@@ -2405,20 +2475,25 @@ local function prepare_new_structure(p,s,request_id)
   t,tp,td,tg=anchor({anchor_edge=p.target.edge_id,anchor_node=p.target.node_id})
  end
  assert(a.id~=t.id and a.template==t.template and a.style==t.style,"unsupported_structure_attachments")
- local target={edge=t,node=p.junctions and -200 or p.target.node_id,pos=tp,direction={-td[1],-td[2],0},grade=-tg}
+ local mixed=p.junctions and ((p.source.location~=nil)~=(p.target.location~=nil))
+ local target={edge=t,node=mixed and (p.target.location and -100 or p.target.node_id) or (p.junctions and -200 or p.target.node_id),pos=tp,direction={-td[1],-td[2],0},grade=-tg}
  local goals={};for _,g in ipairs(p.guides) do
   vector(g.position);assert(#g.position==3,"structure_guide_xyz");vector(g.travel_direction)
   assert(finite(g.grade),"structure_guide_grade");in_region(g.position,p.region)
   goals[#goals+1]={pos=g.position,direction=norm(g.travel_direction),grade=g.grade}
  end;goals[#goals+1]=target
- local fitted={anchor=a,node=p.junctions and -100 or p.source.node_id,target=target,controls={},region=p.region,min_radius=p.radius or 0,max_grade=p.vertical.max_grade}
- local record={new_alignment=true,source=p.source,target=p.target,fitted=fitted,segments={},region=p.region,handle=request_id,boundary_nodes={p.source.node_id,p.target.node_id},fit_legs={}}
- if p.junctions then record.junctions={a=a,b=t,c=c,d=d,splits=splits,params=p};record.boundary_nodes=nil end
+ local fitted={anchor=a,node=mixed and (p.source.location and -100 or p.source.node_id) or (p.junctions and -100 or p.source.node_id),target=target,controls={},region=p.region,min_radius=p.radius or 0,max_grade=p.vertical.max_grade}
+ local record={new_alignment=true,replacement=replacement,source=p.source,target=p.target,fitted=fitted,segments={},region=p.region,handle=request_id,boundary_nodes={p.source.node_id,p.target.node_id},fit_legs={}}
+ if mixed then
+  record.mixed={interior_source=p.source.location~=nil,interior=p.source.location and a or t,location=c or d,
+   free=p.source.location and p.target or p.source,splits=splits,params=p};record.boundary_nodes=nil
+ elseif p.junctions then record.junctions={a=a,b=t,c=c,d=d,splits=splits,params=p};record.boundary_nodes=nil end
  local start={anchor=a,pos=pos,direction=direction,grade=grade}
+ if not p.normal_offset_from then
  for i,goal in ipairs(goals) do
   local id=request_id.."_structure_leg_"..i
-  local report
-  if p.representation=="endpoint_cubic" then
+  local report;local representation=p.leg_representations and p.leg_representations[i] or p.representation
+  if representation=="endpoint_cubic" then
    local length=distance(start.pos,goal.pos);assert(length>0 and length<=800,"bounded_structure_cubic_leg")
    local scale=p.handle_scale or 1;assert(finite(scale) and scale>0 and scale<=4,"invalid_control_handle_scale")
    local h=length*scale;local d0,d1=norm(start.direction),norm(goal.direction)
@@ -2432,7 +2507,7 @@ local function prepare_new_structure(p,s,request_id)
     controls={ctrl},samples=rows,representation="native_endpoint_cubic",sampled_only=true,native_dubins_fit_invoked=false,
     guides_are_shape_controls_not_project_anchors=true}
   else
-   assert(p.representation==nil or p.representation=="native_parts","unsupported_structure_representation")
+   assert(representation==nil or representation=="native_parts","unsupported_structure_representation")
    local ok;ok,report=pcall(M.fit,{end_xy={goal.pos[1],goal.pos[2]},end_direction=goal.direction,radius=p.radius or 0,fit_radius=p.fit_radius,region=p.region,vertical=p.vertical},s,id,goal,start)
    assert(ok,"structure_leg_"..i..": "..tostring(report))
   end
@@ -2464,6 +2539,64 @@ local function prepare_new_structure(p,s,request_id)
   assert(#record.segments<=16,"new_structure_segment_bound")
   local last=f.controls[#f.controls];start={anchor=a,pos=last.p1,direction=norm(last.t1),grade=slope(last.t1)}
  end
+ end
+ if p.normal_offset_from then
+  local q=p.normal_offset_from
+  assert(mixed and #p.guides==0 and type(q)=="table" and type(q.reverse)=="boolean","offset_structure_contract")
+  for k in pairs(q) do assert(k=="prepared_request" or k=="spacing" or k=="reverse","offset_structure_input") end
+  local reference=s.prepared_structures and s.prepared_structures[q.prepared_request]
+  assert(reference and reference.new_alignment and not reference.used,"offset_reference_preparation_unavailable")
+  local template=api.res.streetTemplateRep.findAndGet(a.template)
+  assert(finite(q.spacing) and math.abs(math.abs(q.spacing)-template.trackDistance)<=.001,"offset_native_spacing_required")
+  local derived={};local maximum=0
+  for _,segment in ipairs(reference.segments) do
+   local original=segment.controls;local g=offset_geometry(original,q.spacing);local height=cubic(original);local selected
+   for _,count in ipairs({1,2,4}) do
+    local trial={};local error=0
+    for j=1,count do
+     local u0,u1=(j-1)/count,j/count;local p0,t0=sample(g,u0);local p1,t1=sample(g,u1)
+     local h0,d0=sample(height,u0);local h1,d1=sample(height,u1);p0[3]=h0[3];p1[3]=h1[3]
+     for axis=1,2 do t0[axis]=t0[axis]/count;t1[axis]=t1[axis]/count end
+     t0[3]=d0[3]/count;t1[3]=d1[3]/count
+     local ctrl={p0=p0,p1=p1,t0=t0,t1=t1,length=distance(p0,p1)};local converted=cubic(ctrl)
+     for k=0,16 do local u=k/16;local expected=sample(g,u0+u*(u1-u0));local actual=sample(converted,u)
+      error=math.max(error,math.sqrt((expected[1]-actual[1])^2+(expected[2]-actual[2])^2)) end
+     trial[#trial+1]={controls=ctrl,structure=segment.structure}
+    end
+    if error<=.1 then selected=trial;maximum=math.max(maximum,error);break end
+   end
+   assert(selected,"native_offset_structure_conversion_failed")
+   for _,segment in ipairs(selected) do derived[#derived+1]=segment end
+   assert(#derived<=16,"offset_structure_segment_bound")
+  end
+  if q.reverse then
+   local reversed={};for i=#derived,1,-1 do local segment=derived[i];local c=segment.controls
+    reversed[#reversed+1]={controls={p0=c.p1,p1=c.p0,t0={-c.t1[1],-c.t1[2],-c.t1[3]},t1={-c.t0[1],-c.t0[2],-c.t0[3]},length=c.length},structure=segment.structure}
+   end;derived=reversed
+  end
+  -- Locate only on the already named interior edge. The original bounded guide
+  -- remains a constraint; offset geometry cannot select another native track.
+  local j=record.mixed;local attachment=j.interior_source and p.source or p.target
+  local boundary=j.interior_source and derived[1].controls.p0 or derived[#derived].controls.p1
+  assert(distance(boundary,attachment.location.guide_xyz)<=attachment.location.placement_tolerance,"offset_interior_guide_outside_tolerance")
+  local location={};for k,value in pairs(attachment.location) do location[k]=value end;location.guide_xyz=boundary;location.refine_position=true
+  local located=interior_location(j.interior,location);attachment.location=location;j.location=located
+  j.splits=interior_splits(j.interior,located.parameter,p.region,p.radius or 0,p.vertical.max_grade)
+  if j.interior_source then pos,direction,grade=located.pos,located.outward_direction,located.grade
+  else target.pos,target.direction,target.grade=located.pos,located.outward_direction,located.grade end
+  local first,last=derived[1].controls,derived[#derived].controls
+  assert(near(first.p0,pos,.001) and near(last.p1,target.pos,.001),"offset_structure_boundary_position_incompatible")
+  assert(angle(first.t0,direction)<=.1 and angle(last.t1,target.direction)<=.1,"offset_structure_boundary_direction_incompatible")
+  assert(math.abs(slope(first.t0)-grade)<=.000001 and math.abs(slope(last.t1)-target.grade)<=.000001,"offset_structure_boundary_grade_incompatible")
+  fitted.controls={};record.segments={};record.fit_legs={}
+  for i,segment in ipairs(derived) do
+   geometry_bounds(cubic(segment.controls),p.region,p.radius or 0,p.vertical.max_grade,64)
+   segment.leg=i;record.segments[i]=segment;fitted.controls[i]=segment.controls
+   record.fit_legs[i]={controls={segment.controls},pieces=1,representation="native_normal_offset",reference_prepared=q.prepared_request,
+    spacing=q.spacing,reference_reversed=q.reverse,sampled_conversion_XY_error=maximum,height_transfer="shared_reference_parameter",
+    structure_inherited_from_reference=true,sampled_only=true}
+  end
+ end
  fitted.samples={};fitted.grade=grade;fitted.end_grade=target.grade;fitted.total_length=0
  for i,ctrl in ipairs(fitted.controls) do
   local rows={};for j=0,16 do local u=j/16;local pos,dir=sample(cubic(ctrl),u);rows[#rows+1]={u=u,pos=pos,dir=dir,base_pos=pos} end
@@ -2474,7 +2607,30 @@ end
 local function structured_proposal(record)
  if record.new_alignment then
   local proposal,offset
-  if record.junctions then
+  if record.mixed then
+   local j=record.mixed;assert_fresh(j.interior);selected_attachments({source=j.free,target=j.free})
+   local location=interior_location(j.interior,j.interior_source and j.params.source.location or j.params.target.location)
+   assert(math.abs(location.parameter-j.location.parameter)<.000001,"stale_structure_junction")
+   assert(j.params.through_representation==nil or j.params.through_representation=="subdivide" or j.params.through_representation=="subdivide_fresh","unsupported_structure_through_representation")
+   j.location.through_representation=j.params.through_representation or "subdivide"
+   proposal=interior_proposal(j.interior,j.location,j.splits,{controls={}},nil,j.params.through_representation=="subdivide_fresh")
+   local connector=build_proposal(record.fitted);local segments,nodes={},{}
+   for _,node in ipairs(proposal.streetProposal.nodesToAdd) do nodes[#nodes+1]=node end
+   -- The combined proposal shares one temporary entity namespace. Adding the
+   -- two through segments must not collide with build_proposal's node IDs.
+   local node_map={}
+   for i,node in ipairs(connector.streetProposal.nodesToAdd) do
+    node_map[node.entity]=-300-i;node.entity=-300-i;nodes[#nodes+1]=node
+   end
+   for _,segment in ipairs(proposal.streetProposal.edgesToAdd) do segments[#segments+1]=segment end
+   for _,segment in ipairs(connector.streetProposal.edgesToAdd) do
+    segment.entity=-#segments-1
+    segment.comp.node0=node_map[segment.comp.node0] or segment.comp.node0
+    segment.comp.node1=node_map[segment.comp.node1] or segment.comp.node1
+    segments[#segments+1]=segment
+   end
+   proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments;offset=2
+  elseif record.junctions then
    local j=record.junctions
    assert_fresh(j.a);assert_fresh(j.b)
    local c=interior_location(j.a,j.params.source.location);local d=interior_location(j.b,j.params.target.location)
@@ -2484,8 +2640,13 @@ local function structured_proposal(record)
    j.c.through_representation=fresh and "subdivide_fresh" or "subdivide";j.d.through_representation=j.c.through_representation
    proposal=crossover_proposal(j.a,j.b,j.c,j.d,j.splits,record.fitted,fresh,true);offset=4
   else
-   selected_attachments({source=record.source,target=record.target})
+   if record.replacement then replacement_chain(record.replacement.params)
+   else selected_attachments({source=record.source,target=record.target}) end
    proposal=build_proposal(record.fitted);offset=0
+   if record.replacement then
+    local removed={};for _,e in ipairs(record.replacement.originals) do removed[#removed+1]=e.id end
+    proposal.streetProposal.edgesToRemove=removed;proposal.streetProposal.nodesToRemove=record.replacement.internal_nodes
+   end
   end
   local segments={}
   for i,segment in ipairs(proposal.streetProposal.edgesToAdd) do
@@ -2535,7 +2696,7 @@ function M.structured_chain(p,s,state,request_id,respond)
  else
   assert(p.prepare==true and p.execute~=true,"structure_preparation_required")
   if p.new_alignment==true then
-   for k in pairs(p) do assert(k=="new_alignment" or k=="junctions" or k=="max_route_length" or k=="through_representation" or k=="representation" or k=="handle_scale" or k=="prepare" or k=="execute" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical","unsupported_new_structure_input") end
+   for k in pairs(p) do assert(k=="new_alignment" or k=="replace_chain" or k=="junctions" or k=="normal_offset_from" or k=="max_route_length" or k=="through_representation" or k=="representation" or k=="leg_representations" or k=="handle_scale" or k=="prepare" or k=="execute" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical","unsupported_new_structure_input") end
    record=prepare_new_structure(p,s,request_id)
   else
   for k in pairs(p) do assert(k=="segments" or k=="prepare" or k=="execute" or k=="region","unsupported_structure_input") end
@@ -2574,6 +2735,22 @@ function M.structured_chain(p,s,state,request_id,respond)
  local proposal=structured_proposal(record)
  local data=api.engine.util.proposal.makeProposalData(proposal,nil);local evaluation=structure_evaluation(data)
  local through_evaluations,junction_approach_evaluations
+ if record.mixed and (evaluation.critical or evaluation.message_count>0) then
+  -- A concrete mixed-proposal rejection warrants separating its through split,
+  -- first/last branch attachment and remaining structure diagnostics.
+  local j=record.mixed;local q=api.type.SimpleProposal.new()
+  q.streetProposal.nodesToAdd={proposal.streetProposal.nodesToAdd[1]}
+  q.streetProposal.edgesToAdd={proposal.streetProposal.edgesToAdd[1],proposal.streetProposal.edgesToAdd[2]}
+  q.streetProposal.edgesToRemove={j.interior.id}
+  through_evaluations={{original_edge=j.interior.id,evaluation=structure_evaluation(api.engine.util.proposal.makeProposalData(q,nil))}}
+  local branch=proposal.streetProposal.edgesToAdd[j.interior_source and 3 or #proposal.streetProposal.edgesToAdd]
+  local nodes={};for _,node in ipairs(proposal.streetProposal.nodesToAdd) do
+   if node.entity==branch.comp.node0 or node.entity==branch.comp.node1 then nodes[#nodes+1]=node end
+  end
+  q.streetProposal.nodesToAdd=nodes
+  q.streetProposal.edgesToAdd={proposal.streetProposal.edgesToAdd[1],proposal.streetProposal.edgesToAdd[2],branch}
+  junction_approach_evaluations={{original_edge=j.interior.id,evaluation=structure_evaluation(api.engine.util.proposal.makeProposalData(q,nil))}}
+ end
  if record.junctions and (evaluation.critical or evaluation.message_count>0) then
   -- Isolate the two named through-track splits after a concrete full-proposal
   -- rejection. This is bounded read-only evidence, never an accepted build.
@@ -2611,6 +2788,35 @@ function M.structured_chain(p,s,state,request_id,respond)
   for _,row in ipairs(receipt.addedSegments) do local e=api.engine.getComponent(row.entity,api.type.ComponentType.BASE_EDGE);if e and e.roadType==E.RoadType.TRACK then ids[#ids+1]=row.entity end end
   local ok,value=pcall(function()
    if record.new_alignment then
+    if record.mixed then
+     local j=record.mixed;assert(#ids==#record.fitted.controls+2,"mixed_structure_receipt_incomplete")
+     local placement=reacquire_split(j.interior,j.location,j.splits,ids);local f=record.fitted
+     f.ids={};for _,id in ipairs(ids) do if id~=placement.replacement_edges[1] and id~=placement.replacement_edges[2] then f.ids[#f.ids+1]=id end end
+     f.junction_node=placement.junction_node
+     if j.interior_source then f.node=placement.junction_node;f.anchor=placement.incoming
+     else f.target.node=placement.junction_node;f.target.edge=placement.through end
+     local rb=M.readback(f);local branch=j.interior_source and rb.ordered_edges[1] or rb.ordered_edges[#rb.ordered_edges]
+     local all=incidence(placement.junction_node);local expected={[placement.incoming.id]=true,[placement.through.id]=true,[branch]=true}
+     assert(#all==3,"mixed_structure_junction_incidence");for _,id in ipairs(all) do assert(expected[id],"mixed_structure_junction_incidence") end
+     local freeall=incidence(j.free.node_id);local freebranch=j.interior_source and rb.ordered_edges[#rb.ordered_edges] or rb.ordered_edges[1]
+     assert(#freeall==2 and ((freeall[1]==j.free.edge_id and freeall[2]==freebranch) or (freeall[2]==j.free.edge_id and freeall[1]==freebranch)),"mixed_free_port_attachment_incidence")
+     local function other(e,n) return e.node0==n and e.node1 or e.node0 end
+     local junctions={placement.junction_node};local through=M.route({source_edge=placement.incoming.id,source_node=other(placement.incoming,placement.junction_node),
+      target_edge=placement.through.id,target_node=other(placement.through,placement.junction_node),required_edges=placement.replacement_edges,
+      junction_nodes=junctions,mode="TRAIN",max_length=j.params.max_route_length})
+     local start=j.interior_source and placement.incoming or edge(j.free.edge_id);local finish=j.interior_source and edge(j.free.edge_id) or placement.through
+     local required={start.id,finish.id};for _,id in ipairs(rb.ordered_edges) do required[#required+1]=id end
+     local crossing=M.route({source_edge=start.id,source_node=other(start,j.interior_source and placement.junction_node or j.free.node_id),
+      target_edge=finish.id,target_node=other(finish,j.interior_source and j.free.node_id or placement.junction_node),required_edges=required,
+      junction_nodes=junctions,mode="TRAIN",max_length=j.params.max_route_length})
+     assert(through.requested_route_verified and crossing.requested_route_verified,"mixed_structure_movements_unverified")
+     local observed=M.inspect({edge_ids=rb.ordered_edges,structures=true,geometry=true});s.mutationPending=nil
+     return {game_constructed=true,new_alignment=true,attachment_kinds={source=j.interior_source and "interior" or "free",target=j.interior_source and "free" or "interior"},
+      attachment_nodes={rb.ordered_nodes[1],rb.ordered_nodes[#rb.ordered_nodes]},placements={placement},junction_nodes=junctions,readback=rb,
+      through_after={through},crossover_after=crossing,structure_readback=observed,native_command_success=true,prepared_request=p.prepared_request,
+      prepared_geometry_reused=true,geometry_refitted=false,native_effect_history_complete=false,
+      effects={added_segments=#receipt.addedSegments,removed_segments=#receipt.removedSegments,added_nodes=#receipt.addedNodes,removed_nodes=#receipt.removedNodes}}
+    end
     if record.junctions then
      local j=record.junctions;local result=crossover_readback(j.a,j.b,j.c,j.d,j.splits,record.fitted,ids,j.params,{})
      local observed=M.inspect({edge_ids=result.readback.ordered_edges,structures=true,geometry=true})
@@ -2633,6 +2839,17 @@ function M.structured_chain(p,s,state,request_id,respond)
     end
     assert(current==record.target.node_id,"new_structure_target_attachment_missing")
     assert_fresh(record.source.edge_snapshot);assert_fresh(record.target.edge_snapshot)
+    if record.replacement then
+     for _,e in ipairs(record.replacement.originals) do assert(not api.engine.entityExists(e.id) or api.engine.getComponent(e.id,api.type.ComponentType.BASE_EDGE)==nil,"replacement_original_edge_retained") end
+     record.fitted.ids=ordered;result.readback=M.readback(record.fitted)
+     local first,last=record.fitted.anchor,record.fitted.target.edge
+     local required={first.id,last.id};for _,id in ipairs(ordered) do required[#required+1]=id end
+     result.through_after=M.route({source_edge=first.id,source_node=first.node0==record.source.node_id and first.node1 or first.node0,
+      target_edge=last.id,target_node=last.node0==record.target.node_id and last.node1 or last.node0,
+      mode="TRAIN",required_edges=required,max_length=record.replacement.params.max_route_length})
+     assert(result.through_after.requested_route_verified,"replacement_through_route_unverified")
+     result.replaced_edges={};for _,e in ipairs(record.replacement.originals) do result.replaced_edges[#result.replaced_edges+1]=e.id end
+    end
     result.ordered_edges=ordered;result.ordered_nodes=nodes;result.exact_boundary_attachments=true
     result.game_constructed=true;result.new_alignment=true;result.native_command_success=true;result.prepared_request=p.prepared_request;result.prepared_geometry_reused=true;result.geometry_refitted=false
     result.effects={added_segments=#receipt.addedSegments,removed_segments=#receipt.removedSegments,added_nodes=#receipt.addedNodes,removed_nodes=#receipt.removedNodes};s.mutationPending=nil

@@ -121,3 +121,42 @@ reservation/capacity or continuous clearance. Evidence:
 `.local_runs/live_python_interface/p64/{final_routes,fresh_acceptance}`.
 Check each saved preparation/build with
 `python tests/native/check_structured_junction.py --prepared <record> --built <record>`.
+
+
+## Mixed attachments and local through-track replacement
+
+P65 extends `new_alignment:true, junctions:true` to one exact interior attachment
+and one exact free port, in either travel direction. The interior endpoint uses
+its fresh snapshot and `location`; the free endpoint uses its fresh snapshot,
+`edge_id` and `node_id`. The complete native proposal includes the through split.
+The receipt reports `attachment_nodes`, attachment kinds, exact split replacements,
+through and branch TRAIN checks. Build the returned handle once without refitting.
+
+Optional `leg_representations` selects `endpoint_cubic` or `native_parts` per leg.
+Portal `spans` apply only to single-cubic legs. Optional `replace_chain` supplies
+1–16 fresh named simple-chain edges between two exact external attachment nodes.
+Internal nodes must have degree two, no external attachments or construction ownership;
+edges with objects are unsupported. The proposal removes the named chain and builds
+the accepted replacement; fresh native through-route checks follow execution.
+
+`normal_offset_from:{prepared_request,spacing,reverse}` is a bounded diagnostic/
+fallback using genuine native horizontal normal offsets and shared-parameter height,
+not a map-axis shift. It requires compatible exact position/direction/grade boundaries
+and native track spacing. Conversion is sampled and limited to sixteen segments.
+P65 demonstrated boundary refinement but the complete paired-ramp proposal was
+rejected for native incline/collision. No successful paired offset build is claimed.
+The accepted fast returns use separate native-valid curves; constant spacing along
+the complete pair is not asserted.
+
+Build40408 demonstrated four C connections, local US/UF/DF spreading, fast bridges,
+a slow underpass and a NORMAL slow approach. All eighteen required directed movements
+and sixteen retained-route regressions passed in the resulting world. Fresh geometry,
+resource and attachment checks passed. A level turnout run-in and earlier slow descent
+resolved actual native proposal failures; no engineering tolerance was relaxed.
+Native collision acceptance remains distinct from sampled crossing diagnostics,
+physical train traversal, signalling/reservation capacity and continuous clearance.
+
+Evidence: `.local_runs/live_python_interface/p65/{full18_02,P64_regression_routes_03,
+fresh_final,independent_checks.json,final_crossings.json}`. Saved receipt checks:
+`python tests/native/check_structured_junction.py --prepared <record> --built <record>`.
+Affected local checks: `python tools/quiet_checks.py --suite live_client --label pif-p65-refined-boundaries`.

@@ -19,7 +19,8 @@ for i,(eid,seg) in enumerate(zip(order,pv['segments'])):
  interval=seg.get('parameter_interval',[0,1]);original=pv['fit_legs'][seg['leg']-1]['controls'][0]
  if 'parameter_interval' in seg:
   for u in [.1,.35,.65,.9]:assert norm([x-y for x,y in zip(value(seg['controls'],u),value(original,interval[0]+u*(interval[1]-interval[0])))])<.002
-assert nodes[0]==bv['junction_nodes'][0] and nodes[-1]==bv['junction_nodes'][1]
+attachments=bv.get('attachment_nodes',bv['junction_nodes'])
+assert nodes[0]==attachments[0] and nodes[-1]==attachments[1]
 for route in bv['through_after']+[bv['crossover_after']]:
  assert route['requested_route_verified'] and route['transport_continuous'] and not route['truncated']
  for previous,current in zip(route['path'],route['path'][1:]):assert previous['to']==current['from']
