@@ -11,6 +11,34 @@ local function distance(a,b) return math.sqrt((a[1]-b[1])^2+(a[2]-b[2])^2) end
 local function near(a,b,tol) return math.abs(a[1]-b[1])<=tol and math.abs(a[2]-b[2])<=tol and math.abs(a[3]-b[3])<=tol end
 local function angle(a,b) a=norm(a);b=norm(b);return math.acos(math.max(-1,math.min(1,a[1]*b[1]+a[2]*b[2])))*180/math.pi end
 local function vector(a) assert(type(a)=="table" and #a>=2 and #a<=3,"invalid_vector");for _,x in ipairs(a) do assert(finite(x),"nonfinite_vector") end end
+-- Opt-in semantic structure readback. Repository handles are session-local;
+-- resource names establish the selected asset, not geometric resemblance.
+local function structure(base)
+ local kind=base.type==E.BaseEdgeType.NORMAL and "NORMAL" or base.type==E.BaseEdgeType.BRIDGE and "BRIDGE" or base.type==E.BaseEdgeType.TUNNEL and "TUNNEL" or "UNKNOWN"
+ local row={classification=kind,type_value=tostring(base.type),type_index=base.typeIndex,
+  instance_parameters="not_exposed_by_BaseEdge",resource_state="not_applicable"}
+ local repository=kind=="BRIDGE" and api.res.bridgeTypeRep or kind=="TUNNEL" and api.res.tunnelTypeRep or nil
+ if kind=="UNKNOWN" then row.resource_state="unknown_edge_type" end
+ if repository then
+  row.repository=kind=="BRIDGE" and "bridgeTypeRep" or "tunnelTypeRep"
+  local ok,name,parameters=pcall(function()
+   local name=repository.getName(base.typeIndex)
+   assert(type(name)=="string" and #name>0,"structure_resource_name_unavailable")
+   local res=repository.get(base.typeIndex);assert(res,"structure_resource_unavailable")
+   local params={}
+   for _,key in ipairs({"cost","speedLimit","maintenanceCost","padding","height","sidewalkHeight","pillarWidth","pillarLen","pillarMinDist","pillarMaxDist","pillarTargetDist","abutmentLen","abutmentWidth","pillarGroundTextureOffset"}) do
+    local value=res[key];if finite(value) then params[key]=value end
+   end
+   if type(res.isAutoSelectable)=="boolean" then params.isAutoSelectable=res.isAutoSelectable end
+   local carriers={};for i,value in ipairs(res.carriers or {}) do if i>8 then break end;carriers[#carriers+1]=tostring(value) end
+   params.carriers=carriers;params.carriers_truncated=#(res.carriers or {})>8
+   return name,params
+  end)
+  if ok then row.resource_name=name;row.resource_parameters=parameters;row.resource_state="resolved"
+  else row.resource_state="unavailable";row.resource_error=tostring(name):sub(1,256) end
+ end
+ return row
+end
 local function edge(id)
  assert(type(id)=="number" and id>0 and id%1==0,"invalid_edge_id")
  local e=api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)
@@ -97,8 +125,10 @@ local function geometry_bounds(g,region,minradius,maxgrade,divisions)
 end
 function M.inspect(p)
  assert(type(p.edge_ids)=="table" and #p.edge_ids>=1 and #p.edge_ids<=16,"edge_read_bound")
+ assert(p.structures==nil or type(p.structures)=="boolean","structures_flag_boolean_required")
  local out={};for _,id in ipairs(p.edge_ids) do
   local e=edge(id)
+  if p.structures==true then e.structure=structure(api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)) end
   if p.geometry==true then
    local g=native_geometry(id);local samples={}
    for _,u in ipairs({0,.25,.5,.75,1}) do local pos,dir=sample(g,u);samples[#samples+1]={u=u,pos=pos,direction=dir} end
@@ -137,7 +167,7 @@ function M.inspect(p)
    if base or building or construction then
     if #observed>=32 then truncated=true;return end
     local row={entity=id,base_edge=base~=nil,town_building=building~=nil,construction=construction~=nil}
-    if base then row.road_type=tostring(base.roadType);row.TRACK=base.roadType==E.RoadType.TRACK;row.node0=base.node0;row.node1=base.node1;row.p0=arr(base.position0);row.p1=arr(base.position1);row.t0=arr(base.tangent0);row.t1=arr(base.tangent1) end
+    if base then row.road_type=tostring(base.roadType);row.TRACK=base.roadType==E.RoadType.TRACK;row.node0=base.node0;row.node1=base.node1;row.p0=arr(base.position0);row.p1=arr(base.position1);row.t0=arr(base.tangent0);row.t1=arr(base.tangent1);if p.structures==true then row.structure=structure(base) end end
     observed[#observed+1]=row
    end
   end)

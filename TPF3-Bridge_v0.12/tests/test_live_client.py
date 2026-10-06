@@ -5103,5 +5103,45 @@ class CrossoverAcceptanceRevisionTests(unittest.TestCase):
             with self.assertRaises(LiveError):reconcile_constructed_crossover(self.client,acceptance_revision=self.revision)
             self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
 
+class NativeStructureEvidenceTests(unittest.TestCase):
+    """Acceptance of observed semantic records, not emulation of native Lua."""
+    @classmethod
+    def setUpClass(cls):
+        import importlib.util
+        path=Path(__file__).parent/'native/check_structure_readback.py'
+        spec=importlib.util.spec_from_file_location('structure_acceptance',path)
+        cls.checker=importlib.util.module_from_spec(spec);spec.loader.exec_module(cls.checker)
+
+    def record(self,kind='BRIDGE'):
+        return {'classification':kind,'type_index':4,'instance_parameters':'not_exposed_by_BaseEdge',
+                'repository':'bridgeTypeRep' if kind=='BRIDGE' else 'tunnelTypeRep',
+                'resource_state':'resolved','resource_name':'test_asset',
+                'resource_parameters':{'carriers':['1'],'carriers_truncated':False,'pillarMaxDist':48}}
+
+    def test_resolved_bridge_and_tunnel_records(self):
+        for kind in ('BRIDGE','TUNNEL'):
+            self.checker.check_structure(self.record(kind),kind,'test_asset')
+        self.checker.check_structure({'classification':'NORMAL','type_index':-1,
+                                     'instance_parameters':'not_exposed_by_BaseEdge',
+                                     'resource_state':'not_applicable'},'NORMAL')
+
+    def test_unknown_or_wrong_resource_cannot_establish_selected_structure(self):
+        for changed in ({'resource_state':'unavailable'},{'classification':'UNKNOWN'},
+                        {'repository':'tunnelTypeRep'},{'resource_name':'other'},
+                        {'instance_parameters':{}},{'type_index':True}):
+            with self.subTest(changed=changed),self.assertRaises(ValueError):
+                self.checker.check_structure(self.record()|changed,'BRIDGE','test_asset')
+
+    def test_nonfinite_and_unbounded_configuration_rejected(self):
+        for parameters in ({'carriers':['1']*9,'carriers_truncated':True},
+                           {'carriers':['1'],'carriers_truncated':False,'height':float('nan')}):
+            with self.assertRaises(ValueError):
+                self.checker.check_structure(self.record()|{'resource_parameters':parameters},'BRIDGE','test_asset')
+
+    def test_ordinary_edge_does_not_imply_selected_bridge_asset(self):
+        record={'classification':'NORMAL','type_index':-1,'instance_parameters':'not_exposed_by_BaseEdge',
+                'resource_state':'not_applicable','resource_name':'test_asset'}
+        with self.assertRaises(ValueError):self.checker.check_structure(record,'NORMAL')
+
 if __name__ == '__main__':
     unittest.main()

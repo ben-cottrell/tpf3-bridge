@@ -1,3 +1,43 @@
+## P61 complete — native structure readback (6 October 2026)
+
+Opt-in inspect structures:true exports BaseEdge classification/typeIndex, selected
+bridge/tunnel repository/name and bounded resource parameters, including site roads.
+Default ordinary-track output unchanged; instance parameters explicitly unexposed.
+Build40408 fresh session pif_1791273070_6764436: flyover67251/67265 and road64072
+resolve stone.bridge,index4; tunnel63362/63150 tunnel_b.tunnel,index3. Sloping flyover
+approaches NORMAL. Actual current P61 save loaded normally; no railway construction.
+Installed declarations establish getStrips(edge) and createBridgeOrTunnelProposal
+(strip,newTypeIndex), plus new BaseEdge proposal fields; neither proposal path tested.
+376 affected quiet tests pass; .local_checks/pif-p61-structure-final_stpotpvw/report.json.
+Native compatibility/malformed-flag/resource checks and saved evidence checker pass.
+Evidence .local_runs/live_python_interface/p61/{HANDOFF.md,native_checks.json,
+checks.json,source_evidence.json,staging.json,world_checkpoint.json}. Unpublished
+read reconciled with existing exact-read mechanism; failed evidence preserved, no
+journal reset. No restart/host repair/minimum-clearance search/topology choice/push.
+Game paused/non-maximised; next integrated layout/capability decision belongs to Astra.
+Scoped local milestone: .local_runs/live_python_interface/p61/checkpoint.json;
+pre-existing coordinator policy/history edits remain separate.
+
+## P60 complete — Complex Junction reference survey (6 October 2026)
+
+Normal authorised activation resolved initial missing handshake: current world saved
+TPF3_Complex_Junction_P60_Reference_20261006.sav, existing adapter enabled, normal
+load/Start Game; fresh build40408 session pif_1791271700_5394469. No process restart.
+Six exact station bindings; A/B four boundary interfaces, C four leads (two station
+slow/two fast bypass), D/E two free leads each, F reference. Both flyover chains
+trace exact nodes;154 TRACK geometry records. Sampled flyover absolute grade up to
+8.196percent; crossing height offsets flyover15.029–15.070,tunnel15.02498,road
+12.035–12.057 native units. Not clearance/continuous extrema/UI-unit proof or limits.
+A/B/F traversal bounded/incomplete; travel-role viewpoint and native structure
+asset/type/parameters remain unresolved. No topology selection/new construction.
+Evidence .local_runs/live_python_interface/p60/{HANDOFF.md,reference_bindings.json,
+reference_survey.svg,derived_crossings.json,checks.json,activation.json,
+fresh_handshake.json,final_reference_overview.png}; initial blocker retained.
+Local derived/JSON/SVG/session/pending/diff checks; unchanged engineering evidence
+reused, no production source change or broad rerun. Save hash in activation.json
+precedes enabled-mod load. Game paused/non-maximised; no restart/host repair/push.
+Survey acceptance reached; coordinator decides integrated design and necessary gaps.
+
 ## P59 complete — compact parallel packing and rejection repair (5 October 2026)
 
 Ten existing crossover functions and six continuous approaches now end550 instead
