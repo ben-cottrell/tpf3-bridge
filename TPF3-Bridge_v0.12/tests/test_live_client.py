@@ -548,6 +548,25 @@ class LiveClientTests(unittest.TestCase):
                 self.assertEqual(request.call_args.args,('structured_chain',payload))
                 self.assertFalse(is_mutation(*request.call_args.args))
 
+    def test_operating_command_uncertainty_blocks_replay_but_allows_observation(self):
+        self.client.timeout = .02
+        with self.assertRaises(LiveError) as ctx:
+            self.client.request('operating_control', {'execute': True, 'action': 'line_create'}, request_id='operate1')
+        self.assertEqual(ctx.exception.status, 'mutation_outcome_unknown')
+        restarted = LiveClient(self.client.mod, self.log, self.client.evidence, 'test_session', .02)
+        with self.assertRaises(LiveError) as ctx:
+            restarted.request('operating_control', {'execute': True, 'action': 'line_create'}, request_id='operate2')
+        self.assertEqual(ctx.exception.status, 'reconciliation_required')
+        with self.assertRaises(LiveError) as ctx:
+            restarted.request('operating_inspect', {'limit': 4}, request_id='observe_operating')
+        self.assertEqual(ctx.exception.status, 'request_timeout')
+        self.assertEqual(len(list(self.client.mod.rglob('*.lua'))), 2)
+        pending = json.loads(restarted.journal.read_text())['pending']
+        self.assertEqual(pending['unresolved_mutation']['request_id'], 'operate1')
+        with self.assertRaises(LiveError) as ctx:
+            restarted.request('operating_control', {'execute': True, 'action': 'line_create'}, request_id='operate3')
+        self.assertEqual(ctx.exception.status, 'reconciliation_required')
+
     def test_uncertain_compound_extension_cannot_replay_after_restart(self):
         self.client.timeout = .02
         with self.assertRaises(LiveError) as ctx:
@@ -1011,6 +1030,18 @@ class LiveClientTests(unittest.TestCase):
             bad=json.loads(json.dumps(v));bad['result'][key]=replacement
             with self.assertRaises(LiveError):parse_response(MARKER+json.dumps(bad),'rejected','test_session','crossover')
 
+    def test_prepared_crossover_noncritical_native_error_prevents_build(self):
+        from bridge_live import build_prepared_crossover
+        p=self.response('prepare','crossover',result={'prepared_request':'prepare','native_proposal_evaluated':True,'native_proposal_critical':False,
+            'candidate_rejections':[{'status':'accepted','evaluation':{'critical':False,'messages':['Too Much Curvature']}}]})
+        with patch.object(self.client,'request') as request,self.assertRaises(ValueError):
+            build_prepared_crossover(self.client,p)
+        request.assert_not_called()
+        p['result']['candidate_rejections'][0]['evaluation']={'critical':False,'messages':[],'warnings':['diagnostic warning']}
+        with patch.object(self.client,'request') as request:
+            build_prepared_crossover(self.client,p)
+        request.assert_called_once()
+
     def test_prepared_interior_keeps_explicit_hard_radius_and_guides(self):
         from bridge_live import prepare_interior_junction
         params=self.interior_preparation_parameters()|{'radius':150,'guides':[{'pos':[10,0,0],'direction':[1,0]}]}
@@ -1018,6 +1049,20 @@ class LiveClientTests(unittest.TestCase):
         with patch.object(self.client,'request') as call:prepare_interior_junction(self.client,params,candidates)
         self.assertEqual(call.call_args.args[1]['radius'],150)
         self.assertEqual(call.call_args.args[1]['guides'],params['guides'])
+
+    def test_prepared_interior_graded_candidate_is_explicit_and_keeps_bounds(self):
+        from bridge_live import prepare_interior_junction
+        params=self.interior_preparation_parameters()
+        params['vertical']={'max_grade':.03}
+        candidates=[{'branch':'endpoint_cubic_graded','through':'subdivide_fresh','handle_scale':.8}]
+        with patch.object(self.client,'request') as call:
+            prepare_interior_junction(self.client,params,candidates)
+        sent=call.call_args.args[1]
+        self.assertEqual(sent['vertical'],{'max_grade':.03})
+        self.assertEqual(sent['source'],params['source'])
+        self.assertEqual(sent['target'],params['target'])
+        self.assertEqual(sent['fit_candidates'],candidates)
+        self.assertFalse(sent['execute'])
 
     def test_prepared_interior_rejects_unbounded_candidate_inputs_before_native_call(self):
         from bridge_live import prepare_interior_junction

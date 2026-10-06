@@ -1,4 +1,124 @@
-# P65 complete — four C connections and18-movement challenge (6 October 2026)
+# P66 active â€” native D/E access and service configuration (6 October 2026)
+
+P66 operating demonstration accepted boundary: build40408, bridge purchase67414,
+assignment and physical E/D travel; D native alternative selection demonstrated.
+Manual-departure hold kept67414 stationary at Dprimary0. Existing reference67394
+ran depot→E→D, chose configured Dalternative1 and arrived/stopped alongside it.
+Exact simultaneous readback: both speed0/state2/stop_index0, terminal0 versus1;
+positions [1286.0725,-2799.3403,16.78] / [1280.1942,-2801.8572,16.78].
+Both holds released with verified native controls; no new purchase/infrastructure.
+Final save TPF3_Complex_Junction_P66_AlternativePlatform_20261006, paused/non-maximised,
+not reloaded. Evidence p66/alternative/{result.json,simultaneous_arrival.json,
+released_final.json,world_checkpoint.json}; bounded raw observations preserved.
+390 affected checks reused unchanged; .local_checks/pif-p66-path-read-bounded_7kjzcttt/report.json.
+Signal creation/depot placement remain bridge gaps; Ealternative/all8 physical routes,
+capacity/reservation not claimed. Return next scope/layout decision to coordinator.
+
+D and E two-crossover pairs built. Exact attachment, crossover TRAIN paths and
+retained-through checks pass. Dâ€“E line67419 created/updated: Dprimary0/alternate1,
+Eprimary1/alternate0; exact config readback and save/load pass. All8 terminal-pair
+TRAIN routes pass; bounded primary-service motion and D alternative choice now observed.
+Checkpoint TPF3_Complex_Junction_P66_ServiceConfig_20261006, paused/non-maximised.
+Evidence .local_runs/live_python_interface/p66/service_configuration/{checkpoint.json,
+checks.json,terminal_routes_summary.json,reload_operating_baseline.json}; E_pair_preview/built_summary.json.
+D inbound UI signal67428/edge67429 read back and persisted; bridge signal creation
+unresolved. Misplaced outbound UI reference removed by normal checkpoint reload;
+failure retained. Proposal-event observer emitted no marker; no blind repeated placements.
+Depot asset-local getConstructionResult succeeds: main model35.36Ã—130.76;100models,
+32exported with explicit truncation. World preview not demonstrated by bridge; UI fixture/readback now demonstrated.
+makeProposalData requires Proposal, not SimpleProposal; earlier preview exceptions
+are bridge type-contract failures, not native ineligibility. Depot placement packet
+p66/depot_placement_packet_01.json reviewed; approved outside-DUS transform.
+Documented depot command constructor raises Unknown exception before submission;
+depot_build_result_01.json failed before send; its immediate readback confirmed0depots.
+Coordinator-approved depot fixture moved farther stationward after UI spur rejection.
+Current session pif_1791310560_15981470: depot67522/con67418, exterior67524 at
+[1240.113892,-2829.242432,16.197815], exit[-.7660445,.6427875]. All6 exact owners
+verified. Actual forward run158.803/inward43.099 to original DUSs90, materially
+longer; no pixel-to-world inference. Current fixture saved with its extension (see checkpoint below). Earlier fixture
+checkpoint/evidence preserved; removed from current world through normal reload.
+Three graded bridge proposals rejected Construction Not Possible at the new site;
+through proposals valid, no spur build submitted. Cause unknown; actual terminal
+and through context sent to coordinator before any further relocation.
+Evidence p66/depot_reposition_03_{construction,ownership,port_packet}.json and
+p66/depot_spur_{parameters,prepare}_03.json. Computer Use recovered; paused/nonmaximised.
+Coordinator isolation step: bridge30-unit straight depot extension BUILT and exact
+readback passed: edge67547, depot67524 to new free44416 at
+[1217.132568,-2809.958740,16.197815], matching standard_catenary/standard. Depot
+edge retained exact owner; new endpoint eligible. Remaining DUSs90 merge still
+rejects all3 full native proposals; through valid. No blind sweep or fourthmove.
+Evidence p66/depot_short_extension_{build,readback}.json, depot_spur_prepare_04.json.
+Current fixture+extension saved separately: TPF3_Complex_Junction_P66_DepotLeg_20261006;
+p66/depot_leg_checkpoint.json records hash/bytes; reload verified in session pif_1791311545_16966097.
+Native UI reference built edges67551/67552 but snapped to adjacent free67550,
+not DUS: exactdegree1,5units besidefork62365; DUS through unchanged. Not a turnout
+or bridge-fit success. Evidence p66/depot_ui_spur_reference_result.json.
+Unconnected UI reference removed by normal DepotLeg reload; evidence retained.
+Direct D-E route67344 midpoint[1063.778503,-2685.517212,16.25] selected beyondfork.
+Existing exactjunction_nodes[62365] required for trimmed native transport. One
+fullproposal still rejects Construction Not Possible; through passes. No build.
+Evidence p66/depot_clear_merge_prepare_with_fork.json; coordinator informed.
+Whole disposable depot+leg UI resource upgrade retained per coordinator: owned
+edges67555..67560 and ordinary67561 now simple_catenary/simple; exact positions,
+controls and depot owner reacquired. Not an isolated external-leg diagnostic.
+Same clear67344 parameter.5078125 merge, graded handle1/fresh through, still rejects
+Construction Not Possible; through valid. No build/sweep/extra upgrade. Current
+upgraded fixture retained in ManualDepotConnection checkpoint; DepotLeg remains prior standard-resource state.
+Evidence p66/depot_matched_{fixture_readback,merge_parameters,merge_prepare,merge_packet}.json.
+Computer Use recovered after human mouse interference; awaiting coordinator diagnosis.
+Coordinator two-stage attempt: level interior-to-free turnout to provisional
+[1110.2454,-2724.1205,16.25], native fit_radius50/hard minimum0,3 native-fit pieces,
+max_grade0. Exact full native diagnostic rejects Construction Not Possible with
+0 collision entities; through-only passes, first-lead/prefixes reject. No build.
+Existing diagnostics also evaluated reversed/subdivided first cubic, both rejected.
+Evidence p66/depot_level_lead_{parameters,diagnostics,result}.json. Decomposition
+stopped as instructed; no graded connector, relocation or further sweep attempted.
+Focused resource diagnosis: actual simple_catenary minCurveRadiusBuild55 read
+natively. Earlier level-fit50 violated that input; not a valid height isolation.
+Only parameter corrected to55: native proposal still rejects, through-only passes.
+Converted sampled minimum54.1585 remains below55; not established causal. Prior
+long endpoint cubic and successful crossover/straight exit compared in compact
+p66/depot_turnout_diagnosis_packet.json; exact native transport and resource reads
+in depot_turnout_resource_diagnosis.json. No game changes or further sweeps.
+Focused resource diagnosis: actual simple_catenary minCurveRadiusBuild55 read
+natively. Earlier level-fit50 violated that input; not a valid height isolation.
+Only parameter corrected to55: native proposal still rejects, through-only passes.
+Converted sampled minimum54.1585 remains below55; not established causal. Prior
+long endpoint cubic sampled minimum278.219 exceeds55; that simple limit cannot
+explain its failure. Successful crossover/straight exit compared in compact
+p66/depot_turnout_diagnosis_packet.json; exact native transport/resource evidence
+in depot_turnout_resource_diagnosis.json. No game changes or further sweeps.
+Human manual depot connection inspected read-only, preserved without reload.
+Manual junction67546 at[1109.403931,-2710.044189,16.25] splits earlier DUS67326
+into67540/67541; branches67549→67539 through67548 attach exact44416/depotleg67561.
+Later67344 unchanged. Junction13.63units from prior s90,52.60 from later intended
+midpoint; nearfork62365 (1.019units). Native depot↔E-facing67344 TRAIN routes
+pass285.102units; queried depot↔D-facing67515 routes no path. Not train traversal
+or global route impossibility. Manual example saved separately; exact reload readback passes.
+Evidence p66/depot_manual_reference_{discovery,exact,packet}.json and
+p66/depot_manual_route_{to_E,from_E,to_D,from_D}.json. Coordinator informed.
+ManualDepotConnection checkpoint hash/bytes and reload evidence:
+p66/depot_manual_checkpoint.json, depot_manual_reload_exact_03.json. Both saved
+manual branches and through split reacquired; no fitter-replication claim.
+Native UI reference67394 established selected Class246+BiLevel config0/cargo-1/
+autoLoad=true, including the legitimate zero-capacity locomotive compartment.
+Shared read-only preflight passed; one corrected bridge purchase created67414.
+One assignment to line67419 took effect; callback read failed on native path-pair
+userdata. No assignment replay. Independent post-reload read confirms exact line/
+vehicle; module18 reports the unavailable current-edge field honestly.
+Build40408/session pif_1791316477_1848605: train67414 physically moved toward E,
+slowed near E, then reversed direction with stop_index0 toward D. Primary Eterminal1
+and Dterminal0 observed; D alternative demonstrated above, all8 physical routes unproven.
+Healthy game paused/non-maximised. BridgeTrain checkpoint reload verified; subsequent
+movement is unsaved. Existing manual spur, old fatal/pending journals preserved.
+Evidence p66/vehicle_native_milestone.json and referenced purchase/assignment/motion
+records; vehicle_bridge_checkpoint.json records exact save hash/reload evidence.
+python tools/quiet_checks.py --suite live_client --label pif-p66-path-read-bounded:
+390 passed,0fail/0errors; .local_checks/pif-p66-path-read-bounded_7kjzcttt/report.json.
+Bridge signal creation/depot placement remain gaps; no capacity/loading proof.
+Computer Use recovered after human mouse release; no restart, assignment replay or push.
+
+# P65 complete â€” four C connections and18-movement challenge (6 October 2026)
 
 Native build40408: C.UF/C.DF bridges, C.US NORMAL approach and C.DS underpass built;
 US/UF/DF through corridors spread locally. All eighteen required native TRAIN paths
@@ -38,13 +158,13 @@ host repair; pending none. No final-save reload, physical train/capacity/reserva
 continuous-clearance or future C Y/all18-route proof. Scoped local milestone;
 coordinator edits preserved, no push. Acceptance reached; next topology belongs to Astra.
 
-## P63 complete — new direct D/E paired flyover (6 October 2026)
+## P63 complete â€” new direct D/E paired flyover (6 October 2026)
 
 structured_chain now prepares new internal nodes/alignment between exact free ports,
 with <=4 guides, <=16 native-fitted segments and explicit structure resources.
 Stored accepted controls build without refit; replacement API remains compatible.
-Native build40408 session pif_1791276643_10337462 built D.US67203→E.DS63080 and
-E.US67231→D.DS63456, nine new edges/eight nodes each, seven stone bridge edges each.
+Native build40408 session pif_1791276643_10337462 built D.US67203â†’E.DS63080 and
+E.US67231â†’D.DS63456, nine new edges/eight nodes each, seven stone bridge edges each.
 125-unit level reserves; deck movementZ31.880, offset15.1 above sampled trunk;
 observed max sampled grades .06150/.06143. Separate exact chains, no trunk attachment.
 Both links/four trunk routes pass both directions (12 native TRAIN checks); deck/
@@ -59,13 +179,13 @@ gate and native container structure writeback; no blind mutation replay. Origina
 role bindings govern over opposite helper sorting. Scoped local checkpoint.json;
 coordinator edits preserved, no push. Next topology decision remains Astra's.
 
-## P62 complete — prepared native bridge/tunnel chain replacement (6 October 2026)
+## P62 complete â€” prepared native bridge/tunnel chain replacement (6 October 2026)
 
 structured_chain prepares bounded NORMAL/BRIDGE/TUNNEL chain replacement with explicit
 current resource names, fixed exact node attachments, stored controls, native proposal
 evaluation and consumed session-local handle. Native build40408 session
-pif_1791274544_8238475 replaced ten flyover edges N63410→67232 and seven tunnel edges
-N67223→63254 with new entities. Accepted controls/type/resources match fresh readback.
+pif_1791274544_8238475 replaced ten flyover edges N63410â†’67232 and seven tunnel edges
+N67223â†’63254 with new entities. Accepted controls/type/resources match fresh readback.
 Both directions through each pass native TRAIN paths; tunnel external approaches and
 companion/four trunk functions pass (14 final checks). Rendered deck/portals observed.
 379 affected quiet tests pass; .local_checks/pif-p62-structured-chain_g3k0sht2/report.json;
@@ -80,7 +200,7 @@ preservation or UK numeric gates. No build repair/replay/restart/push; game paus
 Scoped milestone in checkpoint.json; unrelated coordinator edits preserved. Next
 integrated topology/elevation decision remains Astra's responsibility.
 
-## P61 complete — native structure readback (6 October 2026)
+## P61 complete â€” native structure readback (6 October 2026)
 
 Opt-in inspect structures:true exports BaseEdge classification/typeIndex, selected
 bridge/tunnel repository/name and bounded resource parameters, including site roads.
@@ -100,7 +220,7 @@ Game paused/non-maximised; next integrated layout/capability decision belongs to
 Scoped local milestone: .local_runs/live_python_interface/p61/checkpoint.json;
 pre-existing coordinator policy/history edits remain separate.
 
-## P60 complete — Complex Junction reference survey (6 October 2026)
+## P60 complete â€” Complex Junction reference survey (6 October 2026)
 
 Normal authorised activation resolved initial missing handshake: current world saved
 TPF3_Complex_Junction_P60_Reference_20261006.sav, existing adapter enabled, normal
@@ -108,8 +228,8 @@ load/Start Game; fresh build40408 session pif_1791271700_5394469. No process res
 Six exact station bindings; A/B four boundary interfaces, C four leads (two station
 slow/two fast bypass), D/E two free leads each, F reference. Both flyover chains
 trace exact nodes;154 TRACK geometry records. Sampled flyover absolute grade up to
-8.196percent; crossing height offsets flyover15.029–15.070,tunnel15.02498,road
-12.035–12.057 native units. Not clearance/continuous extrema/UI-unit proof or limits.
+8.196percent; crossing height offsets flyover15.029â€“15.070,tunnel15.02498,road
+12.035â€“12.057 native units. Not clearance/continuous extrema/UI-unit proof or limits.
 A/B/F traversal bounded/incomplete; travel-role viewpoint and native structure
 asset/type/parameters remain unresolved. No topology selection/new construction.
 Evidence .local_runs/live_python_interface/p60/{HANDOFF.md,reference_bindings.json,
@@ -120,13 +240,22 @@ reused, no production source change or broad rerun. Save hash in activation.json
 precedes enabled-mod load. Game paused/non-maximised; no restart/host repair/push.
 Survey acceptance reached; coordinator decides integrated design and necessary gaps.
 
-## P59 complete — compact parallel packing and rejection repair (5 October 2026)
+## Wickham accepted; challenge-led capability planning (5 October 2026)
+
+User accepts the challenge outcome and directs recording design lessons, then looking
+at further bridge capabilities. Retained fans are too long for the slow terminal
+setting; no more fan reconstruction needed for this demonstration. Guide records
+game-scale footprint, optional extra access, parallel crossover packing and using
+new practical challenges to expose useful bridge gaps. CURRENT_TASK now records
+roadmap planning; no new feature implementation dispatched.
+
+## P59 complete â€” compact parallel packing and rejection repair (5 October 2026)
 
 Ten existing crossover functions and six continuous approaches now end550 instead
-of650; platform fans/platform3 retained, extra access acceptable. Parallel315–355
-links accepted. Remaining group adjusted together: AB_reverse330→380, BC_forward
-385→425, A_reverse405→445, AB_forward435→475, C_forward455→495, B_reverse410→450,
-B_forward500→540. Actual spans39.671–49.880; ends549.999828–550.000144. Directional
+of650; platform fans/platform3 retained, extra access acceptable. Parallel315â€“355
+links accepted. Remaining group adjusted together: AB_reverse330â†’380, BC_forward
+385â†’425, A_reverse405â†’445, AB_forward435â†’475, C_forward455â†’495, B_reverse410â†’450,
+B_forward500â†’540. Actual spans39.671â€“49.880; ends549.999828â€“550.000144. Directional
 ordering and all connector/both-through TRAIN checks pass; fresh fan snapshots unchanged.
 One full56 required arrival/departure route check passed. No engine minimum claim.
 Prepared-rejection recovery fixed in bridge_live.py/tests/test_live_client.py: exact
@@ -146,11 +275,11 @@ No physical train/capacity/continuous-clearance proof or final-save reload claim
 Game paused/non-maximised; no restart, runner/native source change or remote push.
 Local milestone complete; next design choice to coordinator. Actual usage unavailable.
 
-## P58 complete — compact Wickham reconstruction (5 October 2026)
+## P58 complete â€” compact Wickham reconstruction (5 October 2026)
 
 Coordinator compact01/plan.json realised: six continuous approaches end650 instead
-of1250, ten ordinary single crossovers; actual longitudinal spans39.798–40.104.
-Fresh bounded observation/exact incidence at299–300; removed14old connectors and
+of1250, ten ordinary single crossovers; actual longitudinal spans39.798â€“40.104.
+Fresh bounded observation/exact incidence at299â€“300; removed14old connectors and
 58approach edges, retained platform fans. Native full proposals accepted/stored
 controls built; each connector/both-through TRAIN check passes. Fresh retained fan
 boundary snapshots unchanged; all56 required arrivals/departures pass, checked once
@@ -171,13 +300,13 @@ record_final.py. No railway source/runner changes; unchanged369quiet P57 checks 
 Only STATE/CURRENT_TASK/RAILWAY_DESIGN_GUIDE updated; local milestone, no remote push.
 No blocker; acceptance reached, next design decision belongs to coordinator. Usage unavailable.
 
-## P57 complete — prepared middle3/4 single crossover (5 October 2026)
+## P57 complete â€” prepared middle3/4 single crossover (5 October 2026)
 
 prepare_crossover/build_prepared_crossover in bridge_live.py reuse interior candidate
 families, optional hard radius and P56 request-owned state. Up to8 meaningful candidates;
 two through evaluations plus full native proposal; exact stored controls/freshness/
 single-use guards. Legacy defaults retained. Prepared leads use fresh components;
-one endpoint cubic/subdivide candidate accepted at380→460. Previous native-parts
+one endpoint cubic/subdivide candidate accepted at380â†’460. Previous native-parts
 rejections preserved; exact internal rejection cause remains opaque, not impossibility.
 Build40408/sessionpif_1791192898_12523394: prepare50d733d5baf54d68b6e6f7eeb2e46904,
 build d849788cf5574bbfa418891c3e0a8522, different Python processes/no refit.
@@ -204,7 +333,7 @@ CURRENT_TASK/STATE. Local milestone only, guide/older evidence/saves preserved.
 No blocker. Physical train/reservation/continuous clearance/full56 allocation unprobed.
 Usage unavailable. Acceptance reached; next layout decision belongs to coordinator.
 
-## P56 complete — prepared-state ownership and platform12→13 fan (5 October 2026)
+## P56 complete â€” prepared-state ownership and platform12â†’13 fan (5 October 2026)
 
 Actual repeated engine state:get refreshed borrowed tables, losing new preparation
 handles/counters; compacting fit data was insufficient. GameScript now owns one
@@ -212,7 +341,7 @@ plain root per request through native stores/callbacks. No refit/bypass/toleranc
 change. Separate Python prepare/inspect/build accepted and reused exact controls:
 build40408/sessionpif_1791189743_9368806, prepare0b969558cd6946738ce3ba67774b4ec3,
 build e1f48e0da2ab4e2b8330e5d5b6a74ff5. Replaced104794; junction105095;
-through105096/105097, branch105098→95736. Outer102295/104791 retained.
+through105096/105097, branch105098â†’95736. Outer102295/104791 retained.
 Native12/13/10/11/9 TRAIN routes pass; retained snapshots unchanged; changed-input,
 consumed/stale guards pass. Branch sampled radius1377.2242429847545, no hard radius.
 Final owned-root source passed tests/native/test_game_script_state.lua inside TPF3:
@@ -235,7 +364,7 @@ CURRENT_TASK/STATE. Local milestone only; guide/older saves/evidence preserved.
 No task blocker. Physical train/reservation/full throat and continuous clearance
 unprobed. Usage unavailable. Acceptance reached; next decision belongs to coordinator.
 
-## P55 complete — prepared interior platform10→11 fan (5 October 2026)
+## P55 complete â€” prepared interior platform10â†’11 fan (5 October 2026)
 
 prepare_interior_junction/build_prepared_interior_junction: bounded complete through
 replacement/branch candidates, optional hard radius, endpoint/direction/guide-led
@@ -266,7 +395,7 @@ Local milestone, no push; coordinator guide untracked, older evidence/saves pres
 Usage unavailable. No task blocker; physical train/reservation,12/rest of throat not
 demonstrated. Acceptance reached; next layout decision belongs to coordinator.
 
-## P54 complete — prepared native platform11 junction (5 October 2026)
+## P54 complete â€” prepared native platform11 junction (5 October 2026)
 
 prepare_junction/build_prepared_junction: bounded native candidate evaluation,
 independent fit_radius preference/hard minimum, exact prepared controls consumed
@@ -296,7 +425,7 @@ Local milestone/no push; usage unavailable. No blocker; Astra resumes design.
 Sampled bounds/session-only preparation; physical train/reservation proof and whole
 throat remain incomplete. Untracked coordinator guide excluded from this commit.
 
-## P53 diagnostic complete — first-turnout rejection unresolved (4 October 2026)
+## P53 diagnostic complete â€” first-turnout rejection unresolved (4 October 2026)
 
 Build40408 native SimpleProposal evaluation of both original operation19 fans:
 through split alone noncritical; first arc, longer prefix and complete branch reject
@@ -322,7 +451,7 @@ Local milestone/no push; usage unavailable. Return first-turnout placement/geome
 decision to Astra; later straight/platform attachment not required for this rejection.
 Full throat remains incomplete; no universal5degree/radius rule or train-motion claim.
 
-## P52 complete — native node/edge observations separated (4 October 2026)
+## P52 complete â€” native node/edge observations separated (4 October 2026)
 
 Freshly reproduced read-only discover_interior endpoint_node_mismatch. Universal
 .001 BaseNode/edge-position equality aborted an entire useful query. Native TRACK
@@ -348,14 +477,14 @@ platform8_discovery.json,platform9_discovery.json,cleanup.json}. Local commit/no
 Usage unavailable; discovery blocker none. Full throat still incomplete; Astra resumes
 design/construction using fresh candidate bindings. No physical train claims.
 
-## P51 complete — exact mixed-endpoint branch removal (4 October 2026)
+## P51 complete â€” exact mixed-endpoint branch removal (4 October 2026)
 
 Exact-chain removal retains every unselected TRACK snapshot and complete endpoint
 incidence; exactly one selected incident at bounded endpoints1..16, exclusive internal
 nodes still required. Legacy modes unchanged. Build40408, current session
 pif_1791144583_144132436 after normal CURRENT-operation15 save/load and module staging.
 Removed only104888,104889,95689,95702,95712. Retained unchanged through104886/104887
-at104882 (incidence3→2) and original platform1 lead95517/node95514 (2→1).
+at104882 (incidence3â†’2) and original platform1 lead95517/node95514 (2â†’1).
 Four directional native TRAIN routes pass; shared-internal chain rejected before build,
 all eight observed TRACK snapshots unchanged after rejection. Pending none.
 python tools/quiet_checks.py --suite live_client --label pif-p51-chain-endpoints:
@@ -373,14 +502,14 @@ Local milestone/no push. No new track construction; physical trains unprobed,
 effect history incomplete, full throat incomplete. Usage unavailable; repair blocker none.
 Return fresh platform1 free-end and through-junction bindings to Astra for redesign.
 
-## P50 complete — constructed free-lead readback repaired (4 October 2026)
+## P50 complete â€” constructed free-lead readback repaired (4 October 2026)
 
 Confirmed nil maxgrade: level free-lead fitting omitted positive-limit vertical option;
 junction readback lost its explicit0 limit. Preserve0 in fit/runtime state, no changed
 geometry/permissive default. verify_interior now supports target-less receipt and exact
 free endpoint incidence/position/direction; Python reconciliation checks returned binding.
 Original requeste05ba4b4cb57438b825474de0d2d0ba9 preserved and verified without replay.
-Build40408: oldsessionpif_1791139669_139218306 → currentpif_1791143579_143128533.
+Build40408: oldsessionpif_1791139669_139218306 â†’ currentpif_1791143579_143128533.
 Exact current through104886/104887, branch104888/104889/104890, junction104882;
 freeTRACK104890/node104885, both native through/branch routes pass, sampled radius179.46583,
 grade0. Old/current pending none. New construction after fix not performed; actual existing
@@ -396,7 +525,7 @@ stage.json,reacquired_receipt_edges.json,reconciliation.json,bindings.json,final
 Revision: p50/checkpoint.json; local milestone/no push. Usage unavailable, repair blocker none.
 Return to Astra with fresh free-end binding for platform1 connection; full throat incomplete.
 
-## P49 complete — explicit rejected extension reconciled (4 October 2026)
+## P49 complete â€” explicit rejected extension reconciled (4 October 2026)
 
 Added reconcile_rejected_extension(client, original_discovery): one fresh bounded
 native discovery binds exact unchanged free TRACK anchor to correlated rejected fit.
@@ -416,7 +545,7 @@ Recovery gap resolved; native construction rejection cause unestablished, full t
 incomplete. Astra resumes layout design; operation11 track8 spine remains, track3 spine
 was removed by operation12. Prior P48 save/evidence remain historical, not current map.
 
-## P48 closed — useful partial, Astra-directed stop (4 October 2026)
+## P48 closed â€” useful partial, Astra-directed stop (4 October 2026)
 
 Exact-chain cleanup removed24 superseded edges; six entrance tracks span local300..500.
 Four native curves connect original leads0/1/14/15. First adjusted crossover104785
@@ -438,14 +567,14 @@ Saved TPF3_Bridge_P48_Compact_PARTIAL_20261004.sav normally, not reloaded; SHA25
 Local milestone revision: p48/checkpoint.json; no push. Usage unavailable.
 Next: Astra designs the entire integrated radius-led throat before more construction.
 
-## P47 complete — exact compensation and corrected native connector verified
+## P47 complete â€” exact compensation and corrected native connector verified
 
 Receipt-bound compensation removed only95579/95585/95602 after fresh checks,
 preserving through rails95568/95571/95573/95578 and original failed evidence.
 Old request33dd9333f5e04b2ca0983ec45089024d is compensated, never accepted/replayed.
 Explicit level two-piece native-fit lowering uses fixed midpoint, LS201handles
 and1001checks/half; defaults and0.1conversion/radius/grade/region remain unchanged.
-Corrected TRACK104628/104629 connects95547→104627→95552, combined conversion
+Corrected TRACK104628/104629 connects95547â†’104627â†’95552, combined conversion
 0.0691432; both native movement directions sampled radius151.56465 pass70.
 Build40408; successful save normally reloaded, sessionpif_1791137219_136768880.
 20directional routes pass:12through/4prior/2first revised/2corrected. Station
@@ -465,7 +594,7 @@ Revision: p47/checkpoint.json. Local milestone only/no push. Sampled/non-atomic;
 physical train/speed/continuous proof unprobed, usage unavailable. No blockers.
 No more middle-out stages; next material design is Astra's outer-first fan priority.
 
-## P46 complete — exact read recovered; native trimmed-curve failure localised
+## P46 complete â€” exact read recovered; native trimmed-curve failure localised
 
 LiveClient read-publication reconciliation now accepts up to2 exact pending reads
 above a proven-published terminal mutation. Saved envelope/hash/session/slot/log/
@@ -492,7 +621,7 @@ p46/offline/diagnosis.json, HANDOFF.md/checks.json/checkpoint.json. Existing P45
 PARTIAL save retained; geometry/control evidence local. Return material design to
 Astra (outer-first priority), no physicaltrain/speed/continuous-bound claim or push.
 
-## P45 stopped — explicit revision accepted first connector; matching build fails70
+## P45 stopped â€” explicit revision accepted first connector; matching build fails70
 
 New caller-supplied radius-only acceptance revision records exact original request,
 old/new criteria, reason/authority, original failed response path/hash and fresh
@@ -502,7 +631,7 @@ through exact native verification without rebuilding. Original150 failure intact
 Optional native crossover fit_radius separates fit target from realised minimum;
 default radius*1.25 unchanged. No global relaxation or topology replacement.
 Build40408/newsession pif_1791134311_133860007 after resolved current-worldsave/load.
-First exactconnector reverified. Matching12@160→11@260 radius70/nativefit187.5
+First exactconnector reverified. Matching12@160â†’11@260 radius70/nativefit187.5
 prefit187.2218 passed; construction33dd9333f5e04b2ca0983ec45089024d returned7TRACKs,
 fresh verify rejects native movement radius37.43414797<70. Connector95579/95585/95602,
 junction95547/95552; no replay/deletion/further radius revision. Stage NOT complete.
@@ -523,7 +652,7 @@ Saved new TPF3_Bridge_P45_Wickham_PARTIAL_20261004.sav; SHA256
 d3e2a45f15ac67de46a604b2308fa59658f2153b8e565ad1b1d1c7b7d9f54c4c.
 Resolved pre-second Stage save preserved; partial not reloaded. Revision: p45/checkpoint.json.
 
-## P44 stopped at native crossover acceptance — continuation repair verified
+## P44 stopped at native crossover acceptance â€” continuation repair verified
 
 Build40408/session pif_1791132513_132062371. Aggregate tiny arcs total.00165224
 previously rejected before near-straight lowering. Retain ALL parts when collective
@@ -531,11 +660,11 @@ previously rejected before near-straight lowering. Retain ALL parts when collect
 130-unit brief passes radius12511702.95/grade0. All6specified extension actions
 succeeded: rails9/12 from150to280;10/11 transition30 thenlevel280. Current6extended
 leads8..13;8/13 end150. Not8extendedleads or full16throat.
-Fixed9@160→10@260 native_parts crossover prefit radius187.1468 passed; native build
+Fixed9@160â†’10@260 native_parts crossover prefit radius187.1468 passed; native build
 returned7entities but realised movement geometry radius74.2072767<150. Fresh native
 verify_crossover and geometry-required TRAIN route still reject. Connectivity-only
 bothdirections exists; NOT accepted railway. Pending mutation e3c5eae2c9cc47c39b65631dd220459e
-preserved. Connector104611/104612/104613; junction104599/104602. Second12@160→11@260
+preserved. Connector104611/104612/104613; junction104599/104602. Second12@160â†’11@260
 prefit passed radius187.2218; construction NOT attempted. No replay/delete/alternate.
 Fresh12through +4previouscrossover directional routes pass geometry;16original
 userlead snapshots unchanged;192frozen stationTRACK identities/endpointpairs intact.
@@ -551,14 +680,14 @@ New distinct TPF3_Bridge_P44_Wickham_PARTIAL_20261004.sav saved; path/hash in
 p44/native/world_checkpoint.json (not reloaded). Existing P43 useful baseline retained.
 Local repair checkpoint only/no push/usage unavailable.
 
-## P43 complete — rotated near-straight lowering and Wickham connections
+## P43 complete â€” rotated near-straight lowering and Wickham connections
 
 Native float quantisation made two 0.003154-unit ARC fragments lower to invalid
 cubics. Bounded one-cubic near-straight conversion preserves native originals,
 exact attachments and existing conversion/engineering limits; no radius bypass.
 Build40408/session pif_1791130766_130315674: specified physical leads8,9,12,13
-extended through30-unit grade transitions to150, crossovers8@50→9@120 and
-13@50→12@120 accepted. Fresh readback verifies12 directional TRAIN routes,
+extended through30-unit grade transitions to150, crossovers8@50â†’9@120 and
+13@50â†’12@120 accepted. Fresh readback verifies12 directional TRAIN routes,
 16 original user leads and station-owned snapshots unchanged. Sampled route
 minimum radius164.2678>=150; maximum grade0.002819964<=.01; connectors level.
 New save TPF3_Bridge_P43_Wickham_Leads_20261004.sav; exact path/hash in
@@ -574,7 +703,7 @@ sampled, snapshot sequential; platform association/save GUID unknown, physical
 train traversal unprobed. Local milestone only, no push; usage unavailable.
 Return topology decisions to Astra; no further connections authorised by P43.
 
-## P42 complete — Wickham Station named read-only survey
+## P42 complete â€” Wickham Station named read-only survey
 
 New save/checkpoint `TPF3_Bridge_P42_Wickham_20261004.sav` (SHA-256 in
 `.local_runs/live_python_interface/p42/native/world_checkpoint.json`), build40408;
@@ -1087,7 +1216,7 @@ signals,reservations,direction enforcement,save/load identity/traversal unprobed
 Disposable sandbox saved;paused/non-maximised. No blocker;stop P23 for coordinator.
 Actual usage unavailable;no credit estimate. Local milestone commit only,no push.
 
-# TPF3-Bridge milestone state — 4 October 2026
+# TPF3-Bridge milestone state â€” 4 October 2026
 
 ## Current task - P22 complete, ordered patterns/reversed UP verified
 Shared plan/publish/execute/inspect_parallel_layout and CLI parallel-layout (offline
@@ -1274,7 +1403,7 @@ python tools/quiet_checks.py --suite live_client --label pif-p16-final:97passed;
 in that directory. Milestone revision recorded in checkpoint.json after local commit;
 no push. Physical traversal/reservations/save identity unknown; actual usage unavailable.
 
-## P15 baseline complete — cde5755
+## P15 baseline complete â€” cde5755
 Native widened connection through connect_throat / CLI connect-throat [--execute]:
 all5declared TRAIN movements A1->D1/D2/D3,A2->D2/D3 pass on build40408.
 Disclosed local fan-out:100-unit5m approach retained;D2 ends near local(620,105),D3 near
@@ -1342,11 +1471,11 @@ Disposable world saved normally after verification and left paused/nonmaximised.
 ## P12 interior junction accepted
 P12 complete: connect_junction_at / CLI connect-junction-at [--execute] adds native
 interior placement with explicit placement_tolerance; ordinary unowned TRACK/no objects,
-parameter0.05–0.95, either travel direction, free target. Native cubic evaluation and
+parameter0.05â€“0.95, either travel direction, free target. Native cubic evaluation and
 one coherent remove/replace/branch proposal; no Python fitter or relaxed constraint.
 Build40408: original131326 replaced by135522/135548, outer nodes131317/131318 retained,
 interior node135148 at0.50390625; branch135425/8641/131653 to target11085. Native fitted
-length350.125965,rise2.991768,grades0.008900871→0.015,requested radius120/margin126;
+length350.125965,rise2.991768,grades0.008900871â†’0.015,requested radius120/margin126;
 realised sampled minimum124.535004,max_grade0.015<0.04. Exact native through TRAIN
 473.756048 and branch608.866104 pass, including node-owned turnout connectors.
 First read used class instead of instance method; corrected before construction.
@@ -1399,9 +1528,9 @@ P10 complete: native findDubinsPath direction flag is passed to its native sampl
 for endpoints/tangents and comparisons; false pieces additionally verify canonical
 endpoint/tangent reversal. Existing exact travel/join/radius/grade/region checks remain.
 No supplied direction, guide or hard requirement changed; no Python replacement fitter.
-Build40408: translated/rotated previously rejected+12°/−8°/+4° relative pattern,
-3legs/9TRACK131319–131327,source131250/node131232→target131268/node131160,
-exact guide nodes131313/131316. Length1501.283859,rise12,grades0.015→0.005→0.01→0.015,
+Build40408: translated/rotated previously rejected+12Â°/âˆ’8Â°/+4Â° relative pattern,
+3legs/9TRACK131319â€“131327,source131250/node131232â†’target131268/node131160,
+exact guide nodes131313/131316. Length1501.283859,rise12,grades0.015â†’0.005â†’0.01â†’0.015,
 radius120/max_grade0.04; six forward/three backward-parametrised native pieces.
 Independent committed inspection/native TRAIN1541.342245 pass;sampledXYerror0.005695,
 Zerror0.000003815,grade0.015000002,joinheightgap0. Legacy forward straight/curved fits
@@ -1421,10 +1550,10 @@ reload. Existing built TRACK chain independently reacquired; no construction rep
 
 ## P09 coherent corridor accepted
 P09 complete: connect_corridor/CLI connect-corridor reuses P08 discovery/selection and
-native fit/build/readback;1–3ordered XYZ/direction/grade guides, all legs pre-fitted,
+native fit/build/readback;1â€“3ordered XYZ/direction/grade guides, all legs pre-fitted,
 one coherent native proposal, exact shared guide nodes/final attachments and TRAIN route.
-Build40408:3legs/9TRACK131295–131303, source131271/node131270→target131285/node131283,
-exact guide nodes131289/131292. Length1500.004925,rise12,grades0.015→0.005→0.01→0.015,
+Build40408:3legs/9TRACK131295â€“131303, source131271/node131270â†’target131285/node131283,
+exact guide nodes131289/131292. Length1500.004925,rise12,grades0.015â†’0.005â†’0.01â†’0.015,
 radius120/max_grade0.04; native TRAIN1540.063845. Fresh independent inspection passes;
 sampledgrade0.015000001,joinheightgap0. Fit-only leaves guide identities unrealised.
 Wrong-direction/strict-grade briefs rejected prebuild. Original layout/3fit-only
@@ -1449,8 +1578,8 @@ deterministic guide/heading selection and one native compound fit/build/readback
 TRAIN route. Default fit-only; exact candidate snapshots/incidence revalidated before
 build. Only explicit pre-build fit failure allows another pair; unknown/build/route
 failure stops, no replay. Partial discovery/no pair/fit exhaustion remain explicit.
-Build40408: source131267/node131264→target131271/node131255; TRACK131275/131276/
-131277, nodes131264→131273→131274→131255. Length600.013514,rise6,grades0.005→0.015,
+Build40408: source131267/node131264â†’target131271/node131255; TRACK131275/131276/
+131277, nodes131264â†’131273â†’131274â†’131255. Length600.013514,rise6,grades0.005â†’0.015,
 radius120/max_grade0.04. Fresh readback/independent inspection and native TRAIN
 route623.538651 pass. SampledXYerror0.000503309,Zerror0.000001907,joinheightgap0;
 wrong-direction and out-of-region briefs rejected without construction.
@@ -1469,9 +1598,9 @@ Normal save/load only; game paused/non-maximised. Actual usage unavailable.
 ## P07 native height/grade accepted
 Native cubic height/grade support in existing extend/connect/connect-selected; Python
 validates explicit vertical constraints, mod retains native XY fit/interpolation.
-Build40408: isolated connection131258/131259/131260, exact nodes131248→131256→
-131257→131251, rise2/grades0.005→0.015; further extension131265/131266/131267,
-nodes131252→131236→131254→131264,rise1/grade0.015→0.005. Radius100,max_grade0.04.
+Build40408: isolated connection131258/131259/131260, exact nodes131248â†’131256â†’
+131257â†’131251, rise2/grades0.005â†’0.015; further extension131265/131266/131267,
+nodes131252â†’131236â†’131254â†’131264,rise1/grade0.015â†’0.005. Radius100,max_grade0.04.
 Fresh exact readback/independent inspection and native TRAIN path pass; combined
 length240.031993. Five samples/piece, no continuous proof or train traversal claim.
 Native strict-grade/out-of-region/no-vertical rejection and legacy fit pass.
@@ -1528,7 +1657,7 @@ no unrestricted routing/continuous proof/train traversal. Actual usage unavailab
 Native discovery demonstrated, build40408. discover(client,brief)/CLI discover accepts
 bounded XYZ region/max_edges; native octree + complete getNodeSegments + construction
 owner checks. One incident TRACK/unowned node is eligible, not a construction guarantee.
-≤16edges,≤256component inspections; callback/incident counts and truncation explicit.
+â‰¤16edges,â‰¤256component inspections; callback/incident counts and truncation explicit.
 Stable recorded refs valid only in current adapter session; no world identity guarantee.
 connect_selected/CLI connect-selected --discovery RESPONSE uses refs, rejects stale/
 nonfree candidates natively, and invokes existing connection fitter with execute=false.
@@ -1550,13 +1679,13 @@ compatible selected-fit demonstration and explicit local reconciliation. Usage u
 ## P04 native route verification
 Callable route(client,brief); CLI bridge_live.py route --context CONTEXT --params ROUTE.
 Fresh exact BaseEdge/transport NodeIds feed native findPathNodeToNode; no Python graph.
-Build40408 TRAIN path131229→131239→131240→131241→131235, nodes/index0
-131225→131226→131237→131238→131215→131234, length88.659898native units.
+Build40408 TRAIN path131229â†’131239â†’131240â†’131241â†’131235, nodes/index0
+131225â†’131226â†’131237â†’131238â†’131215â†’131234, length88.659898native units.
 Exact continuity, selected mode, approach lanes/directions and required edges pass.
 Native excessive-length, invalid-endpoint, missing-required-edge and wrong-entry-direction
 cases rejected without build; CLI exit1 even when query status is ok but unverified.
 max_length is acceptance-only; API exposes no engine search bound or initial direction
-parameter. ≤64observations; truncation fails. No traversal/reservation availability claim.
+parameter. â‰¤64observations; truncation fails. No traversal/reservation availability claim.
 python tools/quiet_checks.py --suite live_client --label pif-p04-client:29passed,
 .local_checks/pif-p04-client_6av4bjeg/report.json; reused after tested-file hash checks.
 python .local_runs/live_python_interface/p04/run_acceptance.py:5expected native outcomes.
@@ -1576,7 +1705,7 @@ constant grade compatible at both ends (grade1e-6,height0.001 numerical toleranc
 No general vertical solver; unsupported native families/directions are explicit.
 Final proposal reuses both existing positive node IDs; fresh readback checks both
 known incident edges/resources. Unknown late mutation responses remain blocked.
-Build40408: edges131239/131240/131241, nodes131226→131237→131238→131215,
+Build40408: edges131239/131240/131241, nodes131226â†’131237â†’131238â†’131215,
 source131229/target131235; length60.001331,radius100,sampledXYerror0.000503309.
 Independent later inspection confirmed both attachments, tangents, Z and assets.
 Nearby test approach131235 supplied the target. Fit-only, invalid target and reversed
@@ -1590,21 +1719,21 @@ python .local_runs/live_python_interface/p03/check_evidence.py:passed; checks.js
 result.json,workflow_history.json,HANDOFF.md in that directory;12native receipts
 validated,8prepared/staged hashes match. Unchanged14quiet-runner tests reused below.
 P03 alone proves no pathfinder/traversal; P04 adds native route evidence above.
-No continuous proof, saveGUID, rollback or transport guarantees; no L01–L14/runner changes.
+No continuous proof, saveGUID, rollback or transport guarantees; no L01â€“L14/runner changes.
 Latest human steering: whole test map disposable; prefer open land or clear incidental
 obstructions. Earlier collisions do not prove an API defect; accepted work not repeated.
 
 ## Implemented interface
 Offline commands: bridge_cli.py design [--mock-execute], connect, connect-pair
 [--mock-execute --snapshot], status --run, verify --run. bridge_app exposes callable
-equivalents. L01–L14 and exhausted batch ledgers are preserved; no game construction
+equivalents. L01â€“L14 and exhausted batch ledgers are preserved; no game construction
 claims arise from offline/mock evidence. Supported offline connection domain is
 level/zero-cant, bounded existing relative-heading/curve families; paired tracks use
 explicit directed endpoint IDs, compatible parallel pairs/equal end spacing.
 
 Live: bridge_live.py inspect/fit/build/readback, extend/connect/route --context CONTEXT
 --params BRIEF [--execute]; callable client_from_context and extend. Fit-only default;
-explicit construction performs fresh inspect→native fit→build→fresh readback in one
+explicit construction performs fresh inspectâ†’native fitâ†’buildâ†’fresh readback in one
 compound native invocation. Current session handshake and one shared durable journal;
 no automatic mutation replay. Reusable mod is implementation/n01_probe/prepared_mod/.
 Usage: implementation/live_python_interface/README.md.
@@ -1613,8 +1742,8 @@ Usage: implementation/live_python_interface/README.md.
 Actual TPF3 build40408, disposable context: GameScript, native event/log transport,
 native forward ARC/STRAIGHT fit, explicit construction and exact TRACK/node readback
 demonstrated. Constant inherited anchor grade; selected radius/region; local bounds
-400×400XY, length≤800, ≤8pieces. Final P02 edges131227/131228/131229 connect exact
-nodes131218→131207→131225→131226; length296.165783native units, selected radius100,
+400Ã—400XY, lengthâ‰¤800, â‰¤8pieces. Final P02 edges131227/131228/131229 connect exact
+nodes131218â†’131207â†’131225â†’131226; length296.165783native units, selected radius100,
 sampledXYerror0.00048828125. Later independent inspection confirmed identities.
 Fit-only, invalid attachment and region failure ran without further construction.
 Owned disposable save saved normally; game left paused/non-maximised.
@@ -1649,7 +1778,7 @@ L14 recorded reports (unchanged engineering code; no closeout rerun):
 - branch107: .local_checks/batch_l14_branch_v5nma0qr/report.json
 Independent acceptance: .local_runs/batch_pair_5ef4682fd126404ea379936e33ca3643/result.json.
 Batch ledger .task_batch/pair-l09-l14/state.json:6invocations/0repairs, exhausted.
-Historical L01–L14/N01/N02/NCD/PIF detail and prior STATE/AGENTS are preserved locally;
+Historical L01â€“L14/N01/N02/NCD/PIF detail and prior STATE/AGENTS are preserved locally;
 pre-cleanup documents: .local_runs/milestone_git/g01/before/. No old evidence overwritten.
 
 ## Git hygiene

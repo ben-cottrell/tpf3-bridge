@@ -1465,7 +1465,7 @@ function M.interior_junction(p,s,state,request_id,respond)
   stage="build";local proposal,nodes,segments=interior_proposal(a,c,splits,f,target,prepared and prepared.candidate.through~="subdivide",extension)
   if prepared then
    local data=api.engine.util.proposal.makeProposalData(proposal,nil)
-   assert(not data.errorState.critical,"prepared_interior_proposal_no_longer_accepted")
+   assert(not data.errorState.critical and #data.errorState.messages==0,"prepared_interior_proposal_no_longer_accepted")
   end
   if p.proposal_diagnostics then
    -- Read-only native evaluation of the exact SimpleProposal sent by build.
@@ -1675,7 +1675,7 @@ function M.crossover(p,s,state,request_id,respond)
   stage="build";local proposal=crossover_proposal(a,b,c,d,splits,f,prepared and prepared.candidate.through~="subdivide",prepared~=nil)
   if prepared then
    local data=api.engine.util.proposal.makeProposalData(proposal,nil)
-   assert(not data.errorState.critical,"prepared_crossover_proposal_no_longer_accepted")
+   assert(not data.errorState.critical and #data.errorState.messages==0,"prepared_crossover_proposal_no_longer_accepted")
    prepared.used=true;s.prepared_crossovers[prepared.handle]=nil
   end
   f.built=true;f.build_request=request_id
@@ -2152,7 +2152,8 @@ end
 -- Connection-led candidates bypass Dubins/radius fitting unless explicitly selected.
 prepare_interior_fit=function(a,c,target,tp,td,tg,p,s,fit_id,second_interior)
  local extension,finish_node,finish_pos,finish_direction=through_extension(a,p)
- assert(target and a.template==target.edge_snapshot.template and a.style==target.edge_snapshot.style,"unsupported_attachment_resources")
+ -- Keep existing attachment resources; the complete native proposal decides compatibility.
+ assert(target and a.road_type=="TRACK" and target.edge_snapshot.road_type=="TRACK","TRACK_attachments_required")
  assert(finite(p.radius) and p.radius>=0 and finite(p.max_route_length) and p.max_route_length>0 and p.max_route_length<=800,"invalid_prepared_interior_bounds")
  local candidates=p.fit_candidates;assert(type(candidates)=="table" and #candidates>=1 and #candidates<=8,"interior_candidate_bound")
  local guides=p.guides or {};assert(type(guides)=="table" and #guides<=2,"interior_guide_bound")
@@ -2160,22 +2161,23 @@ prepare_interior_fit=function(a,c,target,tp,td,tg,p,s,fit_id,second_interior)
  local function scale(x) assert(finite(x) and x>0 and x<=4,"invalid_control_handle_scale");return x end
  for _,q in ipairs(candidates) do
   for k in pairs(q) do assert(k=="branch" or k=="through" or k=="handle_scale" or k=="through_handle_scales" or k=="fit_radius","invalid_interior_candidate_field") end
-  assert(q.branch=="native_parts" or q.branch=="endpoint_cubic_level" or q.branch=="guided_cubic_level","unsupported_interior_branch_candidate")
+  assert(q.branch=="native_parts" or q.branch=="endpoint_cubic_level" or q.branch=="endpoint_cubic_graded" or q.branch=="guided_cubic_level","unsupported_interior_branch_candidate")
   assert(q.through=="subdivide" or q.through=="subdivide_fresh" or q.through=="endpoint_cubic_level" or q.through=="extended_endpoint_cubic_level","unsupported_interior_through_candidate")
   assert((extension~=nil)==(q.through=="extended_endpoint_cubic_level"),"explicit_extended_candidate_required")
   scale(q.handle_scale or 1);local hs=q.through_handle_scales or {1,1,1,1};assert(type(hs)=="table" and #hs==4,"through_handle_scale_bound");for _,x in ipairs(hs) do scale(x) end
   if q.fit_radius then assert(finite(q.fit_radius) and q.fit_radius>=p.radius and q.fit_radius>0,"invalid_interior_fit_radius") end
  end
- local function handles(p0,p1,t0,t1,s0,s1)
-  assert(math.abs(p0[3]-p1[3])<=.001 and math.abs(t0[3] or 0)<=.000001 and math.abs(t1[3] or 0)<=.000001,"level_endpoint_candidate_required")
+ local function handles(p0,p1,t0,t1,s0,s1,g0,g1)
+  if g0==nil then assert(math.abs(p0[3]-p1[3])<=.001 and math.abs(t0[3] or 0)<=.000001 and math.abs(t1[3] or 0)<=.000001,"level_endpoint_candidate_required") end
   local length=distance(p0,p1);assert(length>1e-6,"degenerate_endpoint_candidate")
   local x,y=norm(t0),norm(t1)
-  return {p0=p0,p1=p1,t0={x[1]*length*s0,x[2]*length*s0,0},t1={y[1]*length*s1,y[2]*length*s1,0},length=length}
+  return {p0=p0,p1=p1,t0={x[1]*length*s0,x[2]*length*s0,(g0 or 0)*length*s0},t1={y[1]*length*s1,y[2]*length*s1,(g1 or 0)*length*s1},length=length}
  end
  local function evaluate(proposal)
-  local data=api.engine.util.proposal.makeProposalData(proposal,nil);local errors=data.errorState;local messages={}
+  local data=api.engine.util.proposal.makeProposalData(proposal,nil);local errors=data.errorState;local messages,warnings={},{}
   for i,x in ipairs(errors.messages) do if i<=4 then messages[#messages+1]=tostring(x):sub(1,240) end end
-  return {critical=errors.critical,messages=messages}
+  for i,x in ipairs(errors.warnings) do if i<=4 then warnings[#warnings+1]=tostring(x):sub(1,240) end end
+  return {critical=errors.critical,messages=messages,message_count=#errors.messages,warnings=warnings}
  end
  local attempts={}
  for i,q in ipairs(candidates) do
@@ -2193,20 +2195,21 @@ prepare_interior_fit=function(a,c,target,tp,td,tg,p,s,fit_id,second_interior)
      {edge=target.edge_snapshot,node=target.node_id,pos=tp,direction=td,grade=tg},{anchor=a,pos=c.pos,direction=c.outward_direction,grade=c.grade})
     fitted=s.fits[id]
    else
-    assert(math.abs(c.grade)<=.000001 and math.abs(tg)<=.000001,"level_endpoint_candidate_required")
+    local graded=q.branch=="endpoint_cubic_graded"
+    if not graded then assert(math.abs(c.grade)<=.000001 and math.abs(tg)<=.000001,"level_endpoint_candidate_required") end
     local points={{pos=c.pos,direction=c.outward_direction}}
     if q.branch=="guided_cubic_level" then assert(#guides>0,"shape_guides_required");for _,g in ipairs(guides) do points[#points+1]=g end end
     points[#points+1]={pos=tp,direction=td};local controls,samples={},{};local total,minimum=0,math.huge
     for j=1,#points-1 do
-     local x,y=points[j],points[j+1];local ctrl=handles(x.pos,y.pos,x.direction,y.direction,q.handle_scale or 1,q.handle_scale or 1)
+     local x,y=points[j],points[j+1];local ctrl=handles(x.pos,y.pos,x.direction,y.direction,q.handle_scale or 1,q.handle_scale or 1,graded and c.grade or nil,graded and tg or nil)
      local g=cubic(ctrl);minimum=math.min(minimum,geometry_bounds(g,p.region,p.radius,p.vertical.max_grade,64));local rows,last={},nil
      for k=0,64 do local u=k/64;local pos,dir=sample(g,u);rows[#rows+1]={u=u,pos=pos,dir=dir,base_pos=pos};if last then total=total+distance(last,pos) end;last=pos end
      controls[j]=ctrl;samples[j]=rows
     end
     assert(total<=p.max_route_length,"candidate_length_exceeds_limit")
     fitted={anchor=a,node=-100,target={edge=target.edge_snapshot,node=target.node_id,pos=tp,direction=td,grade=tg},controls=controls,samples=samples,
-     region=p.region,total_length=total,grade=0,end_grade=0,max_grade=p.vertical.max_grade,min_radius=p.radius,built=false}
-    report={fit_request=id,pieces=#controls,controls=controls,total_length=total,start=c.pos,finish=tp,target_node=target.node_id,grade=0,end_grade=0,
+     region=p.region,total_length=total,grade=c.grade,end_grade=tg,max_grade=p.vertical.max_grade,min_radius=p.radius,built=false}
+    report={fit_request=id,pieces=#controls,controls=controls,total_length=total,start=c.pos,finish=tp,target_node=target.node_id,grade=c.grade,end_grade=tg,
      radius=p.radius,requested_min_radius=p.radius,max_grade=p.vertical.max_grade,min_sampled_converted_radius=minimum~=math.huge and minimum or nil,
      candidate_geometry={method=q.branch,handle_scale=q.handle_scale or 1,native_fit_invoked=false,guides_are_shape_controls_not_project_anchors=true},sampled_only=true,game_constructed=false}
     s.fits[id]=fitted
@@ -2236,9 +2239,9 @@ prepare_interior_fit=function(a,c,target,tp,td,tg,p,s,fit_id,second_interior)
    end
    failure_stage="complete_proposal";full_eval=evaluate(proposal)
   end)
-  attempts[#attempts+1]={index=i,branch=q.branch,through=q.through,stage=failure_stage,status=not ok and "failed_check" or full_eval.critical and "native_proposal_rejected" or "accepted",
+  attempts[#attempts+1]={index=i,branch=q.branch,through=q.through,stage=failure_stage,status=not ok and "failed_check" or (full_eval.critical or full_eval.message_count>0) and "native_proposal_rejected" or "accepted",
    error=not ok and tostring(err):sub(1,240) or nil,through_evaluation=through_eval,evaluation=full_eval}
-  if ok and not full_eval.critical then return {fit_id=id,fitted=fitted,fit=report,splits=splits,candidate=q},attempts end
+  if ok and not full_eval.critical and full_eval.message_count==0 then return {fit_id=id,fitted=fitted,fit=report,splits=splits,candidate=q},attempts end
   s.fits[id]=nil
  end
  return nil,attempts

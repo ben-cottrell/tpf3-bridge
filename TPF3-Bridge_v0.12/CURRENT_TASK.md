@@ -1,3 +1,134 @@
+# P66 active — native D/E access and service configuration (6 October 2026)
+
+P66 operating demonstration accepted boundary: build40408, bridge purchase67414,
+assignment and physical E/D travel; D native alternative selection demonstrated.
+Manual-departure hold kept67414 stationary at Dprimary0. Existing reference67394
+ran depot→E→D, chose configured Dalternative1 and arrived/stopped alongside it.
+Exact simultaneous readback: both speed0/state2/stop_index0, terminal0 versus1;
+positions [1286.0725,-2799.3403,16.78] / [1280.1942,-2801.8572,16.78].
+Both holds released with verified native controls; no new purchase/infrastructure.
+Final save TPF3_Complex_Junction_P66_AlternativePlatform_20261006, paused/non-maximised,
+not reloaded. Evidence p66/alternative/{result.json,simultaneous_arrival.json,
+released_final.json,world_checkpoint.json}; bounded raw observations preserved.
+390 affected checks reused unchanged; .local_checks/pif-p66-path-read-bounded_7kjzcttt/report.json.
+Signal creation/depot placement remain bridge gaps; Ealternative/all8 physical routes,
+capacity/reservation not claimed. Return next scope/layout decision to coordinator.
+
+D and E two-crossover pairs built. Exact attachment, crossover TRAIN paths and
+retained-through checks pass. D–E line67419 created/updated: Dprimary0/alternate1,
+Eprimary1/alternate0; exact config readback and save/load pass. All8 terminal-pair
+TRAIN routes pass; bounded primary-service motion and D alternative choice now observed.
+Checkpoint TPF3_Complex_Junction_P66_ServiceConfig_20261006, paused/non-maximised.
+Evidence .local_runs/live_python_interface/p66/service_configuration/{checkpoint.json,
+checks.json,terminal_routes_summary.json,reload_operating_baseline.json}; E_pair_preview/built_summary.json.
+D inbound UI signal67428/edge67429 read back and persisted; bridge signal creation
+unresolved. Misplaced outbound UI reference removed by normal checkpoint reload;
+failure retained. Proposal-event observer emitted no marker; no blind repeated placements.
+Depot asset-local getConstructionResult succeeds: main model35.36×130.76;100models,
+32exported with explicit truncation. World preview not demonstrated by bridge; UI fixture/readback now demonstrated.
+makeProposalData requires Proposal, not SimpleProposal; earlier preview exceptions
+are bridge type-contract failures, not native ineligibility. Depot placement packet
+p66/depot_placement_packet_01.json reviewed; approved outside-DUS transform.
+Documented depot command constructor raises Unknown exception before submission;
+depot_build_result_01.json failed before send; its immediate readback confirmed0depots.
+Coordinator-approved depot fixture moved farther stationward after UI spur rejection.
+Current session pif_1791310560_15981470: depot67522/con67418, exterior67524 at
+[1240.113892,-2829.242432,16.197815], exit[-.7660445,.6427875]. All6 exact owners
+verified. Actual forward run158.803/inward43.099 to original DUSs90, materially
+longer; no pixel-to-world inference. Current fixture saved with its extension (see checkpoint below). Earlier fixture
+checkpoint/evidence preserved; removed from current world through normal reload.
+Three graded bridge proposals rejected Construction Not Possible at the new site;
+through proposals valid, no spur build submitted. Cause unknown; actual terminal
+and through context sent to coordinator before any further relocation.
+Evidence p66/depot_reposition_03_{construction,ownership,port_packet}.json and
+p66/depot_spur_{parameters,prepare}_03.json. Computer Use recovered; paused/nonmaximised.
+Coordinator isolation step: bridge30-unit straight depot extension BUILT and exact
+readback passed: edge67547, depot67524 to new free44416 at
+[1217.132568,-2809.958740,16.197815], matching standard_catenary/standard. Depot
+edge retained exact owner; new endpoint eligible. Remaining DUSs90 merge still
+rejects all3 full native proposals; through valid. No blind sweep or fourthmove.
+Evidence p66/depot_short_extension_{build,readback}.json, depot_spur_prepare_04.json.
+Current fixture+extension saved separately: TPF3_Complex_Junction_P66_DepotLeg_20261006;
+p66/depot_leg_checkpoint.json records hash/bytes; reload verified in session pif_1791311545_16966097.
+Native UI reference built edges67551/67552 but snapped to adjacent free67550,
+not DUS: exactdegree1,5units besidefork62365; DUS through unchanged. Not a turnout
+or bridge-fit success. Evidence p66/depot_ui_spur_reference_result.json.
+Unconnected UI reference removed by normal DepotLeg reload; evidence retained.
+Direct D-E route67344 midpoint[1063.778503,-2685.517212,16.25] selected beyondfork.
+Existing exactjunction_nodes[62365] required for trimmed native transport. One
+fullproposal still rejects Construction Not Possible; through passes. No build.
+Evidence p66/depot_clear_merge_prepare_with_fork.json; coordinator informed.
+Whole disposable depot+leg UI resource upgrade retained per coordinator: owned
+edges67555..67560 and ordinary67561 now simple_catenary/simple; exact positions,
+controls and depot owner reacquired. Not an isolated external-leg diagnostic.
+Same clear67344 parameter.5078125 merge, graded handle1/fresh through, still rejects
+Construction Not Possible; through valid. No build/sweep/extra upgrade. Current
+upgraded fixture retained in ManualDepotConnection checkpoint; DepotLeg remains prior standard-resource state.
+Evidence p66/depot_matched_{fixture_readback,merge_parameters,merge_prepare,merge_packet}.json.
+Computer Use recovered after human mouse interference; awaiting coordinator diagnosis.
+Coordinator two-stage attempt: level interior-to-free turnout to provisional
+[1110.2454,-2724.1205,16.25], native fit_radius50/hard minimum0,3 native-fit pieces,
+max_grade0. Exact full native diagnostic rejects Construction Not Possible with
+0 collision entities; through-only passes, first-lead/prefixes reject. No build.
+Existing diagnostics also evaluated reversed/subdivided first cubic, both rejected.
+Evidence p66/depot_level_lead_{parameters,diagnostics,result}.json. Decomposition
+stopped as instructed; no graded connector, relocation or further sweep attempted.
+Focused resource diagnosis: actual simple_catenary minCurveRadiusBuild55 read
+natively. Earlier level-fit50 violated that input; not a valid height isolation.
+Only parameter corrected to55: native proposal still rejects, through-only passes.
+Converted sampled minimum54.1585 remains below55; not established causal. Prior
+long endpoint cubic sampled minimum278.219 exceeds55; that simple limit cannot
+explain its failure. Successful crossover/straight exit compared in compact
+p66/depot_turnout_diagnosis_packet.json; exact native transport/resource evidence
+in depot_turnout_resource_diagnosis.json. No game changes or further sweeps.
+Human manual depot connection inspected read-only, preserved without reload.
+Manual junction67546 at[1109.403931,-2710.044189,16.25] splits earlier DUS67326
+into67540/67541; branches67549→67539 through67548 attach exact44416/depotleg67561.
+Later67344 unchanged. Junction13.63units from prior s90,52.60 from later intended
+midpoint; nearfork62365 (1.019units). Native depot↔E-facing67344 TRAIN routes
+pass285.102units; queried depot↔D-facing67515 routes no path. Not train traversal
+or global route impossibility. Manual example saved separately; exact reload readback passes.
+Evidence p66/depot_manual_reference_{discovery,exact,packet}.json and
+p66/depot_manual_route_{to_E,from_E,to_D,from_D}.json. Coordinator informed.
+ManualDepotConnection checkpoint hash/bytes and reload evidence:
+p66/depot_manual_checkpoint.json, depot_manual_reload_exact_03.json. Both saved
+manual branches and through split reacquired; no fitter-replication claim.
+Native UI reference67394 established selected Class246+BiLevel config0/cargo-1/
+autoLoad=true, including the legitimate zero-capacity locomotive compartment.
+Shared read-only preflight passed; one corrected bridge purchase created67414.
+One assignment to line67419 took effect; callback read failed on native path-pair
+userdata. No assignment replay. Independent post-reload read confirms exact line/
+vehicle; module18 reports the unavailable current-edge field honestly.
+Build40408/session pif_1791316477_1848605: train67414 physically moved toward E,
+slowed near E, then reversed direction with stop_index0 toward D. Primary Eterminal1
+and Dterminal0 observed; D alternative demonstrated above, all8 physical routes unproven.
+Healthy game paused/non-maximised. BridgeTrain checkpoint reload verified; subsequent
+movement is unsaved. Existing manual spur, old fatal/pending journals preserved.
+Evidence p66/vehicle_native_milestone.json and referenced purchase/assignment/motion
+records; vehicle_bridge_checkpoint.json records exact save hash/reload evidence.
+python tools/quiet_checks.py --suite live_client --label pif-p66-path-read-bounded:
+390 passed,0fail/0errors; .local_checks/pif-p66-path-read-bounded_7kjzcttt/report.json.
+Bridge signal creation/depot placement remain gaps; no capacity/loading proof.
+Computer Use recovered after human mouse release; no restart, assignment replay or push.
+
+# Operating challenge extension — alternate platforms
+
+User includes primary/alternative platform configuration, station-approach single
+crossovers for shared platform access, and final approach decision-signal placement.
+See DEVELOPMENT_ROADMAP.md for acceptance distinctions: configured choices,
+reachability and observed native alternative selection. Game owns selection logic;
+ordinary waiting/queues are acceptable. No station expansion or general capacity audit.
+
+# Roadmap update — 6 October 2026
+
+See DEVELOPMENT_ROADMAP.md. Railway-design agent/skill, pattern library and design
+challenge evaluation captured as a separate queued exercise. Complex Junction is
+accepted as bridge capability evidence, not railway-design quality. Recommended
+next bridge outcome, now accepted by the user, is native signals and representative
+train operation on this save (WP-07 / WF-04). Native game logic owns signalling and
+routing; waiting-clearance and junction-blockage design audits are excluded from
+bridge acceptance. No worker dispatch or game mutation in this roadmap update.
+
 # P65 complete — four C connections and18-movement challenge (6 October 2026)
 
 Native build40408: C.UF/C.DF bridges, C.US NORMAL approach and C.DS underpass built;
@@ -120,7 +251,19 @@ reused, no production source change or broad rerun. Save hash in activation.json
 precedes enabled-mod load. Game paused/non-maximised; no restart/host repair/push.
 Survey acceptance reached; coordinator decides integrated design and necessary gaps.
 
-# P59 complete — compact parallel packing and prepared rejection repair
+# Wickham challenge accepted â€” next capability planning
+
+User review,5 October2026: completed challenge proves its intended construction
+capabilities. Fans could be substantially shorter for slow terminal movements, but
+further reconstruction is not requested. Record lessons and select the next useful
+challenge to drive bridge expansion. No new implementation task dispatched.
+Roadmap candidates: native structure-bearing corridor(WF-03/WP-06), signals and
+representative train observation(WF-04/WP-07), and reusable existing-layout upgrades
+(WF-05/WP-08; exact removal/replacement already exercised at Wickham). These are
+planning candidates, not claims of implemented native support or newly adopted scope.
+Detailed station internals and custom train physics remain deferred.
+
+## P59 complete â€” compact parallel packing and prepared rejection repair
 
 Authority .local_runs/live_python_interface/p59/orchestrator/TASK.md and compact02
 with authorised local group adjustments. Six approaches end550; original fans and
@@ -140,11 +283,11 @@ historical reconstruction/build scripts or clear journals to repeat operations.
 
 ## Previous accepted milestone
 
-# P58 complete — compact Wickham reconstruction
+# P58 complete â€” compact Wickham reconstruction
 
 Authority .local_runs/live_python_interface/p58/orchestrator/TASK.md and compact01 plan.
 Six continuous approaches end650; original platform fans retained. Ten native single
-crossovers built from accepted prepared controls, longitudinal spans39.798–40.104.
+crossovers built from accepted prepared controls, longitudinal spans39.798â€“40.104.
 Each connector/both-through route verified; fresh fan snapshots unchanged; full56
 required arrival/departure TRAIN paths pass. No physical train/capacity proof.
 Transient published-read journal failures reconciled with existing client, no resends,
@@ -162,9 +305,9 @@ milestone only; no remote push. Acceptance reached; next design choice to coordi
 Authority: .local_runs/live_python_interface/p57/orchestrator/TASK.md.
 prepare_crossover/build_prepared_crossover reuse bounded connection-led candidate,
 native evaluation and P56 state ownership. Both through replacements and complete
-proposal accepted at380→460; separate Python process built exact stored controls.
-Junctions105109/105110; through105111–105114; connector105141. Crossing/both-through
-and retained9–15 TRAIN routes pass,32 retained snapshots unchanged; guards pass.
+proposal accepted at380â†’460; separate Python process built exact stored controls.
+Junctions105109/105110; through105111â€“105114; connector105141. Crossing/both-through
+and retained9â€“15 TRAIN routes pass,32 retained snapshots unchanged; guards pass.
 369 affected quiet checks pass. Final source/current save reload readback/routes pass.
 Current save TPF3_Bridge_P57_Crossover34_20261005.sav includes14/15 additions.
 Evidence .local_runs/live_python_interface/p57/{HANDOFF.md,final_result.json,
@@ -180,7 +323,7 @@ Authority: .local_runs/live_python_interface/p56/orchestrator/TASK.md.
 Fixed borrowed engine-state refresh losing preparation handles/counters by using
 one request-owned plain root through all stores/callbacks. Accepted geometry,
 freshness and single-use guards remain. Separate prepare/inspect/build processes
-built platform12 into13: junction105095, through105096/105097, branch105098→95736.
+built platform12 into13: junction105095, through105096/105097, branch105098â†’95736.
 Final source passed refreshing-state Lua regression including original-failure
 negative control;363 affected Python checks pass. Clean production reload of the
 saved P56 world: exact readback unchanged,12/13/10/11/9 TRAIN routes pass, old-session
@@ -192,14 +335,14 @@ Acceptance reached; next layout decision belongs to coordinator.
 
 ## Previous accepted milestone
 
-# PIF-P55 complete — platform10→11 prepared interior fan junction
+# PIF-P55 complete â€” platform10â†’11 prepared interior fan junction
 
 Authority: .local_runs/live_python_interface/p55/orchestrator/TASK.md and standing
 human map/staging/current-world save-load/local commit/handoff authorisation.
 Extended prepared construction to curved through-track replacement plus branch.
 Connection intent/tangents/corridor and bounded shape candidates govern fitting;
 radius is optional hard constraint, distinct from shaping. Preserve existing APIs.
-Build40408: junction105055, through105059/105060, branch105061/105062/105063→95539.
+Build40408: junction105055, through105059/105060, branch105061/105062/105063â†’95539.
 Replaced105044/134947 and redundant134924; exact outer104670/134923 retained.
 Accepted connection-led level guided candidate at native parameter.64990234375;
 radius is feedback, no invented hard minimum. Exact stored controls reused.
@@ -214,7 +357,7 @@ Acceptance reached: return layout decisions to coordinator. No restart or push.
 
 ## Previous accepted milestone
 
-P54 complete — prepared platform11 junction built and verified
+P54 complete â€” prepared platform11 junction built and verified
 
 Authority: .local_runs/live_python_interface/p54/orchestrator/TASK.md and standing
 human construction/staging/current-world save-load/local commit/handoff authority.
@@ -225,7 +368,7 @@ Optional fit_radius is separate from the mandatory radius. New opt-in level cubi
 candidate respects exact attachments/headings/corridor/hard bounds; old conversion
 tolerances remain unchanged. See implementation/JUNCTION_PREPARATION.md.
 
-Build40408: replaced only manual11 branch105075 with105044, nodes104670→134924.
+Build40408: replaced only manual11 branch105075 with105044, nodes104670â†’134924.
 Native platform11 and through9 TRAIN routes verified; exact retained9/11 snapshots
 unchanged. Prepared controls reused; changed input and consumed handle reject with
 unchanged readback, pending none. Current sessionpif_1791183544_3169823.

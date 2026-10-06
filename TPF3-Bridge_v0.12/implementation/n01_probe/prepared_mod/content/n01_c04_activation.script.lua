@@ -3,7 +3,9 @@ local MOD="tpf3_bridge_n01_c04_20261001"
 local SRC,ID,NAME="tpf3_bridge_pif_live","request","TPF3_BRIDGE_PIF_LIVE_EVENT"
 local codec=ug_require(MOD.."::/scripts/pif_codec.lua")
 local native=ug_require(MOD.."::/scripts/pif_native.lua")
+local operating=ug_require(MOD.."::/scripts/pif_operating.lua")
 local guiSession,lastPoll,nextSequence=nil,0,1
+local proposalCaptureArmed=false
 local function emit(kind,value) debugPrint("TPF3_BRIDGE_LIVE_"..kind.." "..codec.json(value)) end
 local function store(state,s) local root=state:get() or {};root.pifLive=s;state:set(root) end
 local function identity(x) return type(x)=="string" and #x<=80 and x:match("^[%w_-]+$") end
@@ -37,9 +39,32 @@ function data()
    emit("TRANSPORT_ERROR",{session=guiSession,error="invalid_module_envelope",sequence=nextSequence});nextSequence=nextSequence+1;return
   end
   nextSequence=nextSequence+1
+  if request.operation=="operating_inspect" and request.params and request.params.capture_next_proposal==true then proposalCaptureArmed=true end
+  if request.operation=="operating_inspect" and request.params and request.params.focus_entity then
+   local entity=request.params.focus_entity
+   assert(type(entity)=="number" and entity>0 and entity%1==0,"exact_focus_identity_required")
+   api.gui.camera.focusEntity(entity)
+  end
   api.cmd.sendCommand(api.cmd.makeScriptingSendEventCmd(SRC,ID,NAME,request),function(_result,success)
    emit("ACK",{session=guiSession,request_id=request.request_id,success=success==true})
   end)
+ end,
+ guiHandleEvent=function(_params,_state,_guiState,src,id,name,param)
+  if not proposalCaptureArmed or (name~="proposalApply" and name~="builder.proposalApply") then return end
+  proposalCaptureArmed=false
+  local result={source=src,id=id,event=name,diagnostic_only=true,world_replay=false}
+  local ok,err=pcall(function()
+   if type(param)=="table" then local keys={};for k in pairs(param) do keys[#keys+1]=tostring(k) end;table.sort(keys);result.parameter_keys={};for i=1,math.min(#keys,12) do result.parameter_keys[i]=keys[i] end end
+   local p=param.proposal;result.proposal_present=p~=nil
+   if not p then return end
+   result.removed_entities={};for i,x in ipairs(p.toRemove) do if i<=8 then result.removed_entities[#result.removed_entities+1]=x end end
+   result.constructions={};for i,x in ipairs(p.toAdd) do if i<=4 then result.constructions[#result.constructions+1]={resource=x.fileName,player=x.playerEntity} end end
+   result.edge_objects={};for i,x in ipairs(p.proposal.edgeObjectsToAdd) do if i<=4 then result.edge_objects[#result.edge_objects+1]={result_entity=x.resultEntity,category=x.category,left=x.left,player=x.playerEntity} end end
+   result.added_segments={};for i,x in ipairs(p.proposal.addedSegments) do if i<=4 then result.added_segments[#result.added_segments+1]={entity=x.entity,node0=x.comp.node0,node1=x.comp.node1,objects=x.comp.objects} end end
+   result.counts={constructions=#p.toAdd,edge_objects=#p.proposal.edgeObjectsToAdd,segments=#p.proposal.addedSegments}
+  end)
+  result.inspection_ok=ok;if not ok then result.error=tostring(err):sub(1,400) end
+  emit("P66_PROPOSAL_REFERENCE",result)
  end,
  handleEvent=function(_params,state,src,id,name,request)
   if src~=SRC or id~=ID or name~=NAME or type(request)~="table" then return end
@@ -77,6 +102,8 @@ function data()
    elseif request.operation=="connection" then native.extension(p,s,state,request.request_id,respond,true)
    elseif request.operation=="test_approach" then native.test_approach(p,s,state,request.request_id,respond)
    elseif request.operation=="inspect" then respond(request.request_id,"ok",native.inspect(p))
+   elseif request.operation=="operating_inspect" then respond(request.request_id,"ok",operating.inspect(p))
+   elseif request.operation=="operating_control" then operating.control(p,s,state,request.request_id,respond)
    elseif request.operation=="structured_chain" then native.structured_chain(p,s,state,request.request_id,respond)
    elseif request.operation=="station_lookup" then respond(request.request_id,"ok",native.station_lookup(p))
    elseif request.operation=="clear_obstructions" then native.clear_obstructions(p,s,state,request.request_id,respond)

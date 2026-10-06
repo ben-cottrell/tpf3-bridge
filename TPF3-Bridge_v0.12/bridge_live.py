@@ -21,9 +21,10 @@ OPERATIONS = {'scissors_candidate', 'degree_four_candidate', 'inspect_degree_fou
 OPERATIONS.add(STATION_OPERATION)
 OPERATIONS.add('repair_crossover')
 OPERATIONS.add('structured_chain')
+OPERATIONS.update({'operating_inspect', 'operating_control'})
 
 def is_mutation(operation, params):
-    return operation in ('build', 'test_approach', 'remove_branch', 'clear_obstructions') or (operation in ('structured_chain', 'repair_crossover', 'scissors_candidate', 'extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover', 'adjacent', 'degree_four_candidate') and params.get('execute') is True)
+    return operation in ('build', 'test_approach', 'remove_branch', 'clear_obstructions') or (operation in ('operating_control', 'structured_chain', 'repair_crossover', 'scissors_candidate', 'extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover', 'adjacent', 'degree_four_candidate') and params.get('execute') is True)
 
 def discover_session(log_path):
     """Read transport markers locally; a later request must still prove responsiveness."""
@@ -226,7 +227,7 @@ def _validate_interior_shapes(parameters, candidates, minimum):
         if (not isinstance(candidate,dict) or not {'branch','through'}<=candidate.keys()
                 or candidate.keys()-{'branch','through','fit_radius','handle_scale','through_handle_scales'}):
             raise ValueError('invalid interior candidate fields')
-        if candidate['branch'] not in ('native_parts','endpoint_cubic_level','guided_cubic_level') or candidate['through'] not in ('subdivide','subdivide_fresh','endpoint_cubic_level','extended_endpoint_cubic_level'):
+        if candidate['branch'] not in ('native_parts','endpoint_cubic_level','endpoint_cubic_graded','guided_cubic_level') or candidate['through'] not in ('subdivide','subdivide_fresh','endpoint_cubic_level','extended_endpoint_cubic_level'):
             raise ValueError('unsupported interior candidate')
         if ('through_extension' in parameters)!=(candidate['through']=='extended_endpoint_cubic_level'):
             raise ValueError('adjoining replacement requires an explicit extended candidate and snapshot')
@@ -322,6 +323,9 @@ def build_prepared_crossover(client, prepared):
             or prepared['result'].get('native_proposal_critical') is not False
             or prepared['result'].get('prepared_request')!=prepared.get('request_id')):
         raise ValueError('accepted current-session prepared crossover required')
+    for attempt in prepared['result'].get('candidate_rejections', []):
+        if attempt.get('status') == 'accepted' and attempt.get('evaluation', {}).get('messages'):
+            raise ValueError('native crossover error messages prevent build')
     return client.request('crossover',{'prepared_request':prepared['request_id'],'execute':True})
 
 def validate_project_brief(brief, *, corridor=False):
@@ -2839,7 +2843,7 @@ class LiveClient:
             intent=self.evidence/(unresolved['request_id']+'.compensation_intent.json')
             if intent.exists():
                 saved=json.loads(intent.read_text());corrective=saved.get('original_pending')==unresolved and saved.get('removal_params')==params
-        if unresolved and not corrective and (is_mutation(operation,params) or operation not in ('readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'verify_adjacency', 'adjacent', 'remove_branch', 'crossover', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'scissors_candidate')):
+        if unresolved and not corrective and (is_mutation(operation,params) or operation not in ('operating_inspect', 'readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'verify_adjacency', 'adjacent', 'remove_branch', 'crossover', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'scissors_candidate')):
             raise LiveError('reconciliation_required', 'previous request is unfinished; inspect its matching response/current world before any repeat', state['pending']['request_id'])
         if (self.evidence / (request_id + '.request.json')).exists():
             raise LiveError('request_id_reused', 'request ID already recorded', request_id)
