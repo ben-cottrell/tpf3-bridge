@@ -1,3 +1,22 @@
+# P69 — single edge-object model test failed at native resource conversion (6 October 2026)
+
+Build40408: actual signal_path_c.mdl/model2808 resolves and declared
+SimpleStreetProposal.EdgeObject/command constructors succeed. One submission on
+unused Cedge63090 (exact clone, negative replacement-1, ignoreErrors=false).
+Native Convert reports "Couldn't find resource for edge object" for that model;
+callback yields no replacement segment; no functional signal demonstrated.
+Exact reconciliation:63090 revision[67,14,1], node66436/67261 and empty objects
+unchanged; Dsignal67428/edge67429 unchanged. No build retry or new asset guesses.
+Original mutation_unverified journal preserved; no fabricated success/replay.
+Experimental source preserved locally, production/staged script restored to exact
+pre-P69 SHA6df771b2...; normal P69Baseline reload restores runtime, no process restart.
+Evidence .local_runs/live_python_interface/p69/{result.json,native_test_response.json,
+native_test_log.txt,after_test_operating.json,submitted_test_source.lua}.
+390-pass baseline .local_checks/pif-p66-path-read-bounded_7kjzcttt/report.json reused:
+all recorded test-input hashes unchanged. git diff --check passes. No new feature.
+Precise next boundary: supported modern con-based signal/depot producer contract;
+this failed model conversion is not evidence of global API absence. Return coordinator.
+
 # P68 — native GUI semantic placement contract unestablished (6 October 2026)
 
 Followed P67 builders into existing React GameContext/tool-stack ActionDescriptor.
