@@ -1,3 +1,18 @@
+# P74 complete — current-state design survey (7 October 2026)
+
+Build40408/session pif_1791396784_90336; current P73 world paused/non-maximised.
+Exact C/trunk/branch/direct D/E geometry and A–F station mapping exported;28 C
+controls unchanged from P65. Five historical IDs reacquired; old UF62224→69272,
+ID62224 now DF. Current graph confirms D/E-before-C slow-junction order.
+Nine sampled crossings plus one shared-node join overlap; no continuous clearance
+claim or new radius/grade gate. Scaled current_plan.svg, whole/C screenshots,
+geometry/role/port JSON and hashes: .local_runs/live_python_interface/p74/
+{HANDOFF.md,result.json}. Station external coverage bounded/truncated; frozen
+multigraph movement not flattened; failed reads preserved. Local consistency/diff
+checks pass; unchanged tests not rerun. No construction, simulation/save/load,
+staging or implementation change; pending none. No blocker/push; usage unavailable.
+Astra chooses next whole-layout design; P74 survey stopped at acceptance.
+
 # Cleanup and publication — 7 October 2026
 
 User authorised removal of unnecessary project files/test saves and remote push.
