@@ -1,3 +1,23 @@
+# P70 — existing signal found; new-instance producer unestablished (7 October 2026)
+
+Adopt existing functional signal as technical-template prerequisite (human report,
+not demonstrated universal engine necessity). Fresh seed67428 on67429/build40408:
+EDGE_OBJECT + SIGNAL_LIST, .con resource, oneWay1/type1/reversedfalse; no CONSTRUCTION.
+Native read-only refreshConstruction(seed) returns nil. replaceSegment(seed edge)
+prepares a replacement retaining SAME67428; no new edgeObjectsToAdd/toAdd entries.
+Neither helper exposes a new-instance producer. No build command, seed change,
+P69 retry, global scan/absence claim or inferred depot support. Exact-known-seed coverage.
+Original world saved as TPF3_Complex_Junction_P70_Baseline_20261007; hashes in
+.local_runs/live_python_interface/p70/baseline.json. Working service preserved.
+Probe/results/source evidence local in p70/{template_probe.json,result.json,
+source_contracts.json,template_probe_source.lua,HANDOFF.md}; production/staging
+source restored exactly. Normal reload restores runtime; no process restart.
+390 affected checks pass: python tools/quiet_checks.py --suite live_client
+--label pif-p70-template-read; .local_checks/pif-p70-template-read_ds2pu89k/report.json.
+git diff --check passes. Need supported modern edge-object creation factory or
+working current mod template example binding .con/params to a NEW target identity.
+Return this precise contract gap to coordinator; seed existence alone is not creation.
+
 # P69 — single edge-object model test failed at native resource conversion (6 October 2026)
 
 Build40408: actual signal_path_c.mdl/model2808 resolves and declared
