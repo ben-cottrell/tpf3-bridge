@@ -2795,7 +2795,17 @@ def lua_literal(value):
 def atomic_json(path, data):
     temp = path.with_suffix(path.suffix + '.tmp')
     temp.write_text(json.dumps(data, indent=2, allow_nan=False) + '\n', encoding='utf-8')
-    os.replace(temp, path)
+    # Windows readers/filters can briefly deny replacement after the file closes.
+    # Retry only this prepared file, never serialization or a native request.
+    delays = (.01, .02, .04, .08, .16)
+    for attempt in range(len(delays) + 1):
+        try:
+            os.replace(temp, path)
+            return
+        except OSError as exc:
+            if getattr(exc, 'winerror', None) not in (5, 32, 33) or attempt == len(delays):
+                raise  # Preserve the old destination and prepared temp on failure.
+            time.sleep(delays[attempt])
 
 def parse_response(line, request_id, session, operation):
     if MARKER not in line:

@@ -9,6 +9,83 @@ import contextlib
 import io
 from bridge_live import connect_adjacent, reconcile_constructed_crossover, connect_throat, validate_throat_brief, _select_throat_port, is_mutation, LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, connect_junction, connect_junction_at, reconcile_rejected_junction, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, reconcile_constructed_interior, discover_session, client_from_context
 
+class AtomicJsonTests(unittest.TestCase):
+    @staticmethod
+    def denied(code=5):
+        error = PermissionError('injected replacement contention')
+        error.winerror = code
+        return error
+
+    def test_transient_windows_errors_retry_same_prepared_bytes(self):
+        import bridge_live as live
+        for code in (5, 32, 33):
+            with self.subTest(code=code), tempfile.TemporaryDirectory() as d:
+                path = Path(d) / 'state.json'; path.write_text('old')
+                original = live.os.replace; attempts = []
+                def replace(source, target):
+                    attempts.append((source, target, source.read_bytes()))
+                    if len(attempts) < 3:
+                        self.assertEqual(target.read_text(), 'old')
+                        raise self.denied(code)
+                    return original(source, target)
+                with patch('bridge_live.os.replace', side_effect=replace), patch('bridge_live.time.sleep') as sleep:
+                    live.atomic_json(path, {'value': 42})
+                self.assertEqual(len(attempts), 3)
+                self.assertTrue(all(x == attempts[0] for x in attempts))
+                self.assertEqual(json.loads(path.read_text()), {'value': 42})
+                self.assertFalse(path.with_suffix('.json.tmp').exists())
+                self.assertEqual(sleep.call_count, 2)
+
+    def test_persistent_denial_is_bounded_and_preserves_both_files(self):
+        import bridge_live as live
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / 'state.json'; path.write_text('old')
+            error = self.denied()
+            with patch('bridge_live.os.replace', side_effect=error) as replace, patch('bridge_live.time.sleep') as sleep:
+                with self.assertRaises(PermissionError) as caught:
+                    live.atomic_json(path, {'pending': 'retained'})
+            self.assertIs(caught.exception, error)
+            self.assertEqual(replace.call_count, 6)
+            self.assertAlmostEqual(sum(c.args[0] for c in sleep.call_args_list), .31)
+            self.assertEqual(path.read_text(), 'old')
+            self.assertEqual(json.loads(path.with_suffix('.json.tmp').read_text()), {'pending': 'retained'})
+
+    def test_other_errors_are_not_retried(self):
+        import bridge_live as live
+        for error in (PermissionError('not a Windows error'), self.denied(112), FileNotFoundError('missing')):
+            with self.subTest(error=repr(error)), tempfile.TemporaryDirectory() as d:
+                with patch('bridge_live.os.replace', side_effect=error) as replace, patch('bridge_live.time.sleep') as sleep:
+                    with self.assertRaises(OSError): live.atomic_json(Path(d) / 'state.json', {})
+                self.assertEqual(replace.call_count, 1); sleep.assert_not_called()
+
+    def test_journal_contention_after_publication_does_not_republish_mutation(self):
+        import bridge_live as live
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d); log = root / 'stdout.txt'; log.write_text('')
+            client = LiveClient(root / 'mod', log, root / 'evidence', 'test_session', 1, require_ack=True)
+            original_replace = live.os.replace; original_publish = client._publish_file
+            denied = []
+            def replace(source, target):
+                value = json.loads(source.read_text())
+                if target == client.journal and value.get('pending', {}).get('publication', {}).get('state') == 'published' and not denied:
+                    denied.append(True)
+                    raise self.denied()
+                return original_replace(source, target)
+            def publish(source, target):
+                original_publish(source, target)
+                response = {'version': 1, 'session': 'test_session', 'request_id': 'once', 'operation': 'build',
+                            'status': 'ok', 'result': {'game_constructed': True}}
+                ack = {'session': 'test_session', 'request_id': 'once', 'success': True}
+                with log.open('a') as stream:
+                    stream.write(MARKER + json.dumps(response) + '\nTPF3_BRIDGE_LIVE_ACK ' + json.dumps(ack) + '\n')
+            with patch('bridge_live.os.replace', side_effect=replace), patch.object(client, '_publish_file', side_effect=publish) as publication:
+                result = client.request('build', {'fit_request': 'f'}, request_id='once')
+            self.assertEqual(denied, [True]); self.assertEqual(publication.call_count, 1)
+            self.assertTrue(result['result']['game_constructed'])
+            state = json.loads(client.journal.read_text())
+            self.assertNotIn('pending', state); self.assertEqual(state['next_sequence'], 2)
+            self.assertEqual(len(list(client.mod.rglob('*.lua'))), 1)
+
 class DepotPlacementTests(unittest.TestCase):
     def brief(self):
         return {'resource':'::/depots/rail/rail_depot.con','template':2,'params':{'catenary':2},

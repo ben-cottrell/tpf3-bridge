@@ -1,3 +1,16 @@
+## Windows atomic-write retry — 7 October 2026
+
+Implemented bounded retries of the same prepared JSON file replacement for Windows
+errors5/32/33: at most6attempts with10/20/40/80/160ms delays (310ms total backoff).
+Other errors fail immediately; persistent denial preserves the previous destination
+and prepared temporary file. No native request or publication is retried by this fix.
+415 affected tests pass, including post-publication journal contention without a
+second mutation publication. Real single-writer stress completed10000writes while
+recovering41transient denials; final contents verified. Exact OS actor remains unknown.
+Evidence: .local_runs/write_error_diagnosis/fixed_stress_result.json and
+.local_checks/windows-atomic-retry_v2zd9wia/report.json. No game commands issued in
+this fix. P73 pending read still requires reconciliation before final observation.
+
 # P73 partial milestone — blocked observation (7 October 2026)
 
 Build40408: bridge_station.place_station prepares processed native passenger modules
