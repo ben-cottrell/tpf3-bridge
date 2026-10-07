@@ -1,3 +1,10 @@
+## P71: native signal placement
+
+See [SIGNALS.md](SIGNALS.md) for place_signal, automatic template discovery,
+explicit placement/direction and final-state verification. Build40408 demonstrated
+a new E inbound one-way signal; all8 D/E terminal routes remain available.
+Depot creation remains separate.
+
 ## P40: opt-in complete level crossover representation
 
 The public `crossover` request and a `connect_throat` crossover step accept optional

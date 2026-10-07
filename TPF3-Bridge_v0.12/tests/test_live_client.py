@@ -9,6 +9,51 @@ import contextlib
 import io
 from bridge_live import connect_adjacent, reconcile_constructed_crossover, connect_throat, validate_throat_brief, _select_throat_port, is_mutation, LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, connect_junction, connect_junction_at, reconcile_rejected_junction, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, reconcile_constructed_interior, discover_session, client_from_context
 
+class SignalPlacementTests(unittest.TestCase):
+    def test_invalid_signal_brief_never_queries_or_builds(self):
+        from bridge_live import place_signal
+        from unittest.mock import Mock
+        b={'edge_id':42,'parameter':.4,'forward':True,'one_way':True}
+        for k,v in [('edge_id',True),('parameter',0),('parameter',1),('parameter',float('nan')),('forward',1),('one_way',None)]:
+            client=Mock()
+            with self.subTest(k=k,v=v),self.assertRaises(ValueError):place_signal(client,dict(b,**{k:v}),execute=True)
+            client.request.assert_not_called()
+
+    def test_signal_prepare_only_and_execute_use_fresh_target_and_seed(self):
+        from bridge_live import place_signal
+        from unittest.mock import Mock
+        b={'edge_id':42,'parameter':.4,'forward':False,'one_way':True}
+        read={'status':'ok','result':{'tracks':{'records':[{'id':42,'revision':[1,2,3]}]}}}
+        prepared={'status':'ok','result':{'signal_placement':{'seed':{'id':5,'revision':[6,7,8]}}}}
+        for execute in (False,True):
+            client=Mock();client.request.side_effect=[read,prepared,{'status':'mutation_unverified'}]
+            result=place_signal(client,b,execute=execute)
+            calls=client.request.call_args_list
+            self.assertEqual(len(calls),3 if execute else 2)
+            self.assertEqual(calls[1].args[1]['signal_placement'],dict(b,revision=[1,2,3]))
+            if execute:
+                self.assertEqual(calls[2].args,('operating_control',dict(b,revision=[1,2,3],seed_id=5,seed_revision=[6,7,8],action='signal_place',execute=True)))
+                self.assertEqual(result['status'],'mutation_unverified')
+            else:self.assertIs(result,prepared)
+
+    def test_missing_template_stale_target_or_duplicate_stops_before_mutation(self):
+        from bridge_live import place_signal
+        from unittest.mock import Mock
+        b={'edge_id':42,'parameter':.4,'forward':True,'one_way':False}
+        read={'status':'ok','result':{'tracks':{'records':[{'id':42,'revision':[1,2,3]}]}}}
+        for reason in ('functional_signal_template_required','stale_operating_identity','signal_already_at_parameter'):
+            failure={'status':'error','result':{'error':reason}}
+            client=Mock();client.request.side_effect=[read,failure]
+            self.assertIs(place_signal(client,b,execute=True),failure)
+            self.assertEqual(client.request.call_count,2)
+
+    def test_signal_target_identity_mismatch_requires_reconciliation(self):
+        from bridge_live import place_signal
+        from unittest.mock import Mock
+        client=Mock();client.request.return_value={'status':'ok','result':{'tracks':{'records':[{'id':43,'revision':[1,2,3]}]}}}
+        with self.assertRaises(LiveError):place_signal(client,{'edge_id':42,'parameter':.4,'forward':True,'one_way':False},execute=True)
+        self.assertEqual(client.request.call_count,1)
+
 class ScissorsTests(unittest.TestCase):
     def brief(self):
         return json.loads((Path(__file__).resolve().parents[1]/'implementation/live_python_interface/scissors_example.json').read_text())

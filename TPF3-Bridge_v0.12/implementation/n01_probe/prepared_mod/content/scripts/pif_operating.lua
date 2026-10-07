@@ -66,6 +66,92 @@ local function signals(x)
  end
  return result
 end
+-- API contract reference: installed Auto Signals submit; independent bounded implementation.
+local function signal_seed()
+ local processed,visited,selected=0,0,nil
+ api.engine.forEachEntity(function(x)
+  visited=visited+1
+  if selected or processed>=100000 then return end
+  processed=processed+1
+  local ok,value=pcall(function()
+   local o=assert(comp(x,C.EDGE_OBJECT));local s=assert(comp(x,C.SIGNAL_LIST))
+   assert(#s.signals>=1 and #s.signals<=8)
+   local edge_id=s.signals[1].edgePr[1].entity
+   local edge=assert(comp(edge_id,C.BASE_EDGE));assert(edge.roadType==E.RoadType.TRACK)
+   local attached=false;for _,entry in ipairs(edge.objects) do if entry[1]==x then attached=true end end
+   assert(attached and o.edgeObjectConstruction~=nil)
+   return {id=x,revision=rev(x),edge=edge_id,resource=o.edgeObjectConstruction}
+  end)
+  if ok then selected=value end
+ end)
+ if selected then selected.processed=processed;selected.entity_count=visited;selected.coverage="first_qualified_signal";return selected end
+ return {availability=processed<visited and "signal_seed_search_bound_exhausted" or "functional_signal_template_required",
+  processed=processed,entity_count=visited,truncated=processed<visited}
+end
+local function signal_prepare(p)
+ assert(type(p.parameter)=="number" and p.parameter==p.parameter and p.parameter>0 and p.parameter<1,"signal_parameter_inside_edge_required")
+ assert(type(p.forward)=="boolean" and type(p.one_way)=="boolean","explicit_signal_direction_and_one_way_required")
+ fresh(p.edge_id,p.revision)
+ local edge=assert(comp(p.edge_id,C.BASE_EDGE),"signal_target_edge_missing")
+ assert(edge.roadType==E.RoadType.TRACK,"signal_target_track_required")
+ assert(#edge.objects<=15,"signal_target_object_bound")
+ local seed=signal_seed();assert(seed.id,seed.availability)
+ if p.seed_id then assert(seed.id==p.seed_id,"signal_template_changed");fresh(seed.id,p.seed_revision) end
+ for _,entry in ipairs(edge.objects) do
+  local s=comp(entry[1],C.SIGNAL_LIST)
+  if s then
+   local o=comp(entry[1],C.EDGE_OBJECT)
+   assert(not o or math.abs(o.param-p.parameter)>.0001,"signal_already_at_parameter")
+  end
+ end
+ return edge,seed,{edge=p.edge_id,revision=rev(p.edge_id),parameter=p.parameter,forward=p.forward,
+  one_way=p.one_way,seed=seed,node0=edge.node0,node1=edge.node1,command_submitted=false}
+end
+local function signal_command(p)
+ local edge,seed,summary=signal_prepare(p)
+ local before={node0=edge.node0,node1=edge.node1,p0=xyz(edge.position0),p1=xyz(edge.position1),
+  t0=xyz(edge.tangent0),t1=xyz(edge.tangent1),template=edge.roadTemplate,style=edge.roadStyle,objects={}}
+ local objects={};for _,entry in ipairs(edge.objects) do objects[#objects+1]={entry[1],entry[2]};before.objects[entry[1]]=entry[2] end
+ objects[#objects+1]={-400000000,E.EdgeObjectType.SIGNAL}
+ local segment=api.type.SegmentAndEntity.new();segment.entity=-1;segment.type=1;segment.comp=edge
+ local owner=comp(p.edge_id,C.PLAYER_OWNED);if owner then segment.playerOwned=owner end
+ segment.comp.objects=objects
+ local addition=api.type.SimpleStreetProposal.EdgeObject.new()
+ addition.edgeEntity=-1;addition.param=p.parameter;addition.left=p.forward;addition.oneWay=p.one_way
+ addition.model=comp(seed.id,C.EDGE_OBJECT).edgeObjectConstruction -- Keep the actual native resource value.
+ addition.playerEntity=api.engine.util.getPlayer()
+ local proposal=api.type.SimpleProposal.new()
+ proposal.streetProposal.edgesToRemove={p.edge_id};proposal.streetProposal.edgesToAdd={segment}
+ proposal.streetProposal.edgeObjectsToAdd={addition};proposal.streetProposal.edgeObjectsToRemove={}
+ local context=api.type.Context.new();context.player=api.engine.util.getPlayer()
+ return api.cmd.makeWorldBuildProposalCmd(proposal,context,false,true),function(r)
+  local receipt=r.proposal.proposal;assert(#receipt.addedSegments==1,"signal_replacement_receipt_unresolved")
+  local replacement=id(receipt.addedSegments[1].entity);local actual=assert(comp(replacement,C.BASE_EDGE))
+  assert(actual.node0==before.node0 and actual.node1==before.node1 and actual.roadTemplate==before.template and actual.roadStyle==before.style,"signal_track_identity_or_resource_changed")
+  for field,expected in pairs({position0=before.p0,position1=before.p1,tangent0=before.t0,tangent1=before.t1}) do
+   local found=xyz(actual[field]);for i=1,3 do assert(math.abs(found[i]-expected[i])<=.001,"signal_track_geometry_changed") end
+  end
+  local retained,new={},{}
+  assert(#actual.objects<=16,"signal_readback_object_bound")
+  for _,entry in ipairs(actual.objects) do
+   if before.objects[entry[1]] then assert(entry[2]==before.objects[entry[1]],"signal_retained_object_category_changed");retained[entry[1]]=true
+   else new[#new+1]=entry[1] end
+  end
+  for x in pairs(before.objects) do assert(retained[x],"signal_existing_object_removed") end
+  assert(#new==1 and new[1]~=seed.id,"new_signal_identity_unresolved")
+  fresh(seed.id,seed.revision);local result=signals(new[1])
+  assert(result.resource==seed.resource and math.abs(result.param-p.parameter)<=.0001,"signal_resource_or_parameter_mismatch")
+  local kind=p.one_way and api.type.Signal.Type.ONE_WAY_SIGNAL or api.type.Signal.Type.SIGNAL
+  local lane_ok=false
+  for _,lane in ipairs(result.lanes) do
+   if lane.edge==replacement and lane.reversed==not p.forward and lane.type==tostring(kind) then lane_ok=true end
+  end
+  assert(lane_ok,"functional_signal_direction_or_type_mismatch")
+  return {signal=result,replacement_edge=replacement,replaced_edge=p.edge_id,seed=signals(seed.id),
+   track_geometry_verified=true,existing_objects_retained=true,functional_signal_verified=true,
+   game_constructed=true,physical_operation="requires_separate_observation"}
+ end
+end
 local function bounded(ids,limit,read)
  local out={count=#ids,records={},truncated=#ids>limit}
  for i=1,math.min(#ids,limit) do out.records[i]=read(ids[i]) end
@@ -140,6 +226,8 @@ end
 function M.inspect(p)
  local limit=p.limit or 16;assert(type(limit)=="number" and limit%1==0 and limit>=1 and limit<=32,"operating_read_bound")
  local out={game_constructed=false,player=api.engine.util.getPlayer(),save_identity="unknown",load_epoch="adapter_session_only"}
+ if p.signal_seed then out.signal_seed=signal_seed();return out end
+ if p.signal_placement then local _,_,summary=signal_prepare(p.signal_placement);out.signal_placement=summary;return out end
  if p.vehicle_asset_resources then
   assert(#p.vehicle_asset_resources>=1 and #p.vehicle_asset_resources<=8,"selected_vehicle_asset_bound")
   local function entries(values)
@@ -351,7 +439,9 @@ end
 function M.control(p,s,state,request_id,respond)
  assert(p.execute==true,"explicit_operating_execute_required");assert(not s.mutationPending,"unreconciled_mutation")
  local cmd,read
- if p.action=="depot_build" then
+ if p.action=="signal_place" then
+  cmd,read=signal_command(p)
+ elseif p.action=="depot_build" then
   cmd,read=depot_command(p)
  elseif p.action=="vehicle_buy" then
   local config,summary=prepare_vehicle(p)

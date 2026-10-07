@@ -2567,6 +2567,32 @@ def reconcile_constructed_connection(client, discoveries, edge_ids):
     latest.pop('pending');atomic_json(client.journal,latest)
     return {'status':'ok','result':record,'evidence':str(evidence.resolve())}
 
+def place_signal(client, brief, *, execute=False):
+    """Fresh native template discovery and explicit placement; no replay on failure."""
+    keys = {'edge_id', 'parameter', 'forward', 'one_way'}
+    if type(brief) is not dict or set(brief) != keys or type(execute) is not bool:
+        raise ValueError('signal requires edge_id, parameter, forward, one_way and boolean execute')
+    if type(brief['edge_id']) is not int or brief['edge_id'] <= 0:
+        raise ValueError('signal edge_id must be an exact positive native ID')
+    if (type(brief['parameter']) not in (int, float) or not math.isfinite(brief['parameter'])
+            or not 0 < brief['parameter'] < 1
+            or any(type(brief[k]) is not bool for k in ('forward', 'one_way'))):
+        raise ValueError('signal needs an interior native parameter and explicit direction/one_way')
+    observed = client.request('operating_inspect', {'track_ids': [brief['edge_id']]})
+    if observed['status'] != 'ok':
+        return observed
+    rows = observed.get('result', {}).get('tracks', {}).get('records', [])
+    if len(rows) != 1 or rows[0]['id'] != brief['edge_id']:
+        raise LiveError('reconciliation_required', 'exact signal target observation unavailable')
+    params = dict(brief, revision=rows[0]['revision'])
+    prepared = client.request('operating_inspect', {'signal_placement': params})
+    if prepared['status'] != 'ok' or not execute:
+        return prepared
+    seed = prepared['result']['signal_placement']['seed']
+    params = dict(params, seed_id=seed['id'], seed_revision=seed['revision'], action='signal_place', execute=True)
+    return client.request('operating_control', params)
+
+
 def route(client, brief):
     """Query native transport routing; does not build or establish train traversal."""
     keys = {'source_edge', 'source_node', 'target_edge', 'target_node', 'mode', 'max_length', 'required_edges'}
