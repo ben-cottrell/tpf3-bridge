@@ -9,44 +9,44 @@ second mutation publication. Real single-writer stress completed10000writes whil
 recovering41transient denials; final contents verified. Exact OS actor remains unknown.
 Evidence: .local_runs/write_error_diagnosis/fixed_stress_result.json and
 .local_checks/windows-atomic-retry_v2zd9wia/report.json. No game commands issued in
-this fix. P73 pending read still requires reconciliation before final observation.
+this fix. P73 pending read reconciled; subsequent observation completed.
 
-# P73 partial milestone — blocked observation (7 October 2026)
+# P73 complete — native stations and representative operation (7 October 2026)
 
-Build40408: bridge_station.place_station prepares processed native passenger modules
-and submits once; exact construction/station/group/zero-based terminal/port readback.
-Two-track 160-unit fast terminals A68920/group69069 and B69070/group69172 built,
-four exact leads plus ordinary turnback crossovers; distinct fast/slow roles and
-C fast bypass retained. Native station_target ownership permits explicit resource
-transition. Free buffer-side endpoints rejected Collision; approach-side leads work.
-Fast depot43113/con29672 connected by turnout69244–69246; slow depot69186/con69187
-connected to C terminal1. Unused trial depots62110/69212 remain, failures retained.
-Fast signals reversed through exact selected-object replacement, track controls and
-other objects checked; forward binds native left, not an assumed travel direction.
-Train69268/line60782 travels A–B with exact B terminal1 stop; slow69269/69262 travels
-A–C with C terminal1 stop and A loading stop (arrival tuple unobserved). Train69270
-physically dispatched from P72 Depot68943 on67419. P66 D/E travel/alternative-platform
-evidence reused. Native paths over64 rows remain truncated/unverified, not promoted.
-P73 NOT COMPLETE: exact fast-A stop remains uncaptured. Finite observer twice hit
-WinError5 replacing p01/pif_1791385541_13474088/client_state.json. First published read
-collected without replay via existing reconciliation; recurrence stopped all bridge
-requests. Pending published READ a0a9edcef69948d6aa7e6f1bece95469, sequence230,
-response/ACK present. No ACL/host repair, alternate-path bypass or fabricated success.
-411 tests pass: python tools/quiet_checks.py --suite live_client --label pif-p73-final;
-.local_checks/pif-p73-final_t12yfc7c/report.json. Python/test report hashes unchanged;
-station/module hashes recorded separately. python .local_runs/live_python_interface/
-p73/check_evidence.py validates16 receipts/3 stop records as partial_evidence_valid;
-git diff --check passes. Native rejection now clears command guard; uncertain success
-still requires reconciliation. Whole-entity line_update was rejected stale twice,
-no dwell change applied; no reservation/capacity/wait-clearance proof or new physics.
+Build40408: reusable bridge_station.place_station processes native passenger modules,
+single guarded construction and exact station/group/zero-based terminal/port readback.
+Fast A68920/group69069 and B69070/group69172: two tracks, length3→160 native;
+four approach leads, ordinary turnback crossovers and separate fast/slow roles;
+C fast bypass retained. Explicit station_target ownership permits resource transition.
+Free buffer-side ports rejected Collision; approach-side connections worked.
+Fast Depot43113/con29672 and slow69186/con69187 connected; unused trial62110/69212
+remain with original failures. Exact fast signal replacements verified; forward binds
+native left rather than assumed travel direction. Train69268/60782 travels A–B,
+69269/69262 travels A–C; four loading stops recorded, three with exact native
+terminal tuples. Slow-A arrival tuple unavailable at the observed stop. Train69270
+physically dispatched from P72 Depot68943 on67419.
+P66 D/E physical travel and alternate-terminal use reused, not rerun.
+Storage recurrence retained; coordinator fix5cda55c retries only atomic replacement.
+415 affected tests pass; original published read a0a9edcef69948d6aa7e6f1bece95469
+reconciled from saved exact response/ACK/request/slot after current log was replaced,
+without replay. Fresh session/service identities verified; final pending none.
+Reused python tools/quiet_checks.py --suite live_client --label windows-atomic-retry;
+.local_checks/windows-atomic-retry_v2zd9wia/report.json,415 passed. Current Python/test
+hashes match; unchanged station/native module hashes match prior evidence.
+python .local_runs/live_python_interface/p73/check_evidence.py validates18 native
+receipt/configuration records and4 loading stops; git diff --check passes.
 Evidence .local_runs/live_python_interface/p73/{result.json,checks_final.json,
-observer_storage_failure.json,world_checkpoint_partial.json,HANDOFF.md}; local commit
-recorded in result.json. Saved TPF3_Complex_Junction_P73_Operating_Partial_20261007;
-41606966bytes, SHA256fedf50bd83711ed0bdf9402980cbaca17fcc47838692f121dea254cec99912ab.
-Paused/non-maximised; final save not reloaded. Usage unavailable; no remote push.
-Resume only when journal storage works, reconcile that exact read, then finish the
-small remaining stop observation. Do not rebuild or rerun passing tests. Historical
-entries below retain their milestone scope/date; P71/P72 are accepted baselines.
+resume_reconciled.json,resume_current_operating.json,resume_current_lines.json,
+world_checkpoint_final.json,
+HANDOFF.md}; prior partial records and failed journals preserved. Local final commit
+recorded in result.json; source milestone848440c and atomic fix5cda55c retained.
+Saved TPF3_Complex_Junction_P73_Operating_Complete_20261007; size/SHA256 in checkpoint.
+Paused/non-maximised; final save not reloaded. No current blocker or remote push.
+Paths over64 rows remain truncated/unverified; physical travel is independent evidence.
+Native no-path/terminal telemetry is not universal topology/capacity/reservation proof.
+Line-dwell updates rejected stale twice; no dwell change applied. No standalone Lua
+checker, new physics, station internals or host repair. Usage unavailable.
+Acceptance reached; further task/design choice belongs to coordinator.
 
 # P72 complete — native depot and service access (7 October 2026)
 

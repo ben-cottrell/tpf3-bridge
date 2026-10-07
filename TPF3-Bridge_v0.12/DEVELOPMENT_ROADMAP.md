@@ -167,20 +167,21 @@ Detailed evidence remains in `.local_runs/live_python_interface/p71/` and `p72/`
 There is no current blocker. Existing capabilities do not need another general
 validation campaign before progressing to a useful new construction challenge.
 
-## P73 station/service milestone — operating acceptance incomplete
+## P73 completed — basic native stations and representative services
 
 User direction, 7 October: provide suitable basic native platforms for non-branch
 services. P73 built dedicated two-track fast A/B terminals, four approach leads,
 ordinary turnback crossovers and connected fast/slow service depots. Reusable
 placement/configuration and exact station/group/terminal readback are implemented.
-411 affected tests pass; see implementation/live_python_interface/STATIONS.md.
+415 affected tests pass, including atomic-write contention handling; see
+implementation/live_python_interface/STATIONS.md.
 
-Fast A–B and slow A–C trains actually travel; exact B/C terminal stops and slow A
-loading observed. A new train physically dispatched from Depot68943 on D–E;
-P66 alternate-platform evidence retained. Full P73 acceptance remains incomplete:
-fast-A exact terminal stop is uncaptured. Repeated local journal replacement
-WinError5 stopped further bridge requests; no environment repair. Reconcile the
-preserved pending read only when storage works, then finish the short observation.
+Fast A–B and slow A–C train travel and four loading stops demonstrated on build40408.
+A new train physically dispatched from Depot68943 on D–E; P66 alternate-platform
+evidence retained. Original storage failures preserved; replacement-only retry fix
+and explicit old-read reconciliation permitted completion without native replay.
+Final checkpoint: TPF3_Complex_Junction_P73_Operating_Complete_20261007.sav.
+No capacity/reservation/whole-world guarantee. Source/result/checkpoint evidence in p73/.
 
 Outcome: construct a simple native rail passenger station serving a selected
 non-branch route, connect its native track interfaces to the railway, discover its
@@ -200,4 +201,4 @@ Basic station construction is now in scope for this challenge. Detailed station
 architecture, furniture/crowd modelling, broad station-modification support, road
 network expansion and tycoon management are not implied. Railway-design skill work
 remains a separate queued exercise. Do not dispatch it automatically from this
-partial milestone. Detailed evidence and current blocker are in STATE.md and p73/.
+completed milestone. Detailed evidence and remaining limitations are in STATE.md and p73/.
