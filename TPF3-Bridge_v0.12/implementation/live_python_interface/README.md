@@ -1,3 +1,12 @@
+## Exact structured-track removal (P75 preparation)
+
+client.remove_exact_chain(edge_ids, allow_structures=True) explicitly permits a
+named bridge/tunnel chain. It reads fresh structure metadata; the mod checks exact
+geometry, structure type/resource, unowned exclusive internal nodes and retained
+endpoint incidence. Edge objects and unknown types remain unsupported. The default
+stays NORMAL-only. 416 affected tests pass; native execution remains untested.
+P75 candidates are superseded by the human whole-junction correction.
+
 ## P73: basic native stations and representative services
 
 See [STATIONS.md](STATIONS.md) for native passenger templates, processed modules,

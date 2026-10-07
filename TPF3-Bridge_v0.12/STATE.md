@@ -1,3 +1,19 @@
+# P75 stopped — direct design correction (7 October 2026)
+
+Mainline A–B/C split takes priority; coordinator will relocate/rebuild D/E branches.
+Old P75 candidates superseded, not native evaluated/built. No game request/mutation,
+reload/save/simulation change; P73 session pif_1791396784_90336 pending none,
+paused/non-maximised. Narrow fix retained:remove_exact_chain(...,allow_structures=True)
+observes/checks exact structure metadata, known types, ownership/incidence/object
+safeguards; default NORMAL-only unchanged.416 affected tests pass:
+python tools/quiet_checks.py --suite live_client --label pif-p75-structured-removal-local;
+.local_checks/pif-p75-structured-removal-local_l76h0wzw/report.json. Sandbox temporary
+file failures preserved; authorised normal local tests passed without host repair.
+Staged pif_native.lua changed on disk, NOT loaded/runtime-demonstrated. Prior bytes,
+hashes, superseded plans/checks/handoff in .local_runs/live_python_interface/p75/
+{HANDOFF.md,result.json,staging.json,SUPERSEDED.md}. Helper/mod/tests/README and state/
+task only; no runner/refactor/push. Await replacement design; usage unavailable.
+
 # P74 complete — current-state design survey (7 October 2026)
 
 Build40408/session pif_1791396784_90336; current P73 world paused/non-maximised.

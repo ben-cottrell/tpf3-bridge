@@ -5330,6 +5330,21 @@ class ExactChainRemovalTests(unittest.TestCase):
                 with patch.object(c,'request',return_value=response) as call,self.assertRaises(LiveError):c.remove_exact_chain([1])
                 self.assertEqual(call.call_count,1)
 
+    def test_structured_chain_removal_requires_explicit_fresh_structure_observation(self):
+        with tempfile.TemporaryDirectory() as d:
+            c=LiveClient(Path(d)/'mod',Path(d)/'log',Path(d)/'evidence','current',.02)
+            row={'id':7,'structure':{'classification':'BRIDGE'}}
+            answer={'status':'ok','result':{'removed_edges':[7]}}
+            with patch.object(c,'request',side_effect=[{'status':'ok','result':{'edges':[row]}},answer]) as calls:
+                self.assertEqual(c.remove_exact_chain([7],allow_structures=True),answer)
+                self.assertEqual(calls.call_args_list[0].args,('inspect',{'edge_ids':[7],'structures':True}))
+                self.assertEqual(calls.call_args_list[1].args,('remove_branch',{'authorised':True,'exact_chain':True,'allow_structures':True,'edges':[row]}))
+            with patch.object(c,'request',return_value={'status':'ok','result':{'edges':[{'id':7}]}}) as call,self.assertRaises(LiveError):
+                c.remove_exact_chain([7],allow_structures=True)
+            self.assertEqual(call.call_count,1)
+            with patch.object(c,'request') as call,self.assertRaises(ValueError):c.remove_exact_chain([7],allow_structures=1)
+            call.assert_not_called()
+
     def test_native_chain_mode_guards_and_unknown_outcome_are_preserved(self):
         source=(Path(__file__).resolve().parents[1]/'implementation/n01_probe/prepared_mod/content/scripts/pif_native.lua').read_text()
         block=source[source.index('function M.remove_branch'):source.index('function M.verify_crossover')]

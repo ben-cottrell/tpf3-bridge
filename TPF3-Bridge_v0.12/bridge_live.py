@@ -2832,19 +2832,26 @@ def parse_response(line, request_id, session, operation):
     return data
 
 class LiveClient:
-    def remove_exact_chain(self, edge_ids):
+    def remove_exact_chain(self, edge_ids, *, allow_structures=False):
         """Remove one explicitly named observed open chain; never select by region."""
-        if (type(edge_ids) is not list or not 1 <= len(edge_ids) <= 16
+        if (type(allow_structures) is not bool or type(edge_ids) is not list or not 1 <= len(edge_ids) <= 16
                 or any(type(x) is not int or x <= 0 for x in edge_ids)
                 or len(set(edge_ids)) != len(edge_ids)):
             raise ValueError('exact chain requires 1..16 distinct native edge IDs')
-        observed = self.request('inspect', {'edge_ids': edge_ids})
+        query = {'edge_ids': edge_ids}
+        if allow_structures:
+            query['structures'] = True
+        observed = self.request('inspect', query)
         rows = observed.get('result', {}).get('edges', [])
         byid = {e['id']: e for e in rows}
         if observed['status'] != 'ok' or set(byid) != set(edge_ids):
             raise LiveError('reconciliation_required', 'exact chain observation unavailable')
-        return self.request('remove_branch', {'authorised': True, 'exact_chain': True,
-                                             'edges': [byid[x] for x in edge_ids]})
+        params = {'authorised': True, 'exact_chain': True, 'edges': [byid[x] for x in edge_ids]}
+        if allow_structures:
+            if any(e.get('structure', {}).get('classification') not in ('NORMAL', 'BRIDGE', 'TUNNEL') for e in rows):
+                raise LiveError('reconciliation_required', 'exact structure observation unavailable')
+            params['allow_structures'] = True
+        return self.request('remove_branch', params)
 
     def compensate_crossover(self, *, connector_ids, reason, authority, original_client=None):
         """Explicit exact-receipt connector removal, never acceptance or replay."""

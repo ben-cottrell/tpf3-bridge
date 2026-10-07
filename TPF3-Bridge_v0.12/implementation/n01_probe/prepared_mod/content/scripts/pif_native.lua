@@ -1713,6 +1713,8 @@ function M.remove_branch(p,s,state,request_id,respond)
  assert(p.free_ends==nil or type(p.free_ends)=="boolean","invalid_free_end_removal_option")
  assert(p.exact_chain==nil or type(p.exact_chain)=="boolean","invalid_exact_chain_option")
  local exact=p.exact_chain==true
+ assert(p.allow_structures==nil or type(p.allow_structures)=="boolean","invalid_structured_removal_option")
+ assert(not p.allow_structures or exact,"structured_removal_requires_exact_chain")
  assert(not exact or (not p.free_ends and not p.isolated_fixture and not p.compensation),"conflicting_chain_removal_modes")
  assert(p.authorised==true and type(p.edges)=="table" and #p.edges>=1 and #p.edges<=((p.free_ends or exact) and 16 or 8),"invalid_branch_removal")
  local compensation=p.compensation
@@ -1744,7 +1746,12 @@ function M.remove_branch(p,s,state,request_id,respond)
  for i,snapshot in ipairs(p.edges) do
   local a=assert_fresh(snapshot);assert(not expected[a.id],"duplicate_removal_edge");expected[a.id]=true;ids[#ids+1]=a.id
   local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
-  assert(base.type==E.BaseEdgeType.NORMAL and #base.objects==0,"unsupported_removal_edge")
+  assert(#base.objects==0,"unsupported_removal_edge")
+  if p.allow_structures then
+   local current=structure(base);local expected_structure=snapshot.structure
+   assert(current.classification=="NORMAL" or current.classification=="BRIDGE" or current.classification=="TUNNEL","unsupported_removal_edge")
+   assert(expected_structure and current.classification==expected_structure.classification and current.type_index==expected_structure.type_index and current.resource_name==expected_structure.resource_name,"stale_removal_structure")
+  else assert(base.type==E.BaseEdgeType.NORMAL,"unsupported_removal_edge") end
   local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForEdge(a.id);assert(not (owner and owner>0),"construction_owned_removal")
   if exact then
    assert(a.node0~=a.node1,"removal_chain_loop")
