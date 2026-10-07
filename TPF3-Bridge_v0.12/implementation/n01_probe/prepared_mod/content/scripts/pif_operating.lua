@@ -1,5 +1,6 @@
 -- Bounded native operating evidence. Routing, signalling and motion stay native.
 local M={}
+local stations=ug_require('tpf3_bridge_n01_c04_20261001::/scripts/pif_stations.lua')
 local C,E=api.type.ComponentType,api.type["enum"]
 local function id(x) assert(type(x)=="number" and x>0 and x%1==0,"exact_entity_id_required");return x end
 local function comp(x,t) return api.engine.getComponent(id(x),t) end
@@ -101,8 +102,13 @@ local function signal_prepare(p)
   local s=comp(entry[1],C.SIGNAL_LIST)
   if s then
    local o=comp(entry[1],C.EDGE_OBJECT)
-   assert(not o or math.abs(o.param-p.parameter)>.0001,"signal_already_at_parameter")
+   assert(entry[1]==p.replace_signal_id or not o or math.abs(o.param-p.parameter)>.0001,"signal_already_at_parameter")
   end
+ end
+ if p.replace_signal_id then
+  fresh(p.replace_signal_id,p.replace_signal_revision);local old=signals(p.replace_signal_id);local attached=false
+  for _,entry in ipairs(edge.objects) do if entry[1]==p.replace_signal_id then attached=true end end
+  assert(attached and math.abs(old.param-p.parameter)<=.0001,'replacement_signal_not_at_exact_attachment')
  end
  return edge,seed,{edge=p.edge_id,revision=rev(p.edge_id),parameter=p.parameter,forward=p.forward,
   one_way=p.one_way,seed=seed,node0=edge.node0,node1=edge.node1,command_submitted=false}
@@ -111,7 +117,7 @@ local function signal_command(p)
  local edge,seed,summary=signal_prepare(p)
  local before={node0=edge.node0,node1=edge.node1,p0=xyz(edge.position0),p1=xyz(edge.position1),
   t0=xyz(edge.tangent0),t1=xyz(edge.tangent1),template=edge.roadTemplate,style=edge.roadStyle,objects={}}
- local objects={};for _,entry in ipairs(edge.objects) do objects[#objects+1]={entry[1],entry[2]};before.objects[entry[1]]=entry[2] end
+ local objects={};for _,entry in ipairs(edge.objects) do if entry[1]~=p.replace_signal_id then objects[#objects+1]={entry[1],entry[2]};before.objects[entry[1]]=entry[2] end end
  objects[#objects+1]={-400000000,E.EdgeObjectType.SIGNAL}
  local segment=api.type.SegmentAndEntity.new();segment.entity=-1;segment.type=1;segment.comp=edge
  local owner=comp(p.edge_id,C.PLAYER_OWNED);if owner then segment.playerOwned=owner end
@@ -122,7 +128,7 @@ local function signal_command(p)
  addition.playerEntity=api.engine.util.getPlayer()
  local proposal=api.type.SimpleProposal.new()
  proposal.streetProposal.edgesToRemove={p.edge_id};proposal.streetProposal.edgesToAdd={segment}
- proposal.streetProposal.edgeObjectsToAdd={addition};proposal.streetProposal.edgeObjectsToRemove={}
+ proposal.streetProposal.edgeObjectsToAdd={addition};proposal.streetProposal.edgeObjectsToRemove=p.replace_signal_id and {p.replace_signal_id} or {}
  local context=api.type.Context.new();context.player=api.engine.util.getPlayer()
  return api.cmd.makeWorldBuildProposalCmd(proposal,context,false,true),function(r)
   local receipt=r.proposal.proposal;assert(#receipt.addedSegments==1,"signal_replacement_receipt_unresolved")
@@ -138,8 +144,8 @@ local function signal_command(p)
    else new[#new+1]=entry[1] end
   end
   for x in pairs(before.objects) do assert(retained[x],"signal_existing_object_removed") end
-  assert(#new==1 and new[1]~=seed.id,"new_signal_identity_unresolved")
-  fresh(seed.id,seed.revision);local result=signals(new[1])
+  assert(#new==1 and (new[1]~=seed.id or seed.id==p.replace_signal_id),"new_signal_identity_unresolved")
+  if seed.id~=p.replace_signal_id then fresh(seed.id,seed.revision) end;local result=signals(new[1])
   assert(result.resource==seed.resource and math.abs(result.param-p.parameter)<=.0001,"signal_resource_or_parameter_mismatch")
   local kind=p.one_way and api.type.Signal.Type.ONE_WAY_SIGNAL or api.type.Signal.Type.SIGNAL
   local lane_ok=false
@@ -147,7 +153,7 @@ local function signal_command(p)
    if lane.edge==replacement and lane.reversed==not p.forward and lane.type==tostring(kind) then lane_ok=true end
   end
   assert(lane_ok,"functional_signal_direction_or_type_mismatch")
-  return {signal=result,replacement_edge=replacement,replaced_edge=p.edge_id,seed=signals(seed.id),
+  return {signal=result,replacement_edge=replacement,replaced_edge=p.edge_id,replaced_signal=p.replace_signal_id,seed=seed.id~=p.replace_signal_id and signals(seed.id) or seed,
    track_geometry_verified=true,existing_objects_retained=true,functional_signal_verified=true,
    game_constructed=true,physical_operation="requires_separate_observation"}
  end
@@ -324,6 +330,9 @@ end
 function M.inspect(p)
  local limit=p.limit or 16;assert(type(limit)=="number" and limit%1==0 and limit>=1 and limit<=32,"operating_read_bound")
  local out={game_constructed=false,player=api.engine.util.getPlayer(),save_identity="unknown",load_epoch="adapter_session_only"}
+ if p.station_catalogue then return stations.catalogue() end
+ if p.station_preparation then local _,r=stations.prepare(p.station_preparation);out.station_preparation=r;return out end
+ if p.station_readback then local q=p.station_readback;out.station_readback=stations.readback(id(q.construction_id),q);return out end
  if p.signal_seed then out.signal_seed=signal_seed();return out end
  if p.signal_placement then local _,_,summary=signal_prepare(p.signal_placement);out.signal_placement=summary;return out end
  if p.vehicle_asset_resources then
@@ -532,7 +541,9 @@ end
 function M.control(p,s,state,request_id,respond)
  assert(p.execute==true,"explicit_operating_execute_required");assert(not s.mutationPending,"unreconciled_mutation")
  local cmd,read
- if p.action=="signal_place" then
+ if p.action=="station_build" then
+  cmd,read=stations.command(p)
+ elseif p.action=="signal_place" then
   cmd,read=signal_command(p)
  elseif p.action=="depot_build" then
   cmd,read=depot_command(p)
@@ -560,6 +571,11 @@ function M.control(p,s,state,request_id,respond)
  else error("unsupported_operating_action") end
  s.mutationPending=request_id;local root=state:get() or {};root.pifLive=s;state:set(root)
  api.cmd.sendCommand(cmd,function(result,success)
+  if success~=true then
+   s.mutationPending=nil
+   respond(request_id,"error",{error="native_operating_command_rejected",native_command_success=false,
+    game_constructed=false,operating_effects="unknown",retry=false});return
+  end
   local ok,value=pcall(function() assert(success==true,"native_operating_command_rejected");return read(result) end)
   if ok then s.mutationPending=nil;value.native_command_success=true;value.game_constructed=value.game_constructed or false;value.native_operating_state_changed=true end
   respond(request_id,ok and "ok" or "mutation_unverified",ok and value or {error=tostring(value):sub(1,400),retry=false,game_constructed=false,operating_effects="unknown"})

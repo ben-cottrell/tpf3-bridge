@@ -167,12 +167,20 @@ Detailed evidence remains in `.local_runs/live_python_interface/p71/` and `p72/`
 There is no current blocker. Existing capabilities do not need another general
 validation campaign before progressing to a useful new construction challenge.
 
-## Next challenge: basic native station construction
+## P73 station/service milestone — operating acceptance incomplete
 
-User direction, 7 October: the current map lacks suitable platform stations for
-non-branch services. Build this capability next, before extending representative
-non-branch train operation. Existing named reference stations do not establish that
-usable platforms exist for every intended track role.
+User direction, 7 October: provide suitable basic native platforms for non-branch
+services. P73 built dedicated two-track fast A/B terminals, four approach leads,
+ordinary turnback crossovers and connected fast/slow service depots. Reusable
+placement/configuration and exact station/group/terminal readback are implemented.
+411 affected tests pass; see implementation/live_python_interface/STATIONS.md.
+
+Fast A–B and slow A–C trains actually travel; exact B/C terminal stops and slow A
+loading observed. A new train physically dispatched from Depot68943 on D–E;
+P66 alternate-platform evidence retained. Full P73 acceptance remains incomplete:
+fast-A exact terminal stop is uncaptured. Repeated local journal replacement
+WinError5 stopped further bridge requests; no environment repair. Reconcile the
+preserved pending read only when storage works, then finish the short observation.
 
 Outcome: construct a simple native rail passenger station serving a selected
 non-branch route, connect its native track interfaces to the railway, discover its
@@ -191,5 +199,5 @@ and a second stop are available. Report these evidence levels separately.
 Basic station construction is now in scope for this challenge. Detailed station
 architecture, furniture/crowd modelling, broad station-modification support, road
 network expansion and tycoon management are not implied. Railway-design skill work
-remains a separate queued exercise. This documentation update selects the next
-challenge; it does not claim an implementation or alter the current save.
+remains a separate queued exercise. Do not dispatch it automatically from this
+partial milestone. Detailed evidence and current blocker are in STATE.md and p73/.

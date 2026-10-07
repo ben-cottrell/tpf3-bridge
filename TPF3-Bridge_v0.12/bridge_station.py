@@ -1,7 +1,38 @@
-"""Named native station and bounded external-connection survey; no construction."""
+"""Basic native station placement and bounded exact-identity survey."""
 import math
 import uuid
 import bridge_live as live
+
+
+def place_station(client, brief, *, execute=False):
+    """Prepare native modules; optionally submit once. Connections remain separate."""
+    keys={'resource','template','params','position','angle','name'}
+    if type(brief) is not dict or set(brief)!=keys or type(execute) is not bool:
+        raise ValueError('station requires resource/template/params/position/angle/name')
+    if brief['resource']!='::/stations/rail/modular_station/modular_station.con':
+        raise ValueError('supported native modular passenger station required')
+    if type(brief['template']) is not int or not 0<=brief['template']<=5:
+        raise ValueError('explicit native passenger template required')
+    p=brief['params']
+    if (type(p) is not dict or set(p)-{'tracks','length','trackType','catenary','year'}
+            or type(p.get('tracks')) is not int or not 1<=p['tracks']<=8
+            or type(p.get('length')) is not int or not 1<=p['length']<=5):
+        raise ValueError('bounded native station tracks/length controls required')
+    for key in ('trackType','catenary','year'):
+        if key in p and (type(p[key]) is not int or p[key]<0):
+            raise ValueError('integer native station parameter required')
+    if (type(brief['position']) is not list or len(brief['position'])!=3
+            or any(type(v) not in (int,float) or not math.isfinite(v) or abs(v)>=100000 for v in brief['position'])
+            or type(brief['angle']) not in (int,float) or not math.isfinite(brief['angle']) or abs(brief['angle'])>=100
+            or type(brief['name']) is not str or not 1<=len(brief['name'])<=80):
+        raise ValueError('finite native position/angle and bounded station name required')
+    prepared=client.request('operating_inspect',{'station_preparation':brief})
+    if prepared['status']!='ok' or not execute:return prepared
+    r=prepared.get('result',{}).get('station_preparation',{})
+    if (r.get('resource')!=brief['resource'] or r.get('template')!=brief['template']
+            or r.get('command_constructed') is not True or r.get('native_command_submitted') is not False):
+        raise live.LiveError('reconciliation_required','matching native station preparation unavailable')
+    return client.request('operating_control',dict(brief,action='station_build',execute=True))
 
 
 def parameters(brief):

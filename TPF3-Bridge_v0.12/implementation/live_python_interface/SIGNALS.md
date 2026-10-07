@@ -9,8 +9,11 @@ Use `execute=True` explicitly to submit one new signal. Brief fields:
 ```
 
 IDs are examples; reacquire them in the current loaded world. Parameter is strictly
-inside the native edge (0..1). Forward means node0 towards node1. One-way behaviour
-is explicit; geometry/proximity does not determine signal identity or direction.
+inside the native edge (0..1). `forward` binds the native `left` control; committed
+readback requires `reversed == not forward`. Do not infer permitted travel from
+that label alone. In P73 on build40408, `forward: false` restored the selected
+node0-to-node1 fast path where `true` blocked it. Verify the intended native path
+and actual operation. One-way behaviour is explicit; proximity is not identity.
 The existing low-level CLI also supports `operating_inspect` with `signal_placement`
 and `operating_control` with `action: signal_place`, fresh target/seed revisions and
 `execute: true`. Prefer the callable workflow to obtain these revisions.
@@ -36,3 +39,10 @@ retained existing objects and unchanged seed. Command acknowledgement alone is
 insufficient. Unknown effects stay unreconciled and must not be replayed. Native
 train occupation may reject replacement. This API does not establish depot creation,
 continuous signalling correctness, traffic capacity, or arbitrary-build support.
+
+To change an existing signal's direction/type, supply `replace_signal_id` with its
+exact current ID and the same attachment parameter. The callable workflow reads
+its current revision and verifies that it is on the selected edge before one native
+remove/add proposal. Other edge objects and track geometry/resources remain checked.
+The resulting signal and edge may have new or reused IDs; use committed readback.
+This is an explicit selected-object replacement, not bulk signal removal.

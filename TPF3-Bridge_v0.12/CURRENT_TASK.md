@@ -1,15 +1,25 @@
-# Next: basic native station construction
+# P73 blocked — stations built, operating acceptance incomplete
 
-User selected this next challenge on 7 October 2026. Current map lacks suitable
-platform stations for non-branch services. See DEVELOPMENT_ROADMAP.md and the
-current scope addition in SPDD_SCOPE.md. Survey actual station assets and line roles,
-then construct a simple native passenger station, connect it and expose exact
-station/group/terminal identities for service use. Keep stopping tracks and fast
-bypasses intentional. No station implementation dispatched by this documentation update.
+Authority: .local_runs/live_python_interface/p73/orchestrator/TASK.md.
+Provide native fast A/B terminals outside the junction and a suitable slow-to-C
+service; keep distinct fast/slow approaches and C fast bypass. Survey native
+station modules and exact ports before building; record station/service plan.
+Reuse P66 D/E travel/alternative-platform evidence and P72 depot/route baseline.
+Normal staging/load/simulation and disposable-map construction authorised.
+No process restart, host repair, new dependencies, runner change or remote push.
 
-Existing construction capabilities are sufficient to move forward; do not launch
-another broad validation pass. New depot dispatch and representative non-branch
-operation remain untested; station provision is the next useful enabling step.
+411 affected quiet tests pass; separate fast A/B terminals, four leads, turnback
+crossovers, fast/slow depots and service assignment demonstrated on build40408.
+Fast Train69268 travels A–B with exact B terminal1 stop; slow69269 travels A–C
+with C terminal1 stop and A loading stop (arrival tuple unavailable). Train69270
+physically dispatched from Depot68943 on D–E; P66 alternate-platform proof reused.
+P73 is NOT complete: fast-A exact stop not yet captured. The finite observer twice
+hit WinError5 replacing .local_runs/live_python_interface/p01/
+pif_1791385541_13474088/client_state.json. Stop further bridge requests; no ACL/host
+repair or alternate-path bypass. Pending READ a0a9edcef69948d6aa7e6f1bece95469,
+sequence230, remains published; preserve and reconcile its existing response before
+any continuation once local storage is functioning. Do not rebuild/rebuy/recreate
+services or rerun unchanged tests. Evidence/results: .local_runs/live_python_interface/p73/.
 
 # P72 complete — native depot and DS service connection
 

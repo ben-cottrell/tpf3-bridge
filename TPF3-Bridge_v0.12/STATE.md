@@ -1,12 +1,39 @@
-# Current direction — 7 October 2026
+# P73 partial milestone — blocked observation (7 October 2026)
 
-P71 native signal placement and P72 native depot/service connection are accepted.
-P72 local commit79cd4d1; 399 affected tests and 11 native route checks passed.
-No current blocker. Native depot path proof is not physical dispatch proof.
-User selects basic station construction next because non-branch lines lack suitable
-platform stations. Documentation/scope updated; no new game changes or station
-implementation claimed. Historical entries below describe their milestone dates;
-P69/P70 signal gaps were resolved by P71. See DEVELOPMENT_ROADMAP.md for next outcome.
+Build40408: bridge_station.place_station prepares processed native passenger modules
+and submits once; exact construction/station/group/zero-based terminal/port readback.
+Two-track 160-unit fast terminals A68920/group69069 and B69070/group69172 built,
+four exact leads plus ordinary turnback crossovers; distinct fast/slow roles and
+C fast bypass retained. Native station_target ownership permits explicit resource
+transition. Free buffer-side endpoints rejected Collision; approach-side leads work.
+Fast depot43113/con29672 connected by turnout69244–69246; slow depot69186/con69187
+connected to C terminal1. Unused trial depots62110/69212 remain, failures retained.
+Fast signals reversed through exact selected-object replacement, track controls and
+other objects checked; forward binds native left, not an assumed travel direction.
+Train69268/line60782 travels A–B with exact B terminal1 stop; slow69269/69262 travels
+A–C with C terminal1 stop and A loading stop (arrival tuple unobserved). Train69270
+physically dispatched from P72 Depot68943 on67419. P66 D/E travel/alternative-platform
+evidence reused. Native paths over64 rows remain truncated/unverified, not promoted.
+P73 NOT COMPLETE: exact fast-A stop remains uncaptured. Finite observer twice hit
+WinError5 replacing p01/pif_1791385541_13474088/client_state.json. First published read
+collected without replay via existing reconciliation; recurrence stopped all bridge
+requests. Pending published READ a0a9edcef69948d6aa7e6f1bece95469, sequence230,
+response/ACK present. No ACL/host repair, alternate-path bypass or fabricated success.
+411 tests pass: python tools/quiet_checks.py --suite live_client --label pif-p73-final;
+.local_checks/pif-p73-final_t12yfc7c/report.json. Python/test report hashes unchanged;
+station/module hashes recorded separately. python .local_runs/live_python_interface/
+p73/check_evidence.py validates16 receipts/3 stop records as partial_evidence_valid;
+git diff --check passes. Native rejection now clears command guard; uncertain success
+still requires reconciliation. Whole-entity line_update was rejected stale twice,
+no dwell change applied; no reservation/capacity/wait-clearance proof or new physics.
+Evidence .local_runs/live_python_interface/p73/{result.json,checks_final.json,
+observer_storage_failure.json,world_checkpoint_partial.json,HANDOFF.md}; local commit
+recorded in result.json. Saved TPF3_Complex_Junction_P73_Operating_Partial_20261007;
+41606966bytes, SHA256fedf50bd83711ed0bdf9402980cbaca17fcc47838692f121dea254cec99912ab.
+Paused/non-maximised; final save not reloaded. Usage unavailable; no remote push.
+Resume only when journal storage works, reconcile that exact read, then finish the
+small remaining stop observation. Do not rebuild or rerun passing tests. Historical
+entries below retain their milestone scope/date; P71/P72 are accepted baselines.
 
 # P72 complete — native depot and service access (7 October 2026)
 

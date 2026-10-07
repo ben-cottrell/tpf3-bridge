@@ -1222,7 +1222,12 @@ function M.extension(p,s,state,request_id,respond,connect_mode,junction_context)
    assert(b.anchor_node~=b.target_node and b.anchor_edge~=b.target_edge,"distinct_attachments_required")
    assert(b.target_node==inspection.edges[2].node0 or b.target_node==inspection.edges[2].node1,"target_not_edge_endpoint")
    local t,pos,outward,grade=anchor({anchor_edge=b.target_edge,anchor_node=b.target_node})
-   assert(a.template==t.template and a.style==t.style,"unsupported_attachment_resources")
+   if b.station_target then
+    local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForEdge(t.id)
+    assert(owner==b.station_target,"station_target_ownership_mismatch")
+    local station=api.engine.getComponent(owner,api.type.ComponentType.CONSTRUCTION)
+    assert(station and #station.stations>0,"station_target_required")
+   else assert(a.template==t.template and a.style==t.style,"unsupported_attachment_resources") end
    target={edge=t,node=b.target_node,pos=pos,direction={-outward[1],-outward[2],0},grade=-grade}
    b={anchor_edge=b.anchor_edge,anchor_node=b.anchor_node,end_xy={pos[1],pos[2]},end_direction=target.direction,radius=b.radius,fit_radius=b.fit_radius,region=b.region,vertical=b.vertical}
   end

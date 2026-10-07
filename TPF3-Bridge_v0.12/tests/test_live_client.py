@@ -58,6 +58,45 @@ class DepotPlacementTests(unittest.TestCase):
             self.assertEqual(client.request.call_count,1)
 
 class SignalPlacementTests(unittest.TestCase):
+    def test_signal_replacement_requires_exact_fresh_attachment(self):
+        from bridge_live import place_signal
+        from unittest.mock import Mock
+        b={'edge_id':42,'parameter':.4,'forward':False,'one_way':True,'replace_signal_id':9}
+        obj={'id':9,'revision':[8,2,1],'parameter':.4,'signal':{'lanes':[]}}
+        read={'status':'ok','result':{'tracks':{'records':[{'id':42,'revision':[1,2,3],'objects':[obj]}]}}}
+        prepared={'status':'ok','result':{'signal_placement':{'seed':{'id':5,'revision':[6,7,8]}}}}
+        client=Mock();client.request.side_effect=[read,prepared,{'status':'mutation_unverified'}]
+        result=place_signal(client,b,execute=True)
+        self.assertEqual(result['status'],'mutation_unverified')
+        self.assertEqual(client.request.call_count,3)
+        params=client.request.call_args_list[2].args[1]
+        self.assertEqual(params['replace_signal_id'],9)
+        self.assertEqual(params['replace_signal_revision'],[8,2,1])
+        self.assertEqual(params['revision'],[1,2,3])
+        self.assertTrue(params['execute'])
+        self.assertEqual(b,{'edge_id':42,'parameter':.4,'forward':False,'one_way':True,'replace_signal_id':9})
+
+    def test_wrong_signal_replacement_attachment_never_prepares_or_builds(self):
+        from bridge_live import place_signal
+        from unittest.mock import Mock
+        b={'edge_id':42,'parameter':.4,'forward':False,'one_way':True,'replace_signal_id':9}
+        for obj in ({'id':8,'parameter':.4,'signal':{}},
+                    {'id':9,'parameter':.7,'signal':{}},
+                    {'id':9,'parameter':.4,'signal':None}):
+            client=Mock();client.request.return_value={'status':'ok','result':{'tracks':{'records':[
+                {'id':42,'revision':[1,2,3],'objects':[obj]}]}}}
+            with self.subTest(obj=obj),self.assertRaises(LiveError):place_signal(client,b,execute=True)
+            self.assertEqual(client.request.call_count,1)
+
+    def test_invalid_replacement_id_never_reads(self):
+        from bridge_live import place_signal
+        from unittest.mock import Mock
+        for value in (True,0,-1,'9'):
+            client=Mock()
+            with self.subTest(value=value),self.assertRaises(ValueError):
+                place_signal(client,{'edge_id':42,'parameter':.4,'forward':False,'one_way':True,'replace_signal_id':value},execute=True)
+            client.request.assert_not_called()
+
     def test_invalid_signal_brief_never_queries_or_builds(self):
         from bridge_live import place_signal
         from unittest.mock import Mock
@@ -5450,6 +5489,148 @@ class RejectedStructuredChainTests(unittest.TestCase):
         self.assertEqual(parse_response(MARKER+json.dumps(record),'r','current','structured_chain'),record)
         record['result']['evaluation']['message_count']=0
         with self.assertRaises(LiveError):parse_response(MARKER+json.dumps(record),'r','current','structured_chain')
+
+from unittest.mock import Mock
+from bridge_station import place_station
+
+class StationPlacementTests(unittest.TestCase):
+    def brief(self):
+        return dict(resource='::/stations/rail/modular_station/modular_station.con',template=5,
+                    params=dict(tracks=2,length=3,trackType=2,catenary=2,year=2021),
+                    position=[10,20,16.25],angle=.5,name='Native terminal')
+
+    def test_invalid_or_cargo_input_sends_nothing(self):
+        b=self.brief()
+        for changes in ({'template':6},{'template':True},{'resource':'depot.con'},
+                        {'position':[1,2,float('nan')]},{'angle':float('inf')},
+                        {'params':dict(tracks=True,length=3)},
+                        {'params':dict(tracks=2,length=7)},
+                        {'params':dict(tracks=2,length=3,unapproved=True)}):
+            c=Mock()
+            with self.subTest(changes=changes),self.assertRaises(ValueError):
+                place_station(c,dict(b,**changes),execute=True)
+            c.request.assert_not_called()
+
+    def test_preparation_and_one_submission_do_not_replay_uncertain_build(self):
+        b=self.brief();prepared={'status':'ok','result':{'station_preparation':{
+            'resource':b['resource'],'template':5,'command_constructed':True,'native_command_submitted':False}}}
+        for execute in (False,True):
+            c=Mock();c.request.side_effect=[prepared,{'status':'mutation_unverified'}]
+            r=place_station(c,b,execute=execute)
+            self.assertEqual(c.request.call_count,2 if execute else 1)
+            self.assertEqual(c.request.call_args_list[0].args,('operating_inspect',{'station_preparation':b}))
+            if execute:
+                self.assertEqual(r['status'],'mutation_unverified')
+                self.assertEqual(c.request.call_args_list[1].args,('operating_control',dict(b,action='station_build',execute=True)))
+            self.assertNotIn('action',b)
+
+    def test_failed_or_mismatched_preparation_never_builds(self):
+        for prepared in ({'status':'error','result':{'error':'native module failure'}},
+                         {'status':'ok','result':{'station_preparation':{'resource':'wrong'}}}):
+            c=Mock();c.request.return_value=prepared
+            if prepared['status']=='error':self.assertIs(place_station(c,self.brief(),execute=True),prepared)
+            else:
+                with self.assertRaises(LiveError):place_station(c,self.brief(),execute=True)
+            self.assertEqual(c.request.call_count,1)
+
+    def test_station_transition_requires_exact_construction_identity(self):
+        from bridge_live import validate_connection_brief
+        b=dict(anchor_edge=1,anchor_node=2,target_edge=3,target_node=4,radius=10,
+               region={'min':[0,0,0],'max':[100,100,10]},station_target=8)
+        self.assertIs(validate_connection_brief(b),b)
+        for value in (True,0,-1,'8'):
+            with self.subTest(value=value),self.assertRaises(ValueError):
+                validate_connection_brief(dict(b,station_target=value))
+
+
+class StationRejectionReconciliationTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        self.client=LiveClient(Path(self.tmp.name)/'mod',Path(self.tmp.name)/'stdout',
+                               Path(self.tmp.name)/'evidence','current')
+        self.pending={'request_id':'failed','operation':'connection','params':{'execute':True,
+            'brief':dict(anchor_edge=1,anchor_node=2,target_edge=3,target_node=4,station_target=8)}}
+        self.response={'session':'current','request_id':'failed','operation':'connection','status':'error',
+            'result':{'native_command_success':False,'error':'native_construction_rejected','stage':'build'}}
+        self.discovery={'session':'current','operation':'discover','status':'ok','result':{'candidates':[
+            {'edge_id':1,'node_id':2,'incident_edges':[1,9]},
+            {'edge_id':3,'node_id':4,'incident_edges':[3],'incident_count':1,'eligible':True,
+             'incidence_complete':True,'incident_output_truncated':False}]}}
+        self.client.evidence.mkdir(parents=True,exist_ok=True)
+        self.persist()
+
+    def persist(self):
+        self.client.journal.write_text(json.dumps({'session':'current','pending':self.pending}))
+        (self.client.evidence/'failed.response.json').write_text(json.dumps(self.response))
+
+    def test_exact_free_station_target_reconciles_without_replay_or_history_claim(self):
+        before=(self.client.evidence/'failed.response.json').read_bytes()
+        observed={'status':'ok','request_id':'observation','result':{'game_constructed':False,
+            'fit':{'start_node':2,'target_node':4}}}
+        with patch.object(self.client,'request',return_value=observed) as native:
+            r=reconcile_rejected_connection(self.client,self.discovery)['result']
+        native.assert_called_once_with('connection',{'brief':self.pending['params']['brief'],'execute':False})
+        self.assertEqual(r['other_effects'],'unknown');self.assertFalse(r['automatic_replay'])
+        self.assertFalse(r['effects_history_complete']);self.assertTrue(r['facts']['target_currently_free'])
+        self.assertEqual(before,(self.client.evidence/'failed.response.json').read_bytes())
+        self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+
+    def test_occupied_target_wrong_fit_or_old_session_keeps_guard(self):
+        for defect in ('occupied','wrong_target','old_session'):
+            self.persist();d=json.loads(json.dumps(self.discovery));observed={'status':'ok','result':{
+                'game_constructed':False,'fit':{'start_node':2,'target_node':4}}}
+            if defect=='occupied':d['result']['candidates'][1]['incident_count']=2
+            if defect=='wrong_target':observed['result']['fit']['target_node']=99
+            if defect=='old_session':d['session']='old'
+            with self.subTest(defect=defect),patch.object(self.client,'request',return_value=observed),self.assertRaises((LiveError,ValueError)):
+                reconcile_rejected_connection(self.client,d)
+            self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+
+
+class RejectedAssignmentReconciliationTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        self.client=LiveClient(Path(self.tmp.name)/'mod',Path(self.tmp.name)/'stdout',
+                               Path(self.tmp.name)/'evidence','current')
+        self.client.evidence.mkdir(parents=True,exist_ok=True)
+        self.pending={'request_id':'failed','operation':'operating_control',
+            'params':{'action':'vehicle_assign','execute':True,'vehicle_id':7,'line_id':8}}
+        self.response={'session':'current','operation':'operating_control','request_id':'failed',
+            'status':'mutation_unverified','result':{'error':'probe:569: native_operating_command_rejected'}}
+        self.observed={'status':'ok','session':'current','request_id':'read','result':{'vehicles':{
+            'records':[{'id':7,'line':-1,'depot':9,'state':'0'}]}}}
+        self.persist()
+
+    def persist(self):
+        self.client.journal.write_text(json.dumps({'session':'current','pending':self.pending}))
+        (self.client.evidence/'failed.response.json').write_text(json.dumps(self.response))
+
+    def test_legacy_rejection_fresh_unassigned_readback_records_reload_and_no_replay(self):
+        from bridge_live import reconcile_rejected_vehicle_assignment
+        with patch.object(self.client,'request',return_value=self.observed) as native:
+            r=reconcile_rejected_vehicle_assignment(self.client)['result']
+        native.assert_called_once_with('operating_inspect',{'vehicle_ids':[7],'limit':1})
+        self.assertTrue(r['legacy_adapter_reload_required']);self.assertFalse(r['assignment_present'])
+        self.assertEqual(r['other_effects'],'unknown');self.assertFalse(r['automatic_replay'])
+        self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+
+    def test_assigned_outside_depot_wrong_identity_or_session_does_not_clear(self):
+        from bridge_live import reconcile_rejected_vehicle_assignment
+        for defect in ('line','depot','state','id','session'):
+            self.persist();r=json.loads(json.dumps(self.observed));v=r['result']['vehicles']['records'][0]
+            if defect=='session':r['session']='old'
+            else:v[defect]={'line':8,'depot':-1,'state':'2','id':99}[defect]
+            with self.subTest(defect=defect),patch.object(self.client,'request',return_value=r),self.assertRaises(LiveError):
+                reconcile_rejected_vehicle_assignment(self.client)
+            self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+
+    def test_unconfirmed_failure_never_reads_or_clears(self):
+        from bridge_live import reconcile_rejected_vehicle_assignment
+        self.response['result']['error']='readback failed after possible success';self.persist()
+        with patch.object(self.client,'request') as native,self.assertRaises(LiveError):
+            reconcile_rejected_vehicle_assignment(self.client)
+        native.assert_not_called();self.assertIn('pending',json.loads(self.client.journal.read_text()))
+
 
 if __name__ == '__main__':
     unittest.main()

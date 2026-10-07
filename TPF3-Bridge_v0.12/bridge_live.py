@@ -109,7 +109,7 @@ def extend(client, brief, *, execute=False):
 
 def validate_connection_brief(brief):
     keys = {'anchor_edge', 'anchor_node', 'target_edge', 'target_node', 'radius', 'region'}
-    if not isinstance(brief, dict) or set(brief) - {'vertical'} != keys:
+    if not isinstance(brief, dict) or set(brief) - {'vertical','station_target'} != keys:
         raise ValueError('connection brief requires only ' + ', '.join(sorted(keys)))
     for key in ('target_edge', 'target_node'):
         if type(brief[key]) is not int or brief[key] <= 0:
@@ -120,6 +120,8 @@ def validate_connection_brief(brief):
         raise ValueError('connection requires distinct source and target attachments')
     if 'vertical' in brief:
         validate_vertical(brief['vertical'])
+    if 'station_target' in brief and (type(brief['station_target']) is not int or brief['station_target']<=0):
+        raise ValueError('station_target must be an exact positive construction identity')
     return brief
 
 def connect(client, brief, *, execute=False):
@@ -2154,6 +2156,44 @@ def reconcile_rejected_extension(client, discovery):
     latest.pop('pending');atomic_json(client.journal,latest)
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
 
+def reconcile_rejected_vehicle_assignment(client):
+    """Reconcile an explicitly rejected assignment only while the train remains in depot.
+
+    No replay or effect-history claim. Legacy adapters need a normal reload before
+    further controls because their rejected callback retained its in-memory guard.
+    """
+    state=json.loads(client.journal.read_text());pending=state.get('pending')
+    if (not pending or pending.get('operation')!='operating_control'
+            or pending.get('params',{}).get('action')!='vehicle_assign'
+            or pending['params'].get('execute') is not True):
+        raise LiveError('reconciliation_required','pending vehicle assignment required')
+    rid=pending['request_id'];path=client.evidence/(rid+'.response.json')
+    response=json.loads(path.read_text());value=response.get('result',{})
+    legacy=(response.get('status')=='mutation_unverified'
+            and str(value.get('error','')).endswith('native_operating_command_rejected'))
+    explicit=(response.get('status')=='error' and value.get('native_command_success') is False
+              and value.get('error')=='native_operating_command_rejected')
+    if (response.get('session')!=client.session or response.get('operation')!='operating_control'
+            or response.get('request_id')!=rid or not (legacy or explicit)):
+        raise LiveError('reconciliation_required','explicit native assignment rejection required',rid)
+    vid=pending['params']['vehicle_id'];observed=client.request('operating_inspect',{'vehicle_ids':[vid],'limit':1})
+    rows=observed.get('result',{}).get('vehicles',{}).get('records',[])
+    if (observed.get('status')!='ok' or observed.get('session')!=client.session or len(rows)!=1
+            or rows[0].get('id')!=vid or rows[0].get('line')!=-1
+            or type(rows[0].get('depot')) is not int or rows[0]['depot']<=0 or rows[0].get('state')!='0'):
+        raise LiveError('reconciliation_required','exact currently unassigned train in depot required',rid)
+    latest=json.loads(client.journal.read_text())
+    if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
+    record={'status':'reconciled_rejected_vehicle_assignment','original_pending':pending,
+            'original_response':str(path.resolve()),'observation':observed['request_id'],
+            'current_vehicle':rows[0],'assignment_present':False,'other_effects':'unknown',
+            'automatic_replay':False,'legacy_adapter_reload_required':legacy}
+    evidence=client.evidence/(rid+'.reconciliation.json');atomic_json(evidence,record)
+    latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(evidence.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(client.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(evidence.resolve())}
+
+
 def reconcile_rejected_connection(client, discoveries=None):
     """Record a native-rejected connection as absent using fresh exact incidence."""
     state=json.loads(client.journal.read_text());pending=state.get('pending')
@@ -2185,6 +2225,32 @@ def reconcile_rejected_connection(client, discoveries=None):
         matches=[c for c in candidates if c['edge_id']==brief[edge_key] and c['node_id']==brief[node_key]]
         if len(matches)!=1:raise ValueError('original exact connection attachment missing or ambiguous')
         selected.append(matches[0])
+    if brief.get('station_target'):
+        # A rejected station approach can start at an already connected node.
+        # A fresh exact free target proves the requested connection is absent;
+        # it does not prove an exhaustive history of other native effects.
+        target=selected[1]
+        if (target.get('eligible') is not True or target.get('incidence_complete') is not True
+                or target.get('incident_output_truncated') or target.get('incident_count')!=1
+                or target.get('incident_edges')!=[brief['target_edge']]):
+            raise LiveError('reconciliation_required','station target is not currently an exact free endpoint',rid)
+        observed=client.request('connection',{'brief':brief,'execute':False})
+        fit=observed.get('result',{}).get('fit',{})
+        if (observed['status']!='ok' or observed.get('result',{}).get('game_constructed') is not False
+                or fit.get('start_node')!=brief['anchor_node'] or fit.get('target_node')!=brief['target_node']):
+            raise LiveError('reconciliation_required','current exact station attachments unavailable',rid)
+        latest=json.loads(client.journal.read_text())
+        if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
+        record={'status':'reconciled_rejected_connection','original_pending':pending,
+                'original_response':str(response_path.resolve()),'observation':observed['request_id'],
+                'facts':{'target_currently_free':True,'completed_connection_absent':True,
+                         'source_current_incident_edges':selected[0].get('incident_edges')},
+                'completed_connection_constructed':False,'other_effects':'unknown',
+                'effects_history_complete':False,'automatic_replay':False}
+        path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
+        latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
+        latest.pop('pending');atomic_json(client.journal,latest)
+        return {'status':'ok','result':record,'evidence':str(path.resolve())}
     selection={'source_ref':selected[0]['ref'],'target_ref':selected[1]['ref'],
                'radius':brief['radius'],'region':brief['region']}
     if 'vertical' in brief:selection['vertical']=brief['vertical']
@@ -2570,10 +2636,12 @@ def reconcile_constructed_connection(client, discoveries, edge_ids):
 def place_signal(client, brief, *, execute=False):
     """Fresh native template discovery and explicit placement; no replay on failure."""
     keys = {'edge_id', 'parameter', 'forward', 'one_way'}
-    if type(brief) is not dict or set(brief) != keys or type(execute) is not bool:
+    if type(brief) is not dict or set(brief)-{'replace_signal_id'} != keys or type(execute) is not bool:
         raise ValueError('signal requires edge_id, parameter, forward, one_way and boolean execute')
     if type(brief['edge_id']) is not int or brief['edge_id'] <= 0:
         raise ValueError('signal edge_id must be an exact positive native ID')
+    if 'replace_signal_id' in brief and (type(brief['replace_signal_id']) is not int or brief['replace_signal_id']<=0):
+        raise ValueError('replacement requires exact positive signal ID')
     if (type(brief['parameter']) not in (int, float) or not math.isfinite(brief['parameter'])
             or not 0 < brief['parameter'] < 1
             or any(type(brief[k]) is not bool for k in ('forward', 'one_way'))):
@@ -2585,6 +2653,12 @@ def place_signal(client, brief, *, execute=False):
     if len(rows) != 1 or rows[0]['id'] != brief['edge_id']:
         raise LiveError('reconciliation_required', 'exact signal target observation unavailable')
     params = dict(brief, revision=rows[0]['revision'])
+    if 'replace_signal_id' in brief:
+        ident=brief['replace_signal_id']
+        matching=[x for x in rows[0]['objects'] if x['id']==ident and isinstance(x.get('signal'),dict)
+                  and abs(x.get('parameter',-1)-brief['parameter'])<=.0001]
+        if len(matching)!=1:raise LiveError('reconciliation_required','replacement signal not at exact requested attachment')
+        params['replace_signal_revision']=matching[0]['revision']
     prepared = client.request('operating_inspect', {'signal_placement': params})
     if prepared['status'] != 'ok' or not execute:
         return prepared
@@ -2897,7 +2971,7 @@ class LiveClient:
             intent=self.evidence/(unresolved['request_id']+'.compensation_intent.json')
             if intent.exists():
                 saved=json.loads(intent.read_text());corrective=saved.get('original_pending')==unresolved and saved.get('removal_params')==params
-        if unresolved and not corrective and (is_mutation(operation,params) or operation not in ('operating_inspect', 'readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'verify_adjacency', 'adjacent', 'remove_branch', 'crossover', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'scissors_candidate')):
+        if unresolved and not corrective and (is_mutation(operation,params) or operation not in ('operating_inspect', 'readback', 'inspect', 'route', 'discover', 'discover_junction', 'discover_interior', 'verify_interior', 'verify_crossover', 'verify_adjacency', 'adjacent', 'remove_branch', 'crossover', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'scissors_candidate')):
             raise LiveError('reconciliation_required', 'previous request is unfinished; inspect its matching response/current world before any repeat', state['pending']['request_id'])
         if (self.evidence / (request_id + '.request.json')).exists():
             raise LiveError('request_id_reused', 'request ID already recorded', request_id)

@@ -1,3 +1,10 @@
+## P73: basic native stations and representative services
+
+See [STATIONS.md](STATIONS.md) for native passenger templates, processed modules,
+exact station/group/terminal identities and approach connections. See [SIGNALS.md](SIGNALS.md)
+for explicit exact-object direction replacement and native direction checks.
+Construction, configuration, path readback and physical operation are separate evidence.
+
 ## P72: native depot placement and service access
 
 See [DEPOTS.md](DEPOTS.md) for processed native construction parameters, exact
