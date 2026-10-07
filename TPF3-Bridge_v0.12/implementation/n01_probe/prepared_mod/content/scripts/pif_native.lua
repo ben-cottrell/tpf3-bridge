@@ -749,6 +749,14 @@ local function rail_lane(id,mode,junction_node,junction_nodes)
  -- Geometry verifies the native row's orientation; identities come from conns.
  local trimmed=junction_node and (base.node0==junction_node or base.node1==junction_node)
  for _,n in ipairs(junction_nodes or {}) do if base.node0==n or base.node1==n then trimmed=true end end
+ -- Existing native junctions also trim movement geometry, including a junction
+ -- at the far end of an approach. Exact native incidence establishes that case.
+ if not trimmed then
+  for _,node in ipairs({base.node0,base.node1}) do
+   local segments=api.engine.system.streetSystem.getNodeSegments(node)
+   if #segments>=3 then trimmed=true end
+  end
+ end
  if trimmed then
   -- Turnout movement edges are trimmed. Native connection entities establish
   -- correspondence; their indexes name distinct native junction ports.
@@ -1231,7 +1239,7 @@ function M.extension(p,s,state,request_id,respond,connect_mode,junction_context)
    -- Reconstitute only the stored controls/resources; no fit call. Evaluate this
    -- exact object against current native state, then pass the same object to build.
    local current=api.engine.util.proposal.makeProposalData(prepared_proposal,nil)
-   assert(not current.errorState.critical,"prepared_proposal_no_longer_accepted")
+   assert(not current.errorState.critical and #current.errorState.messages==0,"prepared_proposal_no_longer_accepted")
   elseif junction_context and junction_context.prepare then
    local record,attempts=prepare_endpoint_fit(b,target,s,fit_id,junction_context)
    if not record then reply("no_accepted_candidate",{game_constructed=false,candidate_rejections=attempts,search_complete=true});return end
@@ -2138,11 +2146,14 @@ prepare_endpoint_fit=function(b,target,s,fit_id,context)
    proposal=build_proposal(fitted)
    local data=api.engine.util.proposal.makeProposalData(proposal,nil);local errors=data.errorState
    local messages={};for j,x in ipairs(errors.messages) do if j<=4 then messages[#messages+1]=tostring(x):sub(1,240) end end
-   evaluation={critical=errors.critical,messages=messages}
+   local collisions={};local rows=data.collisionInfo.collisionEntities
+   for j,x in ipairs(rows) do if j<=16 then collisions[#collisions+1]=x.entity end end
+   evaluation={critical=errors.critical,messages=messages,message_count=#errors.messages,
+    collision_entities=collisions,collision_count=#rows,collision_output_truncated=#rows>16}
   end)
   attempts[#attempts+1]={index=i,fit_radius=q.fit_radius,representation=q.representation,
-   status=not ok and "failed_check" or evaluation.critical and "native_proposal_rejected" or "accepted",error=not ok and tostring(err):sub(1,240) or nil,evaluation=evaluation}
-  if ok and not evaluation.critical then
+   status=not ok and "failed_check" or (evaluation.critical or evaluation.message_count>0) and "native_proposal_rejected" or "accepted",error=not ok and tostring(err):sub(1,240) or nil,evaluation=evaluation}
+  if ok and not evaluation.critical and evaluation.message_count==0 then
    return {fit_id=id,fit=report,fitted=fitted,candidate={index=i,fit_radius=q.fit_radius,representation=q.representation}},attempts
   end
   s.fits[id]=nil

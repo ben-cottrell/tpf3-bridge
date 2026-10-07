@@ -1,3 +1,37 @@
+# P72 complete — native depot and service access (7 October 2026)
+
+bridge_live.place_depot prepares/submits native processed construction parameters
+once; exact Depot/Construction ownership, exit and service readback added.
+Raw toolbar params fail constructor; getConstructionResult(...).params works.
+Build40408: Construction68942/Depot68943 at[830,-2650,16.25], anglepi/2;
+exit68944/track68951→connector68962–68964→DS67047. Exact accepted native
+proposal reused; no error messages/collisions. Native Depot outNodes→D0 node67175
+continuous35-row TRAIN route includes all3 connector edges. Required67386 retained;
+all8 D/E terminal routes, both DS trunk directions and current D_in_near pass.
+Historical D_in_near source65804 was stale; exact current63062 endpoint67423
+reacquired, original failed check preserved. Train67414/line67419 retained.
+Fixes: native junction incidence handles trimmed movement endpoints; Collision
+rejects even critical=false; ACK updates journal without replacing saved response
+twice. Atomic probe passes; old pending read and actual DS03 successful build
+reconciled without replay. Windows denial cause not established; no host repair.
+399 quiet tests pass: python tools/quiet_checks.py --suite live_client
+--label pif-p72-receipt-once; .local_checks/pif-p72-receipt-once_ppyy_ngj/report.json.
+python .local_runs/live_python_interface/p72/check_evidence.py and git diff --check
+pass; checks_final.json records hashes/native checks. Usage: implementation/
+live_python_interface/DEPOTS.md. Changed bridge_live.py, test_live_client.py,
+pif_operating.lua, pif_native.lua, usage README/DEPOTS, STATE/CURRENT_TASK.
+Evidence .local_runs/live_python_interface/p72/{result.json,checks_final.json,
+final_native_checks.json,ds03_service_route.json,world_checkpoint_final.json}.
+Saved TPF3_Complex_Junction_P72_Service_Depot_20261007;40801634bytes;
+SHA2564c6750d8f23471136c3aab457aed7c818cdbefd1103ef609af3178f9e9a258f5.
+Paused/non-maximised, current pending none; final save not reloaded. Earlier
+unused depot68923/failing checkpoints and uncertain older journals retained.
+No dispatch/train-passage/reservation/capacity proof or SimpleProposal world
+preview. Native path search itself unbounded; returned evidence bounded64rows.
+No new service/physics/dependencies, restart, permission repair or remote push.
+P71df96576 retained; local P72 checkpoint in result.json. Usage unavailable.
+Acceptance reached; next capability/layout task belongs to coordinator.
+
 # P71 complete - functional native signal creation (7 October 2026)
 
 bridge_live.place_signal reuses operating transport: fresh target, automatic

@@ -1,26 +1,14 @@
-# P71 complete - functional native signal creation (7 October 2026)
+# P72 complete — native depot and DS service connection
 
-bridge_live.place_signal reuses operating transport: fresh target, automatic
-functional seed discovery, explicit native parameter/direction/one-way, guarded
-single submission and exact EDGE_OBJECT/SIGNAL_LIST readback. Auto Signals source
-informed the API contract; independent implementation, no dependency/substantial copy.
-Build40408: E signal68914 on replacement68916(old67408), nodes67378/67411,
-parameter.625/type1/reversedfalse before both platform choices; Dseed67428 unchanged.
-Track controls/resources, objects and service retained; all8 D/E native terminal
-routes pass; duplicate preparation rejects before another submission. Direct
-SIGNAL_LIST/EDGE_OBJECT enumeration fails; generic native iterator succeeds with
-<=100000 inspections, first qualified seed only; counts are iterator visits.
-394 affected checks pass: python tools/quiet_checks.py --suite live_client
---label pif-p71-entity-discovery; .local_checks/pif-p71-entity-discovery_xgnk9wzw/report.json.
-python .local_runs/live_python_interface/p71/check_evidence.py and git diff --check pass.
-Current save TPF3_Complex_Junction_P71_Signals_20261007; checkpoint/hash and native
-records in .local_runs/live_python_interface/p71/{result.json,checks.json,world_checkpoint.json}.
-Prior failures/P69 journal retained; current pending none. Paused/non-maximised;
-no restart/push. Optional movement geometry inspector cannot uniquely select a
-signalled movement; direct BaseEdge checks succeed. No new train-passage/capacity,
-depot-creation or final-save reload proof. Forward one-way demonstrated; other
-combinations source-backed only. Usage unavailable. P71 acceptance reached; next
-capability/layout choice belongs to coordinator. Usage: implementation/live_python_interface/SIGNALS.md.
-
-Authority: .local_runs/live_python_interface/p71/orchestrator/TASK.md.
-Do not replay construction or start an unsolicited next task.
+Authority: .local_runs/live_python_interface/p72/orchestrator/TASK.md.
+Build40408: native processed-parameter construction created Depot68943 /
+Construction68942; exact exit68944 connects to DS67047 through68962–68964.
+Native Depot outNodes→D0 service route verified; required67386 retained.
+All8 D/E terminal routes, both DS trunk directions and current D_in_near pass.
+399 affected quiet checks and local evidence/diff checks pass.
+Saved TPF3_Complex_Junction_P72_Service_Depot_20261007, paused/non-maximised.
+No train dispatch/capacity proof, new services, process restart or host repair.
+Original failures/unknown journals retained; no replay. Receipt duplicate-write
+fix and exact successful-build reconciliation included; current pending none.
+Evidence/checkpoint/commit: .local_runs/live_python_interface/p72/.
+Acceptance boundary reached. Next task requires coordinator choice; no push.

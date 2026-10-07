@@ -1,3 +1,9 @@
+## P72: native depot placement and service access
+
+See [DEPOTS.md](DEPOTS.md) for processed native construction parameters, exact
+depot/exit identities and native Depot-to-service readback. Build40408 demonstrated
+a DS-connected depot; full proposal errors reject even when critical=false.
+
 ## P71: native signal placement
 
 See [SIGNALS.md](SIGNALS.md) for place_signal, automatic template discovery,

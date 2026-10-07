@@ -9,6 +9,54 @@ import contextlib
 import io
 from bridge_live import connect_adjacent, reconcile_constructed_crossover, connect_throat, validate_throat_brief, _select_throat_port, is_mutation, LiveClient, LiveError, MARKER, lua_literal, parse_response, main, extend, connect, route, discover, connect_selected, connect_brief, connect_corridor, connect_junction, connect_junction_at, reconcile_rejected_junction, reconcile_rejected_fixture, reconcile_rejected_connection, reconcile_constructed_connection, reconcile_constructed_interior, discover_session, client_from_context
 
+class DepotPlacementTests(unittest.TestCase):
+    def brief(self):
+        return {'resource':'::/depots/rail/rail_depot.con','template':2,'params':{'catenary':2},
+                'position':[10,20,3],'angle':.5,'name':'Test depot'}
+
+    def test_invalid_depot_briefs_never_send(self):
+        from bridge_live import place_depot
+        from unittest.mock import Mock
+        for key,value in [('template',True),('template',-1),('resource','signal.con'),('params',[]),
+                          ('position',[1,2,float('nan')]),('angle',float('inf')),('name','')]:
+            client=Mock()
+            with self.subTest(key=key),self.assertRaises(ValueError):
+                place_depot(client,dict(self.brief(),**{key:value}),execute=True)
+            client.request.assert_not_called()
+
+    def test_prepare_is_read_only_and_execution_has_one_submission(self):
+        from bridge_live import place_depot
+        from unittest.mock import Mock
+        b=self.brief()
+        prepared={'status':'ok','result':{'depot_preparation':{'command_constructed':True,
+                  'native_command_submitted':False,'resource':b['resource'],'template':2}}}
+        for execute in (False,True):
+            client=Mock();client.request.side_effect=[prepared,{'status':'mutation_unverified'}]
+            result=place_depot(client,b,execute=execute)
+            self.assertEqual(client.request.call_count,2 if execute else 1)
+            self.assertEqual(client.request.call_args_list[0].args,('operating_inspect',{'depot_preparation':b}))
+            if execute:
+                self.assertEqual(client.request.call_args_list[1].args,('operating_control',dict(b,action='depot_build',execute=True)))
+                self.assertEqual(result['status'],'mutation_unverified')
+            else:self.assertIs(result,prepared)
+            self.assertNotIn('action',b)
+
+    def test_constructor_failure_stops_without_build_or_repair(self):
+        from bridge_live import place_depot
+        from unittest.mock import Mock
+        failure={'status':'error','result':{'error':'constructor failure'}}
+        client=Mock();client.request.return_value=failure
+        self.assertIs(place_depot(client,self.brief(),execute=True),failure)
+        self.assertEqual(client.request.call_count,1)
+
+    def test_missing_or_mismatched_preparation_stops_before_build(self):
+        from bridge_live import place_depot
+        from unittest.mock import Mock
+        for record in ({},{'command_constructed':True,'native_command_submitted':False,'resource':'other','template':2}):
+            client=Mock();client.request.return_value={'status':'ok','result':{'depot_preparation':record}}
+            with self.assertRaises(LiveError):place_depot(client,self.brief(),execute=True)
+            self.assertEqual(client.request.call_count,1)
+
 class SignalPlacementTests(unittest.TestCase):
     def test_invalid_signal_brief_never_queries_or_builds(self):
         from bridge_live import place_signal
@@ -1853,6 +1901,35 @@ class LiveClientTests(unittest.TestCase):
         with self.assertRaises(LiveError):self.client.reconcile_pending()
         self.assertIn('pending',json.loads(self.client.journal.read_text()))
         self.assertEqual(len(list(self.client.mod.rglob('*.lua'))),1)
+
+    def test_acknowledgement_does_not_replace_an_already_saved_receipt(self):
+        import bridge_live as live
+        for ack_first in (False,True):
+            with self.subTest(ack_first=ack_first),tempfile.TemporaryDirectory() as d:
+                root=Path(d);log=root/'stdout.txt';log.write_text('')
+                client=LiveClient(root/'mod',log,root/'evidence','test_session',.5,require_ack=True)
+                rid='completed';receipt=client.evidence/(rid+'.response.json')
+                response=self.response(rid,'build',result={'game_constructed':True})
+                ack={'session':'test_session','request_id':rid,'success':True}
+                def worker():
+                    slot=client.mod/'content/scripts/pif_live/test_session/000001.lua'
+                    deadline=time.monotonic()+1
+                    while not slot.exists() and time.monotonic()<deadline:time.sleep(.005)
+                    lines=[MARKER+json.dumps(response),'TPF3_BRIDGE_LIVE_ACK '+json.dumps(ack)]
+                    if ack_first:lines.reverse()
+                    with log.open('a') as f:f.write('\n'.join(lines)+'\n')
+                def write_once(path,value):
+                    if path==receipt and path.exists():raise PermissionError('receipt replacement denied')
+                    return atomic(path,value)
+                atomic=live.atomic_json;thread=threading.Thread(target=worker);thread.start()
+                try:
+                    with patch('bridge_live.atomic_json',side_effect=write_once):
+                        actual=client.request('build',{'fit_request':'f'},request_id=rid)
+                finally:thread.join()
+                self.assertEqual(actual,response)
+                self.assertEqual(json.loads(receipt.read_text()),response)
+                self.assertNotIn('pending',json.loads(client.journal.read_text()))
+                self.assertEqual(len(list(client.mod.rglob('*.lua'))),1)
 
     def throat_brief(self):
         def endpoint(x):return {'region':{'min':[x-5,-5,-5],'max':[x+5,5,5]},'guide_xyz':[x,0,0],'travel_direction':[1,0],'max_edges':4,'heading_tolerance_deg':5}

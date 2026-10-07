@@ -223,6 +223,104 @@ local function prepare_vehicle(p)
   end
   return prepared_config,summary
 end
+local function depot_prepare(p)
+ assert(type(p.resource)=="string" and p.resource:find("/depots/rail/",1,true),"depot_resource_required")
+ local resource=api.res.constructionRep.find(p.resource);assert(resource>=0,"construction_resource_missing")
+ local desc=api.res.constructionRep.get(resource)
+ assert(type(p.template)=="number" and p.template%1==0 and p.template>=0 and p.template<#desc.constructionTemplates,"construction_template_index_invalid")
+ assert(type(p.position)=="table" and #p.position==3,"asset_position_required")
+ for _,v in ipairs(p.position) do assert(type(v)=="number" and v==v and math.abs(v)<100000,"asset_position_invalid") end
+ assert(type(p.angle)=="number" and p.angle==p.angle and math.abs(p.angle)<100,"asset_angle_invalid")
+ assert(type(p.name)=="string" and #p.name>0 and #p.name<=80,"asset_name_required")
+ local result=api.engine.util.construction.getConstructionResult(p.resource,p.template,p.params or {})
+ assert(#result.subconstructions>=1 and #result.subconstructions<=8,"asset_subconstruction_bound")
+ local q=api.type.SimpleProposal.new();local c=api.type.SimpleProposal.ConstructionEntity.new()
+ c.fileName=p.resource;c.params=result.params;c.name=p.name;c.playerEntity=api.engine.util.getPlayer();c.autoFillSlots=false
+ local co,si=math.cos(p.angle),math.sin(p.angle)
+ c.transf=api.type.Mat4f.new(api.type.Vec4f.new(co,si,0,0),api.type.Vec4f.new(-si,co,0,0),
+  api.type.Vec4f.new(0,0,1,0),api.type.Vec4f.new(p.position[1],p.position[2],p.position[3],1))
+ q.constructionsToAdd={c};local ctx=api.type.Context.new();ctx.player=api.engine.util.getPlayer()
+ local cmd=api.cmd.makeWorldBuildProposalCmd(q,ctx,false,true)
+ local keys={};for k in pairs(result.params) do keys[#keys+1]=tostring(k) end;table.sort(keys)
+ local record={resource=p.resource,template=p.template,processed_parameter_keys=keys,construction_count=1,
+  command_constructed=true,native_command_submitted=false,game_constructed=false,
+  acceptance="command_preparation_only; native construction and attachment not yet demonstrated"}
+ if p.diagnose_legacy then
+  local ok,err=pcall(api.cmd.makeWorldBuildProposalCmd,q,nil,false,true)
+  record.processed_without_context={command_constructed=ok,error=not ok and tostring(err):sub(1,400) or nil}
+  c.params=p.params or {};q.constructionsToAdd={c}
+  ok,err=pcall(api.cmd.makeWorldBuildProposalCmd,q,ctx,false,true)
+  record.raw_with_context={command_constructed=ok,error=not ok and tostring(err):sub(1,400) or nil}
+ end
+ return cmd,record
+end
+local function depot_service_path(d,q)
+ assert(type(q.required_edges)=="table" and #q.required_edges>=1 and #q.required_edges<=16,"depot_route_edge_bound")
+ local base=assert(comp(q.edge,C.BASE_EDGE),"service_track_missing")
+ assert(base.roadType==E.RoadType.TRACK and (q.node==base.node0 or q.node==base.node1),"service_not_TRACK_endpoint")
+ local network=assert(comp(q.edge,C.TRANSPORT_NETWORK),"service_transport_missing")
+ local destination=nil
+ for _,row in ipairs(network.edges) do
+  if row.transportModes[E.TransportMode.TRAIN]==true then
+   assert(not destination and #row.conns==2,"service_transport_ambiguous")
+   assert(row.conns[1].entity==base.node0 and row.conns[2].entity==base.node1,"service_transport_identity_mismatch")
+   destination=row.conns[q.node==base.node0 and 1 or 2]
+  end
+ end
+ assert(destination and #d.outNodes>=1 and #d.outNodes<=8,"depot_route_attachment_missing")
+ -- The API accepts Lua lists of native NodeId values, not a component's
+ -- native vector wrapper as the outer query argument.
+ local origins={};for _,node in ipairs(d.outNodes) do origins[#origins+1]=node end
+ local path=api.engine.util.pathfinding.findPathNodeToNode(origins,{destination},{E.TransportMode.TRAIN})
+ assert(type(path)=="table","native_depot_path_contract")
+ local out={native_path_found=#path>0,verified=false,path_count=#path,truncated=#path>64,path={},
+  destination={entity=destination.entity,index=destination.index},query="findPathNodeToNode",
+  train_dispatch="unprobed",native_search_bound=false,read_only=true}
+ if #path==0 or out.truncated then return out end
+ local function same(a,b) return a.entity==b.entity and a.index==b.index end
+ local previous,seen,continuous=nil,{},true
+ for i,item in ipairs(path) do
+  local eid,forward=item[1],item[2];assert(type(forward)=="boolean","native_depot_path_direction")
+  local row=assert(comp(eid.entity,C.TRANSPORT_NETWORK).edges[eid.index+1],"depot_path_row_missing")
+  assert(#row.conns==2 and row.transportModes[E.TransportMode.TRAIN]==true,"depot_path_not_train")
+  local from,to=row.conns[forward and 1 or 2],row.conns[forward and 2 or 1]
+  if previous and not same(previous,from) or row.forwardOnly and not forward then continuous=false end
+  if i==1 then
+   local matches=false;for _,node in ipairs(d.outNodes) do if same(node,from) then matches=true end end
+   out.origin_matches=matches
+  end
+  local b=comp(eid.entity,C.BASE_EDGE);if b and b.roadType==E.RoadType.TRACK then seen[eid.entity]=true end
+  out.path[i]={edge={entity=eid.entity,index=eid.index},forward=forward,
+   from={entity=from.entity,index=from.index},to={entity=to.entity,index=to.index}}
+  previous=to
+ end
+ local missing={};for _,eid in ipairs(q.required_edges) do if not seen[id(eid)] then missing[#missing+1]=eid end end
+ out.missing_required_edges=missing;out.transport_continuous=continuous;out.destination_matches=same(previous,destination)
+ out.verified=out.origin_matches and continuous and out.destination_matches and #missing==0
+ return out
+end
+local function depot_readback(x,p)
+ local built=assert(comp(x,C.CONSTRUCTION),"depot_construction_missing")
+ assert(built.fileName==p.resource,"depot_resource_readback_mismatch")
+ local position=xyz(built.transf:getTransl())
+ for i=1,3 do assert(math.abs(position[i]-p.position[i])<=.01,"depot_position_readback_mismatch") end
+ assert(#built.depots>=1 and #built.depots<=8 and #built.frozenNodes<=32 and #built.frozenEdges<=32,"depot_readback_bound")
+ local depots={}
+ for _,entity in ipairs(built.depots) do
+  local d=assert(comp(entity,C.VEHICLE_DEPOT),"native_depot_component_missing")
+  assert(api.engine.system.streetConnectorSystem.getConstructionEntityForDepot(entity)==x,"depot_construction_identity_mismatch")
+  local nodes,exits={},{};assert(#d.inNodes<=8 and #d.outNodes<=8,"depot_node_bound")
+  for _,n in ipairs(d.inNodes) do nodes[#nodes+1]={entity=n.entity,index=n.index} end
+  for _,n in ipairs(d.outNodes) do exits[#exits+1]={entity=n.entity,index=n.index} end
+  depots[#depots+1]={id=entity,revision=rev(entity),in_nodes=nodes,out_nodes=exits,construction=x,
+   carrier=d.carrier and tostring(d.carrier) or "unavailable_in_observed_runtime",
+   service_route=p.service_target and depot_service_path(d,p.service_target) or nil}
+ end
+ return {construction={id=x,revision=rev(x),resource=built.fileName,name=named(x),position=position,
+   depots=built.depots,frozen_nodes=built.frozenNodes,frozen_edges=built.frozenEdges},depots=depots,
+  native_depot_identity_verified=true,game_constructed=true,world_mutated_by_readback=false,
+  attachment="requires_exact_native_node_and_route_readback",dispatch="not_demonstrated"}
+end
 function M.inspect(p)
  local limit=p.limit or 16;assert(type(limit)=="number" and limit%1==0 and limit>=1 and limit<=32,"operating_read_bound")
  local out={game_constructed=false,player=api.engine.util.getPlayer(),save_identity="unknown",load_epoch="adapter_session_only"}
@@ -317,6 +415,12 @@ function M.inspect(p)
    world_preview="not_performed",attachment_ports="not_exposed_by_inspected_result_contract",buildable_not_demonstrated=true}
   return out
  end
+ if p.depot_preparation then
+  local _,record=depot_prepare(p.depot_preparation);out.depot_preparation=record;return out
+ end
+ if p.depot_readback then
+  local q=p.depot_readback;out.depot_readback=depot_readback(id(q.construction_id),q);return out
+ end
  if p.asset_preview then
   error("asset_world_preview_unavailable: makeProposalData requires Proposal; SimpleProposal conversion not established")
  end
@@ -406,24 +510,12 @@ local function verified_line(x,p)
  return {line=actual,configuration_verified=true,reachability="requires_separate_native_route_checks",physical_operation="not_demonstrated_by_configuration"}
 end
 local function depot_command(p)
- assert(type(p.resource)=="string" and p.resource:find("/depots/rail/",1,true),"depot_resource_required")
- assert(api.res.constructionRep.find(p.resource)>=0,"construction_resource_missing")
- assert(type(p.position)=="table" and #p.position==3,"asset_position_required")
- for _,v in ipairs(p.position) do assert(type(v)=="number" and v==v and math.abs(v)<100000,"asset_position_invalid") end
- assert(type(p.angle)=="number" and p.angle==p.angle and math.abs(p.angle)<100,"asset_angle_invalid")
- assert(type(p.name)=="string" and #p.name>0 and #p.name<=80,"asset_name_required")
- local q=api.type.SimpleProposal.new();local c=api.type.SimpleProposal.ConstructionEntity.new()
- c.fileName=p.resource;c.params=p.params or {};c.name=p.name;c.playerEntity=api.engine.util.getPlayer();c.autoFillSlots=false
- local co,si=math.cos(p.angle),math.sin(p.angle)
- c.transf=api.type.Mat4f.new(api.type.Vec4f.new(co,si,0,0),api.type.Vec4f.new(-si,co,0,0),
-  api.type.Vec4f.new(0,0,1,0),api.type.Vec4f.new(p.position[1],p.position[2],p.position[3],1))
- q.constructionsToAdd={c}
- -- This documented command overload is separate from makeProposalData(Proposal).
- return api.cmd.makeWorldBuildProposalCmd(q,nil,false,false),function(r)
+ local cmd,prepared=depot_prepare(p)
+ return cmd,function(r)
   assert(#r.resultEntities<=128,"asset_receipt_bound")
   local found={}
   for _,entry in ipairs(r.resultEntities) do
-   local x=entry[1];local built=comp(x,C.CONSTRUCTION)
+   local x=type(entry)=="number" and entry or entry[1];local built=comp(x,C.CONSTRUCTION)
    if built and built.fileName==p.resource then
     assert(#built.depots<=8 and #built.frozenNodes<=32 and #built.frozenEdges<=32,"depot_readback_bound")
     found[#found+1]={id=x,revision=rev(x),resource=built.fileName,position=xyz(built.transf:getTransl()),
@@ -432,8 +524,9 @@ local function depot_command(p)
   end
   assert(#found==1,"depot_construction_readback_unresolved")
   assert(#found[1].depots>0,"depot_component_not_realised")
-  return {construction=found[1],game_constructed=true,asset_preview="unavailable_for_this_SimpleProposal_path",
-   attachment="requires_exact_native_node_and_route_readback",dispatch="not_demonstrated",physical_operation="not_demonstrated_by_construction"}
+  local actual=depot_readback(found[1].id,p);actual.preparation=prepared
+  actual.asset_preview="unavailable_for_this_SimpleProposal_path";actual.physical_operation="not_demonstrated_by_construction"
+  return actual
  end
 end
 function M.control(p,s,state,request_id,respond)

@@ -2593,6 +2593,34 @@ def place_signal(client, brief, *, execute=False):
     return client.request('operating_control', params)
 
 
+def place_depot(client, brief, *, execute=False):
+    """Prepare from native construction parameters; submit once only on explicit execution.
+
+    Command preparation is not a world preview or proof of rail attachment. The
+    caller must inspect the realised exit and connect/verify it separately.
+    """
+    keys = {'resource', 'template', 'params', 'position', 'angle', 'name'}
+    if type(brief) is not dict or set(brief) != keys or type(execute) is not bool:
+        raise ValueError('depot requires resource/template/params/position/angle/name and boolean execute')
+    if (type(brief['resource']) is not str or '/depots/rail/' not in brief['resource']
+            or type(brief['template']) is not int or brief['template'] < 0
+            or type(brief['params']) is not dict or len(brief['params']) > 16
+            or type(brief['name']) is not str or not 1 <= len(brief['name']) <= 80):
+        raise ValueError('depot requires a rail resource, explicit template/parameters and bounded name')
+    if (type(brief['position']) is not list or len(brief['position']) != 3
+            or any(type(v) not in (int, float) or not math.isfinite(v) or abs(v) >= 100000 for v in brief['position'])
+            or type(brief['angle']) not in (int, float) or not math.isfinite(brief['angle']) or abs(brief['angle']) >= 100):
+        raise ValueError('depot requires finite native position and rotation in radians')
+    prepared = client.request('operating_inspect', {'depot_preparation': brief})
+    if prepared['status'] != 'ok' or not execute:
+        return prepared
+    record = prepared.get('result', {}).get('depot_preparation', {})
+    if (record.get('command_constructed') is not True or record.get('native_command_submitted') is not False
+            or record.get('resource') != brief['resource'] or record.get('template') != brief['template']):
+        raise LiveError('reconciliation_required', 'matching native depot command preparation unavailable')
+    return client.request('operating_control', dict(brief, action='depot_build', execute=True))
+
+
 def route(client, brief):
     """Query native transport routing; does not build or establish train traversal."""
     keys = {'source_edge', 'source_node', 'target_edge', 'target_node', 'mode', 'max_length', 'required_edges'}
@@ -2922,7 +2950,8 @@ class LiveClient:
                         atomic_json(self.evidence / (request_id + '.response.json'), response)
                     if received is not None and acknowledged:
                         response = received
-                        atomic_json(self.evidence / (request_id + '.response.json'), response)
+                        # The matching response was already persisted above. An
+                        # acknowledgement changes the journal, not that receipt.
                         verified_pending = (unresolved and unresolved['operation'] == 'build'
                                             and operation == 'readback' and response['status'] == 'ok'
                                             and response.get('result', {}).get('connected') is True
