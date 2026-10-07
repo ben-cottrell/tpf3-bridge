@@ -1,3 +1,13 @@
+# Cleanup and publication — 7 October 2026
+
+User authorised removal of unnecessary project files/test saves and remote push.
+Removed18 superseded test-save/autosave pairs, two hash-identical old save copies
+(retaining another identical copy), and six regenerable Python cache directories.
+Retained the completed P73 save with verified hash, P65/P66/P71/P72 useful milestones,
+Wickham final, user original maps and local diagnostic/acceptance/uncertain journals.
+Exact paths and reclaimed bytes: .local_runs/cleanup_20261007/result.json.
+Source unchanged;415 passing tests remain applicable. Publication targets existing
+origin/codex/initial-implementation with ordinary fast-forward push, no PR or force.
 ## Windows atomic-write retry — 7 October 2026
 
 Implemented bounded retries of the same prepared JSON file replacement for Windows
