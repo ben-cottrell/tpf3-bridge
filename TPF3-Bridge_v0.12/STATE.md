@@ -1,3 +1,13 @@
+# Current direction — 7 October 2026
+
+P71 native signal placement and P72 native depot/service connection are accepted.
+P72 local commit79cd4d1; 399 affected tests and 11 native route checks passed.
+No current blocker. Native depot path proof is not physical dispatch proof.
+User selects basic station construction next because non-branch lines lack suitable
+platform stations. Documentation/scope updated; no new game changes or station
+implementation claimed. Historical entries below describe their milestone dates;
+P69/P70 signal gaps were resolved by P71. See DEVELOPMENT_ROADMAP.md for next outcome.
+
 # P72 complete — native depot and service access (7 October 2026)
 
 bridge_live.place_depot prepares/submits native processed construction parameters

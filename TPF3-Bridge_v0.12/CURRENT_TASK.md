@@ -1,3 +1,16 @@
+# Next: basic native station construction
+
+User selected this next challenge on 7 October 2026. Current map lacks suitable
+platform stations for non-branch services. See DEVELOPMENT_ROADMAP.md and the
+current scope addition in SPDD_SCOPE.md. Survey actual station assets and line roles,
+then construct a simple native passenger station, connect it and expose exact
+station/group/terminal identities for service use. Keep stopping tracks and fast
+bypasses intentional. No station implementation dispatched by this documentation update.
+
+Existing construction capabilities are sufficient to move forward; do not launch
+another broad validation pass. New depot dispatch and representative non-branch
+operation remain untested; station provision is the next useful enabling step.
+
 # P72 complete — native depot and DS service connection
 
 Authority: .local_runs/live_python_interface/p72/orchestrator/TASK.md.
@@ -11,4 +24,4 @@ No train dispatch/capacity proof, new services, process restart or host repair.
 Original failures/unknown journals retained; no replay. Receipt duplicate-write
 fix and exact successful-build reconciliation included; current pending none.
 Evidence/checkpoint/commit: .local_runs/live_python_interface/p72/.
-Acceptance boundary reached. Next task requires coordinator choice; no push.
+P72 accepted by coordinator; no current blocker or remote push.

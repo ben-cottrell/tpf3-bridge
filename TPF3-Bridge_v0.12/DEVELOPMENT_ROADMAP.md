@@ -1,6 +1,6 @@
 # Development roadmap
 
-Updated 6 October 2026. Current priorities supplement the historical work packages
+Updated 7 October 2026. Current priorities supplement the historical work packages
 in implementation/work_packages.json; their old status labels are not a live
 capability inventory. Completed native evidence is recorded in CURRENT_TASK.md.
 
@@ -47,7 +47,7 @@ built result with less repeated human intervention. A longer handbook alone is
 not success. Skill implementation and redesign remain queued; this entry records
 intent and does not dispatch them or mutate the current game.
 
-## Recommended next bridge challenge: operate Complex Junction
+## Operating challenge — demonstrated baseline and remaining coverage
 
 Build on WP-07 Practical signals and observation / WF-04 Signals and representative
 passage. Challenge accepted by the user; native API availability remains to be
@@ -123,10 +123,73 @@ Bridge purchase, service assignment and actual D/E travel demonstrated. Native
 alternative selection at D observed: one train stopped at primary terminal0 while
 a second arrived and stopped at alternative1; both manual holds then released.
 UI depot/signal fixtures and the user's depot spur enabled the operating test;
-bridge-native signal and depot construction remain unresolved producer contracts.
-Do not describe the full bridge challenge as complete. No need to repeat all route
+At this historical milestone, bridge-native signal and depot construction were
+unresolved. P71 and P72 below subsequently resolved those producer gaps.
+Do not describe all representative route-operation coverage as complete. No need to repeat all route
 combinations or add capacity/reservation audits. Preserve the successful fixture
 and target remaining implementation work to concrete producer evidence.
 Final save: TPF3_Complex_Junction_P66_AlternativePlatform_20261006.sav.
 Local owned milestone commit880fdf8; 390 affected tests reused with matching hashes.
 Evidence: .local_runs/live_python_interface/p66/alternative/HANDOFF.md.
+
+
+## Existing-signal prerequisite — user direction7October
+
+Proceed with an existing functional signal anywhere on the map as the technical
+creation template. P71 demonstrated this mechanism using the actual native
+edge-object construction resource and a new signal placeholder in a track proposal.
+A template-free first signal remains unproven; an existing signal is the prerequisite.
+Validate seed freshness and type, apply target position/direction explicitly, and
+report existing_signal_required when no usable seed is found with honest discovery
+coverage. Do not infer identical depot requirements. P70 recorded the initial gap;
+P71 resolved it using the installed Auto Signals implementation as an API reference.
+
+
+## P71/P72 completed construction capabilities — 7 October 2026
+
+- P71 (`df96576`): reusable native signal placement from a discovered existing
+  functional signal, explicit position/direction/one-way intent and native readback.
+  E inbound one-way placement demonstrated before the platform choices. Other
+  direction/type combinations are source-backed, not all demonstrated in game.
+- P72 (`79cd4d1`): reusable native depot construction using processed construction
+  parameters, plus exact depot/exit readback and a connected DS service approach.
+  Native depot-to-platform path passes; physical dispatch from this depot is untested.
+- P72 also rejects native collision errors even when critical=false and removes
+  a redundant response-file replacement. The Windows denial's underlying cause
+  remains unproved. Pending receipts were reconciled without replaying construction.
+- 399 affected tests and 11 native route checks pass at P72. These complement P66
+  actual D/E travel and observed alternative-platform use; they do not establish
+  physical travel over every Complex Junction route.
+
+Current useful checkpoint: `TPF3_Complex_Junction_P72_Service_Depot_20261007.sav`.
+Usage: `implementation/live_python_interface/SIGNALS.md` and `DEPOTS.md`.
+Detailed evidence remains in `.local_runs/live_python_interface/p71/` and `p72/`.
+There is no current blocker. Existing capabilities do not need another general
+validation campaign before progressing to a useful new construction challenge.
+
+## Next challenge: basic native station construction
+
+User direction, 7 October: the current map lacks suitable platform stations for
+non-branch services. Build this capability next, before extending representative
+non-branch train operation. Existing named reference stations do not establish that
+usable platforms exist for every intended track role.
+
+Outcome: construct a simple native rail passenger station serving a selected
+non-branch route, connect its native track interfaces to the railway, discover its
+station/group/terminal identities and make it usable as a native service stop.
+Survey current track roles and available station assets/templates first; select
+placement, platform count, length and track arrangement from the intended service
+and game capabilities. Do not assume a station-template API matches depot creation.
+Preserve the intended distinction between stopping tracks and fast bypass tracks.
+
+Implement only the reusable placement/configuration, connection and terminal
+readback needed by that outcome. Use native construction and fitting. Demonstrate
+actual station construction and connection; service configuration and a useful
+arrival/departure can then close the operational loop when suitable rolling stock
+and a second stop are available. Report these evidence levels separately.
+
+Basic station construction is now in scope for this challenge. Detailed station
+architecture, furniture/crowd modelling, broad station-modification support, road
+network expansion and tycoon management are not implied. Railway-design skill work
+remains a separate queued exercise. This documentation update selects the next
+challenge; it does not claim an implementation or alter the current save.

@@ -1,3 +1,14 @@
+## Basic station construction — user direction, 7 October 2026
+User selects basic native station construction as the next bridge challenge because
+this map lacks suitable platforms for non-branch services. Scope includes native
+rail passenger station placement/configuration, fitting rail connections, station/
+group/terminal readback and integration as a service stop. Survey actual line roles
+and native assets first; maintain intentional fast bypass versus stopping tracks.
+This supersedes older station exclusions only for this basic challenge. Detailed
+station architecture, crowd/furniture modelling and unrelated road/tycoon expansion
+remain deferred. Existing disposable-map, normal staging/save/load, affected tests,
+local milestone commit and external-review rules continue. See DEVELOPMENT_ROADMAP.md.
+
 ## Operating challenge authority — 6 October 2026
 User authorises bridge changes and construction for native signals, depot/test train
 and service setup, train observation, primary/alternative platform configuration
