@@ -1,25 +1,31 @@
-# P75 partial native mainline (8 October 2026)
+# P75 shared four-track overpass verified (8 October 2026)
 
-Build40420/session pif_1791488311_46616; fresh146 role controls matched saved P74.
-UF/US through spreading, DF/DS native spans, new UF and inside DS C routes built.
-Old C/access chains and exact conflicting old bridge/ramp pieces removed; guarded
-structured removal fix76a290e now runtime-demonstrated. Branch functions disconnected.
-Current native routes confirm4 A–B plusUF/DS C:6/8. US/DF C absent; latest proposals
-collide with newly required mainline pieces. Coordinator must coordinate the remaining
-crossings/profiles; no global impossibility claim or new human permission required.
-Exact built geometry, retained D/E interfaces (not certified free ports), failed
-proposals, sampled diagrams and overview: .local_runs/live_python_interface/p75/
-mainline_first/{HANDOFF.md,partial_current.json,asbuilt_and_proposed_controls.json,
-branch_interfaces.json,checks.json}. Pending none; paused/non-maximised.
-Saved TPF3_Complex_Junction_P75_Mainline_Partial_UF_DS_20261008; bytes/SHA256 in
-partial_checkpoint.json. Prior P73 save preserved; new checkpoint not reloaded.
-Two python tests/native/check_structured_junction.py --prepared <UF/DS prepare>
---built <UF/DS build> checks pass; exact commands/logs in checks.json.416 tests reused
-from python tools/quiet_checks.py --suite live_client --label pif-p75-structured-removal-local,
-.local_checks/pif-p75-structured-removal-local_l76h0wzw/report.json; source/test hashes
-match. Unchanged engineering tests not rerun. Native build updated, so historical
-native evidence is not substituted for current readback. Original failures retained.
-No application/mod/runner refactor, host restart/repair or remote push; usage unavailable.
+Build40420/session pif_1791496725_8461280; pending none, paused/non-maximised.
+Fresh manual baseline preserved; four local trunk chains and DS diveunder cleared.
+Native UI lowered central crossing samples ~15–16 relative units; abutment-area
+samples remain ~16.3. No reusable scripted terrain excavation claim.
+Combined native proposal accepted without messages/collisions, built12segments/
+8nodes. Concrete US71617/UF67485/DF62168/DS71624 share exact native strip71620;
+overview shows coordinated continuous deck. All four directed A–B TRAIN routes
+verify through required new edges. Physical train traversal remains unprobed.
+Saved TPF3_P75_Shared_Four_Track_Overpass_20261008 (40544538bytes); SHA256 and
+path in .local_runs/live_python_interface/p75/overpass_first/checkpoint.json.
+Native receipts, exact fresh interfaces, terrain readings, overview and checks:
+that directory/{stage_result.json,fresh_stage_interfaces.json,group_checks.json,
+build_first.json,terrain_crossing95.json,shared_bridge_overview.jpg}.
+DS C preview on fresh mainline71621 rejected Construction Not Possible; through
+split passes but branch approach fails, no reported collision. Exact diagnostic
+DS_prepare_first.json returned to coordinator for material crossing/profile choice.
+Historical UF C IDs not all present; old6/8 evidence superseded, C connectivity
+not claimed. Whole junction and C/D/E branch functions remain incomplete.
+Reusable four cleared-port grouped structured_chain, bounded shared-strip readback
+and base-terrain observations added; exact prepared controls reused at construction.
+python tools/quiet_checks.py --suite live_client --label pif-p75-grouped-structures:
+419passed,0failures/errors; .local_checks/pif-p75-grouped-structures_9_j_8tsr/report.json.
+Saved native shared-strip check and four fresh routes pass; git diff --check passes.
+Unchanged suites not rerun; failing sandbox test attempt/terrain UI timeout retained.
+Local milestone commit authorised; unrelated coordinator docs preserved, no push,
+process restart, environment repair or runner change. Actual usage unavailable.
 
 # P74 complete — current-state design survey (7 October 2026)
 

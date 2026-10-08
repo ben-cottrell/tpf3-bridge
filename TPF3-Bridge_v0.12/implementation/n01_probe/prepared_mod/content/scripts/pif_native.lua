@@ -126,9 +126,24 @@ end
 function M.inspect(p)
  assert(type(p.edge_ids)=="table" and #p.edge_ids>=1 and #p.edge_ids<=16,"edge_read_bound")
  assert(p.structures==nil or type(p.structures)=="boolean","structures_flag_boolean_required")
+ assert(p.parallel_strips==nil or type(p.parallel_strips)=="boolean","parallel_strips_flag_boolean_required")
  local out={};for _,id in ipairs(p.edge_ids) do
   local e=edge(id)
   if p.structures==true then e.structure=structure(api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)) end
+  if p.parallel_strips==true then
+   e.parallel_strips={};e.parallel_strips_truncated=false
+   for i,stripid in ipairs(api.engine.system.baseParallelStripSystem.getStrips(id)) do
+    if i>8 then e.parallel_strips_truncated=true;break end
+    local strip=api.engine.getComponent(stripid,api.type.ComponentType.BASE_PARALLEL_STRIP)
+    assert(strip,"parallel_strip_component_unavailable")
+    local row={entity=stripid,ranges={},ranges_truncated=false}
+    for _,group in ipairs(strip.rangeGroups) do for _,range in ipairs(group) do
+     if #row.ranges<16 then row.ranges[#row.ranges+1]={edge=range.edge,bounds={range.bounds[1],range.bounds[2]}}
+     else row.ranges_truncated=true end
+    end end
+    e.parallel_strips[#e.parallel_strips+1]=row
+   end
+  end
   if p.geometry==true then
    local g=native_geometry(id);local samples={}
    for _,u in ipairs({0,.25,.5,.75,1}) do local pos,dir=sample(g,u);samples[#samples+1]={u=u,pos=pos,direction=dir} end
@@ -220,7 +235,7 @@ function M.inspect(p)
   local terrain={}
   for _,pos in ipairs(q.positions) do
    vector(pos);assert(#pos==2,"terrain_position_needs_xy");assert(pos[1]>=q.region.min[1] and pos[1]<=q.region.max[1] and pos[2]>=q.region.min[2] and pos[2]<=q.region.max[2],"terrain_position_outside_site")
-   local xy=api.type.Vec2f.new(pos[1],pos[2]);terrain[#terrain+1]={xy=pos,height=api.engine.terrain.getHeightAt(xy),valid=api.engine.terrain.isValidCoordinate(xy)}
+   local xy=api.type.Vec2f.new(pos[1],pos[2]);terrain[#terrain+1]={xy=pos,height=api.engine.terrain.getHeightAt(xy),base_height=api.engine.terrain.getBaseHeightAt(xy),valid=api.engine.terrain.isValidCoordinate(xy)}
   end
   result.site={region=q.region,entities=observed,terrain=terrain,queried=queried,processed=processed,truncated=truncated,classification="BASE_EDGE,TOWN_BUILDING,CONSTRUCTION only;other incidental categories not exported",game_constructed=false}
  end
@@ -2631,6 +2646,23 @@ local function prepare_new_structure(p,s,request_id)
  return record
 end
 local function structured_proposal(record)
+ if record.groups then
+  local proposal=api.type.SimpleProposal.new();local nodes,segments={},{}
+  for gi,group in ipairs(record.groups) do
+   local part=structured_proposal(group);local mapping={}
+   for _,node in ipairs(part.streetProposal.nodesToAdd) do
+    mapping[node.entity]=-1000-#nodes-1;node.entity=mapping[node.entity];nodes[#nodes+1]=node
+   end
+   for _,segment in ipairs(part.streetProposal.edgesToAdd) do
+    segment.entity=-#segments-1
+    segment.comp.node0=mapping[segment.comp.node0] or segment.comp.node0
+    segment.comp.node1=mapping[segment.comp.node1] or segment.comp.node1
+    segments[#segments+1]=segment
+   end
+  end
+  proposal.streetProposal.nodesToAdd=nodes;proposal.streetProposal.edgesToAdd=segments
+  return proposal
+ end
  if record.new_alignment then
   local proposal,offset
   if record.mixed then
@@ -2721,7 +2753,19 @@ function M.structured_chain(p,s,state,request_id,respond)
   record=s.prepared_structures[p.prepared_request];assert(record and not record.used,"prepared_structure_missing_or_consumed")
  else
   assert(p.prepare==true and p.execute~=true,"structure_preparation_required")
-  if p.new_alignment==true then
+  if p.groups then
+   for k in pairs(p) do assert(k=="groups" or k=="prepare","unsupported_grouped_structure_input") end
+   assert(type(p.groups)=="table" and #p.groups==4,"four_structure_groups_required")
+   record={groups={},segments={},handle=request_id};local ports,seen={},{}
+   for i,q in ipairs(p.groups) do
+    assert(type(q)=="table" and q.new_alignment==true and not q.junctions and not q.replace_chain and not q.normal_offset_from,"group_requires_cleared_free_attachments")
+    for k in pairs(q) do assert(k=="new_alignment" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical" or k=="representation" or k=="leg_representations" or k=="handle_scale","unsupported_group_member_input") end
+    for _,port in ipairs({q.source,q.target}) do assert(not ports[port.node_id],"group_attachment_reused");ports[port.node_id]=true end
+    local group=prepare_new_structure(q,s,request_id.."_group_"..i);record.groups[i]=group
+    for _,segment in ipairs(group.segments) do record.segments[#record.segments+1]=segment end
+    assert(#record.segments<=16,"grouped_structure_segment_bound")
+   end
+  elseif p.new_alignment==true then
    for k in pairs(p) do assert(k=="new_alignment" or k=="replace_chain" or k=="junctions" or k=="normal_offset_from" or k=="max_route_length" or k=="through_representation" or k=="representation" or k=="leg_representations" or k=="handle_scale" or k=="prepare" or k=="execute" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical","unsupported_new_structure_input") end
    record=prepare_new_structure(p,s,request_id)
   else
@@ -2813,6 +2857,25 @@ function M.structured_chain(p,s,state,request_id,respond)
   local receipt=res.proposal.proposal;local ids={}
   for _,row in ipairs(receipt.addedSegments) do local e=api.engine.getComponent(row.entity,api.type.ComponentType.BASE_EDGE);if e and e.roadType==E.RoadType.TRACK then ids[#ids+1]=row.entity end end
   local ok,value=pcall(function()
+   if record.groups then
+    assert(#ids==#record.segments,"grouped_structure_receipt_incomplete")
+    local remaining={};for _,id in ipairs(ids) do remaining[id]=edge(id) end
+    local groups={}
+    for i,group in ipairs(record.groups) do
+     local current=group.source.node_id;local selected={}
+     for _=1,#group.segments do
+      local found;for id,e in pairs(remaining) do if e.node0==current then assert(not found,"ambiguous_group_attachment");found=id end end
+      assert(found,"group_connection_missing");current=remaining[found].node1;remaining[found]=nil;selected[#selected+1]=found
+     end
+     assert(current==group.target.node_id,"group_target_identity_mismatch")
+     group.fitted.ids=selected
+     groups[i]={readback=M.readback(group.fitted),structures=M.inspect({edge_ids=selected,structures=true,parallel_strips=true})}
+    end
+    assert(next(remaining)==nil,"unreconciled_grouped_receipt")
+    s.mutationPending=nil
+    return {groups=groups,game_constructed=true,native_command_success=true,prepared_request=p.prepared_request,
+     prepared_geometry_reused=true,geometry_refitted=false,shared_four_track_bridge="requires_exact_strip_and_visual_readback",effects={added_segments=#receipt.addedSegments,removed_segments=#receipt.removedSegments,added_nodes=#receipt.addedNodes,removed_nodes=#receipt.removedNodes}}
+   end
    if record.new_alignment then
     if record.mixed then
      local j=record.mixed;assert(#ids==#record.fitted.controls+2,"mixed_structure_receipt_incomplete")

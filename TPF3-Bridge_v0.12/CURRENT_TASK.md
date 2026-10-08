@@ -1,17 +1,21 @@
-# P75 partial mainline — coordinator crossing/profile decision
+# P75 — shared overpass complete; C approach decision
 
-Build40420/session pif_1791488311_46616, pending none; paused/non-maximised.
-Four A–B through paths plus A.UF→C.UF and C.DS→A.DS verified:6/8.
-US/DF C paths absent. Their latest proposals collide with newly required mainline
-pieces. Return coordinated crossing/profile choice to Astra; no new user approval.
-Do not clear built required tracks as incidental obstructions or redesign branches.
-
-UF/US spreading, DF/DS spans and UF/DS C connections built; obsolete C/branch
-access and conflicting old structures removed. Branch functions disconnected.
-Exact geometry/interfaces, proposals, failures/checks/checkpoint:
-.local_runs/live_python_interface/p75/mainline_first/HANDOFF.md and checks.json.
-Saved TPF3_Complex_Junction_P75_Mainline_Partial_UF_DS_20261008; whole junction incomplete.
-Two saved-native junction checks pass.416 unchanged application checks reused with
-matching source/test hashes. Structured removal fix76a290e runtime demonstrated.
-No source/runner change, host repair or push. Await coordinator's coupled geometry
-adjustment inside the authorised mainline-first task, not a permission pause.
+Build40420/session pif_1791496725_8461280; pending none, paused/non-maximised.
+Overpass-first reconstruction succeeded: one combined native proposal built12
+segments/8nodes. Concrete bridge edges US71617/UF67485/DF62168/DS71624 share
+native strip71620; all four directed A–B TRAIN paths verify through new edges.
+Central terrain samples lowered ~15–16 relative units using native UI; surrounding
+abutment samples remain ~16.3. Scripted terrain excavation is not demonstrated.
+Saved TPF3_P75_Shared_Four_Track_Overpass_20261008; hash/bytes retained.
+Fresh interfaces, native receipts/routes, overview and terrain evidence:
+.local_runs/live_python_interface/p75/overpass_first/{stage_result.json,
+fresh_stage_interfaces.json,group_checks.json,checkpoint.json}.
+DS C preview on fresh mainline71621 rejected Construction Not Possible: through
+split passes; adding branch approach fails, no reported collision. Exact diagnostic
+DS_prepare_first.json preserved. Coordinator chooses material C approach/crossing
+adjustment; ordinary implementation remains authorised. Historical UF branch IDs
+could not all be read; no old C verification reused. Whole junction/C/D/E functions
+remain incomplete; physical traversal unprobed.
+Reusable grouped structured_chain and bounded native strip/base-terrain readback
+added.419 quiet checks pass: .local_checks/pif-p75-grouped-structures_9_j_8tsr/report.json.
+No host restart/repair, task-runner change or remote push.

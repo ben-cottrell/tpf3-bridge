@@ -30,6 +30,36 @@ def check_structure(record, expected_class, expected_resource=None):
             raise ValueError('nonfinite resource parameter')
 
 
+def check_shared_bridge(edges):
+    """Require native shared-strip identity, not resemblance of four bridges."""
+    if len(edges) != 4 or len({e['id'] for e in edges}) != 4:
+        raise ValueError('four distinct track edges required')
+    ids = {e['id'] for e in edges}
+    common = None
+    resource = edges[0].get('structure', {}).get('resource_name')
+    for edge in edges:
+        if edge.get('road_type') != 'TRACK' or edge.get('parallel_strips_truncated') is not False:
+            raise ValueError('incomplete TRACK strip evidence')
+        check_structure(edge['structure'], 'BRIDGE', resource)
+        eligible = set()
+        for strip in edge.get('parallel_strips', []):
+            if strip.get('ranges_truncated') is not False:
+                continue
+            covered = set()
+            for row in strip.get('ranges', []):
+                bounds = row.get('bounds', [])
+                if (len(bounds) == 2 and all(type(x) in (int, float) and math.isfinite(x) for x in bounds)
+                        and 0 <= min(bounds) < max(bounds) <= 1):
+                    covered.add(row['edge'])
+            if ids <= covered and type(strip.get('entity')) is int and strip['entity'] > 0:
+                eligible.add(strip['entity'])
+        common = eligible if common is None else common & eligible
+    if not common:
+        raise ValueError('no exact shared native bridge strip demonstrated')
+    return {'shared_strip_ids': sorted(common), 'edges': sorted(ids), 'resource': resource,
+            'claim': 'native shared parallel strip; not continuous clearance or visual deck certification'}
+
+
 def check_evidence(directory):
     def read(name): return json.loads((directory / name).read_text(encoding='utf-8'))
     rail = read('rail_structures.json')

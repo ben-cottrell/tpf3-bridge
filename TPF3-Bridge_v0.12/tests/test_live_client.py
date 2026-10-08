@@ -5491,6 +5491,33 @@ class NativeStructureEvidenceTests(unittest.TestCase):
                                      'instance_parameters':'not_exposed_by_BaseEdge',
                                      'resource_state':'not_applicable'},'NORMAL')
 
+    def shared_rows(self):
+        return [{'id': i, 'road_type': 'TRACK', 'structure': self.record(),
+                 'parallel_strips_truncated': False,
+                 'parallel_strips': [{'entity': 90, 'ranges_truncated': False,
+                     'ranges': [{'edge': j, 'bounds': [0, 1]} for j in range(1, 5)]}]}
+                for i in range(1, 5)]
+
+    def test_exact_shared_bridge_strip(self):
+        rows = self.shared_rows()
+        for row in rows:
+            row['parallel_strips'][0]['ranges'][-1]['bounds'] = [1, 0]
+        self.assertEqual(self.checker.check_shared_bridge(rows)['shared_strip_ids'], [90])
+
+    def test_independent_bridges_do_not_prove_shared_structure(self):
+        rows = self.shared_rows()
+        rows[0]['parallel_strips'][0]['entity'] = 91
+        with self.assertRaises(ValueError): self.checker.check_shared_bridge(rows)
+
+    def test_truncated_or_missing_fourth_track_is_unproven(self):
+        for incomplete in ('truncated', 'missing', 'zero_range'):
+            rows = self.shared_rows()
+            strip = rows[0]['parallel_strips'][0]
+            if incomplete == 'truncated': strip['ranges_truncated'] = True
+            elif incomplete == 'missing': strip['ranges'].pop()
+            else: strip['ranges'][-1]['bounds'] = [0.5, 0.5]
+            with self.assertRaises(ValueError): self.checker.check_shared_bridge(rows)
+
     def test_unknown_or_wrong_resource_cannot_establish_selected_structure(self):
         for changed in ({'resource_state':'unavailable'},{'classification':'UNKNOWN'},
                         {'repository':'tunnelTypeRep'},{'resource_name':'other'},
