@@ -1529,3 +1529,24 @@ add their own footprint. Current native geometry overrides bounded position hint
 See [route_set.md](route_set.md) and route_set_example.json. Read-only
 route-set-inspect reports exact shared rails (including reverse use), junctions
 and endpoints; complete topology-disjoint, overlap or unknown. No capacity claim.
+
+## Grouped native structures (P75)
+
+Use `client.request('structured_chain', {'prepare': True, 'groups': groups})`
+for exactly four explicitly paired, cleared free TRACK attachments. Each member
+uses the existing `new_alignment: true`, exact source/target edge snapshots and
+node IDs, region, guides, structures and fitting/profile options. Eight attachment
+nodes must be distinct; total proposed segments are bounded to sixteen. Grouped
+interior junctions, replacement chains and normal-offset derivation are unsupported.
+
+Preparation evaluates one combined native proposal. Build only a clean accepted
+request with `{'execute': True, 'prepared_request': response['request_id']}` in the
+same session. The saved native geometry is reused; build returns per-group exact
+readback and effects. Unknown outcomes require reconciliation, never blind replay.
+A grouped proposal does not itself establish a shared bridge: request optional
+`parallel_strips: true` alongside `structures: true` in `inspect`, then confirm all
+four TRACK bridge IDs share the same exact strip/resource with nonzero ranges.
+Reversed strip ranges are valid. Truncated strip data cannot establish this fact.
+Use fresh directed TRAIN route checks for required connections after later splits;
+pathfinding is distinct from actual train traversal/reservation. Native terrain
+sample `base_height` is an observation, not a demonstrated scripted excavation API.

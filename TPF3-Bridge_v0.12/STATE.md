@@ -1,31 +1,29 @@
-# P75 shared four-track overpass verified (8 October 2026)
+# P75 — paused partial C reconnection (8 October 2026)
 
-Build40420/session pif_1791496725_8461280; pending none, paused/non-maximised.
-Fresh manual baseline preserved; four local trunk chains and DS diveunder cleared.
-Native UI lowered central crossing samples ~15–16 relative units; abutment-area
-samples remain ~16.3. No reusable scripted terrain excavation claim.
-Combined native proposal accepted without messages/collisions, built12segments/
-8nodes. Concrete US71617/UF67485/DF62168/DS71624 share exact native strip71620;
-overview shows coordinated continuous deck. All four directed A–B TRAIN routes
-verify through required new edges. Physical train traversal remains unprobed.
-Saved TPF3_P75_Shared_Four_Track_Overpass_20261008 (40544538bytes); SHA256 and
-path in .local_runs/live_python_interface/p75/overpass_first/checkpoint.json.
-Native receipts, exact fresh interfaces, terrain readings, overview and checks:
-that directory/{stage_result.json,fresh_stage_interfaces.json,group_checks.json,
-build_first.json,terrain_crossing95.json,shared_bridge_overview.jpg}.
-DS C preview on fresh mainline71621 rejected Construction Not Possible; through
-split passes but branch approach fails, no reported collision. Exact diagnostic
-DS_prepare_first.json returned to coordinator for material crossing/profile choice.
-Historical UF C IDs not all present; old6/8 evidence superseded, C connectivity
-not claimed. Whole junction and C/D/E branch functions remain incomplete.
-Reusable four cleared-port grouped structured_chain, bounded shared-strip readback
-and base-terrain observations added; exact prepared controls reused at construction.
-python tools/quiet_checks.py --suite live_client --label pif-p75-grouped-structures:
-419passed,0failures/errors; .local_checks/pif-p75-grouped-structures_9_j_8tsr/report.json.
-Saved native shared-strip check and four fresh routes pass; git diff --check passes.
-Unchanged suites not rerun; failing sandbox test attempt/terrain UI timeout retained.
-Local milestone commit authorised; unrelated coordinator docs preserved, no push,
-process restart, environment repair or runner change. Actual usage unavailable.
+Human pause-after-current-step relayed by coordinator; no next phase dispatched.
+Build40420/session pif_1791496725_8461280, pending none, game paused/non-maximised.
+Shared overpass milestone effdc70 retained: US71617/UF67485/DF62168/DS71624
+share exact strip71620; twelve segments built. UI-only central excavation retained. Roomier DS merge near local s-955
+accepted and built six segments/four nodes, replacing71621 with61044/61043.
+Exact junction71847; branch67244→71847 uses61042/61041/67346/67350.
+Local branch/through readback and fresh whole routes pass: four A–B plus DS C,
+five of eight. UF/DF/US C remain disconnected; no physical traversal claim.
+UF raised sweep conflicts with US67301. Bridge-transition and earlier-rise
+variants retain native Construction Not Possible/Too Much Incline diagnostics;
+through-only splits pass. No general native impossibility or root-cause claim.
+Current outcome is incomplete: coordinator needs the specific rejection evidence
+before another material profile/through-layout decision. Do not start D/E work.
+
+Evidence: .local_runs/live_python_interface/p75/overpass_first/
+{DS_build_roomy955.json,reconnection_checks.json,checkpoint_reconnection.json,
+RECONNECTION_HANDOFF.md,reconnection_paused_overview.jpg}; all failed previews kept.
+New unique partial save40709438bytes; exact actual UI-produced filename/hash in
+checkpoint_reconnection.json, previous overpass checkpoint unchanged.
+419 affected tests remain valid (.local_checks/pif-p75-grouped-structures_9_j_8tsr/report.json);
+no implementation changes since that acceptance; hashes rechecked in acceptance_reuse.json.
+Original command: python tools/quiet_checks.py --suite live_client --label pif-p75-grouped-structures.
+Grouped API usage documented.
+No remote push, host recovery, additional phase or task-runner changes.
 
 # P74 complete — current-state design survey (7 October 2026)
 
