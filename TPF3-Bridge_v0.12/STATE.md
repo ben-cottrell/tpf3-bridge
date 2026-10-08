@@ -1,18 +1,25 @@
-# P75 stopped — direct design correction (7 October 2026)
+# P75 partial native mainline (8 October 2026)
 
-Mainline A–B/C split takes priority; coordinator will relocate/rebuild D/E branches.
-Old P75 candidates superseded, not native evaluated/built. No game request/mutation,
-reload/save/simulation change; P73 session pif_1791396784_90336 pending none,
-paused/non-maximised. Narrow fix retained:remove_exact_chain(...,allow_structures=True)
-observes/checks exact structure metadata, known types, ownership/incidence/object
-safeguards; default NORMAL-only unchanged.416 affected tests pass:
-python tools/quiet_checks.py --suite live_client --label pif-p75-structured-removal-local;
-.local_checks/pif-p75-structured-removal-local_l76h0wzw/report.json. Sandbox temporary
-file failures preserved; authorised normal local tests passed without host repair.
-Staged pif_native.lua changed on disk, NOT loaded/runtime-demonstrated. Prior bytes,
-hashes, superseded plans/checks/handoff in .local_runs/live_python_interface/p75/
-{HANDOFF.md,result.json,staging.json,SUPERSEDED.md}. Helper/mod/tests/README and state/
-task only; no runner/refactor/push. Await replacement design; usage unavailable.
+Build40420/session pif_1791488311_46616; fresh146 role controls matched saved P74.
+UF/US through spreading, DF/DS native spans, new UF and inside DS C routes built.
+Old C/access chains and exact conflicting old bridge/ramp pieces removed; guarded
+structured removal fix76a290e now runtime-demonstrated. Branch functions disconnected.
+Current native routes confirm4 A–B plusUF/DS C:6/8. US/DF C absent; latest proposals
+collide with newly required mainline pieces. Coordinator must coordinate the remaining
+crossings/profiles; no global impossibility claim or new human permission required.
+Exact built geometry, retained D/E interfaces (not certified free ports), failed
+proposals, sampled diagrams and overview: .local_runs/live_python_interface/p75/
+mainline_first/{HANDOFF.md,partial_current.json,asbuilt_and_proposed_controls.json,
+branch_interfaces.json,checks.json}. Pending none; paused/non-maximised.
+Saved TPF3_Complex_Junction_P75_Mainline_Partial_UF_DS_20261008; bytes/SHA256 in
+partial_checkpoint.json. Prior P73 save preserved; new checkpoint not reloaded.
+Two python tests/native/check_structured_junction.py --prepared <UF/DS prepare>
+--built <UF/DS build> checks pass; exact commands/logs in checks.json.416 tests reused
+from python tools/quiet_checks.py --suite live_client --label pif-p75-structured-removal-local,
+.local_checks/pif-p75-structured-removal-local_l76h0wzw/report.json; source/test hashes
+match. Unchanged engineering tests not rerun. Native build updated, so historical
+native evidence is not substituted for current readback. Original failures retained.
+No application/mod/runner refactor, host restart/repair or remote push; usage unavailable.
 
 # P74 complete — current-state design survey (7 October 2026)
 
