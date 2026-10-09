@@ -23,9 +23,14 @@ one design-record template, contextual patterns, five regression cases and a P75
 retrospective. It is not installed as a personal skill. These documents establish
 the workflow; independent replay and prospective design transfer remain untested.
 
-Next: inspect a small user-built three-track fan when available, capture native
-geometry and intended relationships, then plan a changed/mirrored variant before
-fitting. Use that small exercise to refine the procedure before another full junction.
+Shefford reference now captured: two user-built staggered fans, 29 native tracks,
+four junction nodes and six verified directional paths. Version 0.2 incorporates
+two ordinary turnouts and an early middle branch from the outer sweep. Scaled plan,
+geometry and limitations: railway-design/examples/SHEFFORD_FANS.md.
+User clarifies the10/15offsets allow a5-wide platform; track-only5/10 is also useful.
+Next: plan that track-only5/10-offset variant before fitting. Use that small
+exercise to refine the procedure before another full junction. Reference capture
+alone does not demonstrate prospective design transfer.
 The current game layout remains unchanged. No new junction rebuild, worker dispatch
 or scheduler restart follows from writing the procedure. P75 is a functional
 baseline and a design counterexample, not the aesthetic target for regression.

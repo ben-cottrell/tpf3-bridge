@@ -24,6 +24,20 @@ An accepted manual curve does not establish that the bridge's candidate is ident
 Local evidence: `.local_runs/design/terminal_16_8_12_8/manual02`, `manual03`,
 `operation23`, `operation25`; detailed outcomes in the handbook.
 
+## F2 — Compact staggered fan from two ordinary turnouts
+
+The first captured manual fan reference is now available in
+[Shefford staggered fans](examples/SHEFFORD_FANS.md), with native controls, a scaled
+plan and six successful directional path queries. Its two ordinary turnouts provide
+three exits: the middle route branches early from the outer sweep. See F1 for the
+general ordering lesson; the measured approximately 27–28-unit node separation is
+an example, not a minimum. Native construction cannot be inferred from a schematic
+that collapses both junctions into a single three-way switch.
+The measured 10/15-unit outlet offsets include platform space: the user intended
+a 5-unit-wide platform in the first 10-unit gap. A track-only variation can target
+5/10-unit offsets. Select the cross-section from its function before fitting;
+neither set of offsets defines the staggered-turnout pattern itself.
+
 ## X1 — Compact ordinary crossover groups
 
 **Context:** six approach tracks retain their through functions while adding the
@@ -101,9 +115,8 @@ final `restored03_station.json` passes all 16 scoped terminal routes.
 
 ## Contributions from manually built examples
 
-The most useful first contribution is a compact three-track fan: one approach to
-three platform-like straight leads, with the intermediate route sharing a compatible
-sweep. Keep its neighbouring tracks so the spatial constraint is visible.
+The first contribution, two mirrored compact fans near Shefford, is captured above.
+For future fan examples, keep neighbouring tracks so the spatial constraint is visible.
 
 If convenient, place two variations side by side: the preferred layout and a tighter
 or mirrored one that still works. No need to create a deliberately bad layout or

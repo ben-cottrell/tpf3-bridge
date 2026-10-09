@@ -1,0 +1,1150 @@
+{
+  "session": "pif_1791572697_48431435",
+  "survey": "2026-10-09",
+  "station": "Shefford Station",
+  "approach_direction_source": "user statement, singleton-side endpoints; native one-way signal records retained",
+  "units": "native game coordinates",
+  "geometry": "BaseEdge controls; plotted as cubic Hermite. Not full native movement paths.",
+  "fans": [
+    {
+      "first": 59948,
+      "second": 59963,
+      "approach": 5954,
+      "exits": {
+        "straight": 60000,
+        "middle": 59980,
+        "outer": 59972
+      },
+      "edge_ids": [
+        29694,
+        59592,
+        59944,
+        59950,
+        59951,
+        59953,
+        59954,
+        59961,
+        59989,
+        59996,
+        59998,
+        60002,
+        60004,
+        60006
+      ],
+      "origin": [
+        -1014.9090576171875,
+        -5775.44287109375,
+        2.0999984741210938
+      ],
+      "forward": [
+        -0.995564031564144,
+        -0.09408644459085544
+      ],
+      "left": [
+        0.09408644459085544,
+        -0.995564031564144
+      ],
+      "junction_node_chord": 27.88307051834517,
+      "junction_base_curve_sampled_length": 27.900082769923717,
+      "exit_offsets": {
+        "straight": 0.0026023141029796193,
+        "middle": 10.00301988359491,
+        "outer": 15.003228668340874
+      },
+      "name": "A"
+    },
+    {
+      "first": 60038,
+      "second": 59992,
+      "approach": 59970,
+      "exits": {
+        "straight": 59958,
+        "middle": 60012,
+        "outer": 60035
+      },
+      "edge_ids": [
+        59615,
+        59967,
+        59969,
+        59974,
+        59975,
+        59993,
+        59997,
+        60005,
+        60007,
+        60008,
+        60013,
+        60037,
+        60043,
+        60044,
+        60050
+      ],
+      "origin": [
+        -1017.2824096679688,
+        -5750.55517578125,
+        2.0999984741210938
+      ],
+      "forward": [
+        -0.9955633628644482,
+        -0.0940935200852383
+      ],
+      "left": [
+        0.0940935200852383,
+        -0.9955633628644482
+      ],
+      "junction_node_chord": 26.876388410325763,
+      "junction_base_curve_sampled_length": 26.89193917399985,
+      "exit_offsets": {
+        "straight": 0.0006800416663637066,
+        "middle": -9.999737527674633,
+        "outer": -14.999946312345129
+      },
+      "name": "B"
+    }
+  ],
+  "signals": [
+    {
+      "id": 59590,
+      "lanes": [
+        {
+          "animation_state": 0,
+          "edge": 59592,
+          "edge_index": 0,
+          "index": 0,
+          "reversed": false,
+          "type": "1"
+        }
+      ],
+      "one_way_param": 1,
+      "param": 0.03030300699174404,
+      "position": [
+        -1013.914306640625,
+        -5775.34912109375,
+        2.6299984455108643
+      ],
+      "resource": "::/infrastructure/signal/signal_path_c.con",
+      "revision": [
+        5,
+        11,
+        0
+      ]
+    },
+    {
+      "id": 59610,
+      "lanes": [
+        {
+          "animation_state": 0,
+          "edge": 59615,
+          "edge_index": 0,
+          "index": 0,
+          "reversed": false,
+          "type": "1"
+        }
+      ],
+      "one_way_param": 1,
+      "param": 0.030302999541163445,
+      "position": [
+        -1016.2880249023438,
+        -5750.46142578125,
+        2.6299984455108643
+      ],
+      "resource": "::/infrastructure/signal/signal_path_c.con",
+      "revision": [
+        5,
+        11,
+        0
+      ]
+    }
+  ],
+  "game_mutated": false,
+  "limits": [
+    "Spacing is observed, not a proven minimum.",
+    "No train traversal observed.",
+    "No universal three-way-turnout support conclusion."
+  ],
+  "edges": [
+    {
+      "id": 59944,
+      "node0": 59984,
+      "node1": 59963,
+      "p0": [
+        -1140.2894287109375,
+        -5797.337890625,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1042.4351806640625,
+        -5779.89013671875,
+        2.0999984741210938
+      ],
+      "t0": [
+        99.04662322998047,
+        9.360917091369629,
+        0
+      ],
+      "t1": [
+        97.20100402832031,
+        21.209091186523438,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59950,
+      "node0": 59987,
+      "node1": 59972,
+      "p0": [
+        -1163.7635498046875,
+        -5804.57958984375,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1219.843017578125,
+        -5809.88037109375,
+        2.0999984741210938
+      ],
+      "t0": [
+        -56.07948684692383,
+        -5.300734519958496,
+        0
+      ],
+      "t1": [
+        -56.07651901245117,
+        -5.300424098968506,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59953,
+      "node0": 59986,
+      "node1": 59964,
+      "p0": [
+        -1139.8189697265625,
+        -5802.31591796875,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1103.8892822265625,
+        -5795.9267578125,
+        2.0999984741210938
+      ],
+      "t0": [
+        36.37862777709961,
+        3.4381515979766846,
+        0
+      ],
+      "t1": [
+        35.507965087890625,
+        8.626117706298828,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59954,
+      "node0": 59964,
+      "node1": 59963,
+      "p0": [
+        -1103.8892822265625,
+        -5795.9267578125,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1042.4351806640625,
+        -5779.89013671875,
+        2.0999984741210938
+      ],
+      "t0": [
+        61.71908950805664,
+        14.993711471557617,
+        0
+      ],
+      "t1": [
+        62.05419158935547,
+        13.540119171142578,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59967,
+      "node0": 59949,
+      "node1": 59957,
+      "p0": [
+        -1143.5826416015625,
+        -5762.49169921875,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1167.5272216796875,
+        -5764.75537109375,
+        2.0999984741210938
+      ],
+      "t0": [
+        -23.94464683532715,
+        -2.2630136013031006,
+        0
+      ],
+      "t1": [
+        -23.944618225097656,
+        -2.2632884979248047,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59975,
+      "node0": 60009,
+      "node1": 60034,
+      "p0": [
+        -1144.9940185546875,
+        -5747.5576171875,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1168.9385986328125,
+        -5749.8212890625,
+        2.0999984741210938
+      ],
+      "t0": [
+        -23.94464683532715,
+        -2.2630136013031006,
+        0
+      ],
+      "t1": [
+        -23.944618225097656,
+        -2.2632884979248047,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59989,
+      "node0": 59981,
+      "node1": 60032,
+      "p0": [
+        -1141.2303466796875,
+        -5787.3818359375,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1066.3154296875,
+        -5780.3017578125,
+        2.0999984741210938
+      ],
+      "t0": [
+        74.91490173339844,
+        7.0802226066589355,
+        0
+      ],
+      "t1": [
+        74.9149169921875,
+        7.080033779144287,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59993,
+      "node0": 59957,
+      "node1": 59958,
+      "p0": [
+        -1167.5272216796875,
+        -5764.75537109375,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1223.606689453125,
+        -5770.05615234375,
+        2.0999984741210938
+      ],
+      "t0": [
+        -56.079498291015625,
+        -5.300734043121338,
+        0
+      ],
+      "t1": [
+        -56.076515197753906,
+        -5.300423622131348,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59996,
+      "node0": 59988,
+      "node1": 59980,
+      "p0": [
+        -1164.2340087890625,
+        -5799.6015625,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1220.3134765625,
+        -5804.90234375,
+        2.0999984741210938
+      ],
+      "t0": [
+        -56.079490661621094,
+        -5.300734519958496,
+        0
+      ],
+      "t1": [
+        -56.07651901245117,
+        -5.300424098968506,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59998,
+      "node0": 59984,
+      "node1": 59988,
+      "p0": [
+        -1140.2894287109375,
+        -5797.337890625,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1164.2340087890625,
+        -5799.6015625,
+        2.0999984741210938
+      ],
+      "t0": [
+        -23.94464683532715,
+        -2.2630136013031006,
+        0
+      ],
+      "t1": [
+        -23.944618225097656,
+        -2.2632884979248047,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 60002,
+      "node0": 59986,
+      "node1": 59987,
+      "p0": [
+        -1139.8189697265625,
+        -5802.31591796875,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1163.7635498046875,
+        -5804.57958984375,
+        2.0999984741210938
+      ],
+      "t0": [
+        -23.94464683532715,
+        -2.2630136013031006,
+        0
+      ],
+      "t1": [
+        -23.944618225097656,
+        -2.2632884979248047,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 60004,
+      "node0": 59981,
+      "node1": 59999,
+      "p0": [
+        -1141.2303466796875,
+        -5787.3818359375,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1165.1749267578125,
+        -5789.6455078125,
+        2.0999984741210938
+      ],
+      "t0": [
+        -23.94464683532715,
+        -2.2630136013031006,
+        0
+      ],
+      "t1": [
+        -23.944618225097656,
+        -2.2632884979248047,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 60006,
+      "node0": 59999,
+      "node1": 60000,
+      "p0": [
+        -1165.1749267578125,
+        -5789.6455078125,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1221.25439453125,
+        -5794.9462890625,
+        2.0999984741210938
+      ],
+      "t0": [
+        -56.079498291015625,
+        -5.300734519958496,
+        0
+      ],
+      "t1": [
+        -56.07651901245117,
+        -5.300424098968506,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 60007,
+      "node0": 59968,
+      "node1": 59995,
+      "p0": [
+        -1144.5235595703125,
+        -5752.53564453125,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1168.4681396484375,
+        -5754.79931640625,
+        2.0999984741210938
+      ],
+      "t0": [
+        -23.94464683532715,
+        -2.2630136013031006,
+        0
+      ],
+      "t1": [
+        -23.944618225097656,
+        -2.2632884979248047,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 60008,
+      "node0": 59995,
+      "node1": 60012,
+      "p0": [
+        -1168.4681396484375,
+        -5754.79931640625,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1224.547607421875,
+        -5760.10009765625,
+        2.0999984741210938
+      ],
+      "t0": [
+        -56.079498291015625,
+        -5.300734043121338,
+        0
+      ],
+      "t1": [
+        -56.076515197753906,
+        -5.300423622131348,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 60013,
+      "node0": 60034,
+      "node1": 60035,
+      "p0": [
+        -1168.9385986328125,
+        -5749.8212890625,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1225.01806640625,
+        -5755.1220703125,
+        2.0999984741210938
+      ],
+      "t0": [
+        -56.079498291015625,
+        -5.300734043121338,
+        0
+      ],
+      "t1": [
+        -56.076515197753906,
+        -5.300423622131348,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59974,
+      "node0": 59968,
+      "node1": 60011,
+      "p0": [
+        -1144.5235595703125,
+        -5752.53564453125,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1108.02099609375,
+        -5750.595703125,
+        2.0999984741210938
+      ],
+      "t0": [
+        36.405029296875,
+        3.4406468868255615,
+        0
+      ],
+      "t1": [
+        36.56114959716797,
+        0.6683960556983948,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59997,
+      "node0": 60011,
+      "node1": 59992,
+      "p0": [
+        -1108.02099609375,
+        -5750.595703125,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1044.1466064453125,
+        -5751.36865234375,
+        2.0999984741210938
+      ],
+      "t0": [
+        63.87527847290039,
+        1.1677417755126953,
+        0
+      ],
+      "t1": [
+        63.86871337890625,
+        -1.483808994293213,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 60005,
+      "node0": 60009,
+      "node1": 59946,
+      "p0": [
+        -1144.9940185546875,
+        -5747.5576171875,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1107.8853759765625,
+        -5747.134765625,
+        2.0999984741210938
+      ],
+      "t0": [
+        36.99538803100586,
+        3.496441602706909,
+        0
+      ],
+      "t1": [
+        37.11129379272461,
+        -1.9067500829696655,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 60043,
+      "node0": 59949,
+      "node1": 60039,
+      "p0": [
+        -1143.5826416015625,
+        -5762.49169921875,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1068.69970703125,
+        -5755.41455078125,
+        2.0999984741210938
+      ],
+      "t0": [
+        74.8829345703125,
+        7.077200889587402,
+        0
+      ],
+      "t1": [
+        74.8829345703125,
+        7.0772199630737305,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 60050,
+      "node0": 59946,
+      "node1": 59992,
+      "p0": [
+        -1107.8853759765625,
+        -5747.134765625,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1044.146484375,
+        -5751.36865234375,
+        2.0999984741210938
+      ],
+      "t0": [
+        63.79835510253906,
+        -3.2779111862182617,
+        0
+      ],
+      "t1": [
+        63.865272521972656,
+        -1.4837290048599243,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 29694,
+      "node0": 60032,
+      "node1": 59948,
+      "p0": [
+        -1066.3154296875,
+        -5780.3017578125,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1014.9090576171875,
+        -5775.44287109375,
+        2.0999984741210938
+      ],
+      "t0": [
+        51.40642547607422,
+        4.858301162719727,
+        0
+      ],
+      "t1": [
+        51.40636444091797,
+        4.859004020690918,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59592,
+      "node0": 59948,
+      "node1": 60018,
+      "p0": [
+        -1014.9090576171875,
+        -5775.44287109375,
+        2.0999984741210938
+      ],
+      "p1": [
+        -982.0853881835938,
+        -5772.3408203125,
+        2.0999984741210938
+      ],
+      "t0": [
+        32.82365417480469,
+        3.102539300918579,
+        0
+      ],
+      "t1": [
+        32.82366180419922,
+        3.102135181427002,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59615,
+      "node0": 60038,
+      "node1": 60019,
+      "p0": [
+        -1017.2824096679688,
+        -5750.55517578125,
+        2.0999984741210938
+      ],
+      "p1": [
+        -984.4642944335938,
+        -5747.453125,
+        2.0999984741210938
+      ],
+      "t0": [
+        32.81816482543945,
+        3.1018660068511963,
+        0
+      ],
+      "t1": [
+        32.818172454833984,
+        3.1016812324523926,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59951,
+      "node0": 59963,
+      "node1": 59948,
+      "p0": [
+        -1042.4351806640625,
+        -5779.89013671875,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1014.9090576171875,
+        -5775.44287109375,
+        2.0999984741210938
+      ],
+      "t0": [
+        27.29339027404785,
+        5.955370903015137,
+        0
+      ],
+      "t1": [
+        27.806692123413086,
+        2.628329038619995,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59961,
+      "node0": 60018,
+      "node1": 5954,
+      "p0": [
+        -982.0853881835938,
+        -5772.3408203125,
+        2.0999984741210938
+      ],
+      "p1": [
+        -902.512939453125,
+        -5764.82080078125,
+        2.0999984741210938
+      ],
+      "t0": [
+        79.57245635986328,
+        7.520322799682617,
+        0
+      ],
+      "t1": [
+        79.57245635986328,
+        7.520422458648682,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 59969,
+      "node0": 60019,
+      "node1": 59970,
+      "p0": [
+        -984.4642944335938,
+        -5747.453125,
+        2.0999984741210938
+      ],
+      "p1": [
+        -904.9051513671875,
+        -5739.93408203125,
+        2.0999984741210938
+      ],
+      "t0": [
+        79.55915069580078,
+        7.519221305847168,
+        0
+      ],
+      "t1": [
+        79.55915832519531,
+        7.519138813018799,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 60037,
+      "node0": 59992,
+      "node1": 60038,
+      "p0": [
+        -1044.146484375,
+        -5751.36865234375,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1017.2824096679688,
+        -5750.55517578125,
+        2.0999984741210938
+      ],
+      "t0": [
+        26.915023803710938,
+        -0.6252944469451904,
+        0
+      ],
+      "t1": [
+        26.8032283782959,
+        2.5333540439605713,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    },
+    {
+      "id": 60044,
+      "node0": 60039,
+      "node1": 60038,
+      "p0": [
+        -1068.69970703125,
+        -5755.41455078125,
+        2.0999984741210938
+      ],
+      "p1": [
+        -1017.2824096679688,
+        -5750.55517578125,
+        2.0999984741210938
+      ],
+      "t0": [
+        51.41728973388672,
+        4.859471321105957,
+        0
+      ],
+      "t1": [
+        51.417259216308594,
+        4.8597917556762695,
+        0
+      ],
+      "structure": {
+        "classification": "NORMAL",
+        "instance_parameters": "not_exposed_by_BaseEdge",
+        "resource_state": "not_applicable",
+        "type_index": -1,
+        "type_value": "0"
+      }
+    }
+  ],
+  "native_routes": {
+    "session": "pif_1791572697_48431435",
+    "results": [
+      {
+        "fan": "A",
+        "role": "straight",
+        "verified": true,
+        "reason": null
+      },
+      {
+        "fan": "A",
+        "role": "middle",
+        "verified": true,
+        "reason": null
+      },
+      {
+        "fan": "A",
+        "role": "outer",
+        "verified": true,
+        "reason": null
+      },
+      {
+        "fan": "B",
+        "role": "straight",
+        "verified": true,
+        "reason": null
+      },
+      {
+        "fan": "B",
+        "role": "middle",
+        "verified": true,
+        "reason": null
+      },
+      {
+        "fan": "B",
+        "role": "outer",
+        "verified": true,
+        "reason": null
+      }
+    ],
+    "train_traversal": "unprobed"
+  },
+  "cross_section_intent": {
+    "source": "user clarification",
+    "built_offsets": [
+      10,
+      15
+    ],
+    "platform_width_in_first_gap": 5,
+    "proposed_track_only_offsets": [
+      5,
+      10
+    ],
+    "proposed_variant_built": false
+  }
+}

@@ -1,6 +1,7 @@
 # Railway design procedure
 
-Version 0.1 — 9 October 2026. Working procedure; prospective effectiveness unproven.
+Version 0.2 — 9 October 2026. Shefford manual reference incorporated;
+prospective effectiveness on a new variant remains unproven.
 
 Purpose: produce coherent game-scale railways without repeatedly turning local
 construction difficulties into unplanned layout changes. The handbook explains
@@ -22,6 +23,9 @@ keep transferable patterns and concise evaluation results in versioned documents
 - Survey current station interfaces, track order/direction, terrain and structures.
   Give every interface a stable role label and map it to fresh native handles.
   Record coordinate orientation, game units, world identity and survey coverage.
+- Explain the receiving cross-section: track spacing may include platform space.
+  Shefford's 10/15-unit offsets represent a platform allowance; its proposed
+  track-only 5/10 variant keeps the turnout pattern but changes that requirement.
 - Agree the design priorities from the brief: for example, coherent principal
   routes first, useful shared corridors, then compact secondary connections.
   Compactness is not the shortest possible line at the expense of required functions.
@@ -77,6 +81,9 @@ answers the question. An arbitrary parameter sweep is not a design strategy.
 Choose the construction sequence by remaining spatial freedom and native staging:
 
 - Establish controlling fan boundaries before constrained intermediate branches.
+  A three-exit fan may use two staggered ordinary turnouts. Shefford's preferred
+  middle route branches early from the outer sweep; select the parent and junction
+  region as part of that family rather than requiring a single three-way switch.
 - Account for through-track replacement, turnout eligibility and usable approach
   length; do not infer these from endpoint distance alone.
 - Where a demonstrated native structure sequence requires it, clear/prepare the
@@ -157,6 +164,8 @@ Historical replay detects missed lessons; it does not prove transfer to a new si
 1. Retrospective P75 review: identify where this procedure would have intervened.
    Recorded in [the first review](railway-design/P75_REVIEW.md); no reconstruction.
 2. Inspect a small manually built fan pattern and document its actual geometry.
+   Completed for [Shefford's two mirrored fans](railway-design/examples/SHEFFORD_FANS.md):
+   29 tracks captured and all six intended native directional paths verified.
 3. Plan a mirrored or spatially altered version before any fitting; compare with
    the reference for reasoning and appearance. Build only within the active brief.
 4. Exercise an unfamiliar combination after the small example succeeds. Broaden

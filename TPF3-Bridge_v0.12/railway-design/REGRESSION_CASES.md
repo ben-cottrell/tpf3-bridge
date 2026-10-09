@@ -26,6 +26,16 @@ a relational concept and specify the survey needed before a scaled build plan.
 **Review criteria:** whole family and reserved space; controlling routes first;
 compatible sweep/parent selection; willingness to remove constraining track;
 no invented radius, minimum split angle or claimed native feasibility.
+Use separate ordinary turnout locations where appropriate; a three-exit fan does
+not imply a single three-way switch. Native-accepted close spacing serves the whole
+curve family; copying a measured gap alone does not demonstrate sound design.
+
+Observed reference: [Shefford fans](examples/SHEFFORD_FANS.md), including self-contained
+geometry. The reference was inspected and six directional routes verified; this is
+reference capture, not successful completion of a new variant by the design agent.
+For transfer, specify whether a platform occupies the first gap. Shefford's supplied
+10/15 offsets include that allowance; a track-only 5/10 brief must not inherit it.
+Preserve the branching relationships while fitting the changed receiving geometry.
 
 ## R2 — Locally accepted, globally misplaced return
 

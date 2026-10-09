@@ -1,3 +1,16 @@
+# Shefford manual reference captured — 9 October 2026
+
+Read-only survey on build40420/sessionpif_1791572697_48431435 after user enabled mod
+and replaced two signals. Both full fan graphs captured:29TRACKs,4junctions,6/6
+directional TRAIN routes verified. BaseEdge plan/control fixture in railway-design/
+examples/; raw receipts in .local_runs/design/shefford_fans/. No game mutations.
+Old-session query timed out before mod enabled; not replayed. Fresh access healthy.
+Signalled-edge movement read ambiguity retained; BaseEdge geometry/object readback
+sufficed, no bridge repair undertaken. No train-motion or universal spacing claims.
+Procedure v0.2 and F2 pattern updated. User explains10/15offsets reserve platform
+space in first gap. Next: plan track-only5/10-offset variant
+before fitting. This is reference capture, not prospective design-agent validation.
+
 # Railway design procedure v0.1 — 9 October 2026
 
 User authorises procedure/pattern development following review of P75 design quality.

@@ -1,3 +1,17 @@
+# Railway design procedure — Shefford reference captured (9 October 2026)
+
+Read-only native survey of the user's two mirrored staggered fans near Shefford
+Station complete, build40420/sessionpif_1791572697_48431435. 29 track controls,
+two complete components, four junctions and restored one-way signals captured.
+Six intended native TRAIN paths pass; no train traversal or construction performed.
+Reference: railway-design/examples/SHEFFORD_FANS.md, JSON and scaled SVG/PNG.
+Raw evidence: .local_runs/design/shefford_fans/. Procedure v0.2 incorporates the
+early middle branch from the outer sweep; 27–28-unit observed spacing is not a limit.
+User clarification:10/15 outlet offsets include a5-wide platform in the first gap.
+Next: scaled plan for a track-only5/10-offset variant,
+before fitting/building. Fresh-variant success and design regression prevention remain
+unproved. Adapter access resolved after user activation; no current external blocker.
+
 # Railway design procedure — foundation written (9 October 2026)
 
 Current user direction: drive procedure development and suggest useful manually
