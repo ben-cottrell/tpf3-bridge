@@ -2290,7 +2290,7 @@ def reconcile_rejected_structured_chain(client):
         raise LiveError('reconciliation_required','current-session new-alignment preparation required',rid)
     params=prepared.get('params',{})
     groups=params.get('groups',[params])
-    if (not isinstance(groups,list) or len(groups) not in (1,4)
+    if (not isinstance(groups,list) or len(groups) not in (1,2,4)
             or any(not isinstance(g,dict) or g.get('new_alignment') is not True for g in groups)):
         raise LiveError('reconciliation_required','bounded new-alignment preparation required',rid)
     ports=[g[key] for g in groups for key in ('source','target')]
@@ -2517,6 +2517,69 @@ def reconcile_constructed_crossover(client,original_client=None,*,acceptance_rev
     path=old.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
     latest.setdefault('reconciled_constructions',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
     latest.pop('pending');atomic_json(old.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
+
+def reconcile_constructed_structured_junction(client):
+    """Verify an exact structured two-junction receipt without rebuilding it."""
+    state=json.loads(client.journal.read_text());pending=state.get('pending')
+    if not pending or pending.get('operation')!='structured_chain' or pending['params'].get('execute') is not True:
+        raise LiveError('reconciliation_required','no pending structured junction')
+    rid=pending['request_id'];original=json.loads((client.evidence/(rid+'.response.json')).read_text())
+    prepared=json.loads((client.evidence/(pending['params']['prepared_request']+'.request.json')).read_text())
+    ready=json.loads((client.evidence/(prepared['request_id']+'.response.json')).read_text())
+    params=prepared['params'];result=original.get('result',{});ids=result.get('returned_edges')
+    segments=ready.get('result',{}).get('segments',[]);controls=[x['controls'] for x in segments]
+    if (original.get('session')!=client.session or original.get('request_id')!=rid or original.get('operation')!='structured_chain'
+            or original.get('status')!='mutation_unverified' or result.get('game_constructed') is not True
+            or prepared.get('session')!=client.session or prepared.get('operation')!='structured_chain'
+            or ready.get('session')!=client.session or ready.get('request_id')!=prepared['request_id'] or ready.get('status')!='ok'
+            or params.get('junctions') is not True or not all(params[k].get('location') for k in ('source','target'))
+            or not controls or not isinstance(ids,list) or len(ids)!=len(controls)+4 or len(ids)>12
+            or len(set(ids))!=len(ids) or any(type(i) is not int or i<=0 for i in ids)):
+        raise LiveError('reconciliation_required','no exact prepared structured junction receipt',rid)
+    q={k:params[k] for k in ('source','target','region','radius','vertical')}
+    q=json.loads(json.dumps(q));q['max_route_length']=params.get('max_route_length',8000)
+    def point(e,u):
+        weights=(2*u**3-3*u*u+1,u**3-2*u*u+u,-2*u**3+3*u*u,u**3-u*u)
+        return [sum(w*e[k][axis] for w,k in zip(weights,('p0','t0','p1','t1'))) for axis in range(3)]
+    for key,position,tangent in (('source',controls[0]['p0'],controls[0]['t0']),('target',controls[-1]['p1'],controls[-1]['t1'])):
+        port=q[key];edge=port['edge_snapshot'];lo,hi=.05,.95
+        for _ in range(80):
+            a,b=lo+(hi-lo)/3,hi-(hi-lo)/3
+            if math.dist(point(edge,a),position)<=math.dist(point(edge,b),position):hi=b
+            else:lo=a
+        u=(lo+hi)/2
+        if math.dist(point(edge,u),position)>.001:raise LiveError('reconciliation_required','recorded attachment differs from named original curve',rid)
+        weights=(6*u*u-6*u,3*u*u-4*u+1,-6*u*u+6*u,3*u*u-2*u)
+        direction=[sum(w*edge[k][axis] for w,k in zip(weights,('p0','t0','p1','t1'))) for axis in range(3)]
+        horizontal=math.hypot(*tangent[:2])
+        port.update(parameter=u,canonical_forward=sum(a*b for a,b in zip(direction,tangent))>0,
+                    outward_direction=[tangent[0]/horizontal,tangent[1]/horizontal,0],grade=tangent[2]/horizontal)
+    q.update(execute=False,edge_ids=ids,original_request=rid,fit={'pieces':len(controls),'controls':controls,
+             'start':controls[0]['p0'],'finish':controls[-1]['p1'],'grade':q['source']['grade'],'end_grade':q['target']['grade']})
+    observed=client.request('verify_crossover',q);v=observed.get('result',{});rb=v.get('readback',{})
+    if (observed.get('session')!=client.session or observed.get('operation')!='verify_crossover' or observed['status']!='ok'
+            or v.get('reconciled_current_state') is not True or rb.get('connected') is not True
+            or v.get('crossover_after',{}).get('requested_route_verified') is not True
+            or len(v.get('through_after',[]))!=2 or any(x.get('requested_route_verified') is not True for x in v['through_after'])
+            or len(v.get('placements',[]))!=2 or any(x.get('original_removed') is not True for x in v['placements'])
+            or set(rb.get('ordered_edges',[])+[i for x in v['placements'] for i in x['replacement_edges']])!=set(ids)):
+        raise LiveError('reconciliation_required','current structured junction not verified',rid)
+    inspected=client.request('inspect',{'edge_ids':rb['ordered_edges'],'structures':True});rows={e['id']:e for e in inspected.get('result',{}).get('edges',[])}
+    if inspected['status']!='ok' or inspected.get('session')!=client.session or set(rows)!=set(rb['ordered_edges']):
+        raise LiveError('reconciliation_required','current branch structure observation incomplete',rid)
+    for eid,item in zip(rb['ordered_edges'],segments):
+        actual=rows[eid].get('structure',{});wanted=item['structure']
+        if any(actual.get(k)!=wanted.get(k) for k in ('classification','resource_name')):
+            raise LiveError('reconciliation_required','current branch structure differs from prepared intent',rid)
+    latest=json.loads(client.journal.read_text())
+    if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during observation',rid)
+    record={'status':'reconciled_verified_structured_junction','original_pending':pending,'original_response':original,
+            'verification_params':q,'verification':observed,'structures':inspected,'automatic_replay':False,'native_effect_history_complete':False}
+    path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
+    latest.setdefault('reconciled_constructions',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(client.journal,latest)
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
 
 

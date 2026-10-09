@@ -5536,6 +5536,62 @@ class NativeStructureEvidenceTests(unittest.TestCase):
                 'resource_state':'not_applicable','resource_name':'test_asset'}
         with self.assertRaises(ValueError):self.checker.check_structure(record,'NORMAL')
 
+class ConstructedStructuredJunctionTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        root=Path(self.tmp.name);self.client=LiveClient(root/'mod',root/'log',root/'evidence','current',.02)
+        self.client.evidence.mkdir(parents=True,exist_ok=True)
+        edge=lambda i,x:{'id':i,'p0':[x,0,0],'p1':[x+10,0,0],'t0':[10,0,0],'t1':[10,0,0]}
+        self.params={'junctions':True,'source':{'edge_id':10,'edge_snapshot':edge(10,0),'location':{}|{'guide_xyz':[5,0,0]}},
+                     'target':{'edge_id':11,'edge_snapshot':edge(11,10),'location':{'guide_xyz':[15,0,0]}},
+                     'region':{'min':[-1,-1,-1],'max':[21,1,1]},'radius':0,'vertical':{'max_grade':.3}}
+        self.pending={'operation':'structured_chain','request_id':'built','params':{'execute':True,'prepared_request':'ready'}}
+        self.original={'session':'current','request_id':'built','operation':'structured_chain','status':'mutation_unverified',
+                       'result':{'game_constructed':True,'returned_edges':[21,22,23,24,25]}}
+        self.ready={'session':'current','request_id':'ready','status':'ok','result':{'segments':[{'controls':{'p0':[5,0,0],'p1':[15,0,0],
+                    't0':[10,0,0],'t1':[10,0,0]},'structure':{'classification':'BRIDGE','resource_name':'concrete'}}]}}
+        self.observed={'session':'current','operation':'verify_crossover','status':'ok','result':{'reconciled_current_state':True,
+                       'readback':{'connected':True,'ordered_edges':[25]},'crossover_after':{'requested_route_verified':True},
+                       'through_after':[{'requested_route_verified':True}]*2,
+                       'placements':[{'original_removed':True,'replacement_edges':[21,22]},{'original_removed':True,'replacement_edges':[23,24]}]}}
+        self.structures={'session':'current','status':'ok','result':{'edges':[{'id':25,'structure':{'classification':'BRIDGE','resource_name':'concrete'}}]}}
+        self.persist()
+
+    def persist(self):
+        self.client.journal.write_text(json.dumps({'pending':self.pending}))
+        for name,value in [('built.response',self.original),('ready.response',self.ready),('ready.request',
+            {'session':'current','request_id':'ready','operation':'structured_chain','params':self.params})]:
+            (self.client.evidence/(name+'.json')).write_text(json.dumps(value))
+
+    def reconcile(self):
+        from bridge_live import reconcile_constructed_structured_junction
+        return reconcile_constructed_structured_junction(self.client)
+
+    def test_exact_returned_geometry_routes_and_structures_clear_guard_without_replay(self):
+        original=(self.client.evidence/'built.response.json').read_bytes()
+        with patch.object(self.client,'request',side_effect=[self.observed,self.structures]) as native:self.reconcile()
+        self.assertEqual([c.args[0] for c in native.call_args_list],['verify_crossover','inspect'])
+        q=native.call_args_list[0].args[1]
+        self.assertAlmostEqual(q['source']['parameter'],.5);self.assertAlmostEqual(q['target']['parameter'],.5)
+        self.assertEqual(q['max_route_length'],8000)
+        self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+        self.assertEqual(original,(self.client.evidence/'built.response.json').read_bytes())
+
+    def test_wrong_receipt_missing_route_or_wrong_structure_retains_pending(self):
+        for defect in ('duplicate_receipt','changed_attachment','missing_route','wrong_structure'):
+            with self.subTest(defect=defect):
+                observed=json.loads(json.dumps(self.observed));structures=json.loads(json.dumps(self.structures))
+                if defect=='duplicate_receipt':self.original['result']['returned_edges']=[21,22,23,24,24]
+                elif defect=='changed_attachment':self.ready['result']['segments'][0]['controls']['p0']=[5,1,0]
+                elif defect=='missing_route':observed['result']['through_after'][0]['requested_route_verified']=False
+                else:structures['result']['edges'][0]['structure']['resource_name']='wrong'
+                self.persist()
+                with patch.object(self.client,'request',side_effect=[observed,structures]),self.assertRaises(LiveError):self.reconcile()
+                self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+                self.original['result']['returned_edges']=[21,22,23,24,25]
+                self.ready['result']['segments'][0]['controls']['p0']=[5,0,0]
+
+
 class RejectedStructuredChainTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
@@ -5580,8 +5636,14 @@ class RejectedStructuredChainTests(unittest.TestCase):
         self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
 
     def test_group_reconciliation_requires_all_eight_exact_free_ports(self):
+        self.check_group_reconciliation(4)
+
+    def test_pair_reconciliation_requires_all_four_exact_free_ports(self):
+        self.check_group_reconciliation(2)
+
+    def check_group_reconciliation(self, count):
         groups=[];observations=[]
-        for i in range(4):
+        for i in range(count):
             ports=json.loads(json.dumps(self.ports));rows=json.loads(json.dumps(self.observations))
             for key,row in zip(('source','target'),rows):
                 port=ports[key];edge=port['edge_snapshot']
@@ -5599,7 +5661,7 @@ class RejectedStructuredChainTests(unittest.TestCase):
         self.persist()
         with patch.object(self.client,'request',side_effect=observations) as native:
             result=self.reconcile()['result']
-        self.assertEqual(native.call_count,8)
+        self.assertEqual(native.call_count,2*count)
         self.assertTrue(result['completed_connection_absent'])
         self.assertEqual(result['other_effects'],'unknown')
         self.assertNotIn('pending',json.loads(self.client.journal.read_text()))

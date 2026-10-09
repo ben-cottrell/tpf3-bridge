@@ -69,6 +69,11 @@ local function assert_fresh(original)
   assert(near(current.node_positions[1],original.node_positions[1],.001) and
    near(current.node_positions[2],original.node_positions[2],.001),"stale_attachment_node_position")
  end
+ if original.structure then
+  local observed=structure(api.engine.getComponent(current.id,api.type.ComponentType.BASE_EDGE))
+  assert(observed.classification==original.structure.classification and observed.type_index==original.structure.type_index and observed.resource_name==original.structure.resource_name,"stale_attachment_structure")
+  current.structure=observed
+ end
  return current
 end
 local function in_region(p,region)
@@ -610,7 +615,10 @@ function M.station_lookup(p)
 end
 local function interior_location(a,p)
  local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
- assert(base.type==E.BaseEdgeType.NORMAL and #base.objects==0,"unsupported_split_edge_type_or_objects")
+ assert((base.type==E.BaseEdgeType.NORMAL or (p.allow_bridge==true and base.type==E.BaseEdgeType.BRIDGE)) and #base.objects==0,"unsupported_split_edge_type_or_objects")
+ if base.type==E.BaseEdgeType.BRIDGE then
+  assert(a.structure and a.structure.classification=="BRIDGE" and a.structure.resource_state=="resolved" and a.structure.resource_name,"explicit_bridge_structure_required")
+ end
  local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForEdge(a.id)
  assert(not (owner and owner>0),"construction_owned_split_unsupported")
  for _,id in ipairs({a.node0,a.node1}) do local _,owner=incidence(id);assert(not (owner and owner>0),"construction_owned_split_unsupported") end
@@ -1343,6 +1351,7 @@ local function interior_proposal(a,c,splits,f,target,fresh,extension)
  local proposal=api.type.SimpleProposal.new();local segments,nodes={},{}
  local n=api.type.NodeAndEntity.new();n.entity=-100;n.comp.position=v(c.pos);nodes[1]=n
  local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
+ assert(not fresh or base.type==E.BaseEdgeType.NORMAL,"fresh_split_cannot_demote_structure")
  local function segment(ctrl,id,node0,node1,clone)
   local e=api.type.SegmentAndEntity.new();e.entity=id;e.type=1
   if clone then e.comp=base:clone() end
@@ -1583,6 +1592,10 @@ local function reacquire_split(a,c,splits,ids)
  for i,e in ipairs({left,right}) do
   for _,k in ipairs({"p0","p1","t0","t1"}) do assert(near(e[k],splits[i][k],.001),"realised_through_controls_differ") end
   assert(e.template==a.template and e.style==a.style,"through_resources_differ")
+  if a.structure and a.structure.classification=="BRIDGE" then
+   local observed=structure(api.engine.getComponent(e.id,api.type.ComponentType.BASE_EDGE))
+   assert(observed.classification=="BRIDGE" and observed.type_index==a.structure.type_index and observed.resource_name==a.structure.resource_name,"through_bridge_structure_differ")
+  end
  end
  assert(not api.engine.entityExists(a.id) or api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)==nil,"old_split_edge_still_present")
  return {original_edge=a.id,original_nodes={a.node0,a.node1},parameter=c.parameter,position=c.pos,junction_node=left.node1,
@@ -1632,6 +1645,7 @@ local function crossover_proposal(a,b,c,d,splits,f,fresh,fresh_lead)
   segments[#segments+1]=e
  end
  for i,x in ipairs({a,b}) do local base=api.engine.getComponent(x.id,api.type.ComponentType.BASE_EDGE)
+  assert(not fresh or base.type==E.BaseEdgeType.NORMAL,"fresh_split_cannot_demote_structure")
   add(splits[i][1],x.node0,-100*i,base,x,not fresh);add(splits[i][2],-100*i,x.node1,base,x,not fresh)
  end
  local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
@@ -2479,9 +2493,10 @@ local function replacement_chain(p)
  return {originals=originals,internal_nodes=internal,params=p}
 end
 local function prepare_new_structure(p,s,request_id)
+ if p.junctions then assert(finite(p.max_route_length) and p.max_route_length>0 and p.max_route_length<=8000,"invalid_route_length_bound") end
  local replacement=p.replace_chain and replacement_chain(p) or nil
  if not p.junctions and not replacement then selected_attachments(p) end
- assert(type(p.guides)=="table" and #p.guides<=4,"structure_guide_bound")
+ assert(type(p.guides)=="table" and #p.guides<=6,"structure_guide_bound")
  assert(type(p.structures)=="table" and #p.structures==#p.guides+1,"structure_leg_contract")
  if p.leg_representations then
   assert(type(p.leg_representations)=="table" and #p.leg_representations==#p.guides+1,"structure_leg_representation_contract")
@@ -2755,7 +2770,7 @@ function M.structured_chain(p,s,state,request_id,respond)
   assert(p.prepare==true and p.execute~=true,"structure_preparation_required")
   if p.groups then
    for k in pairs(p) do assert(k=="groups" or k=="prepare","unsupported_grouped_structure_input") end
-   assert(type(p.groups)=="table" and #p.groups==4,"four_structure_groups_required")
+   assert(type(p.groups)=="table" and (#p.groups==2 or #p.groups==4),"two_or_four_structure_groups_required")
    record={groups={},segments={},handle=request_id};local ports,seen={},{}
    for i,q in ipairs(p.groups) do
     assert(type(q)=="table" and q.new_alignment==true and not q.junctions and not q.replace_chain and not q.normal_offset_from,"group_requires_cleared_free_attachments")
