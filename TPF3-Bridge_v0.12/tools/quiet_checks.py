@@ -17,6 +17,7 @@ import time
 import unittest
 
 SUITES = {
+    'operator': ('.', 'tests', 'test_operator.py'),
     'quiet_runner': ('tools', '.', 'test_quiet_checks.py'),
     'live_client': ('.', 'tests', 'test_live_client.py'),
     'pair_input': ('.', 'tests', 'test_pair_input.py'),

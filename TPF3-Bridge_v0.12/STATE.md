@@ -1,3 +1,43 @@
+# OPERATOR-01 complete — 9 October 2026
+
+Reusable JSON-plan CLI and optional nine-tool local stdio MCP implemented; usage
+and version1 sample: OPERATOR_USAGE.md, implementation/operator/example_plan.json.
+Named sequential native operations reuse bridge_live; no model loops or network
+listener. Durable plan/hash/progress, exclusive lock, partial failure evidence,
+no blind replay, and stale-session refusal. Failed route review is needs_attention.
+Camera, actual screenshot and unique save completion verified; local Codex stdio
+configuration added without changing model/auth/permissions. Current chat catalogue
+not refreshed; actual installed-SDK protocol works.
+
+Build40420: separate four-step resource-seeded fixture at x[-700,-500],y-5650,z2.1;
+run d595c4b744854242,9 calls,2/2 directed TRAIN paths. Save Operator01 Capability
+Fixture20261009 reloaded normally. Current session pif_1791583177_58911467; paused
+2099x1284 non-maximised game. Challenge01 all20 exact TRACK controls/endpoints
+unchanged after reload; its accepted handbook/plan/evidence remain intact.
+
+Checks with .local_tools/operator312/Scripts/python.exe and workspace-local TEMP:
+- tools/quiet_checks.py --suite operator --label operator01-accepted:15 PASS;
+  .local_checks/operator01-accepted_hczxc7z6/report.json.
+- tools/quiet_checks.py --suite live_client --label operator01-live-final:423 PASS;
+  .local_checks/operator01-live-final_kew9nbfa/report.json. Later wrapper-only edits
+  reuse unchanged bridge_live/test_live_client hashes; regression_reuse.json.
+- Real stdio list/plan/status/survey/build/review/camera/capture/save; replay and
+  stale review refused. git diff --check passes. Sample JSON validates.
+
+Evidence: .local_runs/operator/implementation/{HANDOFF.md,completion_result.json,
+status_final.json,survey_final.json,challenge01_preserved_final.json,
+replay_refused_final.json,stale_review_refused_final.json,configuration.json};
+run plan/state/review/SVGs under .local_runs/operator/d595c4b744854242/.
+Checkpoint36,155,308bytes,SHA256c95b46bc730347a397ea0f37b7879f3a372e101bcc92c86f4e71d84c19f0cae9.
+
+Limits: initial capture timed out honestly; subsequent PNG completion verified.
+Standalone Lua syntax unchecked; native changes loaded/executed. Branch/crossover
+wrappers not freshly live-built by this fixture; existing recipe regression remains.
+No train traversal/design transfer reliability claim, crash resume or host repair.
+Sandbox stdio stalled; approved local execution worked. No acceptance blocker.
+Actual usage unavailable. Focused local commit recorded in completion_result.json;
+no remote push. Exclusive game ownership returns to coordinator at final handoff.
+
 # Challenge 01 initial composition built — 9 October 2026
 
 Build40420/session pif_1791576336_52069880. R1 oblique four-lead fixture built

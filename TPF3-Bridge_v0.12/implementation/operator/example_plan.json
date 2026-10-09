@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "revision": "operator-fixture-R1",
+  "title": "Operator capability fixture",
+  "origin": [
+    -700,
+    -5650,
+    2.1
+  ],
+  "region": {
+    "min": [
+      -735,
+      -5690,
+      0
+    ],
+    "max": [
+      -475,
+      -5600,
+      5
+    ]
+  },
+  "track": {
+    "template": "::/infrastructure/track/simple/simple.street_template",
+    "style": "::/infrastructure/track/simple/simple.street"
+  },
+  "max_grade": 0.01,
+  "max_route_length": 350,
+  "ports": {
+    "west": {
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "direction": [
+        -1,
+        0
+      ],
+      "label": true
+    },
+    "west_inner": {
+      "position": [
+        20,
+        0,
+        0
+      ],
+      "direction": [
+        1,
+        0
+      ]
+    },
+    "middle": {
+      "position": [
+        100,
+        0,
+        0
+      ],
+      "direction": [
+        1,
+        0
+      ]
+    },
+    "east_inner": {
+      "position": [
+        180,
+        0,
+        0
+      ],
+      "direction": [
+        -1,
+        0
+      ]
+    },
+    "east": {
+      "position": [
+        200,
+        0,
+        0
+      ],
+      "direction": [
+        1,
+        0
+      ],
+      "label": true
+    }
+  },
+  "steps": [
+    {
+      "name": "west_seed",
+      "kind": "stub",
+      "port": "west",
+      "direction": [
+        1,
+        0
+      ],
+      "length": 20
+    },
+    {
+      "name": "east_seed",
+      "kind": "stub",
+      "port": "east",
+      "direction": [
+        -1,
+        0
+      ],
+      "length": 20
+    },
+    {
+      "name": "western_extension",
+      "kind": "extend",
+      "source": "west_inner",
+      "target": "middle"
+    },
+    {
+      "name": "join_east",
+      "kind": "connect",
+      "source": "middle",
+      "target": "east_inner"
+    }
+  ],
+  "routes": [
+    {
+      "name": "west_to_east",
+      "source": "west",
+      "target": "east"
+    },
+    {
+      "name": "east_to_west",
+      "source": "east",
+      "target": "west"
+    }
+  ],
+  "curves": {
+    "alignment": {
+      "p0": [
+        0,
+        0,
+        0
+      ],
+      "p1": [
+        200,
+        0,
+        0
+      ],
+      "t0": [
+        200,
+        0,
+        0
+      ],
+      "t1": [
+        200,
+        0,
+        0
+      ]
+    }
+  }
+}

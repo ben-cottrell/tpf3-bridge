@@ -21,9 +21,12 @@ OPERATIONS = {'scissors_candidate', 'degree_four_candidate', 'inspect_degree_fou
 OPERATIONS.add(STATION_OPERATION)
 OPERATIONS.add('repair_crossover')
 OPERATIONS.add('structured_chain')
+OPERATIONS.add('operator_gui')
 OPERATIONS.update({'operating_inspect', 'operating_control'})
 
 def is_mutation(operation, params):
+    if operation == 'operator_gui':
+        return params.get('action') in ('save', 'camera', 'capture')
     return operation in ('build', 'test_approach', 'remove_branch', 'clear_obstructions') or (operation in ('operating_control', 'structured_chain', 'repair_crossover', 'scissors_candidate', 'extension', 'connection', 'selected_connection', 'corridor', 'junction', 'interior_junction', 'crossover', 'adjacent', 'degree_four_candidate') and params.get('execute') is True)
 
 def discover_session(log_path):

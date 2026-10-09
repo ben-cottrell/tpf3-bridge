@@ -39,6 +39,34 @@ function data()
    emit("TRANSPORT_ERROR",{session=guiSession,error="invalid_module_envelope",sequence=nextSequence});nextSequence=nextSequence+1;return
   end
   nextSequence=nextSequence+1
+  if request.operation=="operator_gui" then
+   local p=request.params or {};local answered=false
+   local function finish(status,result)
+    if answered then return end;answered=true
+    emit("RESPONSE",{version=1,session=guiSession,request_id=request.request_id,operation=request.operation,status=status,result=result,build=getBuildVersion()})
+   end
+   emit("ACK",{session=guiSession,request_id=request.request_id,success=true})
+   local ok,err=pcall(function()
+    if p.action=="status" then
+     local center=api.gui.camera.getCenter()
+     finish("ok",{adapter="operator_v1",session=guiSession,center={center.x,center.y,center.z},height=api.gui.camera.getHeightAboveTerrain(),save_available=app~=nil and app.saveGame~=nil,game_constructed=false})
+    elseif p.action=="camera" then
+     assert(type(p.center)=="table" and #p.center==3 and type(p.distance)=="number" and p.distance>0,"camera_position_required")
+     for _,x in ipairs(p.center) do assert(type(x)=="number" and x==x and math.abs(x)<math.huge,"finite_camera_position_required") end
+     api.gui.camera.focusPosition(api.type.Vec3f.new(p.center[1],p.center[2],p.center[3]),p.distance)
+     finish("ok",{camera_requested=true,center=p.center,distance=p.distance,game_constructed=false})
+    elseif p.action=="capture" then
+     assert(p.scale==nil or p.scale==1,"capture_scale_one_only")
+     api.gui.camera.takeScreenshot(1)
+     finish("ok",{capture_requested=true,file_completion="check_userdata_screenshot",game_constructed=false})
+    elseif p.action=="save" then
+     assert(type(p.name)=="string" and #p.name>0 and #p.name<=100 and p.name:match("^[%w _-]+$"),"plain_checkpoint_name_required")
+     app.saveGame(p.name,function() finish("ok",{save_callback_completed=true,name=p.name,game_constructed=false}) end,false,true)
+    else error("unknown_operator_gui_action") end
+   end)
+   if not ok then finish("error",{error=tostring(err):sub(1,400),game_constructed=false}) end
+   return
+  end
   if request.operation=="operating_inspect" and request.params and request.params.capture_cursor==true then
    local observation={session=guiSession,request_id=request.request_id,available=false,source="api.gui.mouse",game_constructed=false}
    local captured,err=pcall(function()

@@ -129,7 +129,7 @@ local function geometry_bounds(g,region,minradius,maxgrade,divisions)
  return minimum,maximum
 end
 function M.inspect(p)
- assert(type(p.edge_ids)=="table" and #p.edge_ids>=1 and #p.edge_ids<=16,"edge_read_bound")
+ assert(type(p.edge_ids)=="table" and (#p.edge_ids>=1 or p.site~=nil) and #p.edge_ids<=16,"edge_read_bound")
  assert(p.structures==nil or type(p.structures)=="boolean","structures_flag_boolean_required")
  assert(p.parallel_strips==nil or type(p.parallel_strips)=="boolean","parallel_strips_flag_boolean_required")
  local out={};for _,id in ipairs(p.edge_ids) do
@@ -1923,7 +1923,15 @@ function M.test_approach(p,s,state,request_id,respond)
   -- Explicit disposable test-stub placement, not production corridor fitting.
   local q=p.fixture;vector(q.position);vector(q.travel_direction)
   assert(#q.position==3 and #q.travel_direction==2 and finite(q.grade) and math.abs(q.grade)<=.04,"invalid_test_fixture_seed")
-  local a=edge(q.template_edge);assert(type(q.region)=="table","fixture_region_required")
+  local a
+  if q.template_edge then a=edge(q.template_edge)
+  else
+   assert(type(q.template)=="string" and type(q.style)=="string","track_resource_names_required")
+   local resource=api.res.streetTemplateRep.get(api.res.streetTemplateRep.find(q.template))
+   assert(resource and resource.laneConfigs,"track_template_unavailable")
+   a={template=q.template,style=q.style}
+  end
+  assert(type(q.region)=="table","fixture_region_required")
   vector(q.region.min);vector(q.region.max)
   assert(#q.region.min==3 and #q.region.max==3,"fixture_region_needs_xyz")
   for i=1,3 do assert(q.region.max[i]>q.region.min[i] and q.region.max[i]-q.region.min[i]<=100,"fixture_region_bound") end
@@ -1934,7 +1942,7 @@ function M.test_approach(p,s,state,request_id,respond)
   f=s.fits[request_id.."_fixture_fit"];c=f.controls[#f.controls];direction=norm(c.t1)
  end
  local finish={c.p1[1]+direction[1]*p.length,c.p1[2]+direction[2]*p.length,c.p1[3]+f.end_grade*p.length}
- in_region(finish,f.region);assert_fresh(f.anchor)
+ in_region(finish,f.region);if f.anchor.id then assert_fresh(f.anchor) end
  local resource=api.res.streetTemplateRep.get(api.res.streetTemplateRep.find(f.anchor.template))
  assert(resource and resource.laneConfigs,"track_template_unavailable")
  local proposal=api.type.SimpleProposal.new();local nodes={}

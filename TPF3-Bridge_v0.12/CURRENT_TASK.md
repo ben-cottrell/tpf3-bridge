@@ -1,3 +1,15 @@
+# OPERATOR-01 — complete (9 October 2026)
+
+Reusable plan-driven operator and local stdio MCP accepted. See OPERATOR_USAGE.md
+and top STATE.md for commands, exact test reports, checkpoint and limitations.
+Native build40420 fixture has four completed steps and2/2 directed TRAIN routes;
+normal checkpoint reload passed, Challenge01 geometry preserved. No blind replay
+or stale-session acceptance. Game paused; exclusive control returns to coordinator
+on completion handoff. No next topology/task chosen here; no remote push.
+Local completion revision/evidence: .local_runs/operator/implementation/completion_result.json.
+
+Prior accepted design record follows unchanged.
+
 # Challenge 01 — built, ready for visual feedback (9 October 2026)
 
 Fresh empty map, session pif_1791576336_52069880. Original oblique four-lead
