@@ -72,7 +72,9 @@ network service is necessary. Actual protocol use without another model:
 
 `plan_payload.json` wraps the plan as `{"plan":{...}}`; `run_payload.json` is
 `{"run":"<returned-run>"}`. Output files are exclusive-create. Non-success
-semantic status gives a nonzero client exit code; full protocol evidence stays local.
+semantic status gives a nonzero client exit code. Stdout decodes the semantic JSON
+without the SDK envelope/escaped formatting; full protocol evidence stays unchanged
+in `--output`. Responses over4096 UTF-8 bytes return their status and evidence pointer.
 
 Tools: `session_status`, `survey_site`, `plan_layout`, `build_layout`, `run_status`,
 `review_layout`, `frame_view`, `capture_view`, `save_checkpoint`. Survey accepts
@@ -105,6 +107,9 @@ exclusive lock. Use one operator/game owner, not multiple independent servers.
 
 Attempted, completed, failed and interrupted builds cannot be blindly replayed.
 Inspect partial effects and receipts before issuing a new approved plan. A retained
+run error includes the native status and up to three distinct bounded evaluation
+messages (for example `no_accepted_candidate: Too Much Curvature`); full candidate
+diagnostics remain in the original native response. A retained
 execution lock needs reconciliation; this is not crash-resilient automatic resume.
 After save/load, fresh native identity discovery is required; old-session reviews
 are rejected. Run evidence is historical, not automatically current world truth.

@@ -24,6 +24,26 @@ CONTEXT = ROOT / '.local_runs/live_python_interface/p02/context.json'
 def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
 
+def native_failure(response):
+    """Keep distinct native rejection messages bounded; receipts retain details."""
+    value=response.get('result',{});messages=[]
+    def retain(message):
+        if isinstance(message,str) and message:
+            message=message[:120]
+            if message not in messages and len(messages)<3:messages.append(message)
+    retain(value.get('error'))
+    evaluations=[value.get('evaluation',{})]
+    rejections=value.get('candidate_rejections',[])
+    for rejection in (rejections[:16] if isinstance(rejections,list) else []):
+        evaluations.append(rejection.get('evaluation',{}))
+        through=rejection.get('through_evaluation',[])
+        if isinstance(through,list):evaluations.extend(through[:8])
+    for evaluation in evaluations:
+        raw=evaluation.get('messages',[])
+        if isinstance(raw,list):
+            for message in raw[:16]:retain(message)
+    return (response['status']+': '+('; '.join(messages) or 'native operation rejected'))[:400]
+
 
 def vector(v, n):
     if not isinstance(v, list) or len(v) != n or any(type(x) not in (int, float) or not math.isfinite(x) for x in v):
@@ -172,7 +192,7 @@ class Operator:
                 start=time.monotonic();r=c.request(op,params,**kwargs)
                 state['calls']+=1;state['native_seconds']+=time.monotonic()-start
                 state['last_request']=r['request_id'];persist()
-                if r['status']!='ok':raise live.LiveError(r['status'],str(r.get('result',{}).get('error','native operation rejected')),r['request_id'])
+                if r['status']!='ok':raise live.LiveError(r['status'],native_failure(r),r['request_id'])
                 return r
         rc=Recorded()
         def world(port):return [port['position'][i]+p['origin'][i] for i in range(3)]
@@ -234,7 +254,7 @@ class Operator:
                                 prepared=live.prepare_interior_junction(rc,q,shapes)
                                 r=live.build_prepared_interior_junction(rc,prepared)
                 value=r.get('result',r)
-                if r['status']!='ok':raise live.LiveError(r['status'],str(value.get('error','step failed')))
+                if r['status']!='ok':raise live.LiveError(r['status'],native_failure(r))
                 edge_ids=value.get('readback',{}).get('ordered_edges',[])
                 edges=value.get('edges',[])
                 if edges and isinstance(edges[0],int):edge_ids=edges;edges=[]

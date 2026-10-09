@@ -4,7 +4,8 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from bridge_operator import Operator, validate_plan, cubic
+from bridge_operator import Operator, validate_plan, cubic, native_failure
+from tools.operator_mcp_client import semantic_result, compact_stdout
 
 
 def fixture():
@@ -26,6 +27,37 @@ class FakeClient:
 
 
 class OperatorTest(unittest.TestCase):
+    def test_mcp_stdout_decodes_semantics_without_changing_protocol_record(self):
+        result={'status':'built','run':'a'*16,'completed_steps':4}
+        data={'content':[{'type':'text','text':json.dumps(result,indent=2)}],'is_error':False,'meta':{'server':'test'}}
+        original=copy.deepcopy(data)
+        decoded,failed=semantic_result(data)
+        self.assertEqual(json.loads(compact_stdout(decoded,None)),result)
+        self.assertFalse(failed);self.assertEqual(data,original)
+
+    def test_mcp_errors_stay_non_successful_and_large_stdout_stays_bounded(self):
+        decoded,failed=semantic_result({'content':[{'type':'text','text':'Native tool error'}],'is_error':True})
+        self.assertTrue(failed);self.assertEqual(decoded['status'],'error')
+        decoded,failed=semantic_result({'content':[{'type':'text','text':json.dumps({'status':'needs_attention','details':'é'*5000})}]})
+        out=compact_stdout(decoded,Path('full.json'))
+        self.assertTrue(failed);self.assertLessEqual(len(out.encode('utf-8')),4096)
+        self.assertEqual(json.loads(out)['status'],'needs_attention');self.assertEqual(json.loads(out)['evidence'],'full.json')
+
+    def test_candidate_failure_retains_status_and_distinct_native_messages(self):
+        response={'status':'no_accepted_candidate','request_id':'rejected','result':{'candidate_rejections':[
+            {'evaluation':{'messages':['Too Much Curvature']}},
+            {'evaluation':{'messages':['Too Much Curvature','Collision']}},
+            {'evaluation':{'messages':['x'*1000]}}]}}
+        message=native_failure(response)
+        self.assertIn('no_accepted_candidate',message);self.assertEqual(message.count('Too Much Curvature'),1)
+        self.assertIn('Collision',message);self.assertLessEqual(len(message),400)
+        self.assertEqual(native_failure({'status':'error','result':{'error':'lost_ack','candidate_rejections':{}}}), 'error: lost_ack')
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);run=o.plan(fixture())['run']
+            with patch.object(c,'request',return_value=response):result=o.execute(run)
+            self.assertEqual(result['status'],'needs_attention');self.assertIn('Too Much Curvature',result['error'])
+            self.assertEqual(json.loads((o.path(run)/'state.json').read_text())['last_request'],'rejected')
+
     def test_complete_run_cannot_be_replayed(self):
         with tempfile.TemporaryDirectory() as td:
             c=FakeClient();o=Operator(runs=td,client=c);run=o.plan(fixture())['run']
