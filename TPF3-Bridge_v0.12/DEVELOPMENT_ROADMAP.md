@@ -15,6 +15,21 @@ fragmented related alignments. These are shortcomings of the design process.
 
 ## Railway-design agent exercise — active
 
+9 October: user authorises coordinator-led development of the design procedure,
+including suggestions for manually built reference patterns. Version 0.1 is now in
+[RAILWAY_DESIGN_PROCEDURE.md](RAILWAY_DESIGN_PROCEDURE.md), with a repository-managed
+[skill entry point](railway-design/SKILL.md) explicitly loaded through AGENTS.md,
+one design-record template, contextual patterns, five regression cases and a P75
+retrospective. It is not installed as a personal skill. These documents establish
+the workflow; independent replay and prospective design transfer remain untested.
+
+Next: inspect a small user-built three-track fan when available, capture native
+geometry and intended relationships, then plan a changed/mirrored variant before
+fitting. Use that small exercise to refine the procedure before another full junction.
+The current game layout remains unchanged. No new junction rebuild, worker dispatch
+or scheduler restart follows from writing the procedure. P75 is a functional
+baseline and a design counterexample, not the aesthetic target for regression.
+
 User requested this separate exercise be added to the roadmap on 6 October 2026.
 Purpose: reliably create coherent, compact game-appropriate railways through the
 bridge, without repeated user correction of the same design mistakes.

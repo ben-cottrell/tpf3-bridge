@@ -1,3 +1,18 @@
+# Railway design procedure v0.1 — 9 October 2026
+
+User authorises procedure/pattern development following review of P75 design quality.
+RAILWAY_DESIGN_PROCEDURE.md and railway-design/{SKILL.md,DESIGN_RECORD_TEMPLATE.md,
+PATTERNS.md,REGRESSION_CASES.md,P75_REVIEW.md} written; AGENTS.md loads the entry point
+for design work. Spatial plan/revisions, local-fit versus material-redesign decision,
+targeted native trials and whole-family reviews now explicit. No live changes.
+P75 retrospective is author review, not independent testing. Five regression cases
+are defined but no independent replay or prospective native transfer is claimed.
+Next evaluation: manually built compact fan and a fresh changed/mirrored variant.
+P75 completion and worker idle status unchanged; scheduler remains paused.
+Documentation checks: 14 relative links resolve; git diff whitespace check passes.
+Skill frontmatter manually reviewed. Bundled quick_validate.py could not run because
+PyYAML is absent from both available Python runtimes; no dependency was installed.
+
 # P75 — integrated junction and station services complete (9 October 2026)
 
 Build40420, sessionpif_1791546949_22682802. All10 access movements/18 directed

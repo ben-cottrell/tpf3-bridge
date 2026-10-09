@@ -1,0 +1,55 @@
+# Design record — <challenge>
+
+Copy into the challenge's local working folder; omit irrelevant fields for simple
+connections. This is one evolving record, not a collection of per-tool forms.
+
+## Identity and brief
+
+- Revision / date / designer:
+- World/save and surveyed region; units, axes, evidence date:
+- Intended outcome and explicit exclusions:
+- Required directed movements (include scoped station returns/choices/depot paths):
+- Track/interface roles and fresh native-handle mapping:
+- Constraints with source: user / observed native / preference / hypothesis:
+- Route priorities; what existing infrastructure may be replaced:
+
+## Selected spatial arrangement
+
+- Scaled overhead plan and decisive profiles:
+- Corridor families, track order, paired portions and intended separations:
+- Fork/merge order along each direction of travel:
+- Crossing order, ramps/landings and terrain treatment:
+- Space reserved for remaining connections:
+- Operational interfaces/turnarounds/signal intent in scope:
+- Alternative considered where consequential; why selected:
+- Unknowns that could change the arrangement; useful trial for each:
+- Status: concept / selected for native trial / selected for construction:
+
+## Construction and fitting brief
+
+- Next controlling route/family and native construction sequence:
+- Revision and plan references supplied to the operator:
+- Attachment regions, travel directions, through tracks and intended outcome:
+- Allowed local adjustments and remaining neighbours to accommodate:
+- Applicable material-redesign triggers:
+- Next useful whole-family review point:
+
+## Changes and decisions
+
+| Revision / observation | Local fit or redesign; why | Affected routes / reserved space | Chosen response and updated plan |
+| --- | --- | --- | --- |
+
+Record meaningful changes; retain full candidate logs elsewhere. A failed preview
+without mutation does not establish a built defect or native impossibility.
+
+## Review and completion
+
+- Comparable actual/selected plan and profile:
+- Required functions confirmed; failures and unknowns:
+- Whole-layout shape, paired corridors and remaining space:
+- Material deviations and explicit trade-offs:
+- Relevant comparable measurements and measurement boundaries:
+- Required human design corrections / major rebuilds and their causes:
+- Built / connected / operating / design-quality conclusions separately:
+- Useful learned pattern; limitations and evidence location:
+- Next step or genuine blocker:

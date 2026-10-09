@@ -1,3 +1,19 @@
+# Railway design procedure — foundation written (9 October 2026)
+
+Current user direction: drive procedure development and suggest useful manually
+built patterns. RAILWAY_DESIGN_PROCEDURE.md v0.1 defines spatial planning, native
+trials, fitting versus redesign, family reviews and separate completion claims.
+railway-design/SKILL.md is the repository-managed entry point loaded by AGENTS.md;
+template, pattern cases, five regression cases and P75 retrospective support it.
+Prospective effectiveness and independent regression replay are not yet demonstrated.
+
+Next useful input: a compact three-track fan with approach direction and intended
+connections identified, optionally a mirrored/tighter variation. Inspect and capture
+that example, then plan a fresh variant. Existing evidence is sufficient to draft
+the procedure; a new example is for evaluation, not an approval or prerequisite gate.
+No live construction, worker dispatch, automation restart or remote push in this task.
+P75 remains closed; its completed construction evidence follows.
+
 # P75 — integrated junction and station services complete (9 October 2026)
 
 Build40420, sessionpif_1791546949_22682802. All10 access movements/18 directed

@@ -1,3 +1,16 @@
+## Railway design procedure — user direction, 9 October 2026
+For railway planning, material layout changes or design-quality review, read
+railway-design/SKILL.md and follow RAILWAY_DESIGN_PROCEDURE.md. Keep a current
+spatial plan and design revision for complex construction; local fitting may proceed
+within it, while material topology/corridor/profile changes return to the designer
+before dependent construction. Review-only requests do not authorise rebuilding.
+Use affected historical cases and fresh small examples to assess procedure changes;
+do not replace practical progress with a broad validation programme. Native build,
+connectivity, observed operation and design quality remain separate conclusions.
+The current authorised exercise is procedure/pattern development. P75 construction
+is complete and is not reopened by this documentation work. No worker dispatch or
+automation restart is implied. Ordinary bridge-only repairs need no layout exercise.
+
 ## Basic station construction — user direction, 7 October 2026
 User selects basic native station construction as the next bridge challenge because
 this map lacks suitable platforms for non-branch services. Scope includes native

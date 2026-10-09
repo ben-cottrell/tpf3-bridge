@@ -1,5 +1,11 @@
 # Practical railway design through the bridge
 
+For the active planning/build/review workflow, use
+[RAILWAY_DESIGN_PROCEDURE.md](RAILWAY_DESIGN_PROCEDURE.md). Its
+[pattern cases](railway-design/PATTERNS.md) and
+[regression cases](railway-design/REGRESSION_CASES.md) turn the lessons below into
+reusable decision examples. This handbook retains the detailed evidence and context.
+
 Working guide, grounded in the Wickham terminal experiment. These procedures are
 firm; dimensions and particular track patterns remain design choices. This is not
 a claim that one template solves every layout or that native acceptance proves
