@@ -2763,7 +2763,9 @@ function M.structured_chain(p,s,state,request_id,respond)
     for _,port in ipairs({q.source,q.target}) do assert(not ports[port.node_id],"group_attachment_reused");ports[port.node_id]=true end
     local group=prepare_new_structure(q,s,request_id.."_group_"..i);record.groups[i]=group
     for _,segment in ipairs(group.segments) do record.segments[#record.segments+1]=segment end
-    assert(#record.segments<=16,"grouped_structure_segment_bound")
+    -- Four tracks with two separated crossings and an ordinary turnout window:
+    -- NORMAL / BRIDGE / NORMAL / BRIDGE / NORMAL, at most twenty segments.
+    assert(#record.segments<=20,"grouped_structure_segment_bound")
    end
   elseif p.new_alignment==true then
    for k in pairs(p) do assert(k=="new_alignment" or k=="replace_chain" or k=="junctions" or k=="normal_offset_from" or k=="max_route_length" or k=="through_representation" or k=="representation" or k=="leg_representations" or k=="handle_scale" or k=="prepare" or k=="execute" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical","unsupported_new_structure_input") end

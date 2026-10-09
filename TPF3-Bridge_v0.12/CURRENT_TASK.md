@@ -1,23 +1,23 @@
-# P75 — paused partial C reconnection (8 October 2026)
+# P75 — mainline built; D/E branch restoration next (9 October 2026)
 
-Human pause-after-current-step relayed by coordinator; no next phase dispatched.
-Build40420/session pif_1791496725_8461280, pending none, game paused/non-maximised.
-Shared overpass milestone effdc70 retained. Roomier DS merge near local s-955
-accepted and built six segments/four nodes, replacing71621 with61044/61043.
-Exact junction71847; branch67244→71847 uses61042/61041/67346/67350.
-Local branch/through readback and fresh whole routes pass: four A–B plus DS C,
-five of eight. UF/DF/US C remain disconnected; no physical traversal claim.
-UF raised sweep conflicts with US67301. Bridge-transition and earlier-rise
-variants retain native Construction Not Possible/Too Much Incline diagnostics;
-through-only splits pass. No general native impossibility or root-cause claim.
-Current outcome is incomplete: coordinator needs the specific rejection evidence
-before another material profile/through-layout decision. Do not start D/E work.
+CENTRAL_PAIR_UNDERPASS.md governs the resumed redesign. Build40420, paused,
+non-maximised; current session pif_1791530031_5765625. Four A–B and four A–C
+directed TRAIN routes verify. Central paired C descent precedes its sweep;
+native paired through decks support the ordered fast/US/DS crossing zones.
+Upper18.5/low3.25 smoothly tie existing approaches. Full current geometry and
+exact branch observations: .local_runs/live_python_interface/p75/central_pair/.
 
-Evidence: .local_runs/live_python_interface/p75/overpass_first/
-{DS_build_roomy955.json,reconnection_checks.json,checkpoint_reconnection.json,
-RECONNECTION_HANDOFF.md,reconnection_paused_overview.jpg}; all failed previews kept.
-New unique partial save40709438bytes; exact actual UI-produced filename/hash in
-checkpoint_reconnection.json, previous overpass checkpoint unchanged.
-419 affected tests remain valid (.local_checks/pif-p75-grouped-structures_9_j_8tsr/report.json);
-no implementation changes since that acceptance. Grouped API usage documented.
-No remote push, host recovery, additional phase or task-runner changes.
+514 post-build terrain observations meet z>=1: surface minimum1.06304,
+base minimum1.05000. Sampled evidence, not continuous floor proof. Scoped Raise
+corrected actual altered pockets; no new station/world elevation requirement.
+Unique mainline save/hash: checkpoint_mainline.json, not reloaded. Train traversal
+unprobed. Oblique view retained; actual overhead pending: observed R/F key taps
+did not visibly tilt through Computer Use (no held-key/right-drag API).
+
+420 affected live-client tests pass; STATE.md records exact quiet command/report.
+Finish local evidence/commit and internal coordinator handoff, then implement
+the assigned D/E restoration: common A slow stem upstream of both C divergences
+and direct D–E double track without trunk running. Current bounded D/E regions
+have no eligible free ports; clearance/rebuild requires the coordinator's layout.
+This is not whole-junction completion. Standing disposable-map and local commit
+authority applies. No remote push, host recovery, runner change or new batch.

@@ -5579,6 +5579,31 @@ class RejectedStructuredChainTests(unittest.TestCase):
         self.assertEqual([call.args[0] for call in native.call_args_list],['discover','discover'])
         self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
 
+    def test_group_reconciliation_requires_all_eight_exact_free_ports(self):
+        groups=[];observations=[]
+        for i in range(4):
+            ports=json.loads(json.dumps(self.ports));rows=json.loads(json.dumps(self.observations))
+            for key,row in zip(('source','target'),rows):
+                port=ports[key];edge=port['edge_snapshot']
+                edge['id']+=100*i;edge['node0']+=100*i;edge['node1']+=100*i
+                port['edge_id']=edge['id'];port['node_id']=edge['node1']
+                row['request_id']+=f'_group{i}'
+                row['result']['candidates']=[port|{'eligible':True,'incidence_complete':True,
+                    'incident_count':1,'incident_edges':[edge['id']]}]
+            groups.append(ports|{'new_alignment':True});observations.extend(rows)
+        self.prepared['params']={'groups':groups};self.persist()
+        bad=json.loads(json.dumps(observations))
+        bad[-1]['result']['candidates'][0]['incident_count']=2
+        with patch.object(self.client,'request',side_effect=bad),self.assertRaises(LiveError):self.reconcile()
+        self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+        self.persist()
+        with patch.object(self.client,'request',side_effect=observations) as native:
+            result=self.reconcile()['result']
+        self.assertEqual(native.call_count,8)
+        self.assertTrue(result['completed_connection_absent'])
+        self.assertEqual(result['other_effects'],'unknown')
+        self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+
     def test_partial_stale_wrong_identity_or_incomplete_read_keeps_guard(self):
         baseline=json.loads(json.dumps(self.observations))
         for defect in ('occupied','stale','wrong_edge','not_rail','old_session','truncated','incomplete'):

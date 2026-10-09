@@ -2286,11 +2286,17 @@ def reconcile_rejected_structured_chain(client):
     if response.get('session')!=client.session or response.get('request_id')!=rid or response.get('operation')!='structured_chain' or response.get('status')!='mutation_unverified' or response.get('result',{}).get('native_command_success') is not False:
         raise LiveError('reconciliation_required','no explicit native structured-chain rejection',rid)
     handle=pending['params']['prepared_request'];prepared=json.loads((client.evidence/(handle+'.request.json')).read_text())
-    if prepared.get('session')!=client.session or prepared.get('request_id')!=handle or prepared.get('operation')!='structured_chain' or prepared.get('params',{}).get('new_alignment') is not True:
+    if prepared.get('session')!=client.session or prepared.get('request_id')!=handle or prepared.get('operation')!='structured_chain':
         raise LiveError('reconciliation_required','current-session new-alignment preparation required',rid)
+    params=prepared.get('params',{})
+    groups=params.get('groups',[params])
+    if (not isinstance(groups,list) or len(groups) not in (1,4)
+            or any(not isinstance(g,dict) or g.get('new_alignment') is not True for g in groups)):
+        raise LiveError('reconciliation_required','bounded new-alignment preparation required',rid)
+    ports=[g[key] for g in groups for key in ('source','target')]
     observations=[]
-    for key in ('source','target'):
-        port=prepared['params'][key];snapshot=port['edge_snapshot'];pos=snapshot['p0'] if snapshot['node0']==port['node_id'] else snapshot['p1']
+    for port in ports:
+        snapshot=port['edge_snapshot'];pos=snapshot['p0'] if snapshot['node0']==port['node_id'] else snapshot['p1']
         observed=client.request('discover',{'region':{'min':[x-10 for x in pos],'max':[x+10 for x in pos]},'max_edges':16})
         matches=[p for p in observed.get('result',{}).get('candidates',[]) if p['edge_id']==port['edge_id'] and p['node_id']==port['node_id']]
         if observed['status']!='ok' or observed.get('session')!=client.session or observed.get('operation')!='discover' or observed['result'].get('complete') is not True or observed['result'].get('truncated') is not False or len(matches)!=1:

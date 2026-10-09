@@ -1,29 +1,36 @@
-# P75 — paused partial C reconnection (8 October 2026)
+# P75 — central-pair mainline built; branch stage pending (9 October 2026)
 
-Human pause-after-current-step relayed by coordinator; no next phase dispatched.
-Build40420/session pif_1791496725_8461280, pending none, game paused/non-maximised.
-Shared overpass milestone effdc70 retained: US71617/UF67485/DF62168/DS71624
-share exact strip71620; twelve segments built. UI-only central excavation retained. Roomier DS merge near local s-955
-accepted and built six segments/four nodes, replacing71621 with61044/61043.
-Exact junction71847; branch67244→71847 uses61042/61041/67346/67350.
-Local branch/through readback and fresh whole routes pass: four A–B plus DS C,
-five of eight. UF/DF/US C remain disconnected; no physical traversal claim.
-UF raised sweep conflicts with US67301. Bridge-transition and earlier-rise
-variants retain native Construction Not Possible/Too Much Incline diagnostics;
-through-only splits pass. No general native impossibility or root-cause claim.
-Current outcome is incomplete: coordinator needs the specific rejection evidence
-before another material profile/through-layout decision. Do not start D/E work.
+Build40420/session pif_1791530031_5765625, paused/non-maximised. Rebuilt four
+through tracks as two paired decks, central C fast pair descends before sweeping
+under the C-side pair; ordered fast/US/DS crossing zones. Upper18.5/low3.25 ties
+outer16.25 and existing C leads. All eight A–B/A–C directed native TRAIN routes
+verify; exact76TRACKedges and4routingjunctionentities read back. Train traversal
+unprobed; native route existence does not prove operation or whole-junction completion.
 
-Evidence: .local_runs/live_python_interface/p75/overpass_first/
-{DS_build_roomy955.json,reconnection_checks.json,checkpoint_reconnection.json,
-RECONNECTION_HANDOFF.md,reconnection_paused_overview.jpg}; all failed previews kept.
-New unique partial save40709438bytes; exact actual UI-produced filename/hash in
-checkpoint_reconnection.json, previous overpass checkpoint unchanged.
-419 affected tests remain valid (.local_checks/pif-p75-grouped-structures_9_j_8tsr/report.json);
-no implementation changes since that acceptance; hashes rechecked in acceptance_reuse.json.
-Original command: python tools/quiet_checks.py --suite live_client --label pif-p75-grouped-structures.
-Grouped API usage documented.
-No remote push, host recovery, additional phase or task-runner changes.
+Local evidence root .local_runs/live_python_interface/p75/central_pair/:
+final_routes.json, final_geometry.json, C_crossing_screen_first.json,
+post_build_terrain3_summary.json, branch_interfaces_current.json,
+branch_interfaces_summary.json, checkpoint_mainline.json, HANDOFF.md, result.json.
+514 scoped post-build terrain samples: surface minimum1.06304/base1.05000,
+none below1; sampled only, no continuous proof. Scoped native Raise corrected
+construction pockets; no unchanged station/world elevation audit. Original failed
+build/terrain/removal and sandbox-test evidence retained. Oblique PNG captured;
+actual overhead screenshot pending: observed native R/F taps did not visibly tilt
+through Computer Use, whose API lacks held keys/right-button drag.
+Unique save TPF3_P75_Central_Paired_Diveunder_Mainline_20261009.sav,
+41846962bytes, SHA25604a210ea148cf0359c12af160c1c9e5663d58d1bcc55522aa2db75b9869ad852;
+completed hash rechecked, not reloaded. Prior checkpoints retained.
+
+Changed bridge_live.py, tests/test_live_client.py, prepared activation script and
+pif_native.lua: optional bounded GUI cursor marker, grouped20segment support,
+rejected4group reconciliation requiring all8fresh exact free ports; no mutation replay.
+python tools/quiet_checks.py --suite live_client --label pif-p75-group-reconciliation-approved:
+420passed0failures/errors, .local_checks/pif-p75-group-reconciliation-approved_3nt7w06e/report.json.
+Unchanged passing evidence reused. Source diff reviewed; final diff check recorded locally.
+Current D/E bounded regions have no eligible free ports; exact existing degree2
+interfaces exported for coordinator clearance/rebuild design. Continue authorised
+D/E stage after internal handoff; no push, host repair or runner change. Usage unavailable.
+Starting checkpoint b9358c4; local milestone revision recorded in local result after commit.
 
 # P74 complete — current-state design survey (7 October 2026)
 

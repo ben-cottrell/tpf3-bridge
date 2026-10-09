@@ -39,6 +39,15 @@ function data()
    emit("TRANSPORT_ERROR",{session=guiSession,error="invalid_module_envelope",sequence=nextSequence});nextSequence=nextSequence+1;return
   end
   nextSequence=nextSequence+1
+  if request.operation=="operating_inspect" and request.params and request.params.capture_cursor==true then
+   local observation={session=guiSession,request_id=request.request_id,available=false,source="api.gui.mouse",game_constructed=false}
+   local captured,err=pcall(function()
+    observation.available=api.gui.mouse.hasTerrainPosition()
+    if observation.available then local p=api.gui.mouse.getTerrainPosition();observation.position={p.x,p.y,p.z} end
+   end)
+   if not captured then observation.available=false;observation.error=tostring(err):sub(1,240) end
+   emit("CURSOR",observation)
+  end
   if request.operation=="operating_inspect" and request.params and request.params.capture_next_proposal==true then proposalCaptureArmed=true end
   if request.operation=="operating_inspect" and request.params and request.params.focus_entity then
    local entity=request.params.focus_entity
