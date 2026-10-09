@@ -5,6 +5,33 @@ firm; dimensions and particular track patterns remain design choices. This is no
 a claim that one template solves every layout or that native acceptance proves
 operational capacity.
 
+## Construction sequence is part of the design
+
+The intended final geometry and the intermediate construction states both matter.
+When a supported-looking parallel structure fails, compare with the manual game
+tool and consider terrain preparation, adjoining tracks and build order before
+distorting the alignment or attributing the failure to the bridge software.
+
+On 8 October the user also encountered rejection of a four-track parallel bridge
+manually and supplied this sequence for the current crossing: clear the affected
+parallel tracks, lower terrain around the corridor by15 game units, build and
+reconnect all four mainline tracks on a coherent shared bridge, then construct
+the diveunder. P75 has now demonstrated the clearance/excavation/overpass sequence:
+native UI excavation lowered central samples by about15–16 units, then one grouped
+bridge proposal built four tracks sharing native concrete strip71620. All four
+directed A–B paths verified, and the overview shows a continuous deck. Excavation
+was performed through the UI; programmatic terrain editing was not demonstrated
+by this milestone. The subsequent DS diveunder built successfully near a roomier
+ordinary-track merge (reconnection_checks.json, five of eight mainline routes).
+The user later observed water pockets: future excavation must obey the absolute
+z=1.0 floor below rather than repeat a relative15-unit lowering. This is site evidence,
+not a universal15-unit rule. Local evidence is in
+`.local_runs/live_python_interface/p75/overpass_first/group_checks.json`.
+Observe the current terrain and actual shared structure; track-height arithmetic
+alone does not establish that supports, abutments and construction states fit.
+Preserve railway functions through reconstruction, rather than freezing temporary
+track pieces that prevent the required construction sequence.
+
 ## Design the complete functional arrangement
 
 ### Wickham conclusion — user review, 5 October 2026
@@ -49,6 +76,27 @@ before distorting the intended layout to suit one fitting algorithm.
    bottlenecks. A connection to the wrong group is not progress merely because it builds.
 4. Design neighbouring tracks together. Reserve their corridors and turnout locations
    before committing an individually attractive connection.
+
+### Establish route priority before retaining infrastructure
+
+The first Complex Junction redesign still bent the slow mainline return around
+existing branch crossings. The user rejected that priority on 7 October: establish
+the A–B/C mainline split first, then fit or relocate the D/E routes around it.
+Moving a few junctions while retaining the branch structures as geographic anchors
+did not address the whole-layout problem.
+
+- Rank the routes whose alignment should shape the junction before selecting
+  attachment points. Give the principal routes coherent corridors and profiles;
+  arrange secondary crossings and connections around those corridors.
+- Separate functional order from geographic position. D/E slow connections must
+  reach the common stem before the C split, but that does not fix the common stem,
+  branch junctions or crossing structures at their existing locations.
+- When a proposed mainline has an awkward detour, ask which retained object is
+  causing it and whether that object has any genuine preservation requirement.
+  Reconsider the whole affected junction before polishing the detour.
+- This is a hierarchy of design priorities, not a ban on every reverse curve or
+  permission to sacrifice required branch movements. Account for those movements
+  in the revised arrangement and distinguish a proposed corridor from a built one.
 
 ## Shape and construction order
 
@@ -207,3 +255,157 @@ not a proven minimum-size layout.
 
 Evidence: `.local_runs/live_python_interface/p65/HANDOFF.md` and referenced
 P60-P65 records. Final save: `TPF3_Complex_Junction_P65_Complete_20261006.sav`.
+
+## Absolute excavation floor — Complex Junction, 9 October 2026
+
+The user's screenshot shows water in the P75 excavation beside the lower track.
+For this map, apply the user-selected hard terrain floor of absolute z=1.0 to
+all excavation, including brush falloff and blended edges. A relative instruction
+such as "lower by15" is insufficient on uneven or previously excavated ground.
+Use target elevations and observe the resulting surface; a UI-only terrain tool
+does not imply that the bridge already implements an automatic height clamp.
+
+On resumption, raise the existing over-deep pockets to at least z=1.0 and shape
+the surrounding cutting accordingly. Current mainline rail height is about16.25;
+its15.25-unit difference from the terrain floor is not a verified structural
+clearance, because rail height, ground height and bridge underside differ.
+Meet native construction requirements through the track/structure arrangement
+rather than excavating below the floor. This is a map-specific user constraint,
+not a claim of a universal game water level or guaranteed native acceptance.
+The user subsequently resumed the redesign on9October; repair and floor enforcement
+are part of that active work. This documentation does not imply the terrain has
+already been repaired or that a programmatic clamp exists.
+
+The user supplies a native height-reference technique: start Flatten on a railway
+track to clamp the tool to its height. A temporary level track at the desired
+elevation can provide that reference. Prefer this track-anchored workflow over
+attempting to carry a bank's cursor height into an excavation. Treat it as direct
+human operating evidence; check the actual resulting terrain and its persistence
+after reference-track removal in our implementation. Reference tracks are disposable
+construction aids. The technique does not itself expose a numeric terrain API.
+
+P75 subsequently reproduced this locally: anchoring Flatten on the lower DS track
+raised a former surface sample from0.3318 to1.3502; eight nearby surface samples
+were1.25..1.85. Evidence: `p75/central_pair/track_flatten_test2_readback.json`
+under `.local_runs/live_python_interface/`. This establishes the local track-anchor
+treatment, not a whole-site floor or terrain persistence after rail removal.
+Underlying base heights can differ from the track-influenced surface. A broader
+measured-Raise treatment also overshot a neighbouring patch; prefer the native
+track reference and small observed corrective passes instead of prolonged raising.
+The eight surface samples persisted across save/load, but subsequent rail removal
+exposed residual low ground; a new structure build failed with native "Place on
+Land". Track-anchored treatment must therefore be checked after removing a temporary
+reference when the final design does not retain its terrain alignment. A dry
+track-influenced surface does not establish a repaired underlying excavation.
+
+## Crossing order and total footprint — P75 design correction, 9 October 2026
+
+Do not minimise crossings or simplify one proposal at the expense of the whole
+junction footprint. The first central-pair layout placed the fast underpass,
+UP(slow) divergence and DOWN(slow) crossing in successive zones. It verified the
+required routes, but the user's overview exposed excessive spread. A concrete
+alternative is to branch UP(slow) before the fast underpass and carry its branch
+over the fast pair alongside the two continuing upper roads. This alternative
+is selected for fitting; it is not yet native-accepted or built.
+
+Before fixing junction locations, compare the ordering of forks and crossings
+in plan AND profile. An extra bridge may replace a long approach, separation
+zone or return curve. Judge the total envelope, including ramps and downstream
+ties, using the same boundary anchors. Reserve room for descending tracks and
+adjacent route families together. Fewer structures and the first accepted native
+proposal are not sufficient evidence of a good layout. An interface limitation
+is not a native design rule; test the missing capability when it demonstrably
+forces poor geometry. These are comparison practices, not a universal rule to
+branch before every bridge or to add more structures.
+
+The compact candidate was subsequently built (P75 compact_build, local milestone
+0583d5c). Eight directed mainline paths verify. Native construction retained the
+three-upper-path crossing arrangement and earlier trunk closure, with small fork
+adjustments; the DS descent realised about8.30%. The actual game view and full
+as-built plan/profiles show the result. Initial US construction rejections named
+old elevated rail remnants; removing those resolved those specific collisions.
+This does not retrospectively explain the earlier generic diagnostic rejection.
+525 affected ground-surface samples were >=1.15. Two lower underlying base values
+under a1.7 surface remain recorded; no current exposed-floor failure was observed.
+If later removal exposes low ground, treat that actual change rather than blindly
+raising a track-influenced surface to alter an unresponsive base diagnostic.
+
+## Fit route families together — P75 branch planning, 9 October 2026
+
+Fit opposing tracks around a common corridor and explicit track order before
+designing each curve. The first D/E access candidate crossed the opposing D-B
+tracks twice in plan and resolved accumulated conflicts with49/64.25 height tiers.
+That was a consequence of the candidate, not a demonstrated native requirement.
+Coupled guide stations removed the paired-family plan crossings in a later fit;
+the complete branch arrangement is still prospective and unbuilt at this point.
+
+Treat a fork as a local plan-and-profile problem. Neighbouring opposing tracks
+may need to separate vertically at a flying junction. Keep the lower route low
+until it clears the overhead bundle, and place its rise after those crossings.
+Move attachment positions, crossing positions and ramp extents together. A height
+that works on a plateau does not supply the same clearance halfway along a ramp.
+Use a local overpass or underpass where it resolves the movement order, instead
+of lifting an entire route family above every previous route.
+
+Compare every candidate using its current whole plan and full profiles. Regenerate
+figures after edits: a chart from an earlier fit can hide newly introduced ramp
+conflicts. Sampled intersections help locate a concrete problem; native proposals
+decide construction acceptance. Neither a clean drawing nor a failed custom fit
+establishes what the game can build.
+
+## Completed P75 lessons — 9 October 2026
+
+The coupled branch design and station restoration were subsequently constructed,
+recorded in local milestone c64bea9 and checkpoint
+`TPF3_P75_Complete_Operating_20261009.sav`. Evidence is under
+`.local_runs/live_python_interface/p75/branch_coupled/turnarounds/`.
+All18 infrastructure routes and16 station-terminal combinations pass. Slow and
+direct train stop sequences demonstrate round trips, beyond endpoint connectivity.
+These results establish this native build, not an optimal layout or a general
+version-independent construction rule.
+
+- Design receiving space as well as the source turnout. D_C's source fork passed
+  when its approach matched the parent bridge's vertical profile, while its landing
+  remained constrained. Moving the C slow pair inward created room to cross the
+  fast roads high, then descend on the fast side of the receiving US road. Fit the
+  receiving pair and its other branches together; do not squeeze the new connection
+  between opposing tracks just because those coordinates were already built.
+- Share compatible same-direction approaches. C_D ultimately joined B_D rather
+  than forcing another turnout onto a roughly24-unit station lead. Check native
+  continuity for both movements; do not require a separate physical arm for every
+  entry in the movement matrix.
+- Construction order can affect generated structures. An unchanged E_B split
+  collided with aggregate model content from the direct bridge. Removing its
+  parent TRACK spans, constructing E_C, then restoring the direct pair succeeded
+  with the original bridge asset and geometry. This demonstrates one native
+  reconstruction sequence; aggregate bounds did not identify a precise bad pillar.
+  Never bypass collision feedback or directly delete a generated model as a rail.
+- Put a shared choice after every route that must reach it has merged. The first
+  A return turnout preceded the C/B merge:18 infrastructure paths passed but two
+  station paths failed. Replace the wrong-source approach rather than append a
+  reversing feeder to preserve it. The temporary loop was removed and a direct
+  outward graded bow from the common approach restored all16 station paths.
+- Include station arrival, return departure and alternative-platform reachability
+  in the design brief from the start. Correcting two reversed D/E arrival signals
+  restored all eight D/E platform combinations without new track. C needed ordinary
+  separated crossovers; A's intervening fast roads required grade separation.
+  Diagnose bindings and signal direction before assuming missing construction.
+- Review plan and profile together after each material native adjustment. Keep
+  paired corridors coherent while allowing local vertical separation. Evaluate
+  the whole footprint before retaining an outward bow or extra structure. The
+  completed result is a useful tested pattern, not a licence for endless local
+  additions or a claim that every remaining bend is minimal.
+- Inspect a prerequisite check's result before its dependent mutation. One C_E
+  build was issued before its independent screen failure was read. The failure
+  concerned two intersections with still-prospective E_C, not a demonstrated native
+  collision; later E_C native acceptance resolved the practical question. Preserve
+  the discrepancy honestly, and do not turn a sampled diagnostic into an invented
+  universal clearance threshold.
+
+Completion limits: platform alternatives are configured and their paths verified;
+actual alternate selection under contention was not demonstrated. Final C terrain
+checks cover80 sampled points (minimum1.0), with28 affected track geometries and
+structures unchanged. Prior E/mainline scoped evidence remains separate. One
+functioning train retains a deleted home-depot reference; no observed running
+failure justified extra replacement or runtime state patching. The final save's
+bytes/hash were verified, but that final checkpoint was not reloaded.

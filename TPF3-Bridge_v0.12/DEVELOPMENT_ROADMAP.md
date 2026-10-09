@@ -1,6 +1,6 @@
 # Development roadmap
 
-Updated 7 October 2026. Current priorities supplement the historical work packages
+Updated 9 October 2026. Current priorities supplement the historical work packages
 in implementation/work_packages.json; their old status labels are not a live
 capability inventory. Completed native evidence is recorded in CURRENT_TASK.md.
 
@@ -13,7 +13,7 @@ demonstrator, not accepted railway-design quality or observed train-operation pr
 The user's whole-layout review identified excessive detours, reverse curves and
 fragmented related alignments. These are shortcomings of the design process.
 
-## Railway-design agent exercise — captured and queued
+## Railway-design agent exercise — active
 
 User requested this separate exercise be added to the roadmap on 6 October 2026.
 Purpose: reliably create coherent, compact game-appropriate railways through the
@@ -44,8 +44,29 @@ Required design practice:
 
 Acceptance: an improved overall plan visible before construction and a coherent
 built result with less repeated human intervention. A longer handbook alone is
-not success. Skill implementation and redesign remain queued; this entry records
-intent and does not dispatch them or mutate the current game.
+not success. On 7 October the user authorised coordinator-led improvement of the
+completed junction. P74 surveyed the current geometry; P75 begins the first
+integrated redesign of the four C connections and affected trunk crossings.
+Astra's first replacement concept retained an awkward slow-return bend around
+branch structures. The user corrected this priority before construction: establish
+the A–B/C mainline split first, then relocate the D/E connections and crossings
+around it. The existing return loops are observed design defects; the revised
+mainline-first arrangement was subsequently built and the P75 redesign completed
+on9October. The early UP(slow) fork compacted the central crossing; D/E access,
+station turnarounds and services were rebuilt around it. Local milestone c64bea9
+records18 infrastructure paths,16 station paths, four tested absent fast/slow
+transfers, and observed slow/direct round trips. Final checkpoint:
+`TPF3_P75_Complete_Operating_20261009.sav`. Evidence and limitations are in
+`.local_runs/live_python_interface/p75/branch_coupled/turnarounds/HANDOFF.md`.
+
+This completes the current redesign exercise, not the general railway-design
+agent deliverable. Further work should turn the demonstrated practices into one
+design skill and test transfer to a fresh challenge. P75 still required repeated
+coordinator corrections of local fitting and turnout ordering; native acceptance
+alone is not evidence that the design process is reliable or the footprint optimal.
+Skills and reusable patterns should incorporate built outcomes and limitations,
+rather than canonising a particular shape. Starting that next exercise is separate
+from closing this requested redesign.
 
 ## Operating challenge — demonstrated baseline and remaining coverage
 
