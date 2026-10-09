@@ -1,3 +1,26 @@
+# P75 — compact mainline built; D/E coordinator fitting next (9 October 2026)
+
+COMPACT_BUILD.md adopted early C.US fork. All eight directed A-B/A-C native TRAIN
+routes verified;76exactTRACK geometries unchanged after scoped terrain correction.
+Three upper crossing paths, nearby low DS return and earlier through closure built.
+Evidence .local_runs/live_python_interface/p75/compact_build/{HANDOFF.md,result.json,
+final_routes.json,post_terrain_geometry.json,as_built_plan.png,as_built_profiles.png,
+terrain_second_summary.json,DE_interfaces_final.json,checkpoint_mainline.json}.
+525affected surface samples>=1,min1.1500015; two underlying base-height readings
+remain0.64413/0.63107 under surface1.7, reported separately, no continuous proof.
+Four exact D/E ports eligible. Astra fits D/E to new layout; old plans unbuilt.
+Train traversal/service restoration/whole redesign remain unproved/incomplete.
+Unchanged420-test evidence reused; source/runner unchanged. Paused/non-maximised,
+build40420/sessionpif_1791530031_5765625. Unique compact save hashed/not reloaded.
+Standing authority applies; no user approval pending, no remote push/host recovery.
+
+Checkpoint: TPF3_P75_Compact_Early_US_Mainline_20261009.sav,
+42954606bytes, SHA25652c340745fb6c687e27bc928b83f76de3f5e3acafed045a2fee714cc46d41a40.
+Commands: verify.py (previous native8), terrain.py second (525),post_terrain.py
+(76unchanged/four eligible ports),as_built.py (8boundary/join); local evidence root
+as above. Reused420test report/command detailed in HANDOFF and previous P75 record.
+Local milestone revision in result.json after commit; prior42de101 preserved.
+
 # P75 — central-pair mainline built; branch stage pending (9 October 2026)
 
 Build40420/session pif_1791530031_5765625, paused/non-maximised. Rebuilt four
