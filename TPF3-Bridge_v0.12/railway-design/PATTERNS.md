@@ -42,6 +42,12 @@ The user subsequently supplied both 5/10 mirrored versions. Their
 and six new native paths, with approximately27.5-unit node separation. Both sets are
 manual reference data, not an agent-designed transfer success.
 
+Prospective transfer: [Challenge02](examples/challenge02/DESIGN.md) built two such
+nested families into oblique six-lead receiving geometry. All four fan branches
+accepted their first selected native fit;12 full arrival/return paths verified.
+The designer finds the result coherent; user visual approval is pending. This
+adds a practical transfer case, not a universal spacing or curvature prescription.
+
 ## X1 — Compact ordinary crossover groups
 
 **Context:** six approach tracks retain their through functions while adding the

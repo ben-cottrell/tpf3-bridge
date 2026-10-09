@@ -1,3 +1,25 @@
+# Challenge02 complete — ready for user visual review (9 October 2026)
+
+Efficiency work is complete: reusable data-plan operator and local stdio MCP,
+native camera/capture/save, compact outcomes and preserved failure diagnostics.
+Implementation commits00eccc5 and5821aa8;18 focused operator tests and423 existing
+live-client regressions passed. Relevant full evidence remains under.local_checks.
+Challenge01 is user-accepted; original plan and handbook baseline preserved.
+
+Challenge02: same220-unit receiving-centre length with six leads,65-unit lateral
+shift and30-degree receiving heading. Two nested three-exit fans and two ordinary
+crossovers.12/12 directed TRAIN routes verified; no train-operation claim.18steps,
+26edges, no demolition/material replan; one failed attachment and one curvature
+rejection resolved by local crossover shift. All fan branches accepted first fit.
+Zero bespoke operator Python files or Computer Use actions for this challenge.
+28.92seconds native-call time for construction; not total time or measured GPT savings.
+
+Save Design Challenge 02 - Six Lead Throat R1.sav verified by callback/file/hash,
+not reloaded. Game paused, camera on completed layout. Full design/results:
+railway-design/examples/challenge02/DESIGN.md. Original-plan overlay retained.
+User visual review pending; no external blocker or additional automatic build queued.
+Sol idle, heartbeat still paused, no remote push. Historical records below.
+
 # OPERATOR-01 — complete (9 October 2026)
 
 Reusable plan-driven operator and local stdio MCP accepted. See OPERATOR_USAGE.md

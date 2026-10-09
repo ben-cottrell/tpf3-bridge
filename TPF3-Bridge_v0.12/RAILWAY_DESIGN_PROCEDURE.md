@@ -172,8 +172,13 @@ Historical replay detects missed lessons; it does not prove transfer to a new si
    all arrivals and returns, planned before fitting. Built on the unchanged fixture:
    eight directed paths pass, with no rejected proposals or rebuilds. See its
    [plan comparison and limits](railway-design/examples/challenge01/DESIGN.md).
-   User visual feedback is pending; this single composition does not prove reliability.
-4. Exercise an unfamiliar combination after the small example succeeds. Broaden
+   User accepted its visual result; this single composition does not prove reliability.
+4. A separate [six-lead transfer case](railway-design/examples/challenge02/DESIGN.md)
+   now combines30-degree receiving alignment, larger lateral offset and nested
+   three-exit fans. All12 paths pass; original topology retained through local
+   crossover fitting. Designer reviewed, user visual feedback pending. This remains
+   a related family, not proof across arbitrary junctions.
+5. Exercise an unfamiliar combination after these small examples succeed. Broaden
    the library when a real failure reveals a missing principle.
 
 Do not start another full-junction rebuild just to evaluate these instructions.

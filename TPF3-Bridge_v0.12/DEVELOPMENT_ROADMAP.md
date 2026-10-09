@@ -4,6 +4,23 @@ Updated 9 October 2026. Current priorities supplement the historical work packag
 in implementation/work_packages.json; their old status labels are not a live
 capability inventory. Completed native evidence is recorded in CURRENT_TASK.md.
 
+## Current milestone — operator efficiency and second transfer case
+
+9 October: Challenge01 was visually accepted by the user. Its original plan and
+handbook remain the baseline. OPERATOR-01 now provides reusable named data plans,
+local stdio MCP, native first-track/camera/capture/save and compact diagnostics.
+No FastAPI listener or additional model loop.18 focused operator tests and423
+live-client regressions pass. See OPERATOR_USAGE.md.
+
+Challenge02 broadens the accepted exercise to six oblique receiving leads and
+nested three-exit fans.12/12 directed paths pass, final native view reviewed by
+designer, saved for user review. Zero bespoke operating scripts or Computer Use
+actions were needed for this case. Original spatial arrangement survived local
+native fitting without demolition. See railway-design/examples/challenge02/DESIGN.md.
+No general design reliability or measured token-saving percentage is claimed.
+Broader future variation should test different corridor/topology constraints after
+this visual review, rather than repeat copies of the same successful family.
+
 ## Completed baseline: Complex Junction construction
 
 P60-P65 demonstrated native structure readback, new and replacement bridge/tunnel

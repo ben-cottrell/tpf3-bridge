@@ -78,3 +78,9 @@ either fan. Designing the complete family made the local native fits routine in
 this case. The next transfer test should materially change the receiving heading
 or lateral offset, recording its spatial arrangement before fitting; merely
 mirroring this result would provide weak additional evidence.
+
+## Subsequent user review — 9 October 2026
+
+User: "This looks good, I can't find fault with it." The initial composition is now
+accepted as the baseline. Original R1 plan/geometry remain unchanged. Challenge02
+provides a separate harder transfer case; it does not replace this accepted example.
