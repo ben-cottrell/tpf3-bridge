@@ -37,6 +37,10 @@ The measured 10/15-unit outlet offsets include platform space: the user intended
 a 5-unit-wide platform in the first 10-unit gap. A track-only variation can target
 5/10-unit offsets. Select the cross-section from its function before fitting;
 neither set of offsets defines the staggered-turnout pattern itself.
+The user subsequently supplied both 5/10 mirrored versions. Their
+[captured comparison](examples/SHEFFORD_TRACK_ONLY.md) confirms the same arrangement
+and six new native paths, with approximately27.5-unit node separation. Both sets are
+manual reference data, not an agent-designed transfer success.
 
 ## X1 — Compact ordinary crossover groups
 

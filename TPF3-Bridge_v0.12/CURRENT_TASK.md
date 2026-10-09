@@ -1,3 +1,16 @@
+# Railway design procedure — both Shefford cross-sections captured (9 October 2026)
+
+Two additional user-built5/10fans captured read-only, alongside the10/15pair.
+Four full components,56TRACKcontrols,8junctions,4signals; all12current directional
+paths pass. New pair's node gaps27.47/27.44; measured offsets5/10. No game mutation.
+Reference: railway-design/examples/SHEFFORD_TRACK_ONLY.md and comparison data/plan.
+Raw evidence: .local_runs/design/shefford_track_only/. Procedurev0.3.
+User asks for a design test with meaningful variation. Proposed CHALLENGE_01.md:
+oblique two-directional-track/four-terminal-lead throat, all8arrivals/returns,
+with pre-fit spatial plan and later changed boundary condition. Brief only; not built.
+Manual references are not evidence of agent transfer. No additional example requested
+as a prerequisite; optional user contribution is unsolved boundary tracks or a site limit.
+
 # Railway design procedure — Shefford reference captured (9 October 2026)
 
 Read-only native survey of the user's two mirrored staggered fans near Shefford

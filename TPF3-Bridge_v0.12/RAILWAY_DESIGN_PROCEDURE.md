@@ -1,6 +1,6 @@
 # Railway design procedure
 
-Version 0.2 — 9 October 2026. Shefford manual reference incorporated;
+Version 0.3 — 9 October 2026. Both Shefford cross-sections incorporated;
 prospective effectiveness on a new variant remains unproven.
 
 Purpose: produce coherent game-scale railways without repeatedly turning local
@@ -166,8 +166,10 @@ Historical replay detects missed lessons; it does not prove transfer to a new si
 2. Inspect a small manually built fan pattern and document its actual geometry.
    Completed for [Shefford's two mirrored fans](railway-design/examples/SHEFFORD_FANS.md):
    29 tracks captured and all six intended native directional paths verified.
-3. Plan a mirrored or spatially altered version before any fitting; compare with
-   the reference for reasoning and appearance. Build only within the active brief.
+3. The user also supplied mirrored 5/10 versions; these are reference data, not
+   successful transfer by the agent. Next proposed test:
+   [an oblique two-track/four-lead throat](railway-design/CHALLENGE_01.md), including
+   all arrivals and returns, planned before fitting. Build only within the active brief.
 4. Exercise an unfamiliar combination after the small example succeeds. Broaden
    the library when a real failure reveals a missing principle.
 

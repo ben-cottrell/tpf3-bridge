@@ -28,9 +28,11 @@ four junction nodes and six verified directional paths. Version 0.2 incorporates
 two ordinary turnouts and an early middle branch from the outer sweep. Scaled plan,
 geometry and limitations: railway-design/examples/SHEFFORD_FANS.md.
 User clarifies the10/15offsets allow a5-wide platform; track-only5/10 is also useful.
-Next: plan that track-only5/10-offset variant before fitting. Use that small
-exercise to refine the procedure before another full junction. Reference capture
-alone does not demonstrate prospective design transfer.
+The user subsequently supplied both5/10variants; four complete fans/12current routes
+are now captured in railway-design/examples/SHEFFORD_TRACK_ONLY.md. This is reference
+evidence, not agent-designed transfer. Procedurev0.3 proposes CHALLENGE_01.md: an
+oblique2-to4terminal throat with full arrival/return access and a saved pre-fit plan,
+followed by a changed receiving condition. No new layout is built by this proposal.
 The current game layout remains unchanged. No new junction rebuild, worker dispatch
 or scheduler restart follows from writing the procedure. P75 is a functional
 baseline and a design counterexample, not the aesthetic target for regression.

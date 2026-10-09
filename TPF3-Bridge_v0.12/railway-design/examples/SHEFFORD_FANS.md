@@ -28,7 +28,9 @@ The user clarified that the 10-unit straight-to-middle centreline gap reserves a
 that platform, a track-only version could place the middle and outer leads at 5 and
 10 units from the straight route. These are two different intended cross-sections,
 not competing measurements of the same example. The supplied fans use 10/15;
-the proposed 5/10 variation has not been built or verified by this inspection.
+the 5/10 variation was subsequently supplied and captured in
+[the track-only comparison](SHEFFORD_TRACK_ONLY.md). The original capture remains
+unchanged as a separate historical reference.
 
 The user reports that a single-point three-way turnout could not be built. This
 reference requires only two ordinary turnouts; a universal engine prohibition has
@@ -96,13 +98,10 @@ Raw receipts and analysis: `.local_runs/design/shefford_fans/`, including
 The versioned JSON retains the geometry and route summary needed for offline review.
 No game construction, terrain, simulation or save changes were made by this inspection.
 
-## Next exercise
+## Subsequent reference and next exercise
 
-Plan a track-only variant with middle/outer lead offsets of 5/10 units before fitting.
-Remove the platform-space requirement from its brief; retain the staggered branch
-hierarchy and smooth sweep intent. Do not assume its junction spacing will be the
-same as the station-like 10/15 reference.
-Use a scaled plan and predict J1/J2 regions and the parent of the middle route.
-Compare with this reference by relationships, footprint and visual continuity;
-evaluate attachment eligibility at the new site. Do not simply paste these controls
-and call the result evidence of generalised design ability. No variant is built yet.
+The user supplied the 5/10 variation before agent planning; it is useful evidence
+but cannot count as an independent design test. The proposed next exercise is an
+[oblique two-track/four-lead throat](../CHALLENGE_01.md), requiring complete arrival
+and return access. Preserve the pre-fit plan and compare its built result. Simply
+pasting these controls would not establish generalised design ability.

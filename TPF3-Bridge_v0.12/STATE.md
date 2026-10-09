@@ -1,3 +1,14 @@
+# Shefford comparison captured — 9 October 2026
+
+Current56TRACKcontrols across4complete fans,8junctions and4one-way signals read;
+all12current native directed paths verified. New C/D have5/10offsets and27.47/27.44
+node gaps. No train observation or game changes. Old capture retained separately;
+some original handles changed and routes were refreshed rather than assumed valid.
+Comparison in railway-design/examples/SHEFFORD_TRACK_ONLY.md; procedurev0.3.
+CHALLENGE_01.md proposes a more varied oblique2-to4terminal throat with full arrivals
+and returns, pre-fit plan and later transfer variant. Unbuilt proposal; no worker
+dispatch or scheduler change. The user-built narrower fans are reference evidence only.
+
 # Shefford manual reference captured — 9 October 2026
 
 Read-only survey on build40420/sessionpif_1791572697_48431435 after user enabled mod
