@@ -1,3 +1,14 @@
+# Challenge 01 initial composition built — 9 October 2026
+
+Build40420/session pif_1791576336_52069880. R1 oblique four-lead fixture built
+unchanged; 20 native track edges, six ordinary junction nodes, eight directed
+TRAIN paths verified. Original plan and as-built overlay retained in
+railway-design/examples/challenge01/. No rejected construction proposals or
+rebuilds. Native connectivity is proven; no train operation or capacity test.
+Saved as Design Challenge 01 - Oblique Throat R1. User visual feedback pending;
+changed-boundary transfer variation remains untested. No bridge source changes,
+worker dispatch, scheduler restart or remote push.
+
 # Shefford comparison captured — 9 October 2026
 
 Current56TRACKcontrols across4complete fans,8junctions and4one-way signals read;

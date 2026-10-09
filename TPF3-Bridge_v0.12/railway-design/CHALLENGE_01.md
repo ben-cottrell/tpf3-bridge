@@ -1,6 +1,9 @@
-# Proposed process test: oblique four-lead terminal throat
+# Process test: oblique four-lead terminal throat
 
-Prepared 9 October 2026. Brief only; no game layout or proposal has been built.
+Prepared 9 October 2026. Initial fixture now built with all eight native directed
+paths verified; see [the prospective design record](examples/challenge01/DESIGN.md)
+and its plan/as-built overlay. User visual feedback and a materially changed
+transfer variant remain outstanding. The original brief follows.
 This advances beyond copying or mirroring the supplied Shefford fans.
 
 ## Purpose and input fixture

@@ -1,3 +1,15 @@
+# Challenge 01 — built, ready for visual feedback (9 October 2026)
+
+Fresh empty map, session pif_1791576336_52069880. Original oblique four-lead
+fixture built unchanged from the pre-fit R1 plan: two single crossovers and two
+fans, all eight directed native TRAIN paths pass. No rejected construction
+proposals, rebuilds or material replans. No train-operation claim or bridge changes.
+Designer considers the composition coherent; user visual feedback is pending.
+Record and overlay: railway-design/examples/challenge01/DESIGN.md.
+Save: Design Challenge 01 - Oblique Throat R1. Next useful exercise, after this
+review, changes the receiving heading/offset materially. General reliability
+remains unproved. Sol stays idle; automation remains paused; no remote push.
+
 # Railway design procedure — both Shefford cross-sections captured (9 October 2026)
 
 Two additional user-built5/10fans captured read-only, alongside the10/15pair.

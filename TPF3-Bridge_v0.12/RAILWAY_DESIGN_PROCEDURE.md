@@ -167,9 +167,12 @@ Historical replay detects missed lessons; it does not prove transfer to a new si
    Completed for [Shefford's two mirrored fans](railway-design/examples/SHEFFORD_FANS.md):
    29 tracks captured and all six intended native directional paths verified.
 3. The user also supplied mirrored 5/10 versions; these are reference data, not
-   successful transfer by the agent. Next proposed test:
+   successful transfer by the agent. First prospective test:
    [an oblique two-track/four-lead throat](railway-design/CHALLENGE_01.md), including
-   all arrivals and returns, planned before fitting. Build only within the active brief.
+   all arrivals and returns, planned before fitting. Built on the unchanged fixture:
+   eight directed paths pass, with no rejected proposals or rebuilds. See its
+   [plan comparison and limits](railway-design/examples/challenge01/DESIGN.md).
+   User visual feedback is pending; this single composition does not prove reliability.
 4. Exercise an unfamiliar combination after the small example succeeds. Broaden
    the library when a real failure reveals a missing principle.
 

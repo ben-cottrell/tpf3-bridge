@@ -1,0 +1,1149 @@
+{
+  "revision": "R1",
+  "session": "pif_1791576336_52069880",
+  "routes": [
+    {
+      "route": "UP_L1",
+      "verified": true,
+      "length": 326.268892288208,
+      "truncated": false,
+      "path_count": 10
+    },
+    {
+      "route": "L1_DOWN",
+      "verified": true,
+      "length": 326.64226722717285,
+      "truncated": false,
+      "path_count": 12
+    },
+    {
+      "route": "UP_L2",
+      "verified": true,
+      "length": 326.7534828186035,
+      "truncated": false,
+      "path_count": 10
+    },
+    {
+      "route": "L2_DOWN",
+      "verified": true,
+      "length": 327.12685775756836,
+      "truncated": false,
+      "path_count": 12
+    },
+    {
+      "route": "UP_L3",
+      "verified": true,
+      "length": 325.8421154022217,
+      "truncated": false,
+      "path_count": 12
+    },
+    {
+      "route": "L3_DOWN",
+      "verified": true,
+      "length": 325.46881580352783,
+      "truncated": false,
+      "path_count": 10
+    },
+    {
+      "route": "UP_L4",
+      "verified": true,
+      "length": 327.60005378723145,
+      "truncated": false,
+      "path_count": 12
+    },
+    {
+      "route": "L4_DOWN",
+      "verified": true,
+      "length": 327.2267541885376,
+      "truncated": false,
+      "path_count": 10
+    }
+  ],
+  "all_eight_native_paths": true,
+  "native_track_edges": 20,
+  "degree_three_nodes": 6,
+  "major_replans": 0,
+  "rejected_construction_proposals": 0,
+  "rebuilds": 0,
+  "native_geometry": {
+    "session": "pif_1791576336_52069880",
+    "edges": [
+      {
+        "endpoint_node_position_match": true,
+        "id": 64121,
+        "node0": 63997,
+        "node1": 65455,
+        "node_positions": [
+          [
+            -1200,
+            -5662.5,
+            2.0999999046325684
+          ],
+          [
+            -1190.009765625,
+            -5662.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1200,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1190.009765625,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          9.990234375,
+          0,
+          0
+        ],
+        "t1": [
+          9.990233421325684,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 64130,
+        "node0": 59943,
+        "node1": 63997,
+        "node_positions": [
+          [
+            -1260,
+            -5662.5,
+            2.0999999046325684
+          ],
+          [
+            -1200,
+            -5662.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1260,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1200,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          60,
+          0,
+          0
+        ],
+        "t1": [
+          60,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 64136,
+        "node0": 64132,
+        "node1": 64133,
+        "node_positions": [
+          [
+            -1260,
+            -5657.5,
+            2.0999999046325684
+          ],
+          [
+            -1200,
+            -5657.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1260,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1200,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          60,
+          0,
+          0
+        ],
+        "t1": [
+          60,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 65522,
+        "node0": 64133,
+        "node1": 65617,
+        "node_positions": [
+          [
+            -1200,
+            -5657.5,
+            2.0999999046325684
+          ],
+          [
+            -1149.9949951171875,
+            -5657.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1200,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1149.9949951171875,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          50.0048828125,
+          0,
+          0
+        ],
+        "t1": [
+          50.004878997802734,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 65739,
+        "node0": 65455,
+        "node1": 65617,
+        "node_positions": [
+          [
+            -1190.009765625,
+            -5662.5,
+            2.0999999046325684
+          ],
+          [
+            -1149.9949951171875,
+            -5657.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1190.009765625,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1149.9949951171875,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          40.32594680786133,
+          0,
+          0
+        ],
+        "t1": [
+          40.32594680786133,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 65861,
+        "node0": 65617,
+        "node1": 62181,
+        "node_positions": [
+          [
+            -1149.9949951171875,
+            -5657.5,
+            2.0999999046325684
+          ],
+          [
+            -1140.005615234375,
+            -5657.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1149.9949951171875,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1140.005615234375,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          9.989420890808105,
+          0,
+          0
+        ],
+        "t1": [
+          9.989404678344727,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 65863,
+        "node0": 65455,
+        "node1": 65860,
+        "node_positions": [
+          [
+            -1190.009765625,
+            -5662.5,
+            2.0999999046325684
+          ],
+          [
+            -1100.0107421875,
+            -5662.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1190.009765625,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1100.0107421875,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          89.99901580810547,
+          0,
+          0
+        ],
+        "t1": [
+          89.9990234375,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 39242,
+        "node0": 51850,
+        "node1": 65572,
+        "node_positions": [
+          [
+            -1090,
+            -5657.5,
+            2.0999999046325684
+          ],
+          [
+            -1069.6793212890625,
+            -5655.298828125,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1090,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1069.6793212890625,
+          -5655.298828125,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          20.682682037353516,
+          0,
+          0
+        ],
+        "t1": [
+          19.9995174407959,
+          4.167764186859131,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 63938,
+        "node0": 65572,
+        "node1": 60069,
+        "node_positions": [
+          [
+            -1069.6793212890625,
+            -5655.298828125,
+            2.0999999046325684
+          ],
+          [
+            -980.6470336914062,
+            -5622.5849609375,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1069.6793212890625,
+          -5655.298828125,
+          2.0999999046325684
+        ],
+        "p1": [
+          -980.6470336914062,
+          -5622.5849609375,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          91.0005111694336,
+          18.963891983032227,
+          0
+        ],
+        "t1": [
+          90.9023208618164,
+          24.35720443725586,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 65134,
+        "node0": 65572,
+        "node1": 61029,
+        "node_positions": [
+          [
+            -1069.6793212890625,
+            -5655.298828125,
+            2.0999999046325684
+          ],
+          [
+            -983.2352294921875,
+            -5612.92578125,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1069.6793212890625,
+          -5655.298828125,
+          2.0999999046325684
+        ],
+        "p1": [
+          -983.2352294921875,
+          -5612.92578125,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          94.24604797363281,
+          19.640239715576172,
+          0
+        ],
+        "t1": [
+          92.99039459228516,
+          24.916704177856445,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 65862,
+        "node0": 62181,
+        "node1": 51850,
+        "node_positions": [
+          [
+            -1140.005615234375,
+            -5657.5,
+            2.0999999046325684
+          ],
+          [
+            -1090,
+            -5657.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1140.005615234375,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1090,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          50.005611419677734,
+          0,
+          0
+        ],
+        "t1": [
+          50.00569534301758,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 65864,
+        "node0": 65860,
+        "node1": 63242,
+        "node_positions": [
+          [
+            -1100.0107421875,
+            -5662.5,
+            2.0999999046325684
+          ],
+          [
+            -1090,
+            -5662.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1100.0107421875,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1090,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          10.010743141174316,
+          0,
+          0
+        ],
+        "t1": [
+          10.010743141174316,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 65865,
+        "node0": 62181,
+        "node1": 65860,
+        "node_positions": [
+          [
+            -1140.005615234375,
+            -5657.5,
+            2.0999999046325684
+          ],
+          [
+            -1100.0107421875,
+            -5662.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1140.005615234375,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1100.0107421875,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          40.30620193481445,
+          0,
+          0
+        ],
+        "t1": [
+          40.30620193481445,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 66164,
+        "node0": 63242,
+        "node1": 64114,
+        "node_positions": [
+          [
+            -1090,
+            -5662.5,
+            2.0999999046325684
+          ],
+          [
+            -1069.47314453125,
+            -5660.298828125,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1090,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1069.47314453125,
+          -5660.298828125,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          20.88580894470215,
+          0,
+          0
+        ],
+        "t1": [
+          20.207897186279297,
+          4.168778419494629,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 66167,
+        "node0": 64114,
+        "node1": 64144,
+        "node_positions": [
+          [
+            -1069.47314453125,
+            -5660.298828125,
+            2.0999999046325684
+          ],
+          [
+            -979.3529663085938,
+            -5627.4150390625,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1069.47314453125,
+          -5660.298828125,
+          2.0999999046325684
+        ],
+        "p1": [
+          -979.3529663085938,
+          -5627.4150390625,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          92.1008529663086,
+          18.999900817871094,
+          0
+        ],
+        "t1": [
+          91.94700622558594,
+          24.637128829956055,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 66168,
+        "node0": 64114,
+        "node1": 63774,
+        "node_positions": [
+          [
+            -1069.47314453125,
+            -5660.298828125,
+            2.0999999046325684
+          ],
+          [
+            -976.7647705078125,
+            -5637.07421875,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1069.47314453125,
+          -5660.298828125,
+          2.0999999046325684
+        ],
+        "p1": [
+          -976.7647705078125,
+          -5637.07421875,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          93.60215759277344,
+          19.309614181518555,
+          0
+        ],
+        "t1": [
+          92.31656646728516,
+          24.73615074157715,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 64140,
+        "node0": 63774,
+        "node1": 61622,
+        "node_positions": [
+          [
+            -976.7647705078125,
+            -5637.07421875,
+            2.0999999046325684
+          ],
+          [
+            -938.1277465820312,
+            -5626.72119140625,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -976.7647705078125,
+          -5637.07421875,
+          2.0999999046325684
+        ],
+        "p1": [
+          -938.1277465820312,
+          -5626.72119140625,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "t1": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 64146,
+        "node0": 64144,
+        "node1": 63855,
+        "node_positions": [
+          [
+            -979.3529663085938,
+            -5627.4150390625,
+            2.0999999046325684
+          ],
+          [
+            -940.7159423828125,
+            -5617.06201171875,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -979.3529663085938,
+          -5627.4150390625,
+          2.0999999046325684
+        ],
+        "p1": [
+          -940.7159423828125,
+          -5617.06201171875,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "t1": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 64150,
+        "node0": 60069,
+        "node1": 42838,
+        "node_positions": [
+          [
+            -980.6470336914062,
+            -5622.5849609375,
+            2.0999999046325684
+          ],
+          [
+            -942.010009765625,
+            -5612.232421875,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -980.6470336914062,
+          -5622.5849609375,
+          2.0999999046325684
+        ],
+        "p1": [
+          -942.010009765625,
+          -5612.232421875,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "t1": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      {
+        "endpoint_node_position_match": true,
+        "id": 64157,
+        "node0": 61029,
+        "node1": 64156,
+        "node_positions": [
+          [
+            -983.2352294921875,
+            -5612.92578125,
+            2.0999999046325684
+          ],
+          [
+            -944.5982055664062,
+            -5602.5732421875,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -983.2352294921875,
+          -5612.92578125,
+          2.0999999046325684
+        ],
+        "p1": [
+          -944.5982055664062,
+          -5602.5732421875,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "t1": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      }
+    ],
+    "boundaries": {
+      "UP": {
+        "endpoint_node_position_match": true,
+        "id": 64130,
+        "node0": 59943,
+        "node1": 63997,
+        "node_positions": [
+          [
+            -1260,
+            -5662.5,
+            2.0999999046325684
+          ],
+          [
+            -1200,
+            -5662.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1260,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1200,
+          -5662.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          60,
+          0,
+          0
+        ],
+        "t1": [
+          60,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      "DOWN": {
+        "endpoint_node_position_match": true,
+        "id": 64136,
+        "node0": 64132,
+        "node1": 64133,
+        "node_positions": [
+          [
+            -1260,
+            -5657.5,
+            2.0999999046325684
+          ],
+          [
+            -1200,
+            -5657.5,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -1260,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "p1": [
+          -1200,
+          -5657.5,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          60,
+          0,
+          0
+        ],
+        "t1": [
+          60,
+          0,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      "L1": {
+        "endpoint_node_position_match": true,
+        "id": 64140,
+        "node0": 63774,
+        "node1": 61622,
+        "node_positions": [
+          [
+            -976.7647705078125,
+            -5637.07421875,
+            2.0999999046325684
+          ],
+          [
+            -938.1277465820312,
+            -5626.72119140625,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -976.7647705078125,
+          -5637.07421875,
+          2.0999999046325684
+        ],
+        "p1": [
+          -938.1277465820312,
+          -5626.72119140625,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "t1": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      "L2": {
+        "endpoint_node_position_match": true,
+        "id": 64146,
+        "node0": 64144,
+        "node1": 63855,
+        "node_positions": [
+          [
+            -979.3529663085938,
+            -5627.4150390625,
+            2.0999999046325684
+          ],
+          [
+            -940.7159423828125,
+            -5617.06201171875,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -979.3529663085938,
+          -5627.4150390625,
+          2.0999999046325684
+        ],
+        "p1": [
+          -940.7159423828125,
+          -5617.06201171875,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "t1": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      "L3": {
+        "endpoint_node_position_match": true,
+        "id": 64150,
+        "node0": 60069,
+        "node1": 42838,
+        "node_positions": [
+          [
+            -980.6470336914062,
+            -5622.5849609375,
+            2.0999999046325684
+          ],
+          [
+            -942.010009765625,
+            -5612.232421875,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -980.6470336914062,
+          -5622.5849609375,
+          2.0999999046325684
+        ],
+        "p1": [
+          -942.010009765625,
+          -5612.232421875,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "t1": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      },
+      "L4": {
+        "endpoint_node_position_match": true,
+        "id": 64157,
+        "node0": 61029,
+        "node1": 64156,
+        "node_positions": [
+          [
+            -983.2352294921875,
+            -5612.92578125,
+            2.0999999046325684
+          ],
+          [
+            -944.5982055664062,
+            -5602.5732421875,
+            2.0999999046325684
+          ]
+        ],
+        "p0": [
+          -983.2352294921875,
+          -5612.92578125,
+          2.0999999046325684
+        ],
+        "p1": [
+          -944.5982055664062,
+          -5602.5732421875,
+          2.0999999046325684
+        ],
+        "road_type": "TRACK",
+        "style": "::/infrastructure/track/simple/simple.street",
+        "t0": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "t1": [
+          38.63703155517578,
+          10.352762222290039,
+          0
+        ],
+        "template": "::/infrastructure/track/simple/simple.street_template"
+      }
+    }
+  },
+  "physical_train_operation": "not tested; outside brief",
+  "quality": "designer reviewed; awaiting user visual feedback",
+  "original_fixture_changed": false,
+  "save": {
+    "name": "Design Challenge 01 - Oblique Throat R1.sav",
+    "bytes": 36130234,
+    "reloaded": false
+  }
+}
