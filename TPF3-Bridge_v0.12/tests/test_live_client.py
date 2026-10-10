@@ -1,4 +1,5 @@
 import json
+import copy
 from pathlib import Path
 import tempfile
 import threading
@@ -1174,6 +1175,18 @@ class LiveClientTests(unittest.TestCase):
             prepare_interior_junction(self.client,params,candidates)
         self.assertEqual(call.call_args.args,('interior_junction',{**params,'radius':0,'execute':False,'prepare':True,'fit_candidates':candidates}))
         self.assertEqual(call.call_count,1)
+
+    def test_strict_interior_parameter_is_not_arbitrary_edge_percentage(self):
+        from bridge_live import prepare_interior_junction
+        for parameter in [.001,.999,0,1]:
+            params=self.interior_preparation_parameters();params['source']['parameter']=parameter
+            with self.subTest(parameter=parameter),patch.object(self.client,'request',return_value=self.response('prepare','interior_junction')) as call:
+                if parameter in (0,1):
+                    with self.assertRaises(ValueError):prepare_interior_junction(self.client,params,[{'branch':'endpoint_cubic_level','through':'subdivide_fresh'}])
+                    call.assert_not_called()
+                else:
+                    prepare_interior_junction(self.client,params,[{'branch':'endpoint_cubic_level','through':'subdivide_fresh'}])
+                    self.assertEqual(call.call_args.args[1]['source']['parameter'],parameter)
 
     def crossover_preparation_parameters(self):
         p=self.interior_preparation_parameters()
@@ -4992,6 +5005,63 @@ class ReferenceRouteSetTests(unittest.TestCase):
 
 class StationSurveyTests(unittest.TestCase):
     setUp=LiveClientTests.setUp
+    def test_empty_lua_station_arrays_are_normalized_without_fabricated_site_read(self):
+        from bridge_station import inspect_station,normalized_station
+        v=self.station(0);v['ports']={}
+        with patch.object(self.client,'request',return_value={'status':'ok','result':v}) as calls:
+            r=inspect_station(self.client,{'name':'Mid West C'})
+        self.assertEqual(r['status'],'ok');self.assertEqual(r['free_connection_count'],0)
+        self.assertEqual(r['site_tiles'],0);self.assertFalse(r['site_complete']);self.assertEqual(calls.call_count,2)
+        record=json.loads(Path(r['evidence']).read_text())
+        self.assertEqual(record['station']['ports'],[]);self.assertEqual(record['observations'][0]['result']['ports'],{})
+        with self.assertRaisesRegex(ValueError,'malformed station list'):normalized_station({'ports':{'unexpected':1}})
+
+    def test_frozen_station_exit_survey_uses_exact_ids_and_rechecks_current_station(self):
+        from bridge_station import inspect_exits
+        v=self.station(0)
+        v['constructions'][0]['frozen_tracks']=[{'edge_id':10,'node0':20,'node1':21},{'edge_id':11,'node0':21,'node1':22}]
+        v['stations'][0].update(construction_id=2,terminals=[{'index':1,'vehicle_edges':[10]}])
+        edges=[{'id':10,'node0':20,'node1':21,'p0':[0,0,12],'p1':[10,0,12],'t0':[10,0,0],'t1':[10,0,0],'road_type':'TRACK'},
+               {'id':11,'node0':21,'node1':22,'p0':[10,0,12],'p1':[20,0,12],'t0':[10,0,0],'t1':[10,0,0],'road_type':'TRACK'}]
+        lookups=0;queries=[]
+        def request(op,q):
+            nonlocal lookups
+            queries.append((op,q))
+            if op=='station_lookup':lookups+=1;value=v
+            elif op=='inspect':value={'edges':edges}
+            else:
+                left=q['region']['min'][0]<0;e=edges[0] if left else edges[1];nid=20 if left else 22
+                candidate={'edge_id':e['id'],'node_id':nid,'pos':e['p0'] if left else e['p1'],'outward_direction':[-1,0,0] if left else [1,0,0],
+                           'grade':0,'edge_snapshot':e,'construction_owner':2,'incident_count':1,'incident_edges':[e['id']],
+                           'incidence_complete':True,'incident_output_truncated':False,'eligible':False}
+                value={'complete':True,'candidates':[candidate]}
+            return {'status':'ok','result':copy.deepcopy(value)}
+        with patch.object(self.client,'request',side_effect=request):r=inspect_exits(self.client,{'name':'Mid West C'})
+        self.assertEqual(r['exits'],2);self.assertEqual(lookups,2)
+        self.assertEqual([(x['edge'],x['node']) for x in r['interfaces']],[(10,20),(11,22)])
+        self.assertTrue(all(x['terminal_matches']==1 for x in r['interfaces']))
+        self.assertEqual([q['edge_ids'] for op,q in queries if op=='inspect'],[[10,11]])
+        self.assertTrue(all(q['max_edges']==16 and q['region']['max'][0]-q['region']['min'][0]==2 for op,q in queries if op=='discover'))
+        self.assertEqual(r['native_buildability'],'unprobed');self.assertFalse(r['game_constructed'])
+        lookups=0
+        def stale(op,q):
+            result=request(op,q)
+            if op=='station_lookup' and lookups==2:result['result']['group_id']=99
+            return result
+        with patch.object(self.client,'request',side_effect=stale),self.assertRaisesRegex(LiveError,'station changed'):inspect_exits(self.client,{'name':'Mid West C'})
+
+    def test_large_station_budget_result_keeps_counted_incomplete_evidence(self):
+        from bridge_station import inspect_station,parameters
+        payload={'outcome':'station_observation_budget_exhausted','complete':False,'blocker':'frozen_entity_read_budget',
+                 'frozen_entity_count':17000,'processed_frozen_entities':0,'frozen_TRACK_count':0,'processed_station_nodes':0,
+                 'observation_limits':{'frozen_entities':16384,'frozen_TRACK':2048,'nodes':4096}}
+        with patch.object(self.client,'request',return_value={'status':'ok','result':payload}) as calls:
+            r=inspect_station(self.client,{'name':'Mid West C','max_frozen_entities':16384,'max_frozen_tracks':2048})
+        self.assertEqual(r['status'],'station_observation_budget_exhausted');self.assertEqual(r['frozen_entity_count'],17000)
+        self.assertEqual(r['processed_frozen_entities'],0);self.assertEqual(calls.call_count,1)
+        self.assertEqual(calls.call_args.args[1]['max_frozen_tracks'],2048)
+        with self.assertRaises(ValueError):parameters({'name':'x','max_frozen_entities':16385})
+        with self.assertRaises(ValueError):parameters({'name':'x','max_frozen_tracks':True})
     def station(self,count=16):
         ports=[]
         for i in range(count):

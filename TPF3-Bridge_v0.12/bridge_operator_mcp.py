@@ -34,6 +34,31 @@ async def survey_site(region: dict, terrain_points: list[list[float]] | None = N
     """Read a bounded site and optional terrain samples; return compact evidence."""
     return await invoke(op.survey,region,terrain_points)
 
+@server.tool(annotations=read)
+async def survey_station(brief: dict) -> dict:
+    """Bounded exact station/terminal/lead survey; full geometry stays local."""
+    return await invoke(op.survey_station,brief)
+
+@server.tool(annotations=read)
+async def survey_station_exits(brief: dict) -> dict:
+    """Read exact exposed frozen TRACK endpoints; no manual native ID input."""
+    return await invoke(op.survey_station_exits,brief)
+
+@server.tool(annotations=read)
+async def diagnose_attachment(intent: dict, mode: str = 'free') -> dict:
+    """Explain adapter attachment eligibility; does not submit a native proposal."""
+    return await invoke(op.attachment_diagnostics,intent,mode)
+
+@server.tool(annotations=ToolAnnotations(readOnlyHint=False,destructiveHint=False))
+async def register_interfaces(name: str, revision: str, roles: dict) -> dict:
+    """Save freshly qualified station roles locally; no game mutation."""
+    return await invoke(op.register_interfaces,name,revision,roles)
+
+@server.tool(annotations=read)
+async def resolve_interfaces(name: str, revision: str, names: list[str] | None = None) -> dict:
+    """Reacquire semantic station roles, never trust cached native IDs."""
+    return await invoke(op.resolve_interfaces,name,revision,names)
+
 @server.tool(annotations=ToolAnnotations(readOnlyHint=False,destructiveHint=False))
 async def plan_layout(plan: dict) -> dict:
     """Record a version1/2 plan and draw plan/profile; no game writes."""

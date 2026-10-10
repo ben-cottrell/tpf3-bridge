@@ -543,18 +543,36 @@ function M.station_lookup(p)
   out.stations[#out.stations+1]={station_id=sid,construction_id=cid,terminal_count=#station.terminals,terminals=terminals}
   constructors[cid]=true
  end
- local frozen_count,node_count=0,0;local seeds={}
+ local frozen_count,node_count,scanned,total=0,0,0,0;local seeds={}
+ local limits={frozen_entities=p.max_frozen_entities or 16384,frozen_TRACK=p.max_frozen_tracks or 2048,nodes=4096}
+ assert(finite(limits.frozen_entities) and limits.frozen_entities%1==0 and limits.frozen_entities>=1 and limits.frozen_entities<=16384,"frozen_entity_read_bound")
+ assert(finite(limits.frozen_TRACK) and limits.frozen_TRACK%1==0 and limits.frozen_TRACK>=1 and limits.frozen_TRACK<=2048,"frozen_TRACK_read_bound")
+ out.observation_limits=limits
+ local function incomplete(reason)
+  out.complete=false;out.truncated=true;out.outcome="station_observation_budget_exhausted";out.blocker=reason
+  out.frozen_entity_count=total;out.processed_frozen_entities=scanned;out.frozen_TRACK_count=frozen_count;out.processed_station_nodes=node_count
+  return out
+ end
  for cid in pairs(constructors) do
   local c=api.engine.getComponent(cid,api.type.ComponentType.CONSTRUCTION)
-  assert(c and #c.frozenEdges<=512,"station_frozen_track_bound")
+  assert(c and c.frozenEdges,"station_construction_frozen_edges_unavailable");total=total+#c.frozenEdges
+ end
+ out.frozen_entity_count=total
+ if total>limits.frozen_entities then return incomplete("frozen_entity_read_budget") end
+ for cid in pairs(constructors) do
+  local c=api.engine.getComponent(cid,api.type.ComponentType.CONSTRUCTION)
+  assert(c and c.frozenEdges,"station_construction_frozen_edges_unavailable")
   local row={construction_id=cid,revision=revision(cid),resource=c.fileName,position=arr(c.transf:getTransl()),frozen_tracks={}}
   for _,eid in ipairs(c.frozenEdges) do
+   scanned=scanned+1
    local base=api.engine.getComponent(eid,api.type.ComponentType.BASE_EDGE)
    if base and base.roadType==E.RoadType.TRACK then
-    frozen_count=frozen_count+1;assert(frozen_count<=512,"station_frozen_track_bound")
+    if frozen_count>=limits.frozen_TRACK then return incomplete("frozen_TRACK_read_budget") end
+    frozen_count=frozen_count+1
     owned[eid]=cid;row.frozen_tracks[#row.frozen_tracks+1]={edge_id=eid,node0=base.node0,node1=base.node1}
     for _,nid in ipairs({base.node0,base.node1}) do if not frozen_nodes[nid] then
-     node_count=node_count+1;assert(node_count<=1024,"station_node_bound")
+     if node_count>=limits.nodes then return incomplete("station_node_read_budget") end
+     node_count=node_count+1
      frozen_nodes[nid]=true;seeds[#seeds+1]={node=nid,construction_id=cid,frozen_edge=eid}
     end end
    end
@@ -610,12 +628,13 @@ function M.station_lookup(p)
   port.association.platform_terminal=#matched==1 and matched[1] or "unknown"
  end
  out.complete=not truncated;out.truncated=truncated;out.outcome=truncated and "external_observation_incomplete" or "resolved"
- out.free_connection_count=#out.ports;out.frozen_TRACK_count=frozen_count;out.processed_station_nodes=node_count
+ out.free_connection_count=#out.ports;out.frozen_TRACK_count=frozen_count;out.processed_station_nodes=node_count;out.processed_frozen_entities=scanned
  return out
 end
 local function interior_location(a,p)
  local base=api.engine.getComponent(a.id,api.type.ComponentType.BASE_EDGE)
- assert((base.type==E.BaseEdgeType.NORMAL or (p.allow_bridge==true and base.type==E.BaseEdgeType.BRIDGE)) and #base.objects==0,"unsupported_split_edge_type_or_objects")
+ assert(base.type==E.BaseEdgeType.NORMAL or (p.allow_bridge==true and base.type==E.BaseEdgeType.BRIDGE),"unsupported_split_edge_type")
+ assert(#base.objects==0,"split_edge_objects_present")
  if base.type==E.BaseEdgeType.BRIDGE then
   assert(a.structure and a.structure.classification=="BRIDGE" and a.structure.resource_state=="resolved" and a.structure.resource_name,"explicit_bridge_structure_required")
  end
@@ -626,13 +645,13 @@ local function interior_location(a,p)
  assert(finite(p.placement_tolerance) and p.placement_tolerance>0 and p.placement_tolerance<=10,"invalid_placement_tolerance")
  local g=cubic({p0=a.p0,p1=a.p1,t0=a.t0,t1=a.t1,length=1})
  local located=g:locate(v(p.guide_xyz),32,p.placement_tolerance)
- assert(located[2]==true and finite(located[1]) and located[1]>=.05 and located[1]<=.95,"no_supported_interior_location")
+ assert(located[2]==true and finite(located[1]) and located[1]>0 and located[1]<1,"no_supported_interior_location")
  local u=located[1]
  -- Native locate may return a coarse point within the guide tolerance. An
  -- offset attachment needs a precise point on this same named geometry;
  -- refine its parameter, rather than weakening the boundary equality gate.
  if p.refine_position then
-  local lo,hi=math.max(.05,u-1/32),math.min(.95,u+1/32)
+  local lo,hi=math.max(0,u-1/32),math.min(1,u+1/32)
   local function squared(t)
    local row=g:calcPos(t);local pos=arr(row[1]);local value=0
    for axis=1,3 do value=value+(pos[axis]-p.guide_xyz[axis])^2 end
@@ -645,6 +664,7 @@ local function interior_location(a,p)
   u=(lo+hi)/2
  end
  local at=g:calcPos(u)
+ assert(u>0 and u<1,"nondegenerate_interior_parameter_required")
  local pos,tangent=arr(at[1]),arr(at[2]);local d=norm(tangent);local forward=true
  if angle(d,p.travel_direction)>angle({-d[1],-d[2],0},p.travel_direction) then forward=false;d={-d[1],-d[2],0} end
  assert(angle(d,p.travel_direction)<=p.heading_tolerance_deg,"interior_direction_mismatch")
@@ -657,7 +677,13 @@ function M.discover_interior(p,request_id)
  for _,a in ipairs(result.edges) do
   local ok,c=pcall(interior_location,a,p)
   if ok then c.ref=request_id..":E"..a.id..":U"..c.parameter;result.candidates[#result.candidates+1]=c
-  else result.rejections[#result.rejections+1]={edge=a.id,error=tostring(c):sub(1,250)} end
+  else
+   local detail=tostring(c):sub(1,250);local reason="adapter_check_failed"
+   for _,code in ipairs({"unsupported_split_edge_type","split_edge_objects_present","construction_owned_split_unsupported","interior_direction_mismatch","interior_location_outside_tolerance","no_supported_interior_location","nondegenerate_interior_parameter_required"}) do
+    if detail:find(code,1,true) then reason=code;break end
+   end
+   result.rejections[#result.rejections+1]={edge=a.id,error=detail,reason=reason,reason_class="adapter_attachment_exclusion",native_proposal_evaluated=false}
+  end
  end
  result.candidate_count=#result.candidates;return result
 end
@@ -1314,6 +1340,7 @@ end
 -- approach at a native-fitted finish, with the same template, tangent and grade.
 -- Native evaluation and one coherent remove/replace/add proposal. No Python fitter.
 local function interior_splits(a,parameter,region,radius,max_grade,second_parameter)
+  assert(finite(parameter) and parameter>0 and parameter<1,"nondegenerate_native_split_parameter_required")
   local g=cubic({p0=a.p0,p1=a.p1,t0=a.t0,t1=a.t1,length=1});local splits={}
   local intervals={{0,parameter},{parameter,1}}
   if second_parameter then
@@ -1323,6 +1350,7 @@ local function interior_splits(a,parameter,region,radius,max_grade,second_parame
   for i,interval in ipairs(intervals) do
    local x,y=interval[1],interval[2];local first,last=g:calcPos(x),g:calcPos(y)
    local t0,t1=arr(first[2]),arr(last[2]);for k=1,3 do t0[k]=t0[k]*(y-x);t1[k]=t1[k]*(y-x) end
+   assert(y>x and distance(arr(first[1]),arr(last[1]))>0,"degenerate_native_split_piece")
    splits[i]={p0=arr(first[1]),p1=arr(last[1]),t0=t0,t1=t1,length=1}
    geometry_bounds(cubic(splits[i]),region,radius,max_grade)
    for _,u in ipairs({0,.25,.5,.75,1}) do
@@ -1877,7 +1905,7 @@ function M.verify_crossover(p,s)
  local c={parameter=p.source.parameter,pos=p.fit.start,canonical_forward=p.source.canonical_forward}
  local d={parameter=p.target.parameter,pos=p.fit.finish,canonical_forward=p.target.canonical_forward,outward_direction=p.target.outward_direction,grade=p.target.grade}
  assert(a.id==p.source.edge_id and b.id==p.target.edge_id and a.id~=b.id,"invalid_recorded_crossover")
- assert(finite(c.parameter) and c.parameter>=.05 and c.parameter<=.95 and finite(d.parameter) and d.parameter>=.05 and d.parameter<=.95,"invalid_recorded_split")
+ assert(finite(c.parameter) and c.parameter>0 and c.parameter<1 and finite(d.parameter) and d.parameter>0 and d.parameter<1,"invalid_recorded_split")
  assert(type(p.edge_ids)=="table" and #p.edge_ids==p.fit.pieces+4 and #p.edge_ids<=12,"invalid_crossover_receipt")
  local splits={interior_splits(a,c.parameter,p.region,p.radius,p.vertical.max_grade),interior_splits(b,d.parameter,p.region,p.radius,p.vertical.max_grade)}
  assert(near(c.pos,splits[1][1].p1,.001) and near(d.pos,splits[2][1].p1,.001),"recorded_crossover_location_mismatch")
@@ -1894,7 +1922,7 @@ end
 -- No fitting, preview or construction is performed; do not reconstruct engine history.
 function M.verify_interior(p)
  local a=p.source.edge_snapshot;local c={parameter=p.parameter,canonical_forward=p.source.canonical_forward,pos=p.fit.start}
- assert(a.id==p.source.edge_id and finite(c.parameter) and c.parameter>=.05 and c.parameter<=.95,"invalid_recorded_interior")
+ assert(a.id==p.source.edge_id and finite(c.parameter) and c.parameter>0 and c.parameter<1,"invalid_recorded_interior")
  assert(type(p.edge_ids)=="table" and #p.edge_ids==p.fit.pieces+2 and #p.edge_ids<=10,"invalid_split_receipt")
  local te,td,tg=nil,nil,p.fit.end_grade
  if p.target then

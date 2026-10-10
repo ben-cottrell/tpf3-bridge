@@ -289,9 +289,101 @@ also exercised honest partial review. See railway-design/examples/challenge03/DE
 38 operator tests and423 shared-client regressions passed in the standalone-structure
 implementation milestone; no code changed for the final native design fitting.
 
-Current attachment limitation: interior discovery accepts only parameters0.05–0.95
-of a native edge. This is an adapter restriction, not a proven native turnout rule;
-its current no_supported_interior_location error can also cover locate failure.
+Interior discovery now requires strict native parameters0<u<1 and nondegenerate
+split pieces, rather than an arbitrary percentage of an edge. Normal native
+proposal evaluation remains authoritative; a short piece is not automatically valid.
 A role at an existing connected endpoint is not a free/interior port. Inspect the
 actual edge and choose a deliberate local alternative; do not label this native
 construction rejection. Numeric bounded terrain editing remains unsupported.
+
+## District interfaces and operations
+
+`station-survey --input brief.json` (MCP `survey_station`) reuses the bounded exact
+station survey. Large station reads distinguish all frozen entities (including
+pedestrian edges) from TRACK entities. Defaults:16384 frozen entities inspected,
+2048 confirmed TRACK edges,4096 distinct track nodes,64 external lead edges. Optional
+`max_frozen_entities`/`max_frozen_tracks` can lower those budgets. Exhaustion returns
+an explicit incomplete outcome with total/processed counts and limits, never success
+or silent truncation. The18-position station is not reduced to suit wrapper bounds.
+
+`diagnose --input intent.json` / MCP `diagnose_attachment(intent,mode)` accepts
+`free`, `interior`, `connected` or `station_exit`, queries bounded native attachment eligibility and
+records full candidate/rejection evidence locally. It distinguishes ownership,
+incomplete incidence, direction/location mismatch, unsupported connected endpoints,
+split objects/type and locate failures. It submits no native proposal. An eligible
+attachment is not proof that a subsequent railway proposal will be accepted.
+
+`station-exits --input brief.json` / MCP `survey_station_exits(brief)` handles a
+station with no external leads. It derives degree-one nodes from the exact frozen
+TRACK incidence graph, inspects those edge identities and confirms current endpoint
+incidence through small bounded queries (at most64 candidate endpoints). Full results
+stay local; the summary shows up to8 exits. Empty Lua list tables are normalised only
+for declared station array fields. Zero leads does not imply a terrain survey passed.
+
+Use `mode:"station_exit"` for an exposed construction-owned frozen endpoint. Exact
+station membership and current single-edge incidence qualify it; terminal association
+uses the same frozen TRACK component, not nearest coordinates. This mode supports
+deliberate `extend` lead tasks only. After building a lead, resolve a normal external
+role from fresh observations. Native construction and TRAIN path acceptance remain
+separate from graph association. Existing free/interior ownership rules stay intact.
+
+Register station-associated roles with `register-interfaces --input roles.json` /
+MCP `register_interfaces(name,revision,roles)`, for example:
+
+```json
+{"name":"mid_west_c","revision":"R1","roles":{"MW_up":{
+ "station":{"name":"Mid West C","construction":{"resource":"<observed native resource>","position":[0,0,0]},"terminal_index":1},
+ "intent":{"region":{"min":[-1,-1,-1],"max":[1,1,1]},"guide_xyz":[0,0,0],"travel_direction":[1,0],"placement_tolerance":0.15,"heading_tolerance_deg":2},
+ "mode":"free"}}}
+```
+
+Replace illustrative coordinates/resource with actual bounded observations. The
+station name and construction selector must be unique; exact TRACK incidence links
+the native candidate to that construction. Position/direction only filter that
+qualified set; nearest-point ranking never supplies identity. Optional terminal
+selection requires an exact frozen-edge/terminal association. It is a one-based
+station-survey index; the returned `operating_terminal` uses the native line command's
+zero-based station/terminal indices. This association does not prove a TRAIN path.
+Omit terminal selection to retain an explicitly unqualified lead role.
+
+`resolve-interfaces --input selector.json` / MCP `resolve_interfaces(name,revision,names)`
+reacquires current identities/topology, even after load; optional `names` selects
+only needed roles. Ambiguous, missing or incomplete associations stop. Save identity
+remains unknown; this is semantic role reacquisition in the current world, not a
+cross-save identity guarantee. Full observations stay local; summaries show up to8
+roles. New registry revisions preserve the previous record locally.
+
+Plans can declare `interface_registry`, `interface_revision` and
+`role_refs:{"port_alias":"MW_up"}` and omit those ports' coordinate boilerplate.
+Planning resolves the used roles and records their exact session/bindings; execution
+rechecks them before any mutation. Changed role geometry, session or registry requires
+a fresh plan. Material role changes require a new registry revision. Mode must match
+the deliberate construction attachment choice; the operator does not change topology.
+
+Version2 task kinds `signal`, `station`, `depot` use the existing respective placement
+briefs/preparation/readback. `operating` uses existing `brief.action` values:
+`vehicle_buy`, `line_create`, `line_update`, `vehicle_assign`, `vehicle_stop`,
+`vehicle_manual_departure`. `observe` accepts one explicit vehicle/track/signal ID
+list (1..16) and performs one read, without simulation or repeated polling. Operating
+brief positions are native world coordinates. Basic station placement retains its
+existing supported templates/parameters; advanced18-position module assembly is not
+added. Primary and up to8 alternative terminals per stop are explicit native choices.
+
+Use `{"result":"earlier_task","path":["vehicle","id"]}` for exact prior receipts,
+or `{"role":"MW_up","field":"edge_id"}` / `field:"operating_terminal"` for freshly
+qualified roles. Forward references are rejected. Vehicle/line updates recheck current
+revisions; purchase preparation checks explicit depot revision and selected assets.
+Operating effects remain separate from railway construction: unknown operating effects
+block continuation/review even when `game_constructed:false`. Partial effects remain
+visible and no rollback/replay is assumed. Observation/purchase/path availability do
+not establish a completed train journey, capacity, signalling or visual design quality.
+
+Signal placement updates named track bindings from the native exact edge-replacement
+receipt and fresh readback; later tasks must use that current identity.
+
+The coordinator demonstrated the station-only read repair and a30-unit extension
+from exact frozen station node69229/edge71764, producing edge45887/node45876 with
+connected readback. This demonstrates that attachment on that build/context, not
+train traversal or all exits. The complete operator additions and split diagnostics
+still require the coordinator's normal staging/load and specific qualification; no new API,
+dependency, physics, server, watchdog or environment recovery is introduced.

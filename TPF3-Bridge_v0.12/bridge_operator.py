@@ -16,6 +16,8 @@ import time
 import uuid
 
 import bridge_live as live
+from bridge_interfaces import InterfaceRegistry, diagnose
+import bridge_operator_tasks as tasks
 
 ROOT = Path(__file__).resolve().parent
 RUNS = ROOT / '.local_runs/operator'
@@ -24,6 +26,11 @@ CONTEXT = ROOT / '.local_runs/live_python_interface/p02/context.json'
 
 def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
+
+def no_step_effects(state):
+    mutation=state.get('step_mutation')
+    if 'step_mutation' in state and mutation is None:return True
+    return bool(mutation and mutation.get('game_constructed') is False and not mutation.get('native_operating_state_changed') and mutation.get('operating_effects')!='unknown')
 
 def native_failure(response):
     """Keep distinct native rejection messages bounded; receipts retain details."""
@@ -222,14 +229,14 @@ def validate_plan(p):
             raise ValueError('port outside construction region')
     if not isinstance(p['steps'],list) or not p['steps']:
         raise ValueError('construction steps required')
-    names=set(p.get('bindings',{}))
+    names=set(p.get('bindings',{}))|set(p.get('result_bindings',{}))
     for binding in p.get('bindings',{}).values():
         if not isinstance(binding,dict) or not binding.get('edges'):raise ValueError('binding requires observed exact edges')
     def ref(r):
         if isinstance(r,str):
             if r not in p['ports']:raise ValueError('unknown port '+r)
         elif isinstance(r,dict) and set(r) in ({'curve','u'},{'curve','segment','u'}):
-            if r['curve'] not in names or type(r['u']) not in (int,float) or not .05<=r['u']<=.95:
+            if r['curve'] not in names or type(r['u']) not in (int,float) or not 0<r['u']<1:
                 raise ValueError('curve reference must refer to an earlier step at an interior parameter')
             if 'segment' in r and (type(r['segment']) is not int or r['segment']<1):raise ValueError('one-based explicit segment required')
         else:raise ValueError('named port or earlier curve reference required')
@@ -237,14 +244,17 @@ def validate_plan(p):
         if not re.fullmatch(r'[A-Za-z0-9_-]+',s['name']) or s['name'] in names:
             raise ValueError('unique simple step names required')
         kind=s['kind']
-        if kind not in ('stub','extend','connect','branch','crossover','group','structure_seed','remove','terrain_check'):raise ValueError('unsupported construction step')
-        if p['version']==1 and kind in ('group','structure_seed','remove','terrain_check'):raise ValueError('new operation requires version2')
+        if kind not in ('stub','extend','connect','branch','crossover','group','structure_seed','remove','terrain_check') and kind not in tasks.KINDS:raise ValueError('unsupported construction step')
+        if p['version']==1 and kind in {'group','structure_seed','remove','terrain_check'}|tasks.KINDS:raise ValueError('new operation requires version2')
         if kind=='stub':
             ref(s['port'])
             if not isinstance(s['port'],str):raise ValueError('stub requires a named port')
             if 'direction' in s:unit(s['direction'])
             if not 5<=s['length']<=60:raise ValueError('native fixture length5..60 required')
             if type(s.get('grade',0)) not in (int,float) or not math.isfinite(s.get('grade',0)) or abs(s.get('grade',0))>min(p['max_grade'],.04):raise ValueError('stub grade within native .04 and selected bound required')
+        elif kind in tasks.KINDS:
+            if not isinstance(s.get('brief'),dict):raise ValueError('explicit operating brief required')
+            tasks.validate(kind,s['brief'],names)
         elif kind=='structure_seed':
             ref(s['source']);ref(s['target'])
             if not all(isinstance(s[k],str) for k in ('source','target')) or s['source']==s['target']:raise ValueError('structure seed requires two distinct named ports')
@@ -343,6 +353,18 @@ class Operator:
         return out
 
     def plan(self, plan):
+        plan=copy.deepcopy(plan)
+        used_roles=set(plan.get('role_refs',{}).values())|tasks.role_names(plan['steps'])
+        if used_roles:
+            resolved=self.interfaces().resolve(self.client(),plan['interface_registry'],plan['interface_revision'],sorted(used_roles))['resolved']
+            plan.setdefault('ports',{});selected={}
+            for port,role in plan.get('role_refs',{}).items():
+                observed=resolved[role];c=observed['candidate'];selected[port]=observed
+                value={'position':[c['pos'][i]-plan['origin'][i] for i in range(3)],'direction':unit(c['outward_direction'][:2]),'grade':c['grade']}
+                if port in plan['ports'] and plan['ports'][port]!=value:raise ValueError('role port conflicts with explicit port')
+                plan['ports'][port]=value
+            plan['interface_bindings']=selected
+            plan['role_bindings']=resolved
         p=validate_plan(plan);run=uuid.uuid4().hex[:16];folder=self.path(run);folder.mkdir()
         live.atomic_json(folder/'plan.json',p)
         live.atomic_json(folder/'state.json',{'status':'planned','plan_hash':digest(p),'steps':{},'calls':0,'native_seconds':0})
@@ -350,6 +372,26 @@ class Operator:
         render_profile(p,[],folder/'profile.svg')
         return {'status':'planned','run':run,'revision':p['revision'],'steps':len(p['steps']),
                 'plan':str(folder/'plan.json'),'view':str(folder/'plan.svg'),'profile':str(folder/'profile.svg')}
+
+    def interfaces(self):return InterfaceRegistry(self.runs/'interfaces')
+    def register_interfaces(self,name,revision,roles):return self.interfaces().register(self.client(),name,revision,roles)
+    def resolve_interfaces(self,name,revision,names=None):
+        c=self.client();result=self.interfaces().resolve(c,name,revision,names)
+        rows=[{'name':n,'edge':v['candidate']['edge_id'],'node':v['candidate'].get('node_id'),'xyz':v['candidate']['pos'],
+               'direction':v['candidate']['outward_direction'],'grade':v['candidate']['grade'],'terminal':v.get('operating_terminal','unqualified')} for n,v in result['resolved'].items()]
+        return {k:v for k,v in result.items() if k!='resolved'}|{'roles':len(rows),'session':c.session,'interfaces':rows[:8],'summary_truncated':len(rows)>8}
+    def survey_station(self,brief):
+        from bridge_station import inspect_station
+        return inspect_station(self.client(),brief)
+    def survey_station_exits(self,brief):
+        from bridge_station import inspect_exits
+        return inspect_exits(self.client(),brief)
+    def attachment_diagnostics(self,intent,mode='free'):
+        c=self.client();result=diagnose(c,intent,mode);path=self.runs/(uuid.uuid4().hex+'.attachment_diagnostics.json')
+        live.atomic_json(path,result)
+        return {k:v for k,v in result.items() if k not in ('candidates','rejections')}|{'candidates':len(result['candidates']),
+            'eligible':sum(r['eligible'] for r in result['candidates']),'reasons':sorted({reason for r in result['candidates'] for reason in r['reasons']})[:8],
+            'rejections':result['rejections'][:4],'evidence':str(path)}
 
     def execute(self, run):
         folder=self.path(run);lock=self.runs/'execution.lock'
@@ -372,8 +414,7 @@ class Operator:
         carried=copy.deepcopy(parent['steps']);failed=parent.get('current_step') if parent['status']=='needs_attention' else None
         if failed:
             response=parent.get('last_response',{})
-            mutation=parent.get('step_mutation')
-            harmless=(mutation is not None and mutation.get('game_constructed') is False) or ('step_mutation' in parent and mutation is None)
+            harmless=no_step_effects(parent)
             if reconciled_step:
                 if reconciled_step.get('name')!=failed:raise ValueError('reconciliation must name the unfinished step')
                 rows=fresh_binding(c,reconciled_step)
@@ -393,6 +434,7 @@ class Operator:
         if not revision or revision==old['revision']:raise ValueError('new explicit design revision required')
         p.update(version=2,revision=revision,steps=copy.deepcopy(remaining),bindings=observed,
                  continuation={'run':run,'state_hash':digest(parent),'session':c.session,'skipped_steps':list(carried)})
+        p['result_bindings']={name:{'result':value['result']} for name,value in carried.items() if 'result' in value}
         result=self.plan(p)
         live.atomic_json(self.path(result['run'])/'continuation_readback.json',{'parent':p['continuation'],'bindings':observed})
         return result|{'parent_run':run,'skipped_steps':len(carried)}
@@ -416,8 +458,9 @@ class Operator:
                 start=time.monotonic();r=c.request(op,params,**kwargs)
                 state['calls']+=1;state['native_seconds']+=time.monotonic()-start
                 state['last_request']=r['request_id'];persist()
-                state['last_response']={k:r.get(k) for k in ('request_id','operation','status')}
+                state['last_response']={k:r.get(k) for k in ('request_id','status')};state['last_response']['operation']=op
                 state['last_response']['game_constructed']=r.get('result',{}).get('game_constructed','unknown');persist()
+                state['last_response'].update({k:r['result'][k] for k in ('native_operating_state_changed','operating_effects') if k in r.get('result',{})})
                 if mutating:state['step_mutation']=state['last_response'].copy();persist()
                 harmless=_.allow_rejection and r['status']=='no_accepted_candidate' and r.get('result',{}).get('game_constructed') is False
                 if r['status']!='ok' and not harmless:raise live.LiveError(r['status'],native_failure(r),r['request_id'])
@@ -437,7 +480,11 @@ class Operator:
                     'placement_tolerance':tolerance}
         def resolve(ref,interior=False,connected=False):
             loc=intent(ref)
-            a,_=live._select_throat_port(rc,loc,interior=interior,tolerance=loc['placement_tolerance'],connected=connected)
+            role=roles.get(p.get('role_refs',{}).get(ref)) if isinstance(ref,str) else None
+            if role and role['mode']=='station_exit':
+                if kind!='extend' or interior or connected:raise ValueError('qualified station_exit supports deliberate lead extension only')
+                a=role['candidate']
+            else:a,_=live._select_throat_port(rc,loc,interior=interior,tolerance=loc['placement_tolerance'],connected=connected)
             if isinstance(ref,str) and 'grade' in p['ports'][ref]:
                 expected=p['ports'][ref]['grade']
                 if type(a.get('grade')) not in (int,float) or abs(a['grade']-expected)>p.get('grade_tolerance',.001):raise ValueError('attachment grade does not meet declared port')
@@ -492,13 +539,21 @@ class Operator:
             if attempts:raise live.LiveError('no_accepted_candidate',attempts[-1]['reason'] or 'no accepted attachment in configured alternatives')
             raise ValueError('no attachment alternatives supplied')
         try:
+            roles={}
             if p.get('continuation'):
                 parent=p['continuation'];parent_path=self.path(parent['run'])
                 if c.session!=parent['session'] or digest(json.loads((parent_path/'state.json').read_text()))!=parent['state_hash']:raise ValueError('continuation parent/session changed')
-            for name,binding in p.get('bindings',{}).items():prior[name]={'edges':fresh_binding(rc,binding)}
+            if p.get('role_bindings'):
+                roles=self.interfaces().resolve(c,p['interface_registry'],p['interface_revision'],list(p['role_bindings']))['resolved']
+                if roles!=p['role_bindings']:raise ValueError('named interface changed; resolve and publish a fresh plan')
+            prior.update(p.get('result_bindings',{}))
+            for name,binding in p.get('bindings',{}).items():prior.setdefault(name,{}).update(edges=fresh_binding(rc,binding))
             for s in p['steps']:
                 state['current_step']=s['name'];state['current_step_start_calls']=state['calls'];state['step_mutation']=None;persist();kind=s['kind']
-                if kind=='stub':
+                if kind in tasks.KINDS:
+                    brief=tasks.references(s['brief'],state['steps']|prior,roles)
+                    r=tasks.perform(rc,kind,brief)
+                elif kind=='stub':
                     port=p['ports'][s['port']];pos=world(port);d=unit(s.get('direction',port['direction']));length=s['length']
                     grade=s.get('grade',0)
                     end=[pos[i]+length*(d[i] if i<2 else grade) for i in range(3)]
@@ -547,6 +602,7 @@ class Operator:
                 value=r.get('result',r)
                 if r['status']!='ok':raise live.LiveError(r['status'],native_failure(r))
                 edge_ids=value.get('readback',{}).get('ordered_edges',value.get('ordered_edges',[]))
+                if kind=='signal':edge_ids=[value['replacement_edge']]
                 edges=value.get('edges',[])
                 if value.get('groups'):
                     edge_ids=[i for group in value['groups'] for i in group['readback']['ordered_edges']]
@@ -556,10 +612,11 @@ class Operator:
                 # Follow the exact native replacement receipt, never proximity.
                 placements=value.get('placements',[])
                 placements=(placements if isinstance(placements,list) else [])+([value['placement']] if 'placement' in value else [])
+                if kind=='signal':placements.append({'original_edge':value['replaced_edge'],'replacement_edges':edge_ids})
                 for placement in placements:
                     original=placement.get('original_edge');replacement=placement.get('replacement_edges',[])
                     if original and replacement:
-                        changed=inspect_edges(rc,replacement)
+                        changed=edges if kind=='signal' else inspect_edges(rc,replacement)
                         for binding in list(state['steps'].values())+list(prior.values()):
                             old=binding.get('edges',[])
                             if any(e['id']==original for e in old):
@@ -571,17 +628,21 @@ class Operator:
                 if invalidated:state.setdefault('invalidated_bindings',[]).append(invalidated)
                 state['steps'][s['name']]={'status':'built','request_id':r.get('request_id',r.get('job_id')),
                                           'edges':edges}
+                if kind in tasks.KINDS:state['steps'][s['name']]['result']=value
                 persist()
             state['status']='built';state['elapsed_seconds']=time.time()-state['started'];persist()
         except Exception as exc:
             state.update(status='needs_attention',error=str(exc)[:450],error_type=type(exc).__name__,elapsed_seconds=time.time()-state['started'])
+            status=getattr(exc,'status',None)
+            state['failure_class']=('native_proposal_rejection' if status=='no_accepted_candidate' else
+                'adapter_attachment_exclusion' if status in ('no_eligible_candidates','ambiguous_attachment','discovery_incomplete','role_unavailable','ambiguous_role') else 'operation_or_adapter_check')
             persist()
         return self.summary(run)
 
     def summary(self,run):
         state=json.loads((self.path(run)/'state.json').read_text())
         return {k:state[k] for k in ('status','session','current_step','error','calls','native_seconds','elapsed_seconds') if k in state} | {
-            'run':run,'completed_steps':len(state['steps']),'evidence':str(self.path(run)/'state.json')}
+            'run':run,'completed_steps':len(state['steps']),'failure_class':state.get('failure_class'),'evidence':str(self.path(run)/'state.json')}
 
     def review(self,run):
         folder=self.path(run);p=json.loads((folder/'plan.json').read_text());state=json.loads((folder/'state.json').read_text())
@@ -594,8 +655,7 @@ class Operator:
         if journal and journal.exists() and json.loads(journal.read_text()).get('pending'):raise ValueError('unresolved native request requires reconciliation')
         construction_complete=state['status']=='built'
         if not construction_complete:
-            mutation=state.get('step_mutation')
-            harmless=(mutation is not None and mutation.get('game_constructed') is False) or ('step_mutation' in state and mutation is None)
+            harmless=no_step_effects(state)
             if not harmless:raise ValueError('uncertain/partial effects require reconciliation before review')
         rows=[];ports={};port_errors={};route_paths={}
         # Route endpoints are the free outer boundaries, so their direction is outward.
@@ -721,7 +781,7 @@ def render_profile(plan,edges,path):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['status','survey','plan','execute','summary','review','continue','camera','capture','save'])
+    parser.add_argument('action',choices=['status','survey','station-survey','station-exits','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','camera','capture','save'])
     parser.add_argument('--input',type=Path);parser.add_argument('--run');parser.add_argument('--context',type=Path,default=CONTEXT)
     a=parser.parse_args()
     try:
@@ -732,6 +792,11 @@ def main():
         elif a.action=='plan':r=op.plan(data)
         elif a.action=='status':r=op.status()
         elif a.action=='survey':r=op.survey(**data)
+        elif a.action=='station-survey':r=op.survey_station(data)
+        elif a.action=='station-exits':r=op.survey_station_exits(data)
+        elif a.action=='diagnose':r=op.attachment_diagnostics(**data)
+        elif a.action=='register-interfaces':r=op.register_interfaces(**data)
+        elif a.action=='resolve-interfaces':r=op.resolve_interfaces(**data)
         else:r=op.gui(a.action,**data)
     except Exception as exc:r={'status':'error','error':str(exc)[:500]}
     print(json.dumps(r,separators=(',',':')))

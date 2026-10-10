@@ -260,7 +260,7 @@ def prepare_interior_junction(client, parameters, candidates):
         raise ValueError('interior preparation requires exact attachments, location and bounds')
     source,target=parameters['source'],parameters['target']
     if (not isinstance(source,dict) or source.get('interior_eligible') is not True
-            or type(source.get('parameter')) not in (int,float) or not .05<=source['parameter']<=.95
+            or type(source.get('parameter')) not in (int,float) or not 0<source['parameter']<1
             or not isinstance(source.get('edge_snapshot'),dict) or source['edge_snapshot'].get('id')!=source.get('edge_id')):
         raise ValueError('observed exact interior source required')
     if not isinstance(target,dict) or not isinstance(target.get('edge_snapshot'),dict):
@@ -303,7 +303,7 @@ def prepare_crossover(client, parameters, candidates):
         port=parameters[key]
         if (not isinstance(port,dict) or port.get('interior_eligible') is not True
                 or type(port.get('edge_id')) is not int or port['edge_id']<=0
-                or type(port.get('parameter')) not in (int,float) or not .05<=port['parameter']<=.95
+                or type(port.get('parameter')) not in (int,float) or not 0<port['parameter']<1
                 or not isinstance(port.get('edge_snapshot'),dict) or port['edge_snapshot'].get('id')!=port['edge_id']):
             raise ValueError('observed exact interior '+key+' required')
     source,target=parameters['source'],parameters['target']
@@ -465,7 +465,7 @@ def _connect_project(client, brief, execute, guides=None, *, junction=False, int
             if interior:
                 if records[0].get('operation')!='discover_interior' or records[0].get('session')!=client.session:
                     raise ValueError('interior selection requires current-session native discovery')
-                if source.get('interior_eligible') is not True or not .05<=source.get('parameter',-1)<=.95 or not isinstance(source.get('edge_snapshot'),dict) or source['edge_snapshot'].get('id')!=source['edge_id']:
+                if source.get('interior_eligible') is not True or not 0<source.get('parameter',-1)<1 or not isinstance(source.get('edge_snapshot'),dict) or source['edge_snapshot'].get('id')!=source['edge_id']:
                     raise ValueError('invalid recorded interior attachment')
                 # Keep the target free-end contract; native execution reacquires both.
                 if target.get('eligible') is not True or target.get('incidence_complete') is not True or target.get('incident_count')!=1 or target.get('incident_edges')!=[target['edge_id']] or not isinstance(target.get('edge_snapshot'),dict):
@@ -2547,7 +2547,7 @@ def reconcile_constructed_structured_junction(client):
         weights=(2*u**3-3*u*u+1,u**3-2*u*u+u,-2*u**3+3*u*u,u**3-u*u)
         return [sum(w*e[k][axis] for w,k in zip(weights,('p0','t0','p1','t1'))) for axis in range(3)]
     for key,position,tangent in (('source',controls[0]['p0'],controls[0]['t0']),('target',controls[-1]['p1'],controls[-1]['t1'])):
-        port=q[key];edge=port['edge_snapshot'];lo,hi=.05,.95
+        port=q[key];edge=port['edge_snapshot'];lo,hi=0,1
         for _ in range(80):
             a,b=lo+(hi-lo)/3,hi-(hi-lo)/3
             if math.dist(point(edge,a),position)<=math.dist(point(edge,b),position):hi=b

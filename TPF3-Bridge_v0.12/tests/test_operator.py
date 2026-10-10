@@ -6,6 +6,8 @@ import unittest
 import xml.etree.ElementTree as ET
 from unittest.mock import patch
 from bridge_live import LiveError
+from bridge_interfaces import InterfaceRegistry, diagnose
+from bridge_operator_tasks import perform, references
 from bridge_operator import Operator, validate_plan, cubic, native_failure, inspect_edges, fresh_binding, discover_region, chain_point, crossing_observations, render_profile
 from tools.operator_mcp_client import semantic_result, compact_stdout
 
@@ -29,6 +31,179 @@ class FakeClient:
 
 
 class OperatorTest(unittest.TestCase):
+    def station_exit_fixture(self):
+        v,c,roles,request=self.role_fixture()
+        v['ports']={}
+        v['constructions'][0]['frozen_tracks']=[{'edge_id':1,'node0':2,'node1':3}]
+        v['stations'][0].update(construction_id=5,terminals=[{'index':1,'vehicle_edges':[1]}])
+        c.update(eligible=False,construction_owner=5)
+        roles['MW_up']['mode']='station_exit'
+        return v,c,roles,request
+
+    def test_owned_station_exit_resolves_without_external_leads_and_extends_exact_node(self):
+        with tempfile.TemporaryDirectory() as td:
+            client=FakeClient();o=Operator(runs=td,client=client);v,c,roles,request=self.station_exit_fixture()
+            p=self.grade_plan();p['ports'].pop('a')
+            p.update(role_refs={'mw':'MW_up'},interface_registry='district',interface_revision='R1')
+            p['steps']=[{'name':'lead','kind':'extend','source':'mw','target':'b'}]
+            with patch.object(client,'request',side_effect=request),patch('bridge_operator.live._select_throat_port') as generic,patch('bridge_operator.live.extend',return_value={'status':'ok','result':{'edges':[]}}) as extend:
+                o.register_interfaces('district','R1',roles)
+                resolved=o.interfaces().resolve(client,'district','R1')['resolved']['MW_up']
+                self.assertEqual(resolved['operating_terminal'],{'station_group':7,'station':0,'terminal':0})
+                self.assertEqual(resolved['associations'][0]['native_TRAIN_route'],'unprobed')
+                self.assertEqual(o.execute(o.plan(p)['run'])['status'],'built')
+            generic.assert_not_called()
+            self.assertEqual((extend.call_args.args[1]['anchor_edge'],extend.call_args.args[1]['anchor_node']),(1,3))
+
+    def test_station_exit_requires_exact_frozen_incidence_not_nearby_geometry(self):
+        for problem in ('identity','external','terminal','owned_free'):
+            with self.subTest(problem=problem),tempfile.TemporaryDirectory() as td:
+                client=FakeClient();v,c,roles,request=self.station_exit_fixture()
+                if problem=='identity':v['constructions'][0]['frozen_tracks'][0]['edge_id']=77
+                elif problem=='external':c.update(incident_count=2,incident_edges=[1,77])
+                elif problem=='terminal':v['stations'][0]['terminals'][0]['vehicle_edges']=[77]
+                else:roles['MW_up']['mode']='free'
+                with patch.object(client,'request',side_effect=request),self.assertRaises(LiveError):
+                    InterfaceRegistry(td).register(client,'district','R1',roles)
+
+    def test_station_exit_cannot_be_used_as_generic_connected_attachment(self):
+        with tempfile.TemporaryDirectory() as td:
+            client=FakeClient();o=Operator(runs=td,client=client);v,c,roles,request=self.station_exit_fixture()
+            p=self.grade_plan();p['ports'].pop('a')
+            p.update(role_refs={'mw':'MW_up'},interface_registry='district',interface_revision='R1')
+            p['steps']=[{'name':'connect','kind':'connect','source':'mw','target':'b'}]
+            with patch.object(client,'request',side_effect=request),patch('bridge_operator.live.connect') as build:
+                o.register_interfaces('district','R1',roles)
+                r=o.execute(o.plan(p)['run'])
+            self.assertEqual(r['status'],'needs_attention');build.assert_not_called()
+
+    def role_fixture(self):
+        edge=self.native_edge();c={'edge_id':1,'node_id':3,'pos':edge['p1'],'outward_direction':[1,0,0],'grade':0,'edge_snapshot':edge,
+            'eligible':True,'incident_count':1,'incident_edges':[1],'incidence_complete':True,'incident_output_truncated':False,'construction_owner':'none','ref':'request-scoped'}
+        assoc={'construction_id':5,'frozen_edge':99,'edge_ids':[1],
+               'terminal_identity_matches':[{'station_id':9,'terminal_index':1,'vehicle_edge':99}]}
+        v={'outcome':'resolved','complete':True,'group_id':7,'constructions':[{'construction_id':5,'resource':'station','position':[0,0,2]}],
+           'stations':[{'station_id':9}],'ports':[c|{'association':assoc}]}
+        intent={'region':{'min':[99,-1,1],'max':[101,1,3]},'guide_xyz':[100,0,2],'travel_direction':[1,0]}
+        roles={'MW_up':{'station':{'name':'Mid West C','construction':{'resource':'station','position':[0,0,2]},'terminal_index':1},'intent':intent,'mode':'free'}}
+        def request(op,q,**kwargs):
+            return {'status':'ok','request_id':op,'result':copy.deepcopy(v) if op=='station_lookup' else {'complete':True,'candidates':[copy.deepcopy(c)],'edges':[edge]}}
+        return v,c,roles,request
+
+    def test_registry_reacquires_station_identity_and_preserves_old_revision(self):
+        with tempfile.TemporaryDirectory() as td:
+            registry=InterfaceRegistry(td);client=FakeClient();v,c,roles,request=self.role_fixture()
+            with patch.object(client,'request',side_effect=request):
+                registry.register(client,'district','R1',roles);first=registry.resolve(client,'district','R1')
+                self.assertEqual(first['resolved']['MW_up']['operating_terminal'],{'station_group':7,'station':0,'terminal':0})
+                client.session='loaded_again';v['group_id']=17;v['constructions'][0]['construction_id']=15
+                v['ports'][0]['association']['construction_id']=15
+                second=registry.resolve(client,'district','R1')
+                self.assertEqual(second['resolved']['MW_up']['group_id'],17);self.assertEqual(second['resolved']['MW_up']['session'],'loaded_again')
+                registry.register(client,'district','R2',roles)
+                with self.assertRaisesRegex(ValueError,'revision changed'):registry.resolve(client,'district','R1')
+            self.assertEqual(len(list(Path(td).glob('*.previous.json'))),1)
+
+    def test_registry_refuses_geometry_without_station_chain_and_ambiguous_terminals(self):
+        for problem in ['chain','duplicates','incomplete','terminal','construction']:
+            with self.subTest(problem=problem),tempfile.TemporaryDirectory() as td:
+                registry=InterfaceRegistry(td);client=FakeClient();v,c,roles,request=self.role_fixture()
+                if problem=='chain':v['ports'][0]['edge_id']=55
+                elif problem=='terminal':v['ports'][0]['association']['terminal_identity_matches']=[]
+                elif problem=='construction':v['constructions'].append(copy.deepcopy(v['constructions'][0]))
+                elif problem=='incomplete':v['complete']=False
+                def queried(op,q,**kwargs):
+                    r=request(op,q,**kwargs)
+                    if problem=='duplicates' and op=='discover':r['result']['candidates']*=2
+                    return r
+                with patch.object(client,'request',side_effect=queried),self.assertRaises(LiveError):registry.register(client,'district','R1',roles)
+                self.assertFalse(registry.path('district').exists())
+
+    def test_named_role_plan_revalidates_before_effects_and_ignores_request_refs(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);v,port,roles,request=self.role_fixture()
+            p=self.grade_plan();p['ports'].pop('a');p.update(role_refs={'mw':'MW_up'},interface_registry='district',interface_revision='R1')
+            p['steps']=[{'name':'extend_lead','kind':'stub','port':'mw','length':20}]
+            with patch.object(c,'request',side_effect=request):
+                o.register_interfaces('district','R1',roles);run=o.plan(p)['run'];port['ref']='another-request'
+                self.assertEqual(o.execute(run)['status'],'built')
+                run=o.plan(p)['run'];v['ports'][0]['association']['terminal_identity_matches']=[]
+                result=o.execute(run)
+            self.assertEqual(result['status'],'needs_attention');self.assertEqual(result['completed_steps'],0)
+            self.assertIsNone(json.loads((o.path(run)/'state.json').read_text()).get('step_mutation'))
+
+    def test_attachment_diagnostics_separate_adapter_exclusion_and_no_native_proposal(self):
+        c=FakeClient();v,port,roles,_=self.role_fixture();port.update(eligible=False,incident_count=3,construction_owner=5,outward_direction=[-1,0,0])
+        with patch.object(c,'request',return_value={'status':'ok','request_id':'diagnostic','result':{'complete':True,'candidates':[port]}}):
+            r=diagnose(c,roles['MW_up']['intent'])
+        reasons=r['candidates'][0]['reasons'];self.assertIn('construction_owned',reasons);self.assertIn('direction_mismatch',reasons)
+        self.assertIn('connected_endpoint_unsupported',reasons);self.assertFalse(r['native_proposal_evaluated'])
+        with patch.object(c,'request',return_value={'status':'ok','result':{'complete':False}}):self.assertEqual(diagnose(c,roles['MW_up']['intent'])['status'],'incomplete')
+
+    def test_operating_steps_use_exact_named_purchase_result_and_fresh_revision(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan()
+            p['steps']=[{'name':'buy','kind':'operating','brief':{'action':'vehicle_buy','depot_id':50,'revision':[1,2,3],'parts':[{'resource':'native.train','reversed':False}]}},
+                {'name':'stop','kind':'operating','brief':{'action':'vehicle_stop','vehicle_id':{'result':'buy','path':['vehicle','id']},'value':True}}]
+            responses=[{'status':'ok','request_id':'prepare','result':{}},
+                {'status':'ok','request_id':'buy','result':{'vehicle':{'id':60},'game_constructed':False,'native_operating_state_changed':True}},
+                {'status':'ok','request_id':'read','result':{'vehicles':{'records':[{'id':60,'revision':[2,3,4]}]}}},
+                {'status':'ok','request_id':'stop','result':{'vehicle':{'id':60,'user_stopped':True},'game_constructed':False,'native_operating_state_changed':True}}]
+            with patch.object(c,'request',side_effect=responses) as request:
+                run=o.plan(p)['run'];r=o.execute(run)
+            self.assertEqual(r['status'],'built');self.assertEqual(request.call_args_list[-1].args[1]['revision'],[2,3,4])
+            self.assertEqual(request.call_args_list[-1].args[1]['vehicle_id'],60)
+            self.assertEqual(json.loads((o.path(run)/'state.json').read_text())['steps']['stop']['result']['vehicle']['id'],60)
+
+    def test_operating_unknown_effects_cannot_be_treated_as_harmless_geometry_failure(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan();p['steps']=[{'name':'service','kind':'operating','brief':{'action':'line_create','name':'test','stops':[{'station_group':1,'station':0,'terminal':0},{'station_group':2,'station':0,'terminal':0}]}}]
+            with patch.object(c,'request',return_value={'status':'error','request_id':'failed','result':{'game_constructed':False,'operating_effects':'unknown','error':'lost_ack'}}):
+                run=o.plan(p)['run'];self.assertEqual(o.execute(run)['status'],'needs_attention')
+            with self.assertRaisesRegex(ValueError,'uncertain/partial'):o.continue_plan(run,'R2')
+            with self.assertRaisesRegex(ValueError,'uncertain/partial'):o.review(run)
+
+    def test_observation_is_one_bounded_read_and_not_a_physical_traversal_claim(self):
+        c=FakeClient()
+        with patch.object(c,'request',return_value={'status':'ok','result':{'vehicles':{'records':[{'id':1,'speed':0,'no_path':False}]}}}) as request:
+            perform(c,'observe',{'vehicle_ids':[1]})
+        self.assertEqual(request.call_args.args,('operating_inspect',{'vehicle_ids':[1]}))
+        with self.assertRaises(ValueError):perform(c,'observe',{'vehicle_ids':list(range(1,18))})
+        with self.assertRaises(ValueError):references({'result':'x','path':['vehicle']*9},{'x':{}},{})
+
+    def test_operating_only_role_plan_does_not_resolve_unrelated_roles(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);v,port,roles,request=self.role_fixture()
+            roles['unused']=copy.deepcopy(roles['MW_up']);roles['unused']['station']['name']='Not In This Task'
+            p=self.grade_plan();p.update(interface_registry='district',interface_revision='R1')
+            p['steps']=[{'name':'inspect','kind':'observe','brief':{'track_ids':[{'role':'MW_up','field':'edge_id'}]}}]
+            registry={'version':1,'name':'district','revision':'R1','roles':roles}
+            o.interfaces().path('district').write_text(json.dumps(registry))
+            calls=[]
+            def observed(op,q,**kwargs):
+                calls.append((op,q))
+                if op=='station_lookup':self.assertEqual(q['name'],'Mid West C')
+                return request(op,q,**kwargs)
+            with patch.object(c,'request',side_effect=observed):run=o.plan(p)['run'];self.assertEqual(o.execute(run)['status'],'built')
+            self.assertEqual(calls[-1],('operating_inspect',{'track_ids':[1]}))
+
+    def test_forward_operating_result_reference_fails_before_any_native_effect(self):
+        p=self.grade_plan();p['steps']=[{'name':'observe','kind':'observe','brief':{'vehicle_ids':[{'result':'future','path':['vehicle','id']}]}}]
+        with self.assertRaisesRegex(ValueError,'earlier task'):validate_plan(p)
+
+    def test_signal_receipt_updates_prior_exact_chain_identity(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan()
+            p['steps'].append({'name':'signal','kind':'signal','brief':{'edge_id':1,'parameter':.5,'forward':True,'one_way':True}})
+            replacement=self.native_edge(2)
+            replies=[{'status':'ok','request_id':'seed','result':{'game_constructed':True,'edges':[self.native_edge(1)]}},
+                {'status':'ok','request_id':'signal','result':{'game_constructed':True,'replaced_edge':1,'replacement_edge':2}},
+                {'status':'ok','request_id':'read','result':{'edges':[replacement]}}]
+            with patch.object(c,'request',side_effect=replies),patch('bridge_operator.tasks.perform',side_effect=lambda client,*_:client.request('operating_control',{})):
+                run=o.plan(p)['run'];self.assertEqual(o.execute(run)['status'],'built')
+            state=json.loads((o.path(run)/'state.json').read_text());self.assertEqual(state['steps']['one']['edges'][0]['id'],2)
+            self.assertEqual(state['lineage'][0]['original_edge'],1);self.assertEqual(state['lineage'][0]['replacement_edges'],[2])
+
     def seed_plan(self):
         p=self.grade_plan();p['ports']['a']['grade']=0;p['ports']['a']['direction']=[-1,0]
         p['ports']['b']['direction']=[1,0]
