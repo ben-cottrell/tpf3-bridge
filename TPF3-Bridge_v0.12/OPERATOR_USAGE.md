@@ -219,6 +219,25 @@ target grade. Structured guides use relative `position`, `travel_direction`, `gr
 the existing native fitter/preview decides suitability. Nonzero branch/crossover
 guide grades require a structured `connect` instead of the level guided recipe.
 
+Finish depot branches and other track splitting before placing signals on those
+edges. Current split preparation rejects `split_edge_objects_present`; a signal
+is an edge object. If sequencing has already caused this concrete blocker, remove
+the exact obstructing signal through an authorised supported operation, complete
+the branch, then restore/rebind the intended signal against fresh replacement
+edge identity. Do not silently discard objects or weaken the split check.
+
+A rejected native proposal is not by itself a bridge defect. Try a finite set of
+already-supported representations/handle choices that retain the brief's actual
+constraints. District04's northern depot is a concrete example: structured
+`connect` endpoint cubics at three approach locations rejected with Construction
+Not Possible, despite accepted through subdivision and preserved endpoint grade.
+Operator run `687aeaee166540ab` then built using `branch` with the first candidate
+`{"branch":"endpoint_cubic_graded","through":"subdivide","handle_scale":1.25}`.
+Preparation `5895890e068049ddb477543864d82e3f` explicitly selected that candidate;
+build receipt `c968f5a2edf946e8bbbdbf2d4f021a07` records the result. The fresh-split
+fallback was unused. This demonstrates one successful graded turnout/shape change,
+not a universal handle value, native rejection diagnosis or completed service.
+
 `connect` adds `source_interior`/`target_interior` for a mixed free/interior or
 two-interior proposal, evaluated together with its through-track replacements.
 `representation`/`leg_representations`, `handle_scale`, `fit_radius` and optional

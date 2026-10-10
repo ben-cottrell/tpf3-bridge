@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1150" viewBox="0 0 1200 1150" role="img" aria-labelledby="title desc">
+<title id="title">District04 outer approaches — corrected R5 plan overview</title>
+<desc id="desc">Two labelled panels in district local coordinates. Northern slow guides at1830 and2080; southern US widened to minus80 between minus1620 and minus1800. Plan schematic, not surveyed committed geometry or service evidence.</desc>
+<rect width="1200" height="1150" fill="#f8fafc"/>
+<style>text{font-family:Arial,sans-serif;fill:#203044}.small{font-size:13px}.label{font-size:15px}.heading{font-size:20px;font-weight:bold}.grid{stroke:#dce3ec;stroke-width:1}.fast{stroke:#275b9b}.slow{stroke:#247d58}</style>
+<text x="35" y="40" class="heading">District04 • outer approaches • R5 plan</text>
+<text x="35" y="66" class="label">Native local coordinates; lateral scale enlarged for legibility. Guide joins are schematic.</text>
+<text x="35" y="90" class="small">Plan reservations only — no service, journey, final acceptance or whole-district completion claim.</text>
+<rect x="20" y="112" width="560" height="914" rx="12" fill="white" stroke="#cbd5e1"/>
+<text x="40.0" y="140.0" class="heading">NORTH • from J to independent terminals</text>
+<line x1="44" y1="959.6" x2="400" y2="959.6" class="grid"/>
+<text x="45.0" y="955.6" class="small">1600</text>
+<line x1="44" y1="871.6" x2="400" y2="871.6" class="grid"/>
+<text x="45.0" y="867.6" class="small">1700</text>
+<line x1="44" y1="783.6" x2="400" y2="783.6" class="grid"/>
+<text x="45.0" y="779.6" class="small">1800</text>
+<line x1="44" y1="695.6" x2="400" y2="695.6" class="grid"/>
+<text x="45.0" y="691.6" class="small">1900</text>
+<line x1="44" y1="607.6" x2="400" y2="607.6" class="grid"/>
+<text x="45.0" y="603.6" class="small">2000</text>
+<line x1="44" y1="519.6" x2="400" y2="519.6" class="grid"/>
+<text x="45.0" y="515.6" class="small">2100</text>
+<line x1="44" y1="431.6" x2="400" y2="431.6" class="grid"/>
+<text x="45.0" y="427.6" class="small">2200</text>
+<line x1="44" y1="343.6" x2="400" y2="343.6" class="grid"/>
+<text x="45.0" y="339.6" class="small">2300</text>
+<line x1="44" y1="255.6" x2="400" y2="255.6" class="grid"/>
+<text x="45.0" y="251.6" class="small">2400</text>
+<line x1="44" y1="167.6" x2="400" y2="167.6" class="grid"/>
+<text x="45.0" y="163.6" class="small">2500</text>
+<rect x="188.7" y="519.6" width="64.6" height="140.8" fill="#e6edf5" stroke="#64748b"/>
+<text x="350.0" y="580.0" class="label">North express</text>
+<text x="350.0" y="600.0" class="small">rail datum z=21.0</text>
+<polyline points="216.2,1003.6 216.2,774.8 216.2,664.8" fill="none" class="fast" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="225.8,1003.6 225.8,774.8 225.8,664.8" fill="none" class="fast" stroke-width="3" stroke-linejoin="round"/>
+<rect x="188.7" y="167.6" width="64.6" height="140.8" fill="#e6edf5" stroke="#64748b"/>
+<text x="350.0" y="228.0" class="label">North stopping</text>
+<text x="350.0" y="248.0" class="small">rail datum z=12.0</text>
+<polyline points="206.8,1003.6 145.0,757.2 145.0,537.2 216.3,414.0 216.3,312.8" fill="none" class="slow" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="235.3,1003.6 306.5,757.2 306.5,537.2 225.8,414.0 225.8,312.8" fill="none" class="slow" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="145.0" cy="757.2" r="4" fill="#247d58"/>
+<text x="350.0" y="751.2" class="small">Slow bypass: y1830, z21</text>
+<path d="M150.0,757.2 H340" fill="none" stroke="#9bacbd" stroke-dasharray="3 3"/>
+<circle cx="306.5" cy="537.2" r="4" fill="#247d58"/>
+<text x="350.0" y="531.2" class="small">y2080, z18</text>
+<path d="M311.5,537.2 H340" fill="none" stroke="#9bacbd" stroke-dasharray="3 3"/>
+<circle cx="216.2" cy="414.0" r="4" fill="#247d58"/>
+<text x="350.0" y="408.0" class="small">Convergence y2220, z12</text>
+<path d="M221.2,414.0 H340" fill="none" stroke="#9bacbd" stroke-dasharray="3 3"/>
+<text x="45.0" y="1020.0" class="small">Blue: express • Green: slow bypass / stopping approach</text>
+<rect x="620" y="112" width="560" height="914" rx="12" fill="white" stroke="#cbd5e1"/>
+<text x="640.0" y="140.0" class="heading">SOUTH • from J to independent terminals</text>
+<line x1="644" y1="176.4" x2="1000" y2="176.4" class="grid"/>
+<text x="645.0" y="172.4" class="small">-1500</text>
+<line x1="644" y1="264.4" x2="1000" y2="264.4" class="grid"/>
+<text x="645.0" y="260.4" class="small">-1600</text>
+<line x1="644" y1="352.4" x2="1000" y2="352.4" class="grid"/>
+<text x="645.0" y="348.4" class="small">-1700</text>
+<line x1="644" y1="440.4" x2="1000" y2="440.4" class="grid"/>
+<text x="645.0" y="436.4" class="small">-1800</text>
+<line x1="644" y1="528.4" x2="1000" y2="528.4" class="grid"/>
+<text x="645.0" y="524.4" class="small">-1900</text>
+<line x1="644" y1="616.4" x2="1000" y2="616.4" class="grid"/>
+<text x="645.0" y="612.4" class="small">-2000</text>
+<line x1="644" y1="704.4" x2="1000" y2="704.4" class="grid"/>
+<text x="645.0" y="700.4" class="small">-2100</text>
+<line x1="644" y1="792.4" x2="1000" y2="792.4" class="grid"/>
+<text x="645.0" y="788.4" class="small">-2200</text>
+<rect x="788.7" y="334.8" width="64.6" height="140.8" fill="#e6edf5" stroke="#64748b"/>
+<text x="950.0" y="395.2" class="label">South express</text>
+<text x="950.0" y="415.2" class="small">rail datum z=1.3</text>
+<polyline points="816.2,150.0 816.2,330.4" fill="none" class="fast" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="825.8,150.0 825.8,330.4" fill="none" class="fast" stroke-width="3" stroke-linejoin="round"/>
+<rect x="788.7" y="686.8" width="64.6" height="140.8" fill="#e6edf5" stroke="#64748b"/>
+<text x="950.0" y="747.2" class="label">South stopping</text>
+<text x="950.0" y="767.2" class="small">rail datum z=1.3</text>
+<polyline points="806.8,150.0 688.0,282.0 688.0,440.4 816.3,581.2 816.2,682.4" fill="none" class="slow" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="835.2,150.0 906.5,264.4 906.5,510.8 825.8,581.2 825.8,682.4" fill="none" class="slow" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="688.0" cy="282.0" r="4" fill="#247d58"/>
+<text x="950.0" y="276.0" class="small">US x−80 • y−1620</text>
+<path d="M693.0,282.0 H940" fill="none" stroke="#9bacbd" stroke-dasharray="3 3"/>
+<circle cx="688.0" cy="440.4" r="4" fill="#247d58"/>
+<text x="950.0" y="434.4" class="small">US x−80 • y−1800</text>
+<path d="M693.0,440.4 H940" fill="none" stroke="#9bacbd" stroke-dasharray="3 3"/>
+<circle cx="816.2" cy="581.2" r="4" fill="#247d58"/>
+<text x="950.0" y="575.2" class="small">Convergence y−1960</text>
+<path d="M821.2,581.2 H940" fill="none" stroke="#9bacbd" stroke-dasharray="3 3"/>
+<text x="645.0" y="1020.0" class="small">Blue: express • Green: slow bypass / stopping approach</text>
+<text x="35.0" y="1062.0" class="label">R5 update: reserve the actual depot footprint before filling the gap between running corridors.</text>
+<text x="35.0" y="1088.0" class="small">North slow guides:1830 /2080 (replaces old1700 /2140). South US:−80 from−1620 to−1800.</text>
+<text x="35.0" y="1113.0" class="small">Sources: recorded outer NS R3b plan + US widening R5 plan. Depot branches and signals are not plotted.</text>
+</svg>
