@@ -9,22 +9,29 @@ def review(client,registry,brief):
         raise ValueError('registry name/revision and1..8 directed station routes required')
     path_limit=brief.get('max_path_entries',256)
     if type(path_limit) is not int or not 1<=path_limit<=512:raise ValueError('explicit route path observation bound1..512 required')
-    record=registry.load(brief['name'])
-    if record['revision']!=brief['revision']:raise ValueError('registry revision changed')
+    records={}
+    def registered_record(name,revision):
+        if name not in records:records[name]=registry.load(name)
+        record=records[name]
+        if record['revision']!=revision:raise ValueError('registry revision changed')
+        return record
+    registered_record(brief['name'],brief['revision'])
     session=client.session;surveys={};observations=[];rows=[];names=set()
     def endpoint(spec,source):
-        if set(spec)-{'role','guide_xyz','travel_direction','placement_tolerance','heading_tolerance_deg'}:raise ValueError('bounded explicit route endpoint required')
+        if set(spec)-{'role','registry_name','registry_revision','guide_xyz','travel_direction','placement_tolerance','heading_tolerance_deg'}:raise ValueError('bounded explicit route endpoint required')
         pos=spec['guide_xyz'];direction=spec['travel_direction'];tol=spec.get('placement_tolerance',.15);heading=spec.get('heading_tolerance_deg',2)
         for vector,n in ((pos,3),(direction,2)):
             if not isinstance(vector,list) or len(vector)!=n or any(type(x) not in (int,float) or not math.isfinite(x) for x in vector):raise ValueError('finite explicit route vectors required')
         if math.hypot(*direction)==0 or type(tol) not in (int,float) or not 0<tol<=10 or type(heading) not in (int,float) or not 0<heading<=180:raise ValueError('bounded direction/location tolerances required')
         if 'role' not in spec:
+            if 'registry_name' in spec or 'registry_revision' in spec:raise ValueError('endpoint registry requires a terminal role')
             outward=[(-1 if source else 1)*x for x in direction]
             intent={'region':{'min':[x-max(1,tol) for x in pos],'max':[x+max(1,tol) for x in pos]},'max_edges':16,
                     'guide_xyz':pos,'travel_direction':outward,'heading_tolerance_deg':heading,'placement_tolerance':tol}
             candidate,_=live._select_throat_port(client,intent,tolerance=tol)
             return {'edge':candidate['edge_id'],'node':candidate['node_id'],'travel_direction':direction,'qualification':'fresh_free_boundary'}
-        role=record['roles'][spec['role']];selector=role['station'];terminal=selector.get('terminal_index')
+        registry_name=spec.get('registry_name',brief['name']);registry_revision=spec.get('registry_revision',brief['revision'])
+        role=registered_record(registry_name,registry_revision)['roles'][spec['role']];selector=role['station'];terminal=selector.get('terminal_index')
         if type(terminal) is not int or not 1<=terminal<=64:raise ValueError('exact registered one-based terminal required')
         name=selector['name']
         if name not in surveys:
@@ -55,7 +62,7 @@ def review(client,registry,brief):
             norm=math.hypot(*travel)*math.hypot(*direction)
             if not norm:raise live.LiveError('station_route_incomplete','endpoint direction unavailable')
             if math.dist(xyz,pos)<=tol and sum(a*b for a,b in zip(travel,direction))/norm>=math.cos(math.radians(heading)):
-                matches.append({'edge':eid,'node':nid,'travel_direction':direction,'qualification':'exact_registered_terminal_frozen_TRACK_component','terminal_index':terminal,'construction_id':cid})
+                matches.append({'edge':eid,'node':nid,'travel_direction':direction,'qualification':'exact_registered_terminal_frozen_TRACK_component','terminal_index':terminal,'construction_id':cid,'registry_name':registry_name,'registry_revision':registry_revision})
         if len(matches)!=1:raise live.LiveError('ambiguous_station_route' if matches else 'station_route_endpoint_unavailable','qualified terminal endpoint/direction is not unique')
         return matches[0]
     for route in brief['routes']:

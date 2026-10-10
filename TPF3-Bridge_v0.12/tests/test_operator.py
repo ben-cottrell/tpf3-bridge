@@ -116,6 +116,51 @@ class OperatorTest(unittest.TestCase):
             self.assertEqual(result['line_operation'],'unprobed');self.assertFalse(result['game_constructed'])
             self.assertTrue(all(op in ('station_lookup','inspect','route') for op,_ in queries))
 
+    def test_station_routes_use_distinct_endpoint_registries_and_reuse_station_survey(self):
+        with tempfile.TemporaryDirectory() as td:
+            client,o,v,edge,brief,queries,request=self.station_route_fixture(td)
+            record=o.interfaces().load('district')
+            other_edge=self.native_edge(11,200,300)
+            v['constructions'].append({'construction_id':15,'resource':'station','position':[200,0,2],
+                                       'frozen_tracks':[{'edge_id':11,'node0':22,'node1':23}]})
+            v['stations'].append({'station_id':19,'construction_id':15,'terminals':[
+                {'index':1,'vehicle_edges':{},'vehicle_node':{'entity':22,'index':0}}]})
+            other_role=copy.deepcopy(record['roles']['MW_up'])
+            other_role['station']['construction']['position']=[200,0,2]
+            o.interfaces().path('outer').write_text(json.dumps({'name':'outer','revision':'R3','roles':{'other_terminal':other_role}}))
+            source={'role':'MW_up','guide_xyz':edge['p0'],'travel_direction':[1,0]}
+            target=source|{'role':'other_terminal','registry_name':'outer','registry_revision':'R3','guide_xyz':other_edge['p0'],'travel_direction':[-1,0]}
+            brief['routes']=[{'name':'station_pair','purpose':'arrival','source':source,'target':target,'max_length':1000},
+                             {'name':'repeat','purpose':'departure','source':source,'target':target,'max_length':1000}]
+            def current_request(op,q,**kwargs):
+                response=request(op,q,**kwargs)
+                if op=='inspect':response['result']['edges']=[edge if eid==1 else other_edge for eid in q['edge_ids']]
+                return response
+            with patch.object(client,'request',side_effect=current_request),patch.object(InterfaceRegistry,'load',autospec=True,side_effect=InterfaceRegistry.load) as loads,patch('bridge_station_routes.live._select_throat_port') as boundary:
+                result=o.review_station_routes(brief)
+            self.assertEqual(result['status'],'ok');boundary.assert_not_called()
+            self.assertEqual([call.args[1] for call in loads.call_args_list],['district','outer'])
+            self.assertEqual(sum(op=='station_lookup' for op,_ in queries),2) # one survey plus final freshness check
+            row=result['routes'][0]
+            self.assertEqual((row['source']['registry_name'],row['source']['registry_revision']),('district','R1'))
+            self.assertEqual((row['target']['registry_name'],row['target']['registry_revision']),('outer','R3'))
+            self.assertEqual(row['target']['qualification'],'exact_registered_terminal_frozen_TRACK_component')
+            self.assertEqual((row['source']['edge'],row['target']['edge']),(1,11))
+
+    def test_station_route_endpoint_registry_revision_mismatch_stops_before_route(self):
+        for mismatch in ('other','cached_default','independent_default','free_endpoint'):
+            with self.subTest(mismatch=mismatch),tempfile.TemporaryDirectory() as td:
+                client,o,v,edge,brief,queries,request=self.station_route_fixture(td)
+                record=o.interfaces().load('district')
+                o.interfaces().path('outer').write_text(json.dumps(dict(record,name='outer',revision='R3')))
+                if mismatch=='other':brief['routes'][0]['target'].update(registry_name='outer',registry_revision='R2')
+                elif mismatch=='cached_default':brief['routes'][0]['target']['registry_revision']='R2'
+                elif mismatch=='independent_default':brief['routes'][0]['target']['registry_name']='outer'
+                else:brief['routes'][0]['source']['registry_name']='district'
+                with patch.object(client,'request',side_effect=request),patch('bridge_station_routes.live._select_throat_port',return_value=({'edge_id':8,'node_id':17},'free')),self.assertRaises(ValueError):
+                    o.review_station_routes(brief)
+                self.assertFalse(any(op=='route' for op,_ in queries))
+
     def test_station_route_scope_and_path_bounds_do_not_promote_incomplete_records(self):
         for problem in ('frozen_incomplete','identity_incomplete','wrong_scope','path_overflow','path_unknown','reported_truncation'):
             with self.subTest(problem=problem),tempfile.TemporaryDirectory() as td:

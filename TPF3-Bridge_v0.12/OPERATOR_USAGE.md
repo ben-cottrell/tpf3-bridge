@@ -485,6 +485,24 @@ An opposite buffer end is a valid directed path endpoint. Current connected lead
 and construction ownership do not disqualify this read-only terminal check.
 No nearest identity or free-port buildability is inferred.
 
+Each role endpoint may specify `registry_name` and `registry_revision`; omitted
+fields independently default to the brief's `name` and `revision`. Distinct
+registries are loaded once each and their exact revisions checked. Station
+identity/frozen surveys are reused by station name. This permits connected
+station-to-station review without re-registering construction roles as free ports.
+For example, a route's endpoints can use:
+
+```json
+{
+  "source": {"role":"C_up", "registry_name":"mid_west_c", "registry_revision":"exposed_leads_R1", "guide_xyz":[0,0,0], "travel_direction":[1,0]},
+  "target": {"role":"RN_primary", "registry_name":"district04_destinations", "registry_revision":"R1", "guide_xyz":[100,0,0], "travel_direction":[1,0]}
+}
+```
+
+These coordinates/role labels are illustrative; use registered role names and
+current terminal endpoint geometry. Registry overrides require `role`; ordinary
+free-boundary endpoints retain their existing discovery/ownership checks.
+
 Optional endpoint placement/heading tolerances default to0.15/2degrees. Geometry
 only filters exact terminal-component endpoints. Explicit travel direction determines
 entry versus exit orientation and is checked against current edge tangent. Ordinary
