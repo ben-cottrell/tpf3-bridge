@@ -36,8 +36,15 @@ async def survey_site(region: dict, terrain_points: list[list[float]] | None = N
 
 @server.tool(annotations=ToolAnnotations(readOnlyHint=False,destructiveHint=False))
 async def plan_layout(plan: dict) -> dict:
-    """Record a version1 named construction plan and draw its geometry; no game writes."""
+    """Record a version1/2 plan and draw plan/profile; no game writes."""
     return await invoke(op.plan,plan)
+
+@server.tool(annotations=ToolAnnotations(readOnlyHint=False,destructiveHint=False))
+async def continue_layout(run: str, revision: str, steps: list[dict] | None = None,
+                          updates: dict | None = None, bindings: dict | None = None,
+                          reconciled_step: dict | None = None) -> dict:
+    """Inspect current bindings and record new remaining work; never replay prefix."""
+    return await invoke(op.continue_plan,run,revision,steps,updates,bindings,reconciled_step)
 
 @server.tool(annotations=write)
 async def build_layout(run: str) -> dict:

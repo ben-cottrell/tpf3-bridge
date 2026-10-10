@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from bridge_operator import Operator, validate_plan, cubic, native_failure
+from bridge_operator import Operator, validate_plan, cubic, native_failure, inspect_edges, fresh_binding, discover_region, chain_point, crossing_observations, render_profile
 from tools.operator_mcp_client import semantic_result, compact_stdout
 
 
@@ -27,6 +27,193 @@ class FakeClient:
 
 
 class OperatorTest(unittest.TestCase):
+    def grade_plan(self):
+        p=fixture();p.update(version=2,max_grade=.18)
+        p['region']={'min':[-10,-10,-5],'max':[600,30,30]}
+        p['ports']['b']={'position':[100,0,10],'direction':[-1,0],'grade':0}
+        return p
+
+    def native_edge(self,id=1,x0=0,x1=100,z=2):
+        return {'id':id,'node0':id*2,'node1':id*2+1,'p0':[x0,0,z],'p1':[x1,0,z],
+                't0':[x1-x0,0,0],'t1':[x1-x0,0,0],'template':'track','style':'style',
+                'road_type':'TRACK','structure':{'classification':'NORMAL'}}
+
+    def test_version2_grades_and_native_group_bounds_validate(self):
+        p=self.grade_plan();p['ports']['a']['grade']=.02;p['steps'][0]['grade']=.02
+        self.assertEqual(validate_plan(p)['version'],2)
+        p['steps'][0]['grade']=.05
+        with self.assertRaises(ValueError):validate_plan(p)
+        p=self.grade_plan();p['steps']=[{'name':'pair','kind':'group','groups':[{'source':'a','target':'b'},{'source':'a','target':'b'}]}]
+        validate_plan(p)
+        p['steps'][0]['groups'][0]['source_interior']=True
+        with self.assertRaises(ValueError):validate_plan(p)
+
+    def test_graded_stub_and_extension_keep_absolute_height_and_signed_grade(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan();p['steps'][0]['grade']=.02
+            self.assertEqual(o.execute(o.plan(p)['run'])['status'],'built')
+            self.assertEqual(c.calls[0][1]['fixture']['grade'],.02)
+            p=self.grade_plan();p['ports']['b']['grade']=-.03;p['steps']=[{'name':'extend','kind':'extend','source':'a','target':'b'}]
+            def extend(_,q,**kwargs):
+                self.assertEqual(q['vertical']['end_height'],12);self.assertEqual(q['vertical']['end_grade'],-.03)
+                return {'status':'ok','result':{'edges':[]}}
+            with patch('bridge_operator.live._select_throat_port',return_value=({'edge_id':1,'node_id':2,'grade':0},'found')),patch('bridge_operator.live.extend',side_effect=extend):
+                self.assertEqual(o.execute(o.plan(p)['run'])['status'],'built')
+
+    def test_mixed_structure_alternatives_reuse_one_accepted_full_proposal(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan()
+            p['steps']=[{'name':'flyover','kind':'connect','source':'a','target':'b','source_interior':True,
+                         'guides':[{'position':[50,0,12],'travel_direction':[1,0],'grade':0}],
+                         'structures':[{'classification':'BRIDGE','resource_name':'observed.bridge'},{'classification':'NORMAL'}],
+                         'attachments':[{'source':'a','target':'b'},{'source':'a','target':'b'}],
+                         'attachment_windows':{'source':p['region'],'target':p['region']}}]
+            rejected={'status':'no_accepted_candidate','request_id':'rejected','result':{'game_constructed':False,'evaluation':{'messages':['Too Much Curvature']}}}
+            accepted={'status':'ok','request_id':'accepted','result':{'game_constructed':False}}
+            built={'status':'ok','request_id':'built','result':{'game_constructed':True,'edges':[]}}
+            with patch('bridge_operator.live._select_throat_port',return_value=({'edge_id':1,'node_id':2,'grade':0},'found')),patch.object(c,'request',side_effect=[rejected,accepted,built]) as requests:
+                run=o.plan(p)['run'];result=o.execute(run)
+            self.assertEqual(result['status'],'built')
+            queries=[call.args[1] for call in requests.call_args_list]
+            self.assertTrue(queries[0]['junctions']);self.assertEqual(queries[0]['guides'][0]['position'],[50,0,14])
+            self.assertEqual(queries[-1],{'execute':True,'prepared_request':'accepted'})
+            state=json.loads((o.path(run)/'state.json').read_text());self.assertIn('Too Much Curvature',state['candidates']['flyover'][0]['reason'])
+
+    def test_group_build_chunked_exact_readback_preserves_all_members(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan()
+            p['steps']=[{'name':'group','kind':'group','groups':[{'source':'a','target':'b'},{'source':'a','target':'b'}]}]
+            ids=list(range(1,21));responses=[{'status':'ok','request_id':'prepared','result':{'game_constructed':False}},
+                {'status':'ok','request_id':'built','result':{'game_constructed':True,'groups':[{'readback':{'ordered_edges':ids[:10]}},{'readback':{'ordered_edges':ids[10:]}}]}},
+                {'status':'ok','request_id':'read1','result':{'edges':[self.native_edge(i) for i in ids[:16]]}},
+                {'status':'ok','request_id':'read2','result':{'edges':[self.native_edge(i) for i in ids[16:]]}}]
+            with patch('bridge_operator.live._select_throat_port',return_value=({'edge_id':1,'node_id':2,'grade':0},'found')),patch.object(c,'request',side_effect=responses):
+                run=o.plan(p)['run'];self.assertEqual(o.execute(run)['status'],'built')
+            self.assertEqual(len(json.loads((o.path(run)/'state.json').read_text())['steps']['group']['edges']),20)
+
+    def test_adaptive_survey_reports_complete_only_after_subdivision(self):
+        c=FakeClient();region={'min':[0,0,0],'max':[600,20,30]}
+        responses=[{'status':'ok','request_id':'dense','result':{'complete':False,'edges':[]}}]+[
+            {'status':'ok','request_id':'read','result':{'complete':True,'edges':[self.native_edge()]}}]*3
+        with patch.object(c,'request',side_effect=responses):rows,calls=discover_region(c,region)
+        self.assertEqual(calls,4);self.assertEqual(len(rows),1)
+        with patch.object(c,'request',return_value={'status':'ok','request_id':'dense','result':{'complete':False}}):
+            with self.assertRaisesRegex(ValueError,'budget exhausted'):discover_region(c,region,max_queries=1)
+
+    def test_multi_edge_reference_and_stale_binding_are_honest(self):
+        rows=[self.native_edge(1,0,20),self.native_edge(2,20,100)]
+        rows[1]['node0']=rows[0]['node1']
+        point,direction=chain_point(rows,.5);self.assertAlmostEqual(point[0],50);self.assertEqual(direction,[1,0])
+        self.assertAlmostEqual(chain_point(rows,.5,segment=1)[0][0],10)
+        c=FakeClient();changed=copy.deepcopy(rows);changed[0]['p0'][0]=1
+        with patch.object(c,'request',return_value={'status':'ok','request_id':'read','result':{'edges':changed}}):
+            with self.assertRaisesRegex(ValueError,'binding changed'):fresh_binding(c,{'edges':rows})
+
+    def test_continuation_generates_remaining_only_and_rechecks_parent_bindings(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan();p['steps'].append({**p['steps'][0],'name':'two'})
+            edge=self.native_edge()
+            responses=[{'status':'ok','request_id':'one','result':{'game_constructed':True,'edges':[edge]}},
+                       {'status':'error','request_id':'two','result':{'game_constructed':False,'error':'rejected'}}]
+            with patch.object(c,'request',side_effect=responses):
+                original=o.plan(p)['run'];self.assertEqual(o.execute(original)['status'],'needs_attention')
+            read={'status':'ok','request_id':'read','result':{'game_constructed':False,'edges':[edge]}}
+            with patch.object(c,'request',return_value=read):next_run=o.continue_plan(original,'R2')['run']
+            new=json.loads((o.path(next_run)/'plan.json').read_text());self.assertEqual([s['name'] for s in new['steps']],['two'])
+            self.assertEqual(new['continuation']['skipped_steps'],['one'])
+            with patch.object(c,'request',side_effect=[read,{'status':'ok','request_id':'remaining','result':{'game_constructed':True,'edges':[]}}]) as request:
+                self.assertEqual(o.execute(next_run)['status'],'built')
+            self.assertEqual([call.args[0] for call in request.call_args_list],['inspect','test_approach'])
+            with self.assertRaises(ValueError):o.execute(original)
+
+    def test_uncertain_effect_not_erased_by_later_read_failure(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan()
+            p['steps']=[{'name':'join','kind':'connect','source':'a','target':'b'}]
+            responses=[{'status':'ok','request_id':'prepared','result':{'game_constructed':False}},
+                       {'status':'ok','request_id':'applied','result':{'game_constructed':True,'ordered_edges':[1]}},
+                       {'status':'error','request_id':'read','result':{'game_constructed':False,'error':'read unavailable'}}]
+            with patch('bridge_operator.live._select_throat_port',return_value=({'edge_id':1,'node_id':2,'grade':0},'found')),patch.object(c,'request',side_effect=responses):
+                run=o.plan(p)['run'];self.assertEqual(o.execute(run)['status'],'needs_attention')
+            with self.assertRaisesRegex(ValueError,'uncertain/partial'):o.continue_plan(run,'R2')
+            state=json.loads((o.path(run)/'state.json').read_text());self.assertTrue(state['step_mutation']['game_constructed'])
+
+    def test_continuation_rejects_session_change_pending_journal_and_prefix_replay(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan();run=o.plan(p)['run'];o.execute(run)
+            with self.assertRaisesRegex(ValueError,'replay successful'):o.continue_plan(run,'R2',steps=p['steps'])
+            c.journal=Path(td)/'journal.json';c.journal.write_text(json.dumps({'pending':{'request_id':'unknown'}}))
+            with self.assertRaisesRegex(ValueError,'unresolved native'):o.continue_plan(run,'R2',steps=[{**p['steps'][0],'name':'new'}])
+            c.session='new'
+            with self.assertRaisesRegex(ValueError,'session changed'):o.continue_plan(run,'R2')
+
+    def test_native_replacement_receipt_updates_exact_prior_chain_lineage(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan()
+            p['steps']=[p['steps'][0],{'name':'junction','kind':'connect','source':'a','target':'b','source_interior':True}]
+            original=self.native_edge(1);left=self.native_edge(2,0,40);right=self.native_edge(3,40,100)
+            responses=[{'status':'ok','request_id':'seed','result':{'game_constructed':True,'edges':[original]}},
+                {'status':'ok','request_id':'prepared','result':{'game_constructed':False}},
+                {'status':'ok','request_id':'built','result':{'game_constructed':True,'edges':[],
+                    'placements':[{'original_edge':1,'replacement_edges':[2,3]}]}},
+                {'status':'ok','request_id':'read','result':{'edges':[left,right]}}]
+            with patch('bridge_operator.live._select_throat_port',return_value=({'edge_id':1,'node_id':2,'grade':0},'found')),patch.object(c,'request',side_effect=responses):
+                run=o.plan(p)['run'];self.assertEqual(o.execute(run)['status'],'built')
+            state=json.loads((o.path(run)/'state.json').read_text())
+            self.assertEqual([e['id'] for e in state['steps']['one']['edges']],[2,3]);self.assertEqual(state['lineage'][0]['original_edge'],1)
+
+    def test_attachment_windows_and_budget_cannot_be_silently_expanded(self):
+        p=self.grade_plan();p['steps']=[{'name':'connect','kind':'connect','source':'a','target':'b','attachments':[{'source':'a','target':'b'}]*9}]
+        with self.assertRaises(ValueError):validate_plan(p)
+        p['steps'][0]['attachments']=[{'source':'a','target':'b'}]
+        with self.assertRaisesRegex(ValueError,'windows'):validate_plan(p)
+        p['steps'][0]['attachment_windows']={'source':{'min':[50,0,0],'max':[60,1,5]},'target':p['region']}
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);result=o.execute(o.plan(p)['run'])
+            self.assertEqual(result['status'],'needs_attention');self.assertEqual(c.calls,[])
+
+    def test_replacement_and_removal_use_fresh_exact_chain_without_widening_selection(self):
+        edge=self.native_edge()
+        for kind in ('remove','connect'):
+            with self.subTest(kind=kind),tempfile.TemporaryDirectory() as td:
+                c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan();p['bindings']={'old':{'edges':[edge]}}
+                p['steps']=[{'name':'change','kind':'remove','chain':'old'}] if kind=='remove' else [
+                    {'name':'change','kind':'connect','source':'a','target':'b','replace_chain':'old'}]
+                read={'status':'ok','request_id':'read','result':{'game_constructed':False,'edges':[edge]}}
+                responses=[read,read,read,{'status':'ok','request_id':'removed','result':{'game_constructed':True,'removed_edges':[1]}}] if kind=='remove' else [
+                    read,read,{'status':'ok','request_id':'prepared','result':{'game_constructed':False}},
+                    {'status':'ok','request_id':'built','result':{'game_constructed':True,'edges':[]}}]
+                with patch('bridge_operator.live._select_throat_port',return_value=({'edge_id':2,'node_id':4,'grade':0},'found')) as select,patch.object(c,'request',side_effect=responses) as request:
+                    run=o.plan(p)['run'];result=o.execute(run)
+                self.assertEqual(result['status'],'built')
+                if kind=='remove':self.assertEqual(request.call_args.args[0],'remove_branch');self.assertEqual(request.call_args.args[1]['edges'],[edge])
+                else:
+                    self.assertTrue(select.call_args.kwargs['connected']);self.assertEqual(request.call_args_list[-2].args[1]['replace_chain'],[edge])
+                self.assertEqual(json.loads((o.path(run)/'state.json').read_text())['invalidated_bindings'],['old'])
+
+    def test_explicit_floor_check_is_sampled_and_never_numeric_edit(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan()
+            p['steps']=[{'name':'floor','kind':'terrain_check','absolute_floor':1.2,'positions':[[0,0],[10,0]]}]
+            response={'status':'ok','request_id':'terrain','result':{'game_constructed':False,'site':{'terrain':[{'xy':[0,0],'height':1.5,'valid':True},{'xy':[10,0],'height':1.1,'valid':True}]}}}
+            with patch.object(c,'request',return_value=response) as request:
+                run=o.plan(p)['run'];result=o.execute(run)
+            self.assertEqual(result['status'],'needs_attention');self.assertIn('below explicit absolute floor',result['error'])
+            self.assertEqual(request.call_args.args[0],'inspect');self.assertTrue(json.loads((o.path(run)/'state.json').read_text())['terrain']['floor']['sampled_only'])
+
+    def test_profile_and_crossing_readback_separate_identity_from_clearance(self):
+        upper=self.native_edge(1,0,100,18.5);upper['structure']={'classification':'BRIDGE','resource_name':'observed.bridge'}
+        lower=self.native_edge(2,0,100,3)
+        p=self.grade_plan();p['curves']={'upper':{k:upper[k] for k in ('p0','p1','t0','t1')}}
+        p['crossings']=[{'name':'cross','position':[50,0],'upper_height':16.5,'lower_height':1,'upper_route':'up','lower_routes':['low']}]
+        paths={'up':[{'edge':{'entity':1},'confirmed_TRACK':True}],'low':[{'edge':{'entity':2},'confirmed_TRACK':True}]}
+        observed=crossing_observations(p,[upper,lower],paths)[0]
+        self.assertTrue(observed['separate_endpoint_identities_observed']);self.assertTrue(observed['required_structure_observed']);self.assertFalse(observed['clearance_certified'])
+        self.assertEqual(observed['upper']['sampled_height_range'],[18.5,18.5])
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/'profile.svg';render_profile(p,[upper,lower],path);text=path.read_text()
+            self.assertIn('vertical exaggeration 4',text);self.assertIn('absolute z axis',text);self.assertIn('planned upper z=18.50',text)
+
     def test_mcp_stdout_decodes_semantics_without_changing_protocol_record(self):
         result={'status':'built','run':'a'*16,'completed_steps':4}
         data={'content':[{'type':'text','text':json.dumps(result,indent=2)}],'is_error':False,'meta':{'server':'test'}}
@@ -97,7 +284,7 @@ class OperatorTest(unittest.TestCase):
             c=FakeClient();o=Operator(runs=td,client=c);p=fixture()
             p['routes']=[{'name':'required','source':'a','target':'a'}]
             run=o.plan(p)['run'];o.execute(run)
-            with (patch('bridge_operator.live._select_throat_port',return_value=({'edge_id':1,'node_id':2},'found')),
+            with (patch('bridge_operator.live._select_throat_port',return_value=({'edge_id':1,'node_id':2,'grade':0},'found')),
                   patch.object(c,'request',side_effect=[{'status':'ok','request_id':'route','result':{'requested_route_verified':False}},
                       {'status':'ok','request_id':'survey','result':{'complete':True,'edges':[]}}])):
                 result=o.review(run)
@@ -162,7 +349,7 @@ class OperatorTest(unittest.TestCase):
                 self.assertEqual(client.evidence,c.evidence)
                 client.request('extension',{},request_id='native-extension')
                 return {'status':'ok','job_id':'native-extension','edges':[42]}
-            with (patch('bridge_operator.live._select_throat_port',return_value=({'edge_id':1,'node_id':2},'found')),
+            with (patch('bridge_operator.live._select_throat_port',return_value=({'edge_id':1,'node_id':2,'grade':0},'found')),
                  patch('bridge_operator.live.extend',side_effect=extend),
                  patch.object(c,'request',side_effect=[{'status':'ok','request_id':'native-extension','result':{}},
                      {'status':'ok','request_id':'read','result':{'edges':[row]}}])):
