@@ -1,3 +1,24 @@
+# Challenge03 complete — ready for visual review (10 October 2026)
+
+Double-track flying junction R5b built: short level 12° crossing, earth-supported
+ramps, coherent receiving pair. All four directed native TRAIN paths and both
+route-bound crossing observations pass; no train-operation claim. User's approximate
+5–10-unit lateral deck margin informed a 7.5-unit starting choice, not a hard limit.
+Sampled track footprint717.8×94.7; peak sampled grade10.20%. Full result and retained
+revision history: railway-design/examples/challenge03/DESIGN.md.
+
+Sol's operator improvements committed locally: b75edcb (graded/grouped plans,
+removal, profile/overlay, candidate fitting, explicit continuation), eefad62 (honest
+partial review), b596f69 (standalone structure seed).38 focused operator and423 shared
+client tests pass. The standalone bridge, continuation, removal, grade connections,
+paths, camera/capture/save are now integrated native evidence. Numeric local terrain
+editing remains unsupported; this design used native NORMAL-track cut/fill.
+
+Save Design Challenge 03 - Shallow Flying Junction R5.sav completed and hashed;
+not reloaded. Game paused and camera framed. Accepted Challenge01/02 retained.
+Design quality awaits user review. Sol idle, heartbeat paused, no further build
+queued and no remote push. Historical records below describe earlier states.
+
 # Challenge02 complete — ready for user visual review (9 October 2026)
 
 Efficiency work is complete: reusable data-plan operator and local stdio MCP,

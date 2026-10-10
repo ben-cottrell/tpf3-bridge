@@ -146,3 +146,23 @@ reference during an inspection-only task.
 
 Later useful patterns, when needed: a compact pair of opposite single crossovers;
 a paired diverging route with local grade separation and a return to normal spacing.
+
+## G3 — Shallow level crossing span with earth-supported approaches
+
+**Context:** Challenge03 double-track A/B mainline and paired C branch, four directed
+movements. The conflicting C_DOWN movement crosses above both through rails.
+
+**Pattern:** choose the crossing angle and both landing corridors first; build an
+unconnected level deck close to the crossed tracks, then fit NORMAL earth-supported
+ramps and the direct C_UP connection. Keep a level turnout lead when native feedback
+shows that immediate vertical curvature is unsuitable. A shallow crossing trades
+longitudinal length for lateral compactness.
+
+**Evidence:** R5b native build,4/4 TRAIN paths, short12° deck, approximately7.5 units
+laterally beyond outer rails; sampled rail footprint717.8×94.7. The user supplied
+10–15° and5–10-unit visual guidance; these are not universal limits. No trains run.
+Designer-reviewed; user acceptance pending. [Record](examples/challenge03/DESIGN.md).
+
+**Limits:** earthworks/abutments may need more room at other sites. Terrain, track
+resource and native turnout shape matter. An adapter selection restriction is not
+native rejection. R4's native success did not make its broad geometry acceptable.

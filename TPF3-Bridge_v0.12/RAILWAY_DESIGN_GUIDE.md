@@ -415,3 +415,30 @@ structures unchanged. Prior E/mainline scoped evidence remains separate. One
 functioning train retains a deleted home-depot reference; no observed running
 failure justified extra replacement or runtime state patching. The final save's
 bytes/hash were verified, but that final checkpoint was not reloaded.
+
+## Shallow flying junction — Challenge03, 10 October 2026
+
+A native-accepted steep-angle flyover was visually too broad. The user's preferred
+alternative was a10–15° crossing with a level deck ending roughly5–10 units laterally
+beyond the outer crossed rails, followed by earth-supported approaches. These are
+contextual visual preferences, not measured game minima. The whole family was
+replanned before rebuilding: R5b uses12°,7.5-unit side margins and a96.2-unit deck.
+All four required paths pass. Designer review is positive; user review is pending.
+
+Plan the deck, both ramps and receiving pair together. Construct the controlling
+unconnected span first when that makes its position and extent unambiguous, then
+fit the ramps and direct route. Prefer a coherent NORMAL earth approach when a
+bridge is needed only at the crossing; do not extend structures by default merely
+because the track is elevated. Actual native cut/fill and acceptance still decide fit.
+
+Vertical shape at the turnout matters independently of peak grade. R3's sampled7.6%
+first junction segment failed Too Much Incline; R4 succeeded at11.2% after a level
+lead. The resource field maxSlopeBuild0.085 was not a universal cap. Final R5b peak
+sampled grade is10.20%. Do not infer all native rules from a resource field or turn
+radius/grade preference into an artificial blocker. See the retained design history.
+
+One fitting stop came from the adapter's5–95% interior-parameter restriction, not
+the native engine. Report that distinction and use intentional local alternatives;
+do not generalise it into a required turnout distance. Long-term eligibility feedback
+should expose this cause directly. Native paths, visual acceptance and physical
+train operation remain separate conclusions.

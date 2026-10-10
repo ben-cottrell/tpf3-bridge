@@ -278,3 +278,20 @@ save/load epoch requires a newly inspected design. This is not crash recovery.
 Grade02 wrappers/profile/continuation are offline tested; the coordinator's flying
 junction will supply their new integrated live evidence. No native scripts/API
 bindings, staged files, model loops or host recovery were added by this extension.
+
+## Integrated native evidence — 10 October 2026
+
+Challenge03 R5b completed on build40420: standalone level bridge first, normal earth
+ramps, native removal and fresh binding across save/load, explicit remaining-work
+continuation,4/4 directed paths and both route-bound crossing observations. Native
+camera, screenshot-file completion and checkpoint-file completion passed. R4 had
+also exercised honest partial review. See railway-design/examples/challenge03/DESIGN.md.
+38 operator tests and423 shared-client regressions passed in the standalone-structure
+implementation milestone; no code changed for the final native design fitting.
+
+Current attachment limitation: interior discovery accepts only parameters0.05–0.95
+of a native edge. This is an adapter restriction, not a proven native turnout rule;
+its current no_supported_interior_location error can also cover locate failure.
+A role at an existing connected endpoint is not a free/interior port. Inspect the
+actual edge and choose a deliberate local alternative; do not label this native
+construction rejection. Numeric bounded terrain editing remains unsupported.

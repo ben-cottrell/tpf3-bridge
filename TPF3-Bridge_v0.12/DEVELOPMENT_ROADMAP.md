@@ -1,10 +1,26 @@
 # Development roadmap
 
-Updated 9 October 2026. Current priorities supplement the historical work packages
+Updated 10 October 2026. Current priorities supplement the historical work packages
 in implementation/work_packages.json; their old status labels are not a live
 capability inventory. Completed native evidence is recorded in CURRENT_TASK.md.
 
-## Current milestone — operator efficiency and second transfer case
+## Current milestone — graded operator and shallow flying junction
+
+10 October: Challenge02 accepted by the user. OPERATOR-GRADE-02 and Challenge03
+are complete for final visual review: four directed paths, short level12° bridge,
+earth-supported approaches.38 operator and423 shared tests pass; native result in
+railway-design/examples/challenge03/DESIGN.md. Earlier accepted cases remain intact.
+Grade/profile plans, exact removal, grouped structures, bounded fitting, remaining-work
+continuation, partial review and a freestanding structure seed are reusable now.
+
+Next decisions should follow visual review. A concrete operator follow-up is replacing
+opaque attachment failure with clear endpoint/interior eligibility diagnostics and
+reviewing the existing5–95% adapter restriction against native behaviour; do not call
+it a game limit. Bounded numeric terrain editing remains an actual capability gap,
+but was unnecessary for this earth-ramp case. Broaden spatial design variation after
+review; repeating the same flyover is not proof of general design competence.
+
+## Earlier milestone — operator efficiency and second transfer case
 
 9 October: Challenge01 was visually accepted by the user. Its original plan and
 handbook remain the baseline. OPERATOR-01 now provides reusable named data plans,

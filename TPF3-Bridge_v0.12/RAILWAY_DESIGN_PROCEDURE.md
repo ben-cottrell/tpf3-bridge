@@ -1,7 +1,7 @@
 # Railway design procedure
 
-Version 0.3 — 9 October 2026. Both Shefford cross-sections incorporated;
-prospective effectiveness on a new variant remains unproven.
+Version 0.4 — 10 October 2026. Shefford and accepted Challenge01/02 inform the
+procedure. Challenge03 adds a shallow flying-junction case awaiting user review.
 
 Purpose: produce coherent game-scale railways without repeatedly turning local
 construction difficulties into unplanned layout changes. The handbook explains
@@ -89,6 +89,10 @@ Choose the construction sequence by remaining spatial freedom and native staging
 - Where a demonstrated native structure sequence requires it, clear/prepare the
   corridor, construct the grouped upper tracks, then the lower connection. Other
   sites may require a different order. Design final and intermediate states.
+- For a flying junction, compare crossing angle, lateral width and deck extent
+  together with both ramps. A shallow level span can be longer but much narrower.
+  Where appropriate, establish it unconnected before fitting earth-supported
+  approaches. Treat example margins as preferences until the native fit is observed.
 - Use observed elevations and terrain floors for the actual site. The Complex
   Junction z=1 floor is a user constraint there, not a universal world water level.
 

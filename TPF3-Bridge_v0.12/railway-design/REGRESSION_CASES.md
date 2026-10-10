@@ -108,3 +108,18 @@ can establish a design-quality baseline for its stated context.
 
 Current status: cases written; no independent replay or prospective native transfer
 test completed. The separate P75 retrospective is a worked application only.
+
+## R6 — A native-accepted flyover is too wide
+
+**Situation:** the bridge accepts a steep-angle crossing with long elevated curves.
+The user prefers a shallow narrow corridor and a short level deck over the rails.
+**Task:** revise the whole crossing/ramp/receiving family before further construction.
+
+**Review criteria:** compare angle, width and longitudinal extent; keep space for
+both routes; consider deck-first construction and earth-supported approaches;
+treat rough lateral margins as guidance. Distinguish native incline rejection from
+adapter eligibility restrictions. Do not equate native acceptance with visual quality.
+
+Worked prospective case: Challenge03 R4→R5b, four routes verified; user visual review
+pending. Challenge01/02 are accepted prospective throat cases. This supplements the
+historical status above; no independent blind replay or general reliability claim.
