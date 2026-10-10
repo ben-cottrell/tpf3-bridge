@@ -47,6 +47,34 @@ they point outward. Stub construction direction can oppose that direction.
 The bounded native discovery resolves actual attachment identity; proximity alone
 never establishes connection. Ambiguity/rejection stops the run.
 
+Direction meaning depends on the operation; do not apply a universal target flip.
+An existing edge's outward attachment vector points away from that edge at its
+endpoint. A travel tangent points along the proposed railway from source to target.
+
+| Operation | Source direction | Target direction |
+|---|---|---|
+| `connect`, existing free endpoints or replacement boundaries | outward from retained source edge | outward from retained target edge; fitter negates it for arrival |
+| `connect` with an interior endpoint | interior side uses travel tangent | interior side uses travel tangent; free side retains outward convention |
+| `branch` | travel tangent at interior source | outward from existing free target edge; fitter negates it |
+| `crossover` | travel tangent at source interior | travel tangent at target interior; no inversion |
+| `extend` | outward from existing source edge | travel tangent at proposed new free end |
+| `structure_seed` | virtual span outward, opposite proposed departure | virtual span outward, along proposed arrival |
+
+For an eastward free-end `connect`, the port directions are source`[1,0]`,
+target`[-1,0]`. For an eastward ordinary `crossover` from local`[0,0,0]` to
+`[35,5,0]`, both port directions are`[1,0]`:
+
+```json
+{"ports":{"a":{"position":[0,0,0],"direction":[1,0]},
+          "b":{"position":[35,5,0],"direction":[1,0]}},
+ "steps":[{"name":"eastward_xo","kind":"crossover","source":"a","target":"b"}]}
+```
+
+This is a partial schema illustration requiring fresh native interior identities,
+resources and an authorised region. An opposing target travel tangent asks for
+different geometry; it is not the free-end arrival convention. Complex geometry
+may legitimately have opposing tangents, so no global rejection gate is imposed.
+
 Connect guides have `position`, `travel_direction`, `grade`; structure entries
 use the existing native chain contract. Optional diagram `curves` contain cubic
 `p0,p1,t0,t1` in local coordinates; these draw intent and do not dictate every
@@ -421,6 +449,15 @@ or rebuilding the fan. This demonstrates segmentation sensitivity for that case;
 it is not a universal crossover-spacing rule or general native acceptance guarantee.
 Exact state/receipt evidence remains under `.local_runs/operator/<run>/` and the
 corresponding session's local native response records. No train-traversal claim.
+
+RN qualification is a separate input-direction lesson: run`9288f7b2af0d4790`
+on the same build/session built both original35-unit crossovers after changing only
+their target travel tangents to match departure (14calls,7.031seconds native-call
+time). No merge, longer crossover or station move was used. The prepared RN merge/
+50–45-unit alternative remained unused. This isolates the earlier RN rejection to
+the mistaken free-end target convention; it does not extend the north segmentation
+conclusion to RN. South coalescing`156bd800a9394ae5` and mirrored crossovers
+`9a2f100b55e9481c` also succeeded; these are specific native fixtures, not a new gate.
 
 `station-routes --input routes.json` / MCP `review_station_routes(brief)` reviews
 up to8 named `arrival`/`departure` paths. Brief fields are registry `name`, `revision`
