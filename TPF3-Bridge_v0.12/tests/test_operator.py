@@ -528,6 +528,28 @@ class OperatorTest(unittest.TestCase):
             r=replacement_boundary(client,intent,[chain],{'anchor_edge':3,'edges':[right,branch]})
         self.assertEqual((r['edge_id'],r['node_id']),(3,3));self.assertFalse(r['eligible'])
 
+    def test_replacement_boundary_uses_exact_primary_when_octree_only_returns_chain_edge(self):
+        chain,left,right,branch,candidate,intent=self.replacement_fixture();client=FakeClient()
+        witness=candidate|{'edge_id':1,'edge_snapshot':chain,'outward_direction':[1,0,0]}
+        def request(op,q,**kwargs):
+            return {'status':'ok','request_id':'exact_incidence','result':{'edges':[right,branch]} if op=='inspect' else {'complete':True,'candidates':[witness]}}
+        with patch.object(client,'request',side_effect=request):
+            r=replacement_boundary(client,intent,[chain],{'anchor_edge':3,'edges':[right,branch]})
+        self.assertEqual((r['edge_id'],r['node_id']),(3,3));self.assertEqual(r['outward_direction'],[-1,0,0]);self.assertEqual(r['edge_snapshot'],right)
+        self.assertEqual(r['ref'],'exact_incidence:E3:N3');self.assertEqual(r['incident_edges'],[1,3,4])
+
+    def test_replacement_boundary_deduplicates_exact_node_witnesses_and_rejects_wrong_position(self):
+        for wrong in (False,True):
+            chain,left,right,branch,candidate,intent=self.replacement_fixture();client=FakeClient()
+            witness=candidate|{'edge_id':1,'edge_snapshot':chain,'outward_direction':[1,0,0]}
+            if wrong:witness['pos']=[100,.01,2]
+            def request(op,q,**kwargs):
+                return {'status':'ok','request_id':'exact_incidence','result':{'edges':[right,branch]} if op=='inspect' else {'complete':True,'candidates':[witness,witness]}}
+            with patch.object(client,'request',side_effect=request):
+                if wrong:
+                    with self.assertRaises(LiveError):replacement_boundary(client,intent,[chain],{'anchor_edge':3,'edges':[right,branch]})
+                else:self.assertEqual(replacement_boundary(client,intent,[chain],{'anchor_edge':3,'edges':[right,branch]})['edge_id'],3)
+
     def test_replacement_boundary_rejects_unlisted_incidence_stale_outside_and_internal_node(self):
         for problem in ('unlisted','missing','incomplete','owned','stale','internal'):
             with self.subTest(problem=problem):

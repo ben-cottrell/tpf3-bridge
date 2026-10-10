@@ -393,6 +393,12 @@ its primary retained edge and all1..2 outside TRACK edges. The removed chain is
 may be degree two or three only with this complete opt-in evidence. An added or
 missing outside edge, owner or stale snapshot stops preparation. Generic free/
 connected selection and default replacement degree-two rules are unchanged.
+The local octree may return only a removed-chain edge at a boundary. Complete
+exact node incidence can establish that boundary; fresh inspection of the named
+retained primary supplies its native outward tangent and geometry. The witness's
+edge/direction is not substituted for the primary, and no proximity identity or
+larger query region is needed. Repeated witnesses for the same exact node agree
+on one attachment rather than creating spurious ambiguity.
 
 This mode allows only collinear NORMAL track with unchanged resources, no guides,
 one NORMAL structure, endpoint-cubic representation and handle scale1. Original

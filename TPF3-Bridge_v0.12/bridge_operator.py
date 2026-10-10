@@ -108,22 +108,34 @@ def replacement_boundary(client,intent,chain,spec):
     if not 1<=len(chain)<=16 or len({e['id'] for e in chain})!=len(chain):raise ValueError('replacement requires1..16 distinct exact chain edges')
     outside=fresh_binding(client,{'edges':spec['edges']});ids={e['id'] for e in chain};out_ids={e['id'] for e in outside}
     if ids&out_ids:raise ValueError('replacement outside edge belongs to removed chain')
+    primary=[e for e in outside if e['id']==spec['anchor_edge']]
+    if len(primary)!=1:raise ValueError('exact primary outside edge required')
+    primary=primary[0]
     adj={}
     for edge in chain:
         for node in (edge['node0'],edge['node1']):adj.setdefault(node,set()).add(edge['id'])
     response=client.request('discover',intent);value=response.get('result',{})
     if response['status']!='ok' or value.get('complete') is not True:raise live.LiveError('discovery_incomplete','complete exact replacement boundary read required')
-    matches=[]
+    matches={}
     for c in value.get('candidates',[]):
         node=c.get('node_id')
-        if c.get('edge_id')!=spec['anchor_edge'] or len(adj.get(node,[]))!=1:continue
+        if len(adj.get(node,[]))!=1:continue
         expected=adj[node]|out_ids
-        if c.get('incidence_complete') is not True or c.get('incident_output_truncated') or c.get('incident_count')!=len(expected) or set(c.get('incident_edges',[]))!=expected or c.get('construction_owner') not in (None,'none',-1,0):continue
+        if c.get('edge_id') not in expected or c.get('incidence_complete') is not True or c.get('incident_output_truncated') or c.get('incident_count')!=len(expected) or set(c.get('incident_edges',[]))!=expected or c.get('construction_owner') not in (None,'none',-1,0):continue
         if any(node not in (e['node0'],e['node1']) for e in outside):continue
-        d=c['outward_direction'];wanted=intent['travel_direction'];norm=math.hypot(*d[:2])*math.hypot(*wanted)
-        if norm and math.dist(c['pos'],intent['guide_xyz'])<=intent['placement_tolerance'] and sum(d[i]*wanted[i] for i in (0,1))/norm>=math.cos(math.radians(intent['heading_tolerance_deg'])):matches.append(c)
+        # Octree edge coverage need not include every incident edge. Complete
+        # node incidence establishes identity; the exact fresh named primary
+        # supplies the anchor geometry, using the native anchor convention.
+        end=node==primary['node1'];pos=primary['p1'] if end else primary['p0']
+        tangent=primary['t1'] if end else [-x for x in primary['t0']]
+        size=math.hypot(*tangent[:2]);wanted=intent['travel_direction'];norm=size*math.hypot(*wanted)
+        if not size or any(abs(c['pos'][i]-pos[i])>.001 for i in range(3)):continue
+        d=[tangent[0]/size,tangent[1]/size,0]
+        if norm and math.dist(pos,intent['guide_xyz'])<=intent['placement_tolerance'] and sum(tangent[i]*wanted[i] for i in (0,1))/norm>=math.cos(math.radians(intent['heading_tolerance_deg'])):
+            matches[node]=c|{'ref':response.get('request_id','discover')+f":E{primary['id']}:N{node}",'edge_id':primary['id'],'edge_snapshot':primary,
+                             'pos':pos,'outward_direction':d,'grade':tangent[2]/size,'template':primary['template'],'style':primary['style']}
     if len(matches)!=1:raise live.LiveError('ambiguous_attachment' if matches else 'no_eligible_candidates','named replacement boundary identity/incidence is not unique/current')
-    return matches[0]
+    return next(iter(matches.values()))
 
 def check_plain_coalescing(chain,source,target,*,require_structure=True):
     start,end=source['pos'],target['pos'];delta=[b-a for a,b in zip(start,end)];sq=sum(x*x for x in delta)
