@@ -139,9 +139,12 @@ def place_station(client, brief, *, execute=False):
 
 
 def parameters(brief):
-    if not isinstance(brief,dict) or set(brief)-{'name','max_groups','max_external_edges','max_lead_distance','survey_depth','max_frozen_entities','max_frozen_tracks'}:raise ValueError('bounded station survey brief required')
+    if not isinstance(brief,dict) or set(brief)-{'name','max_groups','max_external_edges','max_lead_distance','survey_depth','max_frozen_entities','max_frozen_tracks','lookup_scope'}:raise ValueError('bounded station survey brief required')
     if not isinstance(brief.get('name'),str) or not 1<=len(brief['name'].encode('utf-8'))<=120:raise ValueError('exact station name required')
     p={'name':brief['name'],'max_groups':brief.get('max_groups',256),'max_external_edges':brief.get('max_external_edges',64),'max_lead_distance':brief.get('max_lead_distance',800)}
+    if 'lookup_scope' in brief:
+        if brief['lookup_scope'] not in ('external','identity_frozen'):raise ValueError('explicit supported station lookup scope required')
+        p['lookup_scope']=brief['lookup_scope']
     for k,limit in (('max_groups',256),('max_external_edges',64)):
         if type(p[k]) is not int or not 1<=p[k]<=limit:raise ValueError(k+' outside bounded domain')
     for k,limit in (('max_frozen_entities',16384),('max_frozen_tracks',2048)):
@@ -185,7 +188,7 @@ def mouth_groups(ports):
 def inspect_station(client,brief):
     p=parameters(brief);session=client.session;path=client.evidence/(uuid.uuid4().hex+'.station_survey.json')
     record={'brief':brief,'session':session,'observations':[],'sites':[],'game_constructed':False}
-    summary={'status':'incomplete','operation':'station-survey','name':p['name'],'game_constructed':False,'evidence':str(path.resolve()),'platform_routes':'unprobed','native_save_identity':'unknown','snapshot_atomic':False}
+    summary={'status':'incomplete','operation':'station-survey','name':p['name'],'lookup_scope':p.get('lookup_scope','external'),'game_constructed':False,'evidence':str(path.resolve()),'platform_routes':'unprobed','native_save_identity':'unknown','snapshot_atomic':False}
     try:
         r=client.request('station_lookup',p);record['observations'].append(r)
         if r['status']!='ok':raise live.LiveError(r['status'],r['result'].get('error','station lookup failed'))
@@ -215,6 +218,7 @@ def inspect_station(client,brief):
             station_count=len(v['stations']),terminal_count=sum(s['terminal_count'] for s in v['stations']),free_connection_count=len(ports),
             ports=[{'node':q['node_id'],'edge':q['edge_id'],'xyz':q['pos']} for q in ports[:16]],port_summary_truncated=len(ports)>16,mouth_groups=len(groups),
             site_tiles=len(record['sites']),site_complete=bool(record['sites']) and all(s['result']['site']['truncated'] is False for s in record['sites']))
+        if v.get('lookup_scope')=='identity_frozen':summary.update(free_connection_count=None,external_observation='not_requested',external_complete=False)
     except (live.LiveError,ValueError,KeyError,TypeError) as exc:summary.update(status=getattr(exc,'status','invalid_result'),error=str(exc)[:350])
     finally:record['summary']=summary;live.atomic_json(path,record)
     return summary

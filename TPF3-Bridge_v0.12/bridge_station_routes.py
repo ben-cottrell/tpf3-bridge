@@ -5,8 +5,10 @@ import bridge_live as live
 import bridge_station as station
 
 def review(client,registry,brief):
-    if set(brief)!={'name','revision','routes'} or not isinstance(brief['routes'],list) or not 1<=len(brief['routes'])<=8:
+    if set(brief)-{'max_path_entries'}!={'name','revision','routes'} or not isinstance(brief['routes'],list) or not 1<=len(brief['routes'])<=8:
         raise ValueError('registry name/revision and1..8 directed station routes required')
+    path_limit=brief.get('max_path_entries',256)
+    if type(path_limit) is not int or not 1<=path_limit<=512:raise ValueError('explicit route path observation bound1..512 required')
     record=registry.load(brief['name'])
     if record['revision']!=brief['revision']:raise ValueError('registry revision changed')
     session=client.session;surveys={};observations=[];rows=[];names=set()
@@ -26,9 +28,9 @@ def review(client,registry,brief):
         if type(terminal) is not int or not 1<=terminal<=64:raise ValueError('exact registered one-based terminal required')
         name=selector['name']
         if name not in surveys:
-            response=client.request('station_lookup',station.parameters({'name':name}));observations.append(response)
+            response=client.request('station_lookup',station.parameters({'name':name,'lookup_scope':'identity_frozen'}));observations.append(response)
             v=station.normalized_station(response.get('result',{}))
-            if response['status']!='ok' or v.get('complete') is not True or v.get('outcome')!='resolved':raise live.LiveError('station_route_incomplete','complete station observation required')
+            if response['status']!='ok' or v.get('complete') is not True or v.get('outcome')!='resolved' or v.get('lookup_scope')!='identity_frozen' or v.get('identity_complete') is not True or v.get('frozen_complete') is not True:raise live.LiveError('station_route_incomplete','complete scoped station identity/frozen observation required')
             surveys[name]=v
         v=surveys[name];cs=[c for c in v['constructions'] if c['resource']==selector['construction']['resource'] and c['position']==selector['construction']['position']]
         if len(cs)!=1:raise live.LiveError('ambiguous_station_route','registered construction not unique/current')
@@ -63,12 +65,14 @@ def review(client,registry,brief):
         if 'role' not in route[required]:raise ValueError('arrival targets/departure starts at a registered terminal')
         a=endpoint(route['source'],True);b=endpoint(route['target'],False)
         response=live.route(client,{'source_edge':a['edge'],'source_node':a['node'],'target_edge':b['edge'],'target_node':b['node'],
-                                    'mode':'TRAIN','max_length':route['max_length'],'required_edges':list(dict.fromkeys([a['edge'],b['edge']]))})
+                                    'mode':'TRAIN','max_length':route['max_length'],'max_path_entries':path_limit,'required_edges':list(dict.fromkeys([a['edge'],b['edge']]))})
         observations.append(response);value=response.get('result',{})
-        rows.append({'name':route['name'],'purpose':route['purpose'],'verified':response['status']=='ok' and value.get('requested_route_verified') is True,
+        count=value.get('path_count');complete=value.get('truncated') is False and type(count) is int and 0<count<=path_limit
+        rows.append({'name':route['name'],'purpose':route['purpose'],'verified':response['status']=='ok' and value.get('requested_route_verified') is True and complete,
                      'source':a,'target':b,'status':response['status'],'reason':value.get('reason'),'length':value.get('total_path_length'),'request_id':response.get('request_id')})
+        rows[-1].update(path_count=count,max_path_entries=path_limit,truncated=value.get('truncated','unknown'))
     for name,v in surveys.items():
-        final=client.request('station_lookup',station.parameters({'name':name}));observations.append(final)
+        final=client.request('station_lookup',station.parameters({'name':name,'lookup_scope':'identity_frozen'}));observations.append(final)
         if final['status']!='ok' or station.normalized_station(final['result'])!=v or client.session!=session:raise live.LiveError('stale_station','station route review crossed changed state/session')
     path=client.evidence/(uuid.uuid4().hex+'.station_routes.json')
     live.atomic_json(path,{'brief':brief,'session':session,'routes':rows,'observations':observations,'game_constructed':False,'snapshot_atomic':False})

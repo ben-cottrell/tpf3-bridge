@@ -5005,6 +5005,24 @@ class ReferenceRouteSetTests(unittest.TestCase):
 
 class StationSurveyTests(unittest.TestCase):
     setUp=LiveClientTests.setUp
+    def test_explicit_identity_scope_does_not_report_unread_external_ports_as_absent(self):
+        from bridge_station import inspect_station,parameters
+        v=self.station(0);v.update(lookup_scope='identity_frozen',identity_complete=True,frozen_complete=True,external_complete=False,external_observation='not_requested')
+        with patch.object(self.client,'request',return_value={'status':'ok','result':v}) as request:r=inspect_station(self.client,{'name':'Mid West C','lookup_scope':'identity_frozen'})
+        self.assertEqual(r['status'],'ok');self.assertIsNone(r['free_connection_count'])
+        self.assertEqual(r['external_observation'],'not_requested');self.assertFalse(r['external_complete'])
+        self.assertEqual(request.call_count,2);self.assertEqual(request.call_args.args[1]['lookup_scope'],'identity_frozen')
+        with self.assertRaises(ValueError):parameters({'name':'x','lookup_scope':'unbounded'})
+
+    def test_explicit_route_path_budget_keeps_legacy_default_and_rejects_invalid_limits(self):
+        from bridge_live import route
+        brief={'source_edge':1,'source_node':2,'target_edge':3,'target_node':4,'mode':'TRAIN','max_length':4000,'required_edges':[1,3]}
+        with patch.object(self.client,'request',return_value={'status':'ok','result':{}}) as request:
+            route(self.client,brief);self.assertNotIn('max_path_entries',request.call_args.args[1])
+            route(self.client,brief|{'max_path_entries':256});self.assertEqual(request.call_args.args[1]['max_path_entries'],256)
+        for limit in (0,513,True,1.5):
+            with self.subTest(limit=limit),patch.object(self.client,'request') as request,self.assertRaises(ValueError):route(self.client,brief|{'max_path_entries':limit})
+            request.assert_not_called()
     def test_empty_lua_station_arrays_are_normalized_without_fabricated_site_read(self):
         from bridge_station import inspect_station,normalized_station
         v=self.station(0);v['ports']={}

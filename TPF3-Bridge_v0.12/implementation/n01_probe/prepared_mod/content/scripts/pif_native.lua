@@ -510,11 +510,13 @@ function M.discover(p,request_id)
 end
 -- Bounded named station catalogue followed by exact external TRACK incidence.
 function M.station_lookup(p)
+ local lookup_scope=p.lookup_scope or "external"
+ assert(lookup_scope=="external" or lookup_scope=="identity_frozen","unsupported_station_lookup_scope")
  assert(type(p.name)=="string" and #p.name>0 and #p.name<=120,"station_name_required")
  assert(finite(p.max_groups) and p.max_groups%1==0 and p.max_groups>=1 and p.max_groups<=256,"station_group_bound")
  assert(finite(p.max_external_edges) and p.max_external_edges%1==0 and p.max_external_edges>=1 and p.max_external_edges<=64,"external_track_bound")
  assert(finite(p.max_lead_distance) and p.max_lead_distance>0 and p.max_lead_distance<=800,"external_distance_bound")
- local out={name=p.name,matches={},ports={},external_edges={},game_constructed=false,native_save_identity="unknown",load_epoch="unknown",platform_route_association="unprobed"}
+ local out={name=p.name,lookup_scope=lookup_scope,identity_complete=false,frozen_complete=false,external_complete=false,matches={},ports={},external_edges={},game_constructed=false,native_save_identity="unknown",load_epoch="unknown",platform_route_association="unprobed"}
  local groups=api.engine.getEntitiesWithComponent(api.type.ComponentType.STATION_GROUP)
  out.group_count=#groups
  if #groups>p.max_groups then out.outcome="lookup_budget_exhausted";out.complete=false;return out end
@@ -543,6 +545,7 @@ function M.station_lookup(p)
   out.stations[#out.stations+1]={station_id=sid,construction_id=cid,terminal_count=#station.terminals,terminals=terminals}
   constructors[cid]=true
  end
+ out.identity_complete=true
  local frozen_count,node_count,scanned,total=0,0,0,0;local seeds={}
  local limits={frozen_entities=p.max_frozen_entities or 16384,frozen_TRACK=p.max_frozen_tracks or 2048,nodes=4096}
  assert(finite(limits.frozen_entities) and limits.frozen_entities%1==0 and limits.frozen_entities>=1 and limits.frozen_entities<=16384,"frozen_entity_read_bound")
@@ -581,6 +584,12 @@ function M.station_lookup(p)
  end
  assert(#out.constructions>=1 and #out.constructions<=8,"station_construction_bound")
  table.sort(out.constructions,function(a,b) return a.construction_id<b.construction_id end)
+ out.frozen_complete=true
+ if lookup_scope=="identity_frozen" then
+  out.complete=true;out.truncated=false;out.outcome="resolved";out.external_observation="not_requested"
+  out.frozen_TRACK_count=frozen_count;out.processed_station_nodes=node_count;out.processed_frozen_entities=scanned
+  return out
+ end
  table.sort(seeds,function(a,b) return a.node<b.node end)
  local seen,queue,ports={}, {},{};local truncated=false
  local function extend(seed,path,origin)
@@ -628,6 +637,7 @@ function M.station_lookup(p)
   port.association.platform_terminal=#matched==1 and matched[1] or "unknown"
  end
  out.complete=not truncated;out.truncated=truncated;out.outcome=truncated and "external_observation_incomplete" or "resolved"
+ out.external_complete=not truncated
  out.free_connection_count=#out.ports;out.frozen_TRACK_count=frozen_count;out.processed_station_nodes=node_count;out.processed_frozen_entities=scanned
  return out
 end
@@ -817,6 +827,8 @@ function M.route(p)
  assert(p.mode=="TRAIN" or p.mode=="ELECTRIC_TRAIN","unsupported_route_mode")
  assert(finite(p.max_length) and p.max_length>0 and p.max_length<=8000,"invalid_route_length_bound")
  assert(type(p.required_edges)=="table" and #p.required_edges>=1 and #p.required_edges<=32,"route_required_edge_bound")
+ local path_limit=p.max_path_entries or 64
+ assert(finite(path_limit) and path_limit%1==0 and path_limit>=1 and path_limit<=512,"route_path_entry_bound")
  local mode=E.TransportMode[p.mode]
  local a,start,index=rail_lane(p.source_edge,mode,p.junction_node,p.junction_nodes);local b,finish,target_index=rail_lane(p.target_edge,mode,p.junction_node,p.junction_nodes)
  assert((p.source_edge~=p.target_edge or p.single_edge==true) and p.source_node~=p.target_node,"distinct_route_attachments_required")
@@ -831,11 +843,11 @@ function M.route(p)
  local native_destination=finish.conns[p.target_node==b.node0 and 1 or 2]
  local path=api.engine.util.pathfinding.findPathNodeToNode({native_origin},{native_destination},{mode})
  assert(type(path)=="table","native_path_result_contract")
- local out={native_path_found=#path>0,requested_route_verified=false,path={},path_count=#path,truncated=#path>64,
+ local out={native_path_found=#path>0,requested_route_verified=false,path={},path_count=#path,max_path_entries=path_limit,truncated=#path>path_limit,
   source={base_edge=p.source_edge,base_node=p.source_node,transport_edge={entity=p.source_edge,index=index},forward=dir,transport_origin=origin},
   target={base_edge=p.target_edge,base_node=p.target_node,transport_destination=destination},
   mode=p.mode,max_length=p.max_length,query="api.engine.util.pathfinding.findPathNodeToNode",game_constructed=false,
-  native_search_length_bound=false,length_bound_is_acceptance_only=true,
+  native_search_length_bound=false,native_search_entry_bound=false,length_bound_is_acceptance_only=true,
   train_traversal="unprobed",reservation_availability="unprobed",native_save_identity="unknown",load_epoch="unknown"}
  if #path==0 then out.reason="no_native_path_returned";return out end
  if out.truncated then out.reason="native_path_observation_bound";return out end

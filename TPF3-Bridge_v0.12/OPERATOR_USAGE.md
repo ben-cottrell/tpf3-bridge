@@ -402,6 +402,19 @@ outer boundary endpoints omit `role` and use fresh free-boundary discovery. The
 existing native TRAIN route check requires both current endpoint edges and reports
 actual direction/length acceptance. Missing/ambiguous/incomplete or changed station
 state stops review. Summaries show at most4 routes; full responses stay local.
+Terminal review requests `lookup_scope:"identity_frozen"`: station group,
+construction, terminal and frozen TRACK identity only, without walking the growing
+external district. Both identity/frozen completeness must be true. Default external
+station surveys and interface registration retain their64-edge external bound and
+reject incomplete reads; identity-only data cannot qualify an external role.
+An explicit identity-only station survey reports external ports as unobserved,
+not zero. No external graph limit is raised for this fix.
+
+Route review explicitly defaults `max_path_entries` to256 because a station path
+can already exceed120 native entries before its external approach. Brief may select
+1..512 entries; overflow is `routes_unverified` with actual count/truncation evidence.
+Ordinary route API calls retain64 unless an explicit limit is supplied. These limits
+bound returned/processed observations, not the native pathfinder's internal search.
 This establishes native directed path availability, not line operation, train arrival,
 stopping behaviour or physical traversal. Saved-file integrity remains separate.
 

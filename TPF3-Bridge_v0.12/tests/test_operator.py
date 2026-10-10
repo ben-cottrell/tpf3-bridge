@@ -84,6 +84,7 @@ class OperatorTest(unittest.TestCase):
     def station_route_fixture(self,td):
         client=FakeClient();client.evidence=Path(td);o=Operator(runs=td,client=client)
         v,c,roles,_=self.station_exit_fixture();edge=self.native_edge()
+        v.update(lookup_scope='identity_frozen',identity_complete=True,frozen_complete=True,external_complete=False,external_observation='not_requested')
         v['stations'][0]['terminals']=[{'index':1,'vehicle_edges':{},'vehicle_node':{'entity':2,'index':0}}]
         o.interfaces().path('district').write_text(json.dumps({'name':'district','revision':'R1','roles':roles}))
         terminal={'role':'MW_up','guide_xyz':edge['p0'],'travel_direction':[-1,0]}
@@ -93,7 +94,8 @@ class OperatorTest(unittest.TestCase):
         queries=[]
         def request(op,q,**kwargs):
             queries.append((op,q))
-            result=v if op=='station_lookup' else {'edges':[edge]} if op=='inspect' else {'requested_route_verified':True,'total_path_length':200}
+            if op=='station_lookup':self.assertEqual(q['lookup_scope'],'identity_frozen')
+            result=v if op=='station_lookup' else {'edges':[edge]} if op=='inspect' else {'requested_route_verified':True,'total_path_length':200,'path_count':130,'truncated':False,'max_path_entries':q['max_path_entries']}
             return {'status':'ok','request_id':op,'result':copy.deepcopy(result)}
         return client,o,v,edge,brief,queries,request
 
@@ -109,9 +111,36 @@ class OperatorTest(unittest.TestCase):
             route=[q for op,q in queries if op=='route']
             self.assertEqual((route[0]['source_edge'],route[0]['target_edge'],route[0]['target_node']),(8,1,2))
             self.assertEqual((route[1]['source_edge'],route[1]['source_node'],route[1]['target_edge']),(1,2,8))
+            self.assertTrue(all(q['max_path_entries']==256 for q in route))
             self.assertEqual([r['purpose'] for r in result['routes']],['arrival','departure'])
             self.assertEqual(result['line_operation'],'unprobed');self.assertFalse(result['game_constructed'])
             self.assertTrue(all(op in ('station_lookup','inspect','route') for op,_ in queries))
+
+    def test_station_route_scope_and_path_bounds_do_not_promote_incomplete_records(self):
+        for problem in ('frozen_incomplete','identity_incomplete','wrong_scope','path_overflow','path_unknown','reported_truncation'):
+            with self.subTest(problem=problem),tempfile.TemporaryDirectory() as td:
+                client,o,v,edge,brief,queries,request=self.station_route_fixture(td)
+                if problem=='frozen_incomplete':v['frozen_complete']=False
+                elif problem=='identity_incomplete':v['identity_complete']=False
+                elif problem=='wrong_scope':v['lookup_scope']='external'
+                def changed(op,q,**kwargs):
+                    r=request(op,q,**kwargs)
+                    if op=='route':
+                        if problem=='path_overflow':r['result']['path_count']=257
+                        elif problem=='path_unknown':r['result'].pop('path_count')
+                        elif problem=='reported_truncation':r['result']['truncated']=True
+                    return r
+                with patch.object(client,'request',side_effect=changed),patch('bridge_station_routes.live._select_throat_port',return_value=({'edge_id':8,'node_id':17},'free')):
+                    if problem in ('frozen_incomplete','identity_incomplete','wrong_scope'):
+                        with self.assertRaises(LiveError):o.review_station_routes(brief)
+                        self.assertFalse(any(op=='route' for op,_ in queries))
+                    else:self.assertEqual(o.review_station_routes(brief)['status'],'routes_unverified')
+
+    def test_external_role_does_not_accept_identity_only_scope(self):
+        with tempfile.TemporaryDirectory() as td:
+            client=FakeClient();v,c,roles,request=self.role_fixture()
+            v.update(lookup_scope='identity_frozen',identity_complete=True,frozen_complete=True,external_complete=False)
+            with patch.object(client,'request',side_effect=request),self.assertRaises(LiveError):InterfaceRegistry(td).register(client,'district','R1',roles)
 
     def test_station_routes_reject_missing_ambiguous_incomplete_or_wrong_direction_identity(self):
         for problem in ('missing_node','ambiguous','incomplete','wrong_direction','changed_endpoint','stale'):

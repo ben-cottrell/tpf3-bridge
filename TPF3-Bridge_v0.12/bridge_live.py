@@ -2770,8 +2770,10 @@ def place_depot(client, brief, *, execute=False):
 def route(client, brief):
     """Query native transport routing; does not build or establish train traversal."""
     keys = {'source_edge', 'source_node', 'target_edge', 'target_node', 'mode', 'max_length', 'required_edges'}
-    if not isinstance(brief, dict) or set(brief) != keys:
+    if not isinstance(brief, dict) or set(brief)-{'max_path_entries'} != keys:
         raise ValueError('route brief requires only ' + ', '.join(sorted(keys)))
+    if 'max_path_entries' in brief and (type(brief['max_path_entries']) is not int or not 1<=brief['max_path_entries']<=512):
+        raise ValueError('explicit path observation bound1..512 required')
     for key in ('source_edge', 'source_node', 'target_edge', 'target_node'):
         if type(brief[key]) is not int or brief[key] <= 0:
             raise ValueError(key + ' must be an exact positive native ID')

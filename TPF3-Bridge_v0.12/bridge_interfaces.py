@@ -69,7 +69,7 @@ class InterfaceRegistry:
             if key not in surveys:
                 response=client.request('station_lookup',station.parameters({'name':key}))
                 v=station.normalized_station(response.get('result',{}))
-                if response['status']!='ok' or v.get('complete') is not True or v.get('outcome')!='resolved':raise live.LiveError('station_role_unavailable',v.get('outcome',response['status']))
+                if response['status']!='ok' or v.get('complete') is not True or v.get('outcome')!='resolved' or v.get('lookup_scope','external')!='external' or v.get('external_complete',True) is not True:raise live.LiveError('station_role_unavailable',v.get('outcome',response['status']))
                 surveys[key]=v
             v=surveys[key];selector=spec['construction']
             if set(selector)!={'resource','position'}:raise ValueError('observed construction resource/position required')
