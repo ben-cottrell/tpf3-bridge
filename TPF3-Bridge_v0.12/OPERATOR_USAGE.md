@@ -438,6 +438,24 @@ Use `{"result":"earlier_task","path":["vehicle","id"]}` for exact prior receipts
 or `{"role":"MW_up","field":"edge_id"}` / `field:"operating_terminal"` for freshly
 qualified roles. Forward references are rejected. Vehicle/line updates recheck current
 revisions; purchase preparation checks explicit depot revision and selected assets.
+
+Signal `forward=true` requests travel along the current edge's node0→node1
+orientation; `false` requests node1→node0. Keep caller tangent calculations in that
+convention. The adapter maps native `EdgeObject.left = not forward` and qualifies
+`SignalList.edgePr`'s reversed bit as `forward`. On build40420 an isolated required-
+edge route across signal59195/edge59196 proved the previous direct `left=forward`
+mapping permitted the opposite direction. Historical placement receipts with
+`functional_signal_verified` certified attachment/type/orientation bits only;
+they did not prove the intended permitted travel or running-track policy.
+
+Corrected placement reports `travel_forward`, `native_left` and
+`directed_route_verified:false`. Native route acceptance and observed operation
+remain separate. An available path may use the opposite running track/crossovers:
+require the intended exact corridor edges using existing route `required_edges`
+and inspect their direction before claiming the selected running-track policy.
+Previously placed signals require explicit fresh-identity replacement after the
+corrected adapter is staged and normally loaded; changing code does not repair
+existing map signals. Preserve old receipts and failed/wrong-track route evidence.
 Operating effects remain separate from railway construction: unknown operating effects
 block continuation/review even when `game_constructed:false`. Partial effects remain
 visible and no rollback/replay is assumed. Observation/purchase/path availability do

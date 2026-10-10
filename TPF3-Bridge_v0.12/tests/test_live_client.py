@@ -136,6 +136,30 @@ class DepotPlacementTests(unittest.TestCase):
             self.assertEqual(client.request.call_count,1)
 
 class SignalPlacementTests(unittest.TestCase):
+    def test_public_travel_direction_survives_unrelated_seed_orientation(self):
+        from bridge_live import place_signal
+        from unittest.mock import Mock
+        for forward in (False,True):
+            for one_way in (False,True):
+                with self.subTest(forward=forward,one_way=one_way):
+                    brief={'edge_id':42,'parameter':.4,'forward':forward,'one_way':one_way}
+                    read={'status':'ok','result':{'tracks':{'records':[{'id':42,'revision':[1,2,3],'objects':[]}]}}}
+                    # Seed chooses the actual resource; its own direction must
+                    # not define the requested direction on a different edge.
+                    prepared={'status':'ok','result':{'signal_placement':{'seed':{
+                        'id':5,'revision':[6,7,8],'lanes':[{'edge':99,'reversed':not forward}]}}}}
+                    receipt={'status':'ok','result':{'game_constructed':True,'functional_signal_verified':True,
+                        'travel_forward':forward,'native_left':not forward,'directed_route_verified':False}}
+                    client=Mock();client.request.side_effect=[read,prepared,receipt]
+                    result=place_signal(client,brief,execute=True)
+                    self.assertIs(result,receipt)
+                    self.assertEqual(client.request.call_args_list[1].args[1]['signal_placement']['forward'],forward)
+                    command=client.request.call_args_list[2].args[1]
+                    self.assertEqual(command['forward'],forward);self.assertEqual(command['one_way'],one_way)
+                    self.assertNotIn('native_left',command) # translated at semantic/native boundary only
+                    self.assertFalse(result['result']['directed_route_verified'])
+                    self.assertEqual(brief,{'edge_id':42,'parameter':.4,'forward':forward,'one_way':one_way})
+
     def test_signal_replacement_requires_exact_fresh_attachment(self):
         from bridge_live import place_signal
         from unittest.mock import Mock

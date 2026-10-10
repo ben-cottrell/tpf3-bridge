@@ -2822,7 +2822,13 @@ def reconcile_constructed_connection(client, discoveries, edge_ids):
     return {'status':'ok','result':record,'evidence':str(evidence.resolve())}
 
 def place_signal(client, brief, *, execute=False):
-    """Fresh native template discovery and explicit placement; no replay on failure."""
+    """Place a signal for node0->node1 travel when forward=True.
+
+    The semantic adapter translates the native side bit. Functional readback
+    verifies the signal attachment/type/orientation, not an intended running path;
+    use an explicit directed route with required edges for that separate claim.
+    Fresh native template discovery and explicit placement; no replay on failure.
+    """
     keys = {'edge_id', 'parameter', 'forward', 'one_way'}
     if type(brief) is not dict or set(brief)-{'replace_signal_id'} != keys or type(execute) is not bool:
         raise ValueError('signal requires edge_id, parameter, forward, one_way and boolean execute')

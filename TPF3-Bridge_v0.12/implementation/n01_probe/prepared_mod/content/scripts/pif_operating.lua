@@ -123,7 +123,9 @@ local function signal_command(p)
  local owner=comp(p.edge_id,C.PLAYER_OWNED);if owner then segment.playerOwned=owner end
  segment.comp.objects=objects
  local addition=api.type.SimpleStreetProposal.EdgeObject.new()
- addition.edgeEntity=-1;addition.param=p.parameter;addition.left=p.forward;addition.oneWay=p.one_way
+ -- Public forward is node0->node1 travel, not the native side/orientation bit.
+ -- Build40420 isolated TRAIN reads proved left=true permits reverse travel.
+ addition.edgeEntity=-1;addition.param=p.parameter;addition.left=not p.forward;addition.oneWay=p.one_way
  addition.model=comp(seed.id,C.EDGE_OBJECT).edgeObjectConstruction -- Keep the actual native resource value.
  addition.playerEntity=api.engine.util.getPlayer()
  local proposal=api.type.SimpleProposal.new()
@@ -150,11 +152,12 @@ local function signal_command(p)
   local kind=p.one_way and api.type.Signal.Type.ONE_WAY_SIGNAL or api.type.Signal.Type.SIGNAL
   local lane_ok=false
   for _,lane in ipairs(result.lanes) do
-   if lane.edge==replacement and lane.reversed==not p.forward and lane.type==tostring(kind) then lane_ok=true end
+   if lane.edge==replacement and lane.reversed==p.forward and lane.type==tostring(kind) then lane_ok=true end
   end
   assert(lane_ok,"functional_signal_direction_or_type_mismatch")
   return {signal=result,replacement_edge=replacement,replaced_edge=p.edge_id,replaced_signal=p.replace_signal_id,seed=seed.id~=p.replace_signal_id and signals(seed.id) or seed,
    track_geometry_verified=true,existing_objects_retained=true,functional_signal_verified=true,
+   travel_forward=p.forward,native_left=not p.forward,directed_route_verified=false,
    game_constructed=true,physical_operation="requires_separate_observation"}
  end
 end
