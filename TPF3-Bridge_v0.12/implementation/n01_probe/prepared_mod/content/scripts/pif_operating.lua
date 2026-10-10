@@ -14,12 +14,16 @@ local function fresh(x,r)
 end
 local function line(x)
  local l=assert(comp(x,C.LINE),"line_missing");assert(#l.stops<=16,"line_stop_bound")
+ local passenger=api.res.cargoTypeRep.getPassengerCargoTypeId()
+ assert(type(passenger)=="number" and passenger>=0 and passenger%1==0,"passenger_cargo_identity_unavailable")
  local rows={};for _,s in ipairs(l.stops) do
   local alternatives={};assert(#s.alternativeTerminals<=8,"alternative_terminal_bound")
   for _,a in ipairs(s.alternativeTerminals) do alternatives[#alternatives+1]=terminal(a) end
   rows[#rows+1]={station_group=s.stationGroup,station=s.station,terminal=s.terminal,
    alternatives=alternatives,min_wait=s.minWaitingTime,max_wait=s.maxWaitingTime,
-   load_mode=tostring(s.loadMode),waypoint_count=#s.waypoints}
+   load_mode=tostring(s.loadMode),waypoint_count=#s.waypoints,
+   passenger_loading={cargo_type_id=passenger,enabled=s.stopConfig.load[passenger+1]==true,
+    max_fraction=s.stopConfig.maxLoad[passenger+1] or "unavailable"}}
  end
  return {id=x,name=named(x),revision=rev(x),stops=rows}
 end
@@ -487,19 +491,36 @@ local function checked_stop(s)
  assert(type(s.station)=="number" and s.station%1==0 and s.station>=0 and s.station<#group.stations,"station_index_invalid")
  local station=assert(comp(group.stations[s.station+1],C.STATION),"station_missing")
  assert(type(s.terminal)=="number" and s.terminal%1==0 and s.terminal>=0 and s.terminal<#station.terminals,"terminal_index_invalid")
- return api.type.StationTerminal.new(s.station,s.terminal)
+ return api.type.StationTerminal.new(s.station,s.terminal),group.stations[s.station+1]
+end
+local function passenger_stop_config(station_entity)
+ -- Same IdVector convention/default as native gui/line_vehicle_mgmt/line_util.tl.
+ -- Resolve passengers from the repository; never assume cargo id zero.
+ local passenger=api.res.cargoTypeRep.getPassengerCargoTypeId()
+ local cargo=api.res.cargoTypeRep.getAll(true);local maximum=-1;local count=0
+ for k,_ in pairs(cargo) do
+  assert(type(k)=="number" and k>=0 and k%1==0 and k<128,"line_cargo_type_bound")
+  maximum=math.max(maximum,k);count=count+1;assert(count<=128,"line_cargo_type_bound")
+ end
+ assert(type(passenger)=="number" and passenger>=0 and passenger%1==0 and cargo[passenger]~=nil,"passenger_cargo_identity_unavailable")
+ local load,max_load={},{};for k=0,maximum do load[k+1]=false;max_load[k+1]=1 end
+ local enabled=api.engine.util.station.isStationOfType(station_entity,false)
+ if enabled then load[passenger+1]=true end
+ local config=api.type.Line.StopConfig.new();config.load=load;config.maxLoad=max_load;config.forceUnload=false
+ return config,passenger,enabled
 end
 local function configuration(p)
  assert(type(p.stops)=="table" and #p.stops>=2 and #p.stops<=8,"service_stop_bound")
  local l=api.type.Line.new();local stops={}
  for _,s in ipairs(p.stops) do
-  checked_stop(s);local stop=api.type.Line.Stop.new();stop.stationGroup=s.station_group;stop.station=s.station;stop.terminal=s.terminal
+  local _,station_entity=checked_stop(s);local stop=api.type.Line.Stop.new();stop.stationGroup=s.station_group;stop.station=s.station;stop.terminal=s.terminal
   local alternatives={};local seen={[s.station..":"..s.terminal]=true};assert(#(s.alternatives or {})<=8,"alternative_terminal_bound")
   for _,a in ipairs(s.alternatives or {}) do
    local key=a.station..":"..a.terminal;assert(not seen[key],"duplicate_alternative_terminal");seen[key]=true
    alternatives[#alternatives+1]=checked_stop({station_group=s.station_group,station=a.station,terminal=a.terminal})
   end
   stop.alternativeTerminals=alternatives;stop.loadMode=api.type.Line.LoadMode.LOAD_IF_AVAILABLE
+  stop.stopConfig=passenger_stop_config(station_entity)
   assert(type(s.min_wait or 0)=="number" and (s.min_wait or 0)>=0 and (s.min_wait or 0)<=120,"waiting_time_bound")
   stop.minWaitingTime=s.min_wait or 0;stop.maxWaitingTime=120;stop.maxAdditionalWaitingTime=0
   stops[#stops+1]=stop
@@ -518,8 +539,17 @@ local function verified_line(x,p)
   end
   assert(next(expected)==nil,"service_alternative_readback_mismatch")
   assert(observed.min_wait==(wanted.min_wait or 0) and observed.max_wait==120,"service_wait_readback_mismatch")
+  local _,station_entity=checked_stop(wanted)
+  local expected_config,passenger,enabled=passenger_stop_config(station_entity)
+  local native_stop=comp(x,C.LINE).stops[i]
+  assert(#native_stop.stopConfig.load==#expected_config.load and #native_stop.stopConfig.maxLoad==#expected_config.maxLoad,"service_cargo_vector_readback_mismatch")
+  for k,load in ipairs(expected_config.load) do
+   assert(native_stop.stopConfig.load[k]==load and native_stop.stopConfig.maxLoad[k]==1,"service_cargo_loading_readback_mismatch")
+  end
+  assert(observed.passenger_loading.cargo_type_id==passenger and observed.passenger_loading.enabled==enabled and observed.passenger_loading.max_fraction==1,"service_passenger_loading_readback_mismatch")
  end
- return {line=actual,configuration_verified=true,reachability="requires_separate_native_route_checks",physical_operation="not_demonstrated_by_configuration"}
+ return {line=actual,configuration_verified=true,cargo_configuration_verified=true,
+  cargo_policy="native_passenger_station_default",reachability="requires_separate_native_route_checks",physical_operation="not_demonstrated_by_configuration"}
 end
 local function depot_command(p)
  local cmd,prepared=depot_prepare(p)

@@ -307,6 +307,58 @@ class OperatorTest(unittest.TestCase):
         with self.assertRaises(ValueError):perform(c,'observe',{'vehicle_ids':list(range(1,18))})
         with self.assertRaises(ValueError):references({'result':'x','path':['vehicle']*9},{'x':{}},{})
 
+    def test_line_success_requires_cargo_configuration_readback_without_replay(self):
+        stops=[{'station_group':7,'station':0,'terminal':1,'alternatives':[{'station':0,'terminal':2}]},
+               {'station_group':8,'station':0,'terminal':0,'min_wait':15}]
+        for action in ('line_create','line_update'):
+            for proof in (None,False,'true',True):
+                with self.subTest(action=action,proof=proof):
+                    brief={'action':action,'stops':copy.deepcopy(stops)}
+                    if action=='line_create':brief['name']='passenger service'
+                    else:brief['line_id']=42
+                    saved=copy.deepcopy(brief);c=FakeClient()
+                    receipt={'status':'ok','result':{'configuration_verified':True,'game_constructed':False}}
+                    if proof is not None:receipt['result']['cargo_configuration_verified']=proof
+                    responses=[receipt] if action=='line_create' else [
+                        {'status':'ok','result':{'lines':{'records':[{'id':42,'revision':[1,2,3]}]}}},receipt]
+                    with patch.object(c,'request',side_effect=responses) as request:
+                        if proof is True:self.assertIs(perform(c,'operating',brief),receipt)
+                        else:
+                            with self.assertRaisesRegex(LiveError,'cargo loading readback required'):
+                                perform(c,'operating',brief)
+                    self.assertEqual(request.call_count,1 if action=='line_create' else 2)
+                    command=request.call_args.args
+                    self.assertEqual(command[0],'operating_control')
+                    self.assertEqual(command[1]['stops'],stops)
+                    self.assertTrue(command[1]['execute'])
+                    if action=='line_update':self.assertEqual(command[1]['revision'],[1,2,3])
+                    self.assertEqual(brief,saved)
+
+    def test_line_cargo_native_failure_is_preserved_without_retry(self):
+        receipt={'status':'error','request_id':'cargo_failed','result':{
+            'error':'service_cargo_loading_readback_mismatch','operating_effects':'unknown'}}
+        c=FakeClient()
+        with patch.object(c,'request',return_value=receipt) as request:
+            self.assertIs(perform(c,'operating',{'action':'line_create','name':'test','stops':[
+                {'station_group':7,'station':0,'terminal':0},{'station_group':8,'station':0,'terminal':0}]}),receipt)
+        self.assertEqual(request.call_count,1)
+
+    def test_missing_cargo_proof_keeps_operating_effects_visible_and_stops_plan(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan()
+            p['steps']=[{'name':'service','kind':'operating','brief':{'action':'line_create','name':'test','stops':[
+                {'station_group':7,'station':0,'terminal':0},{'station_group':8,'station':0,'terminal':0}]}},
+                {'name':'observe','kind':'observe','brief':{'vehicle_ids':[60]}}]
+            receipt={'status':'ok','request_id':'old_adapter','result':{
+                'configuration_verified':True,'game_constructed':False,'native_operating_state_changed':True}}
+            with patch.object(c,'request',return_value=receipt) as request:
+                run=o.plan(p)['run'];self.assertEqual(o.execute(run)['status'],'needs_attention')
+            self.assertEqual(request.call_count,1)
+            state=json.loads((o.path(run)/'state.json').read_text())
+            self.assertTrue(state['step_mutation']['native_operating_state_changed'])
+            self.assertNotIn('observe',state['steps'])
+            with self.assertRaisesRegex(ValueError,'uncertain/partial'):o.continue_plan(run,'R2')
+
     def test_operating_only_role_plan_does_not_resolve_unrelated_roles(self):
         with tempfile.TemporaryDirectory() as td:
             c=FakeClient();o=Operator(runs=td,client=c);v,port,roles,request=self.role_fixture()

@@ -81,4 +81,8 @@ def perform(client,kind,brief):
         if len(rows)!=1:raise live.LiveError('operating_identity_unavailable','exact current operating identity not in bounded read')
         if 'revision' in q and q['revision']!=rows[0]['revision']:raise live.LiveError('stale_operating_identity','explicit operating revision changed')
         q['revision']=rows[0]['revision']
-    return client.request('operating_control',dict(q,execute=True))
+    result=client.request('operating_control',dict(q,execute=True))
+    if action in ('line_create','line_update') and result.get('status')=='ok':
+        if result.get('result',{}).get('cargo_configuration_verified') is not True:
+            raise live.LiveError('service_cargo_configuration_unverified','line may be changed; cargo loading readback required, do not replay')
+    return result
