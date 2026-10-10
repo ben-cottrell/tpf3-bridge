@@ -400,6 +400,21 @@ brief positions are native world coordinates. Basic station placement retains it
 existing supported templates/parameters; advanced18-position module assembly is not
 added. Primary and up to8 alternative terminals per stop are explicit native choices.
 
+The installed built-in modular passenger template5 is a terminus, not a through
+station. Its default head building is at negative localY; the open approach is
+positive localY, with world direction`[-sin(angle),cos(angle),0]`. This is a
+source-qualified hint for the untouched template, not a universal station rule or
+native buildability guarantee. District04 Cross approached the head/buffer side:
+both5/30-unit extensions received native Collision despite an exact free, unowned
+TRACK endpoint. RN/RS approached the open side. The current catalogue exposes
+template parameters; it does not expose an explicit approach-end/buildable-port
+field. Registry endpoint qualification establishes identity/incidence, not clearance
+past buildings/buffers. Check the selected native template/orientation and actual
+proposal; do not infer an API defect or globally reject endpoints from geometry.
+Edited modules may change the layout. Replacing/rotating a station requires fresh
+group/terminal/lead identities before applying old operating recipes. Evidence and
+the two installed resource hashes: local District04`STATION_APPROACH_LESSON.json`.
+
 Use `{"result":"earlier_task","path":["vehicle","id"]}` for exact prior receipts,
 or `{"role":"MW_up","field":"edge_id"}` / `field:"operating_terminal"` for freshly
 qualified roles. Forward references are rejected. Vehicle/line updates recheck current
