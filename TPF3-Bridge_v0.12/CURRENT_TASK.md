@@ -1,3 +1,22 @@
+# Milestone cleanup — 10 October 2026
+
+Challenge04 remains user-accepted and unchanged. Archived 31 superseded project
+savegames and 31 thumbnails outside the active save directory, with every archived
+hash verified. The accepted final save hash is unchanged; originals, accepted
+Challenge01–04, Wickham/P65/P66/P73/P75 milestones and useful manual/crash references
+remain active. A newly rotated autosave is retained. Archive location is the game's
+local/bridge_save_archive_20261010 folder; its manifest supports restoration.
+Permanent save deletion was rejected by automatic review; the permitted reversible
+archive alternative retains the data (1.312 GB), rather than reclaiming that space.
+Removed 185 regenerable Python bytecode directories (15,817,677 bytes). Source,
+accepted evidence, design history and the separate whole-map handoff remain intact.
+Detailed local manifests: .local_runs/cleanup_20261010/.
+
+User requested publication to the existing Git remote. Automatic review rejected
+the proposed push pending specific payload/destination confirmation. No push occurred.
+Prepared destination: origin/codex/initial-implementation at ben-cottrell/tpf3-bridge.
+No source changed during cleanup; reuse the passing 67 operator / 434 shared checks.
+
 # Challenge04 accepted — future guidance recorded (10 October 2026)
 
 User accepts the overall Mid West C design and explicitly requests no rebuilding.
@@ -172,3 +191,4 @@ not claimed observed under contention; sampled terrain/clearance only, no capaci
 physics or whole-map audit. Lua standalone syntax unverified; native loaded on40420.
 No remaining acceptance blocker or pending user approval; no host repair or remote push.
 Stop at P75 completion; no unsolicited next task. Actual usage unavailable.
+
