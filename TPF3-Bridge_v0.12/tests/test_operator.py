@@ -8,7 +8,7 @@ from unittest.mock import patch
 from bridge_live import LiveError
 from bridge_interfaces import InterfaceRegistry, diagnose
 from bridge_operator_tasks import perform, references
-from bridge_operator import Operator, validate_plan, cubic, native_failure, inspect_edges, fresh_binding, discover_region, chain_point, crossing_observations, render_profile
+from bridge_operator import Operator, validate_plan, cubic, native_failure, inspect_edges, fresh_binding, discover_region, chain_point, crossing_observations, render_profile, replacement_boundary, check_plain_coalescing
 from tools.operator_mcp_client import semantic_result, compact_stdout
 
 
@@ -510,6 +510,76 @@ class OperatorTest(unittest.TestCase):
                 else:
                     self.assertTrue(select.call_args.kwargs['connected']);self.assertEqual(request.call_args_list[-2].args[1]['replace_chain'],[edge])
                 self.assertEqual(json.loads((o.path(run)/'state.json').read_text())['invalidated_bindings'],['old'])
+
+    def replacement_fixture(self):
+        chain=self.native_edge();left=self.native_edge(2,-30,0);left.update(node0=4,node1=2)
+        right=self.native_edge(3,100,130);right.update(node0=3,node1=6)
+        branch=self.native_edge(4,100,140);branch.update(node0=3,node1=8)
+        candidate={'edge_id':3,'node_id':3,'pos':[100,0,2],'outward_direction':[-1,0,0],'grade':0,'edge_snapshot':right,
+                   'incident_count':3,'incident_edges':[1,3,4],'incidence_complete':True,'incident_output_truncated':False,'construction_owner':'none','eligible':False}
+        intent={'region':{'min':[99,-1,1],'max':[101,1,3]},'max_edges':16,'guide_xyz':[100,0,2],'travel_direction':[-1,0],'heading_tolerance_deg':2,'placement_tolerance':.15}
+        return chain,left,right,branch,candidate,intent
+
+    def test_explicit_replacement_boundary_qualifies_degree_three_by_all_exact_outside_edges(self):
+        chain,left,right,branch,candidate,intent=self.replacement_fixture();client=FakeClient()
+        def request(op,q,**kwargs):
+            return {'status':'ok','request_id':op,'result':{'edges':[right,branch]} if op=='inspect' else {'complete':True,'candidates':[candidate]}}
+        with patch.object(client,'request',side_effect=request):
+            r=replacement_boundary(client,intent,[chain],{'anchor_edge':3,'edges':[right,branch]})
+        self.assertEqual((r['edge_id'],r['node_id']),(3,3));self.assertFalse(r['eligible'])
+
+    def test_replacement_boundary_rejects_unlisted_incidence_stale_outside_and_internal_node(self):
+        for problem in ('unlisted','missing','incomplete','owned','stale','internal'):
+            with self.subTest(problem=problem):
+                chain,left,right,branch,candidate,intent=self.replacement_fixture();client=FakeClient();expected=copy.deepcopy(branch)
+                if problem=='unlisted':candidate.update(incident_count=4,incident_edges=[1,3,4,5])
+                elif problem=='missing':candidate.update(incident_count=2,incident_edges=[1,3])
+                elif problem=='incomplete':candidate['incidence_complete']=False
+                elif problem=='owned':candidate['construction_owner']=5
+                elif problem=='stale':branch['p1'][1]=1
+                other=self.native_edge(5,100,110);other.update(node0=3,node1=9)
+                def request(op,q,**kwargs):return {'status':'ok','request_id':op,'result':{'edges':[right,branch]} if op=='inspect' else {'complete':True,'candidates':[candidate]}}
+                with patch.object(client,'request',side_effect=request),self.assertRaises((LiveError,ValueError)):
+                    replacement_boundary(client,intent,[chain,other] if problem=='internal' else [chain],{'anchor_edge':3,'edges':[right,expected]})
+
+    def test_coalescing_operator_transmits_exact_outside_snapshots_without_global_port_relaxation(self):
+        chain,left,right,branch,candidate,intent=self.replacement_fixture()
+        p=self.grade_plan();p['bindings']={'old':{'edges':[chain]}};p['ports']['b']['position']=[100,0,0]
+        step={'name':'merge','kind':'connect','source':'a','target':'b','replace_chain':'old','coalesce_plain':True,
+              'replacement_boundaries':{'source':{'anchor_edge':2,'edges':[left]},'target':{'anchor_edge':3,'edges':[right,branch]}}}
+        p['steps']=[step]
+        with tempfile.TemporaryDirectory() as td:
+            client=FakeClient();o=Operator(runs=td,client=client)
+            source=candidate|{'edge_id':2,'node_id':2,'pos':[0,0,2],'outward_direction':[1,0,0],'edge_snapshot':left}
+            def request(op,q,**kwargs):
+                if op=='inspect':value={'edges':[chain]}
+                elif q.get('prepare'):value={'game_constructed':False,'prepared_request':'merge_handle'}
+                else:value={'game_constructed':True,'edges':[]}
+                return {'status':'ok','request_id':op,'result':value}
+            with patch.object(client,'request',side_effect=request) as requests,patch('bridge_operator.replacement_boundary',side_effect=[source,candidate]),patch('bridge_operator.live._select_throat_port') as generic:
+                self.assertEqual(o.execute(o.plan(p)['run'])['status'],'built')
+            generic.assert_not_called();prepared=next(q for call in requests.call_args_list if (q:=call.args[1]).get('prepare'))
+            self.assertTrue(prepared['coalesce_plain']);self.assertEqual(prepared['replacement_boundaries'],step['replacement_boundaries']);self.assertEqual(prepared['replace_chain'],[chain])
+        for field,value in [('coalesce_plain',False),('guides',[{'position':[50,0,0],'travel_direction':[1,0],'grade':0}]),('replacement_boundaries',{}),('handle_scale',2)]:
+            changed=copy.deepcopy(p);changed['steps'][0][field]=value
+            with self.subTest(field=field),self.assertRaises(ValueError):validate_plan(changed)
+
+    def test_plain_coalescing_preserves_bezier_alignment_and_resources(self):
+        chain,left,right,branch,target,intent=self.replacement_fixture()
+        source={'pos':[0,0,2],'edge_snapshot':left}
+        check_plain_coalescing([chain],source,target)
+        reverse=copy.deepcopy(chain);reverse.update(p0=chain['p1'],p1=chain['p0'],t0=[-100,0,0],t1=[-100,0,0])
+        check_plain_coalescing([reverse],source,target)
+        missing=copy.deepcopy(chain);missing.pop('structure')
+        with self.assertRaises(ValueError):check_plain_coalescing([missing],source,target)
+        check_plain_coalescing([missing],source,target,require_structure=False)
+        for problem in ('bend','structure','resource','backtrack'):
+            e=copy.deepcopy(chain)
+            if problem=='bend':e['t0'][1]=1
+            elif problem=='structure':e['structure']['classification']='BRIDGE'
+            elif problem=='resource':e['template']='other'
+            else:e['t0'][0]=400
+            with self.subTest(problem=problem),self.assertRaises(ValueError):check_plain_coalescing([e],source,target)
 
     def test_explicit_floor_check_is_sampled_and_never_numeric_edit(self):
         with tempfile.TemporaryDirectory() as td:

@@ -384,6 +384,28 @@ not establish a completed train journey, capacity, signalling or visual design q
 Signal placement updates named track bindings from the native exact edge-replacement
 receipt and fresh readback; later tasks must use that current identity.
 
+Plain approach coalescing is an explicit version2 `connect` task with
+`replace_chain:"named_exact_chain"`, `coalesce_plain:true`, and
+`replacement_boundaries:{"source":{"anchor_edge":ID,"edges":[outside snapshots]},
+"target":{"anchor_edge":ID,"edges":[outside snapshots]}}`. Each boundary names
+its primary retained edge and all1..2 outside TRACK edges. The removed chain is
+1..16 exact edges; internal nodes must remain exclusive degree two. Boundary nodes
+may be degree two or three only with this complete opt-in evidence. An added or
+missing outside edge, owner or stale snapshot stops preparation. Generic free/
+connected selection and default replacement degree-two rules are unchanged.
+
+This mode allows only collinear NORMAL track with unchanged resources, no guides,
+one NORMAL structure, endpoint-cubic representation and handle scale1. Original
+Bezier controls must lie monotonically on the boundary line within the existing
+0.001 native snapshot tolerance. Runtime fresh inspection must establish NORMAL;
+an offline recipe with missing old metadata cannot waive that check. Native
+preparation/execution rechecks the same exact chain/outside snapshots. After build,
+each boundary must retain all outside edges/geometry and exactly one new chain
+edge; the receipt reports actual incidence, including the third edge. Only internal
+chain nodes are removed. This is coalescing, not a general degree-three junction
+replacement or implicit branch deletion. Native acceptance and any benefit to
+crossover fitting remain unproven until a coordinator experiment.
+
 `station-routes --input routes.json` / MCP `review_station_routes(brief)` reviews
 up to8 named `arrival`/`departure` paths. Brief fields are registry `name`, `revision`
 and `routes`; each route has `name`, `purpose`, `source`, `target`, `max_length`.

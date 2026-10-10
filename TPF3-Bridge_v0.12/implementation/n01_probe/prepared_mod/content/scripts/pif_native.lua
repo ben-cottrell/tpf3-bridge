@@ -2519,14 +2519,30 @@ local function replacement_chain(p)
   for _,node in ipairs({e.node0,e.node1}) do adj[node]=adj[node] or {};adj[node][#adj[node]+1]=e.id end
  end
  local ports={[p.source.node_id]=p.source,[p.target.node_id]=p.target};assert(p.source.node_id~=p.target.node_id,"distinct_replacement_boundaries")
- local internal={}
+ local internal,boundaries={},{}
+ if p.replacement_boundaries then
+  assert(p.coalesce_plain==true and type(p.replacement_boundaries)=="table" and p.replacement_boundaries.source and p.replacement_boundaries.target,"explicit_coalescing_boundaries_required")
+  for key in pairs(p.replacement_boundaries) do assert(key=="source" or key=="target","unsupported_replacement_boundary") end
+ end
  for node,ids in pairs(adj) do
   local all,owner=incidence(node);assert(not(owner and owner>0),"replacement_construction_node_unsupported")
   local port=ports[node]
   if port then
    local e=assert_fresh(port.edge_snapshot);assert(e.id==port.edge_id and not seen[e.id] and (e.node0==node or e.node1==node),"replacement_external_identity")
-   assert(#ids==1 and #all==2,"replacement_boundary_incidence")
-   for _,id in ipairs(all) do assert(id==e.id or id==ids[1],"replacement_external_attachment") end
+   local side=node==p.source.node_id and "source" or "target";local spec=p.replacement_boundaries and p.replacement_boundaries[side]
+   local outside={};local wanted={[ids[1]]=true}
+   if spec then
+    assert(type(spec)=="table" and spec.anchor_edge==e.id and type(spec.edges)=="table" and #spec.edges>=1 and #spec.edges<=2,"explicit_replacement_boundary_edges_required")
+    for key in pairs(spec) do assert(key=="anchor_edge" or key=="edges","unsupported_boundary_field") end
+    for _,snapshot in ipairs(spec.edges) do
+     local x=assert_fresh(snapshot);assert(not seen[x.id] and not wanted[x.id] and (x.node0==node or x.node1==node),"replacement_outside_identity_mismatch")
+     wanted[x.id]=true;outside[#outside+1]=x
+    end
+    assert(wanted[e.id],"replacement_primary_outside_missing")
+   else outside={e};wanted[e.id]=true end
+   assert(#ids==1 and #all==#outside+1,"replacement_boundary_incidence")
+   for _,id in ipairs(all) do assert(wanted[id],"replacement_external_attachment") end
+   boundaries[side]={node=node,outside_edges=outside}
   else
    assert(#ids==2 and #all==2,"replacement_internal_incidence")
    for _,id in ipairs(all) do assert(seen[id],"replacement_internal_external_attachment") end;internal[#internal+1]=node
@@ -2538,9 +2554,27 @@ local function replacement_chain(p)
   for _,id in ipairs(adj[node]) do local e=edge(id);queue[#queue+1]=e.node0==node and e.node1 or e.node0 end
  end end
  for node in pairs(adj) do assert(reached[node],"replacement_chain_disconnected") end
- return {originals=originals,internal_nodes=internal,params=p}
+ if p.coalesce_plain then
+  assert(p.replacement_boundaries and p.representation=="endpoint_cubic" and #(p.guides or {})==0 and #p.structures==1 and p.structures[1].classification=="NORMAL" and not p.structures[1].spans and (p.handle_scale or 1)==1,"coalescing_plain_alignment_contract")
+  local _,a=anchor({anchor_edge=p.source.edge_id,anchor_node=p.source.node_id});local _,b=anchor({anchor_edge=p.target.edge_id,anchor_node=p.target.node_id})
+  local delta={b[1]-a[1],b[2]-a[2],b[3]-a[3]};local sq=delta[1]^2+delta[2]^2+delta[3]^2;assert(sq>0,"degenerate_coalescing_alignment")
+  local function position_u(pos)
+   local u=0;for k=1,3 do u=u+(pos[k]-a[k])*delta[k]/sq end
+   local at={};for k=1,3 do at[k]=a[k]+u*delta[k] end
+   assert(u>=-.000001 and u<=1.000001 and near(pos,at,.001),"coalescing_changes_alignment");return u
+  end
+  for _,x in ipairs(originals) do
+   local base=api.engine.getComponent(x.id,api.type.ComponentType.BASE_EDGE);assert(base.type==E.BaseEdgeType.NORMAL,"coalescing_requires_plain_TRACK")
+   assert(x.template==p.source.edge_snapshot.template and x.style==p.source.edge_snapshot.style,"coalescing_changes_track_resource")
+   local first,last={},{};for k=1,3 do first[k]=x.p0[k]+x.t0[k]/3;last[k]=x.p1[k]-x.t1[k]/3 end
+   local us={position_u(x.p0),position_u(first),position_u(last),position_u(x.p1)};local sign=us[4]>us[1] and 1 or -1
+   for i=1,3 do assert(sign*(us[i+1]-us[i])>=-.000001,"coalescing_nonmonotone_cubic") end
+  end
+ end
+ return {originals=originals,internal_nodes=internal,params=p,boundaries=boundaries}
 end
 local function prepare_new_structure(p,s,request_id)
+ if p.coalesce_plain~=nil or p.replacement_boundaries~=nil then assert(p.coalesce_plain==true and p.replace_chain and p.replacement_boundaries and not p.junctions,"explicit_plain_replacement_required") end
  if p.junctions then assert(finite(p.max_route_length) and p.max_route_length>0 and p.max_route_length<=8000,"invalid_route_length_bound") end
  local replacement=p.replace_chain and replacement_chain(p) or nil
  if not p.junctions and not replacement and not p.freestanding then selected_attachments(p) end
@@ -2856,7 +2890,7 @@ function M.structured_chain(p,s,state,request_id,respond)
     assert(#record.segments<=20,"grouped_structure_segment_bound")
    end
   elseif p.new_alignment==true then
-   for k in pairs(p) do assert(k=="new_alignment" or k=="freestanding" or k=="track" or k=="replace_chain" or k=="junctions" or k=="normal_offset_from" or k=="max_route_length" or k=="through_representation" or k=="representation" or k=="leg_representations" or k=="handle_scale" or k=="prepare" or k=="execute" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical","unsupported_new_structure_input") end
+   for k in pairs(p) do assert(k=="new_alignment" or k=="freestanding" or k=="track" or k=="replace_chain" or k=="replacement_boundaries" or k=="coalesce_plain" or k=="junctions" or k=="normal_offset_from" or k=="max_route_length" or k=="through_representation" or k=="representation" or k=="leg_representations" or k=="handle_scale" or k=="prepare" or k=="execute" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical","unsupported_new_structure_input") end
    record=prepare_new_structure(p,s,request_id)
   else
   for k in pairs(p) do assert(k=="segments" or k=="prepare" or k=="execute" or k=="region","unsupported_structure_input") end
@@ -3037,7 +3071,19 @@ function M.structured_chain(p,s,state,request_id,respond)
     assert_fresh(record.source.edge_snapshot);assert_fresh(record.target.edge_snapshot)
     if record.replacement then
      for _,e in ipairs(record.replacement.originals) do assert(not api.engine.entityExists(e.id) or api.engine.getComponent(e.id,api.type.ComponentType.BASE_EDGE)==nil,"replacement_original_edge_retained") end
+     result.replacement_boundary_checks={}
+     for _,side in ipairs({"source","target"}) do
+      local boundary=record.replacement.boundaries[side];local wanted={};local outside={}
+      local added=side=="source" and ordered[1] or ordered[#ordered];wanted[added]=true
+      for _,snapshot in ipairs(boundary.outside_edges) do local e=assert_fresh(snapshot);wanted[e.id]=true;outside[#outside+1]=e.id end
+      local all,owner=incidence(boundary.node);assert(not(owner and owner>0) and #all==#outside+1,"replacement_boundary_after_incidence")
+      for _,id in ipairs(all) do assert(wanted[id],"replacement_outside_after_identity") end
+      result.replacement_boundary_checks[#result.replacement_boundary_checks+1]={side=side,node=boundary.node,outside_edges=outside,added_edge=added,incident_edges=all,outside_geometry_preserved=true}
+     end
      record.fitted.ids=ordered;result.readback=M.readback(record.fitted)
+     if result.readback.attachments then
+      for _,check in ipairs(result.replacement_boundary_checks) do result.readback.attachments[check.side.."_incident_edges"]=check.incident_edges end
+     end
      local first,last=record.fitted.anchor,record.fitted.target.edge
      local required={first.id,last.id};for _,id in ipairs(ordered) do required[#required+1]=id end
      result.through_after=M.route({source_edge=first.id,source_node=first.node0==record.source.node_id and first.node1 or first.node0,

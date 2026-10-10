@@ -103,6 +103,43 @@ def fresh_binding(client,binding):
     if any(r.get('road_type')!='TRACK' for r in rows):raise ValueError('binding must confirm native TRACK identity')
     return rows
 
+def replacement_boundary(client,intent,chain,spec):
+    """Opt-in exact outside edges at a degree2/3 replacement boundary."""
+    if not 1<=len(chain)<=16 or len({e['id'] for e in chain})!=len(chain):raise ValueError('replacement requires1..16 distinct exact chain edges')
+    outside=fresh_binding(client,{'edges':spec['edges']});ids={e['id'] for e in chain};out_ids={e['id'] for e in outside}
+    if ids&out_ids:raise ValueError('replacement outside edge belongs to removed chain')
+    adj={}
+    for edge in chain:
+        for node in (edge['node0'],edge['node1']):adj.setdefault(node,set()).add(edge['id'])
+    response=client.request('discover',intent);value=response.get('result',{})
+    if response['status']!='ok' or value.get('complete') is not True:raise live.LiveError('discovery_incomplete','complete exact replacement boundary read required')
+    matches=[]
+    for c in value.get('candidates',[]):
+        node=c.get('node_id')
+        if c.get('edge_id')!=spec['anchor_edge'] or len(adj.get(node,[]))!=1:continue
+        expected=adj[node]|out_ids
+        if c.get('incidence_complete') is not True or c.get('incident_output_truncated') or c.get('incident_count')!=len(expected) or set(c.get('incident_edges',[]))!=expected or c.get('construction_owner') not in (None,'none',-1,0):continue
+        if any(node not in (e['node0'],e['node1']) for e in outside):continue
+        d=c['outward_direction'];wanted=intent['travel_direction'];norm=math.hypot(*d[:2])*math.hypot(*wanted)
+        if norm and math.dist(c['pos'],intent['guide_xyz'])<=intent['placement_tolerance'] and sum(d[i]*wanted[i] for i in (0,1))/norm>=math.cos(math.radians(intent['heading_tolerance_deg'])):matches.append(c)
+    if len(matches)!=1:raise live.LiveError('ambiguous_attachment' if matches else 'no_eligible_candidates','named replacement boundary identity/incidence is not unique/current')
+    return matches[0]
+
+def check_plain_coalescing(chain,source,target,*,require_structure=True):
+    start,end=source['pos'],target['pos'];delta=[b-a for a,b in zip(start,end)];sq=sum(x*x for x in delta)
+    if not sq:raise ValueError('degenerate coalescing alignment')
+    for e in chain:
+        classification=e.get('structure',{}).get('classification')
+        if (classification!='NORMAL' and (require_structure or classification is not None)) or e['template']!=source['edge_snapshot']['template'] or e['style']!=source['edge_snapshot']['style']:raise ValueError('coalescing requires unchanged plain track resources')
+        controls=[e['p0'],[e['p0'][i]+e['t0'][i]/3 for i in range(3)],
+                  [e['p1'][i]-e['t1'][i]/3 for i in range(3)],e['p1']];us=[]
+        for point in controls:
+            u=sum((point[i]-start[i])*delta[i] for i in range(3))/sq;at=[start[i]+u*delta[i] for i in range(3)]
+            if not -.000001<=u<=1.000001 or any(abs(point[i]-at[i])>.001 for i in range(3)):raise ValueError('coalescing changes alignment')
+            us.append(u)
+        sign=1 if us[-1]>us[0] else -1
+        if any(sign*(b-a)<-.000001 for a,b in zip(us,us[1:])):raise ValueError('coalescing nonmonotone cubic')
+
 def chain_point(rows,u,segment=None):
     if segment is not None:
         if not 1<=segment<=len(rows):raise ValueError('native chain segment unavailable')
@@ -283,6 +320,16 @@ def validate_plan(p):
             ref(s['source']);ref(s['target'])
             if kind=='connect':validate_structures(s)
             if 'replace_chain' in s and (kind!='connect' or s['replace_chain'] not in names):raise ValueError('replacement requires an earlier exact chain')
+            if 'replacement_boundaries' in s or 'coalesce_plain' in s:
+                if kind!='connect' or not s.get('replace_chain') or s.get('coalesce_plain') is not True or s.get('source_interior') or s.get('target_interior') or s.get('guides') or s.get('representation','endpoint_cubic')!='endpoint_cubic' or s.get('handle_scale',1)!=1 or s.get('structures',[{'classification':'NORMAL'}])!=[{'classification':'NORMAL'}]:raise ValueError('explicit plain straight coalescing contract required')
+                boundaries=s.get('replacement_boundaries')
+                if not isinstance(boundaries,dict) or set(boundaries)!={'source','target'}:raise ValueError('both exact replacement boundaries required')
+                for spec in boundaries.values():
+                    if not isinstance(spec,dict) or set(spec)!={'anchor_edge','edges'} or not isinstance(spec['edges'],list) or not 1<=len(spec['edges'])<=2:raise ValueError('one or two exact outside edge snapshots required')
+                    ids=[e.get('id') for e in spec['edges']]
+                    if any(type(i) is not int or i<=0 for i in ids) or len(set(ids))!=len(ids) or spec['anchor_edge'] not in ids:raise ValueError('explicit primary outside identity required')
+                    for e in spec['edges']:
+                        if not all(k in e for k in ('node0','node1','p0','p1','t0','t1','template','style')):raise ValueError('complete outside geometry snapshot required')
             alternatives=s.get('attachments',[])
             if alternatives:
                 if kind not in ('branch','crossover','connect') or not 1<=len(alternatives)<=8:raise ValueError('bounded explicit attachment alternatives required')
@@ -497,8 +544,15 @@ class Operator:
             if not binding:raise ValueError('named earlier result unavailable')
             return fresh_binding(rc,binding)
         def structure_query(spec):
-            a,al=resolve(spec['source'],spec.get('source_interior',False),bool(spec.get('replace_chain')))
-            b,bl=resolve(spec['target'],spec.get('target_interior',False),bool(spec.get('replace_chain')))
+            replacement=chain(spec['replace_chain']) if spec.get('replacement_boundaries') else None
+            if replacement is not None:
+                al,bl=intent(spec['source']),intent(spec['target'])
+                a=replacement_boundary(rc,al,replacement,spec['replacement_boundaries']['source'])
+                b=replacement_boundary(rc,bl,replacement,spec['replacement_boundaries']['target'])
+                check_plain_coalescing(replacement,a,b)
+            else:
+                a,al=resolve(spec['source'],spec.get('source_interior',False),bool(spec.get('replace_chain')))
+                b,bl=resolve(spec['target'],spec.get('target_interior',False),bool(spec.get('replace_chain')))
             q={'source':a,'target':b,'region':p['region'],'vertical':{'max_grade':p['max_grade']},'new_alignment':True,
                'guides':[g|{'position':world(g)} for g in spec.get('guides',[])],
                'structures':spec.get('structures',[{'classification':'NORMAL'}]*(len(spec.get('guides',[]))+1)),
@@ -509,7 +563,8 @@ class Operator:
                 q.update(junctions=True,max_route_length=spec.get('max_route_length',p.get('max_route_length',800)))
                 if spec.get('source_interior'):q['source']=a|{'location':al}
                 if spec.get('target_interior'):q['target']=b|{'location':bl}
-            if 'replace_chain' in spec:q.update(replace_chain=chain(spec['replace_chain']),max_route_length=spec.get('max_route_length',p.get('max_route_length',800)))
+            if 'replace_chain' in spec:q.update(replace_chain=replacement if replacement is not None else chain(spec['replace_chain']),max_route_length=spec.get('max_route_length',p.get('max_route_length',800)))
+            if replacement is not None:q.update(replacement_boundaries=spec['replacement_boundaries'],coalesce_plain=True)
             return q
         def fit_step(s):
             alternatives=s.get('attachments',[{'source':s['source'],'target':s['target']}]);attempts=[]
