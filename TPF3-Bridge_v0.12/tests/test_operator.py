@@ -66,6 +66,21 @@ class OperatorTest(unittest.TestCase):
                 with patch.object(client,'request',side_effect=request),self.assertRaises(LiveError):
                     InterfaceRegistry(td).register(client,'district','R1',roles)
 
+    def test_terminal_node_identity_qualifies_frozen_exit_and_external_lead(self):
+        for mode in ('station_exit','free'):
+            with self.subTest(mode=mode),tempfile.TemporaryDirectory() as td:
+                client=FakeClient();v,c,roles,request=self.station_exit_fixture()
+                v['stations'][0]['terminals']=[{'index':1,'vehicle_edges':{},'vehicle_node':{'entity':2,'index':0}}]
+                if mode=='free':
+                    c.update(eligible=True,construction_owner='none')
+                    v['ports']=[c|{'association':{'construction_id':5,'frozen_edge':1,'edge_ids':[1],'terminal_identity_matches':{}}}]
+                    roles['MW_up']['mode']='free'
+                with patch.object(client,'request',side_effect=request):
+                    registry=InterfaceRegistry(td);registry.register(client,'district','R1',roles)
+                    self.assertEqual(registry.resolve(client,'district','R1')['resolved']['MW_up']['operating_terminal']['terminal'],0)
+                    v['stations'][0]['terminals'][0]['vehicle_node']['entity']=77
+                    with self.assertRaises(LiveError):registry.resolve(client,'district','R1')
+
     def test_station_exit_cannot_be_used_as_generic_connected_attachment(self):
         with tempfile.TemporaryDirectory() as td:
             client=FakeClient();o=Operator(runs=td,client=client);v,c,roles,request=self.station_exit_fixture()

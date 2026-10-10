@@ -326,6 +326,9 @@ uses the same frozen TRACK component, not nearest coordinates. This mode support
 deliberate `extend` lead tasks only. After building a lead, resolve a normal external
 role from fresh observations. Native construction and TRAIN path acceptance remain
 separate from graph association. Existing free/interior ownership rules stay intact.
+When terminal `vehicle_edges` is empty, its exact `vehicle_node.entity` may qualify
+membership in that frozen TRACK component. The same check qualifies an external
+lead through its recorded frozen-edge association; coordinate resemblance cannot.
 
 Register station-associated roles with `register-interfaces --input roles.json` /
 MCP `register_interfaces(name,revision,roles)`, for example:

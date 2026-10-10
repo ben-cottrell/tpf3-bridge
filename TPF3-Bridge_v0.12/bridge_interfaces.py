@@ -89,6 +89,8 @@ class InterfaceRegistry:
                     if assoc['construction_id']!=cid:continue
                     if mode=='free' and (port['edge_id']!=c['edge_id'] or port['node_id']!=c['node_id']):continue
                     if mode!='free' and c['edge_id'] not in assoc['edge_ids']:continue
+                    if 'frozen_tracks' in constructions[0]:
+                        assoc=assoc|{'terminal_identity_matches':station.terminal_component_matches(v,cid,assoc['frozen_edge'])}
                     terminal_matches=assoc.get('terminal_identity_matches',[])
                     if 'terminal_index' in spec:
                         terminal_matches=[t for t in terminal_matches if t['terminal_index']==spec['terminal_index']]

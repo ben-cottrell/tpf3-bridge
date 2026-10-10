@@ -41,6 +41,24 @@ def frozen_components(value,cid):
         for eid in group:components[eid]=group
     return edges,nodes,components
 
+def terminal_component_matches(value,cid,eid):
+    edges,nodes,components=frozen_components(value,cid)
+    if eid not in edges:return []
+    component=components[eid]
+    component_nodes={node for track in component for node in (edges[track]['node0'],edges[track]['node1'])}
+    matches=[]
+    for s in value['stations']:
+        if s['construction_id']!=cid:continue
+        for t in s['terminals']:
+            track=next((track for track in t['vehicle_edges'] if track in component),None)
+            node=t.get('vehicle_node',{}).get('entity')
+            if track is not None or (type(node) is int and node in component_nodes):
+                match={'station_id':s['station_id'],'terminal_index':t['index']}
+                if track is not None:match['vehicle_edge']=track
+                if type(node) is int and node in component_nodes:match['vehicle_node']=t['vehicle_node']
+                matches.append(match)
+    return matches
+
 def associate_station_exit(value,candidate,cid):
     edges,nodes,components=frozen_components(value,cid);eid=candidate['edge_id'];nid=candidate['node_id']
     if eid not in edges or nid not in (edges[eid]['node0'],edges[eid]['node1']) or nodes[nid]!={eid}:return None
@@ -49,10 +67,7 @@ def associate_station_exit(value,candidate,cid):
     if type(owner) in (int,float) and owner>0 and owner!=cid:return None
     snapshot=candidate.get('edge_snapshot',{})
     if snapshot.get('id')!=eid or snapshot.get('road_type')!='TRACK' or {snapshot.get('node0'),snapshot.get('node1')}!={edges[eid]['node0'],edges[eid]['node1']}:return None
-    matches=[{'station_id':s['station_id'],'terminal_index':t['index'],'vehicle_edge':track}
-             for s in value['stations'] if s['construction_id']==cid for t in s['terminals']
-             for track in t['vehicle_edges'] if track in components[eid]]
-    matches=list({(m['station_id'],m['terminal_index']):m for m in matches}.values())
+    matches=terminal_component_matches(value,cid,eid)
     return {'kind':'exact_station_frozen_TRACK_incidence_component','construction_id':cid,'frozen_edge':eid,
             'edge_ids':sorted(components[eid]),'terminal_identity_matches':matches,'native_TRAIN_route':'unprobed'}
 
