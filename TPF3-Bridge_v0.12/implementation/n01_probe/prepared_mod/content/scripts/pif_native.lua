@@ -2503,7 +2503,7 @@ end
 local function prepare_new_structure(p,s,request_id)
  if p.junctions then assert(finite(p.max_route_length) and p.max_route_length>0 and p.max_route_length<=8000,"invalid_route_length_bound") end
  local replacement=p.replace_chain and replacement_chain(p) or nil
- if not p.junctions and not replacement then selected_attachments(p) end
+ if not p.junctions and not replacement and not p.freestanding then selected_attachments(p) end
  assert(type(p.guides)=="table" and #p.guides<=6,"structure_guide_bound")
  assert(type(p.structures)=="table" and #p.structures==#p.guides+1,"structure_leg_contract")
  if p.leg_representations then
@@ -2511,7 +2511,21 @@ local function prepare_new_structure(p,s,request_id)
   for _,kind in ipairs(p.leg_representations) do assert(kind=="endpoint_cubic" or kind=="native_parts","unsupported_structure_leg_representation") end
  end
  local a,pos,direction,grade,t,tp,td,tg,c,d,splits
- if p.junctions and (p.source.location==nil or p.target.location==nil) then
+ if p.freestanding then
+  assert(p.freestanding==true and not p.junctions and not replacement and not p.normal_offset_from,"standalone_structure_seed_only")
+  assert(#p.guides==0 and #p.structures==1 and p.structures[1].classification=="BRIDGE" and not p.structures[1].spans and p.representation=="endpoint_cubic" and not p.leg_representations,"standalone_bridge_span_required")
+  assert(type(p.track)=="table" and type(p.track.template)=="string" and type(p.track.style)=="string","track_resource_names_required")
+  local resource=api.res.streetTemplateRep.get(api.res.streetTemplateRep.find(p.track.template))
+  assert(resource and resource.roadType==E.RoadType.TRACK and resource.streetStyle==p.track.style,"standalone_track_resource_mismatch")
+  for _,endpoint in ipairs({p.source,p.target}) do
+   assert(type(endpoint)=="table","standalone_endpoint_required");vector(endpoint.position);vector(endpoint.travel_direction)
+   assert(#endpoint.position==3 and #endpoint.travel_direction==2 and finite(endpoint.grade) and math.abs(endpoint.grade)<=p.vertical.max_grade,"standalone_endpoint_contract")
+   in_region(endpoint.position,p.region)
+  end
+  a={template=p.track.template,style=p.track.style};t=a
+  pos,direction,grade=p.source.position,norm(p.source.travel_direction),p.source.grade
+  tp=p.target.position;local end_direction=norm(p.target.travel_direction);td={-end_direction[1],-end_direction[2],0};tg=-p.target.grade
+ elseif p.junctions and (p.source.location==nil or p.target.location==nil) then
   assert(p.junctions==true and ((p.source.location~=nil)~=(p.target.location~=nil)),"one_interior_one_free_attachment_required")
   a=assert_fresh(p.source.edge_snapshot);t=assert_fresh(p.target.edge_snapshot)
   assert(a.id~=t.id and a.node0~=t.node0 and a.node0~=t.node1 and a.node1~=t.node0 and a.node1~=t.node1,"distinct_structure_attachments_required")
@@ -2538,7 +2552,7 @@ local function prepare_new_structure(p,s,request_id)
   a,pos,direction,grade=anchor({anchor_edge=p.source.edge_id,anchor_node=p.source.node_id})
   t,tp,td,tg=anchor({anchor_edge=p.target.edge_id,anchor_node=p.target.node_id})
  end
- assert(a.id~=t.id and a.template==t.template and a.style==t.style,"unsupported_structure_attachments")
+ assert((p.freestanding or a.id~=t.id) and a.template==t.template and a.style==t.style,"unsupported_structure_attachments")
  local mixed=p.junctions and ((p.source.location~=nil)~=(p.target.location~=nil))
  local target={edge=t,node=mixed and (p.target.location and -100 or p.target.node_id) or (p.junctions and -200 or p.target.node_id),pos=tp,direction={-td[1],-td[2],0},grade=-tg}
  local goals={};for _,g in ipairs(p.guides) do
@@ -2548,6 +2562,7 @@ local function prepare_new_structure(p,s,request_id)
  end;goals[#goals+1]=target
  local fitted={anchor=a,node=mixed and (p.source.location and -100 or p.source.node_id) or (p.junctions and -100 or p.source.node_id),target=target,controls={},region=p.region,min_radius=p.radius or 0,max_grade=p.vertical.max_grade}
  local record={new_alignment=true,replacement=replacement,source=p.source,target=p.target,fitted=fitted,segments={},region=p.region,handle=request_id,boundary_nodes={p.source.node_id,p.target.node_id},fit_legs={}}
+ if p.freestanding then record.freestanding=true;record.boundary_nodes=nil;fitted.node=-100;target.node=-200 end
  if mixed then
   record.mixed={interior_source=p.source.location~=nil,interior=p.source.location and a or t,location=c or d,
    free=p.source.location and p.target or p.source,splits=splits,params=p};record.boundary_nodes=nil
@@ -2722,8 +2737,18 @@ local function structured_proposal(record)
    proposal=crossover_proposal(j.a,j.b,j.c,j.d,j.splits,record.fitted,fresh,true);offset=4
   else
    if record.replacement then replacement_chain(record.replacement.params)
+   elseif record.freestanding then
+    local resource=api.res.streetTemplateRep.get(api.res.streetTemplateRep.find(record.fitted.anchor.template))
+    assert(resource and resource.roadType==E.RoadType.TRACK and resource.streetStyle==record.fitted.anchor.style,"standalone_track_resource_mismatch")
    else selected_attachments({source=record.source,target=record.target}) end
    proposal=build_proposal(record.fitted);offset=0
+   if record.freestanding then
+    local nodes={}
+    for i,endpoint in ipairs({record.source,record.target}) do
+     local n=api.type.NodeAndEntity.new();n.entity=i==1 and -100 or -200;n.comp.position=v(endpoint.position);nodes[i]=n
+    end
+    proposal.streetProposal.nodesToAdd=nodes
+   end
    if record.replacement then
     local removed={};for _,e in ipairs(record.replacement.originals) do removed[#removed+1]=e.id end
     proposal.streetProposal.edgesToRemove=removed;proposal.streetProposal.nodesToRemove=record.replacement.internal_nodes
@@ -2791,7 +2816,7 @@ function M.structured_chain(p,s,state,request_id,respond)
     assert(#record.segments<=20,"grouped_structure_segment_bound")
    end
   elseif p.new_alignment==true then
-   for k in pairs(p) do assert(k=="new_alignment" or k=="replace_chain" or k=="junctions" or k=="normal_offset_from" or k=="max_route_length" or k=="through_representation" or k=="representation" or k=="leg_representations" or k=="handle_scale" or k=="prepare" or k=="execute" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical","unsupported_new_structure_input") end
+   for k in pairs(p) do assert(k=="new_alignment" or k=="freestanding" or k=="track" or k=="replace_chain" or k=="junctions" or k=="normal_offset_from" or k=="max_route_length" or k=="through_representation" or k=="representation" or k=="leg_representations" or k=="handle_scale" or k=="prepare" or k=="execute" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical","unsupported_new_structure_input") end
    record=prepare_new_structure(p,s,request_id)
   else
   for k in pairs(p) do assert(k=="segments" or k=="prepare" or k=="execute" or k=="region","unsupported_structure_input") end
@@ -2882,6 +2907,23 @@ function M.structured_chain(p,s,state,request_id,respond)
   local receipt=res.proposal.proposal;local ids={}
   for _,row in ipairs(receipt.addedSegments) do local e=api.engine.getComponent(row.entity,api.type.ComponentType.BASE_EDGE);if e and e.roadType==E.RoadType.TRACK then ids[#ids+1]=row.entity end end
   local ok,value=pcall(function()
+   if record.freestanding then
+    assert(#ids==1 and #receipt.addedSegments==1 and #receipt.addedNodes==2 and #receipt.removedSegments==0 and #receipt.removedNodes==0,"standalone_structure_receipt_mismatch")
+    local result=M.inspect({edge_ids=ids,structures=true,geometry=true});local e=result.edges[1];local ctrl=record.segments[1].controls
+    assert(e and e.road_type=="TRACK" and e.template==record.fitted.anchor.template and e.style==record.fitted.anchor.style,"standalone_track_readback_mismatch")
+    assert(near(e.p0,ctrl.p0,.001) and near(e.p1,ctrl.p1,.001) and near(e.t0,ctrl.t0,.001) and near(e.t1,ctrl.t1,.001),"standalone_controls_readback_mismatch")
+    assert(e.structure.classification=="BRIDGE" and e.structure.resource_name==record.segments[1].structure.resource_name,"standalone_structure_readback_mismatch")
+    local nodes={};for _,node in ipairs(receipt.addedNodes) do nodes[node.entity]=true end
+    assert(e.node0~=e.node1 and nodes[e.node0] and nodes[e.node1],"standalone_receipt_node_identity_mismatch")
+    for _,node in ipairs({e.node0,e.node1}) do
+     local incident,owner=incidence(node);assert(#incident==1 and incident[1]==e.id and (owner==nil or owner<0),"standalone_endpoint_not_free")
+    end
+    local minimum,maximum=geometry_bounds(cubic({p0=e.p0,p1=e.p1,t0=e.t0,t1=e.t1,length=ctrl.length}),record.region,record.fitted.min_radius,record.fitted.max_grade,64)
+    result.ordered_edges=ids;result.ordered_nodes={e.node0,e.node1};result.freestanding=true;result.new_alignment=true;result.game_constructed=true
+    result.max_sampled_grade=maximum;result.min_sampled_radius=minimum~=math.huge and minimum or nil;result.sampled_only=true
+    result.native_command_success=true;result.prepared_request=p.prepared_request;result.prepared_geometry_reused=true;result.geometry_refitted=false
+    result.effects={added_segments=1,added_nodes=2,removed_segments=0,removed_nodes=0};s.mutationPending=nil;return result
+   end
    if record.groups then
     assert(#ids==#record.segments,"grouped_structure_receipt_incomplete")
     local remaining={};for _,id in ipairs(ids) do remaining[id]=edge(id) end

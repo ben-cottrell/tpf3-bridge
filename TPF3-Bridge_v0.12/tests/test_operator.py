@@ -29,6 +29,58 @@ class FakeClient:
 
 
 class OperatorTest(unittest.TestCase):
+    def seed_plan(self):
+        p=self.grade_plan();p['ports']['a']['grade']=0;p['ports']['a']['direction']=[-1,0]
+        p['ports']['b']['direction']=[1,0]
+        p['steps']=[{'name':'deck','kind':'structure_seed','source':'a','target':'b',
+                     'structure':{'classification':'BRIDGE','resource_name':'observed.bridge'}}]
+        return p
+
+    def test_standalone_bridge_uses_one_native_proposal_without_stub_or_discovery(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.seed_plan();p['ports']['a']['grade']=-.02;p['ports']['b']['grade']=.03
+            edge=self.native_edge()
+            responses=[{'status':'ok','request_id':'prepared','result':{'game_constructed':False}},
+                       {'status':'ok','request_id':'built','result':{'game_constructed':True,'ordered_edges':[1]}},
+                       {'status':'ok','request_id':'read','result':{'edges':[edge]}}]
+            with patch.object(c,'request',side_effect=responses) as request,patch('bridge_operator.live._select_throat_port') as select:
+                run=o.plan(p)['run'];result=o.execute(run)
+            self.assertEqual(result['status'],'built');select.assert_not_called()
+            calls=request.call_args_list;self.assertEqual([x.args[0] for x in calls],['structured_chain','structured_chain','inspect'])
+            q=calls[0].args[1];self.assertTrue(q['freestanding']);self.assertEqual(q['guides'],[])
+            self.assertEqual(q['source'],{'position':[0,0,2],'travel_direction':[1,0],'grade':.02})
+            self.assertEqual(q['target'],{'position':[100,0,12],'travel_direction':[1,0],'grade':.03})
+            self.assertEqual(q['structures'],[p['steps'][0]['structure']]);self.assertEqual(q['track'],p['track'])
+            self.assertEqual(calls[1].args[1],{'execute':True,'prepared_request':'prepared'})
+            self.assertEqual(json.loads((o.path(run)/'state.json').read_text())['steps']['deck']['edges'],[edge])
+
+    def test_standalone_rejection_never_executes_or_hides_uncertain_readback(self):
+        for failure in ['prepare','readback']:
+            with self.subTest(failure=failure),tempfile.TemporaryDirectory() as td:
+                c=FakeClient();o=Operator(runs=td,client=c)
+                if failure=='prepare':responses=[{'status':'no_accepted_candidate','request_id':'rejected','result':{'game_constructed':False,'evaluation':{'messages':['Too Much Incline']}}}]
+                else:responses=[{'status':'ok','request_id':'prepared','result':{'game_constructed':False}},
+                    {'status':'ok','request_id':'built','result':{'game_constructed':True,'ordered_edges':[1]}},
+                    {'status':'error','request_id':'read','result':{'game_constructed':False,'error':'unavailable'}}]
+                with patch.object(c,'request',side_effect=responses) as request:
+                    run=o.plan(self.seed_plan())['run'];result=o.execute(run)
+                self.assertEqual(result['status'],'needs_attention');self.assertEqual(result['completed_steps'],0)
+                state=json.loads((o.path(run)/'state.json').read_text())
+                if failure=='prepare':
+                    self.assertEqual(len(request.call_args_list),1);self.assertIsNone(state['step_mutation']);self.assertIn('Too Much Incline',result['error'])
+                else:
+                    self.assertTrue(state['step_mutation']['game_constructed'])
+                    with self.assertRaisesRegex(ValueError,'uncertain/partial'):o.continue_plan(run,'R2')
+
+    def test_standalone_bridge_rejects_implicit_grades_or_attached_variants(self):
+        changes=[lambda p:p['ports']['a'].pop('grade'),lambda p:p['steps'][0].update(source={'curve':'older','u':.5}),
+                 lambda p:p['steps'][0].update(guides=[]),lambda p:p['steps'][0]['structure'].update(resource_name=''),
+                 lambda p:p.update(version=1),lambda p:p['steps'][0].update(handle_scale=0)]
+        for change in changes:
+            with self.subTest(change=change):
+                p=self.seed_plan();change(p)
+                with self.assertRaises(ValueError):validate_plan(p)
+
     def grade_plan(self):
         p=fixture();p.update(version=2,max_grade=.18)
         p['region']={'min':[-10,-10,-5],'max':[600,30,30]}

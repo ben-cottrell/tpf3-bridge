@@ -237,14 +237,27 @@ def validate_plan(p):
         if not re.fullmatch(r'[A-Za-z0-9_-]+',s['name']) or s['name'] in names:
             raise ValueError('unique simple step names required')
         kind=s['kind']
-        if kind not in ('stub','extend','connect','branch','crossover','group','remove','terrain_check'):raise ValueError('unsupported construction step')
-        if p['version']==1 and kind in ('group','remove','terrain_check'):raise ValueError('new operation requires version2')
+        if kind not in ('stub','extend','connect','branch','crossover','group','structure_seed','remove','terrain_check'):raise ValueError('unsupported construction step')
+        if p['version']==1 and kind in ('group','structure_seed','remove','terrain_check'):raise ValueError('new operation requires version2')
         if kind=='stub':
             ref(s['port'])
             if not isinstance(s['port'],str):raise ValueError('stub requires a named port')
             if 'direction' in s:unit(s['direction'])
             if not 5<=s['length']<=60:raise ValueError('native fixture length5..60 required')
             if type(s.get('grade',0)) not in (int,float) or not math.isfinite(s.get('grade',0)) or abs(s.get('grade',0))>min(p['max_grade'],.04):raise ValueError('stub grade within native .04 and selected bound required')
+        elif kind=='structure_seed':
+            ref(s['source']);ref(s['target'])
+            if not all(isinstance(s[k],str) for k in ('source','target')) or s['source']==s['target']:raise ValueError('structure seed requires two distinct named ports')
+            for name in (s['source'],s['target']):
+                if 'grade' not in p['ports'][name]:raise ValueError('structure seed requires explicit outward endpoint grades')
+            structure=s.get('structure',{})
+            if set(structure)!={'classification','resource_name'} or structure.get('classification')!='BRIDGE' or not isinstance(structure.get('resource_name'),str) or not structure['resource_name']:
+                raise ValueError('structure seed requires an explicit observed BRIDGE resource')
+            if any(k in s for k in ('guides','structures','source_interior','target_interior','replace_chain','attachments','candidates')):raise ValueError('standalone structure seed is one unconnected span')
+            if not 0<math.dist(p['ports'][s['source']]['position'],p['ports'][s['target']]['position'])<=800:raise ValueError('structure seed length must be within800')
+            for key,default,lower,upper in [('radius',0,0,800),('handle_scale',1,0,4)]:
+                value=s.get(key,default)
+                if type(value) not in (int,float) or not math.isfinite(value) or value<lower or value>upper or (key=='handle_scale' and value==0):raise ValueError('invalid structure seed '+key)
         elif kind=='group':
             if len(s.get('groups',[])) not in (2,4):raise ValueError('native group requires2 or4 members')
             for group in s['groups']:
@@ -508,6 +521,16 @@ class Operator:
                     state.setdefault('terrain',{})[s['name']]={'absolute_floor':s['absolute_floor'],'samples':samples,'sampled_only':True};persist()
                     if any(sample.get('valid') is not True or type(sample.get('height')) not in (int,float) or sample['height']<s['absolute_floor'] for sample in samples):raise ValueError('sampled terrain below explicit absolute floor or unavailable')
                     r={'status':'ok','request_id':state['last_request'],'result':{'edges':[]}}
+                elif kind=='structure_seed':
+                    source,target=p['ports'][s['source']],p['ports'][s['target']]
+                    start={'position':world(source),'travel_direction':[-x for x in unit(source['direction'])],'grade':-source['grade']}
+                    end={'position':world(target),'travel_direction':unit(target['direction']),'grade':target['grade']}
+                    q={'prepare':True,'new_alignment':True,'freestanding':True,'source':start,'target':end,
+                       'track':p['track'],'region':p['region'],'vertical':{'max_grade':p['max_grade']},
+                       'guides':[],'structures':[s['structure']],'representation':'endpoint_cubic',
+                       'radius':s.get('radius',0),'handle_scale':s.get('handle_scale',1)}
+                    prepared=rc.request('structured_chain',q)
+                    r=rc.request('structured_chain',{'execute':True,'prepared_request':prepared['request_id']})
                 elif kind=='group':
                     prepared=rc.request('structured_chain',{'prepare':True,'groups':[structure_query(g) for g in s['groups']]})
                     r=rc.request('structured_chain',{'execute':True,'prepared_request':prepared['request_id']})

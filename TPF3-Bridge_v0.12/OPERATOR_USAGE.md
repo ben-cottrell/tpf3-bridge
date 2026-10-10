@@ -67,6 +67,33 @@ Incomplete construction always returns `needs_attention`, even if all existing r
 pass; review never changes construction state or resumes work. Uncertain/partial
 mutation effects require reconciliation first. Native read failures remain errors.
 
+Version2 `structure_seed` creates one standalone bridge span directly from two named
+ports, with no elevated NORMAL stubs or existing attachments. Each port must give
+local XYZ, outward `direction` and explicit outward `grade`. Travel from source to
+target negates the source outward direction/grade and uses the target outward values.
+For example, a span travelling east has westward source and eastward target ports.
+
+```json
+{"name":"overpass_seed","kind":"structure_seed","source":"deck_start","target":"deck_end",
+ "structure":{"classification":"BRIDGE","resource_name":"::/infrastructure/bridge/stone.bridge"},
+ "radius":0,"handle_scale":1}
+```
+
+Use the actually observed track/bridge resources and authorised region. This narrow
+seed accepts one endpoint cubic (3D endpoint distance and sampled length at most800),
+no guides, junctions or replacement. Native preparation evaluates the complete bridge
+proposal; execution reuses that accepted session-local handle without refitting.
+Readback verifies the exact receipt edge/two new node identities, free endpoints,
+track and bridge resources, controls and sampled grade/radius/region bounds. Native
+rejection stops before execution; uncertain or mismatched effects remain visible.
+Connect ramps afterwards through fresh discovery of the seed's actual free endpoints.
+This new branch requires normal staging/load and a native test before it is demonstrated.
+
+Continuation can remove a carried named bridge with `kind:"remove"`, `chain:<name>`,
+`allow_structures:true`; ordinary stubs use the same removal step without that option.
+Exact current TRACK geometry/resource bindings are rechecked, and removed bindings
+are invalidated. No proximity deletion or automatic replay is implied.
+
 ## Optional local stdio MCP
 
 Only this boundary needs `mcp==2.3.0` (`requirements-operator.txt`). This installation
