@@ -59,6 +59,14 @@ native TRAIN paths and draws an equal-scale actual geometry overlay. Failed or
 empty route sets return `needs_attention`; geometry, train operation, visual design
 quality and saved-file integrity remain separate conclusions.
 
+Review also accepts a stopped `needs_attention` run when its failed step has known
+no-mutation effects and no pending native request or execution lock exists. It reads
+fresh geometry and writes actual plan/profile overlays for visual review of completed
+families. Missing or ambiguous route attachments are reported as unverified routes.
+Incomplete construction always returns `needs_attention`, even if all existing routes
+pass; review never changes construction state or resumes work. Uncertain/partial
+mutation effects require reconciliation first. Native read failures remain errors.
+
 ## Optional local stdio MCP
 
 Only this boundary needs `mcp==2.3.0` (`requirements-operator.txt`). This installation

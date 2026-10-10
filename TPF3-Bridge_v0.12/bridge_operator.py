@@ -565,15 +565,31 @@ class Operator:
         if state['plan_hash']!=digest(p):raise ValueError('plan changed')
         c=self.client()
         if c.session!=state.get('session'):raise ValueError('session changed; new survey and rebind required')
-        if state['status']!='built':raise ValueError('construction incomplete; inspect run status first')
-        rows=[];ports={};route_paths={}
+        if state['status'] not in ('built','needs_attention'):raise ValueError('unfinished execution requires reconciliation before review')
+        if (self.runs/'execution.lock').exists():raise ValueError('operator run is already executing')
+        journal=getattr(c,'journal',None)
+        if journal and journal.exists() and json.loads(journal.read_text()).get('pending'):raise ValueError('unresolved native request requires reconciliation')
+        construction_complete=state['status']=='built'
+        if not construction_complete:
+            mutation=state.get('step_mutation')
+            harmless=(mutation is not None and mutation.get('game_constructed') is False) or ('step_mutation' in state and mutation is None)
+            if not harmless:raise ValueError('uncertain/partial effects require reconciliation before review')
+        rows=[];ports={};port_errors={};route_paths={}
         # Route endpoints are the free outer boundaries, so their direction is outward.
         for route in p['routes']:
             for name in (route['source'],route['target']):
-                if name in ports:continue
+                if name in ports or name in port_errors:continue
                 port=p['ports'][name];pos=[port['position'][i]+p['origin'][i] for i in range(3)]
                 loc={'region':box([pos],1),'max_edges':16,'guide_xyz':pos,'travel_direction':unit(port['direction']),'heading_tolerance_deg':2}
-                ports[name],_=live._select_throat_port(c,loc,tolerance=.15)
+                try:ports[name],_=live._select_throat_port(c,loc,tolerance=.15)
+                except live.LiveError as exc:
+                    if construction_complete or exc.status not in ('no_eligible_candidates','ambiguous_attachment'):raise
+                    port_errors[name]={'status':exc.status,'error':str(exc),'request_id':exc.request_id}
+            missing={name:port_errors[name] for name in (route['source'],route['target']) if name in port_errors}
+            if missing:
+                route_paths[route['name']]=[]
+                rows.append({'name':route['name'],'verified':False,'status':'attachment_unavailable','ports':missing})
+                continue
             a,b=ports[route['source']],ports[route['target']]
             r=c.request('route',{'source_edge':a['edge_id'],'source_node':a['node_id'],'target_edge':b['edge_id'],
                                 'target_node':b['node_id'],'mode':'TRAIN','max_length':p.get('max_route_length',800),
@@ -582,12 +598,16 @@ class Operator:
                                             'length':z.get('total_path_length'),'request_id':r['request_id']})
         edges,queries=discover_region(c,p['region'])
         edges=inspect_edges(c,[e['id'] for e in edges])
-        report={'session':c.session,'routes':rows,'edges':edges,'geometry_queries':queries,'all_routes_verified':bool(rows) and all(r['verified'] for r in rows),
+        report={'session':c.session,'construction_complete':construction_complete,'construction_status':state['status'],
+                'completed_steps':len(state['steps']),'planned_steps':len(p['steps']),
+                'routes':rows,'edges':edges,'geometry_queries':queries,'all_routes_verified':bool(rows) and all(r['verified'] for r in rows),
                 'physical_operation':'not tested','design_quality':'requires visual review'}
         report['crossings']=crossing_observations(p,edges,route_paths)
         report['crossing_requirements_observed']=all(x['separate_endpoint_identities_observed'] and x['required_structure_observed'] for x in report['crossings'])
         live.atomic_json(folder/'review.json',report);render(p,edges,folder/'overlay.svg');render_profile(p,edges,folder/'profile-overlay.svg')
-        return {'status':'reviewed' if report['all_routes_verified'] and report['crossing_requirements_observed'] else 'needs_attention','verified_routes':sum(r['verified'] for r in rows),'required_routes':len(rows),
+        return {'status':'reviewed' if construction_complete and report['all_routes_verified'] and report['crossing_requirements_observed'] else 'needs_attention',
+                'construction_complete':construction_complete,'completed_steps':len(state['steps']),'planned_steps':len(p['steps']),
+                'verified_routes':sum(r['verified'] for r in rows),'required_routes':len(rows),
                 'crossing_requirements_observed':report['crossing_requirements_observed'],
                 'view':str(folder/'overlay.svg'),'profile':str(folder/'profile-overlay.svg'),'evidence':str(folder/'review.json')}
 

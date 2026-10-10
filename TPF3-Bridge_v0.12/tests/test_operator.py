@@ -3,7 +3,9 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from unittest.mock import patch
+from bridge_live import LiveError
 from bridge_operator import Operator, validate_plan, cubic, native_failure, inspect_edges, fresh_binding, discover_region, chain_point, crossing_observations, render_profile
 from tools.operator_mcp_client import semantic_result, compact_stdout
 
@@ -290,6 +292,58 @@ class OperatorTest(unittest.TestCase):
                 result=o.review(run)
             self.assertEqual(result['status'],'needs_attention');self.assertEqual(result['verified_routes'],0)
             self.assertFalse(json.loads((o.path(run)/'review.json').read_text())['all_routes_verified'])
+
+    def test_stopped_partial_review_keeps_missing_routes_and_fresh_geometry(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan()
+            p['steps'].append({**p['steps'][0],'name':'remaining'})
+            p['routes']=[{'name':'existing','source':'a','target':'a'},{'name':'missing','source':'a','target':'b'}]
+            run=o.plan(p)['run'];o.execute(run);path=o.path(run)/'state.json';state=json.loads(path.read_text())
+            state.update(status='needs_attention',step_mutation=None);state['steps'].pop('remaining');path.write_text(json.dumps(state))
+            original=path.read_bytes();edge=self.native_edge()
+            def select(client,intent,**kwargs):
+                if intent['guide_xyz'][0]>0:raise LiveError('no_eligible_candidates','no current attachment','missing-port')
+                return {'edge_id':1,'node_id':2},'found'
+            with (patch('bridge_operator.live._select_throat_port',side_effect=select),
+                  patch('bridge_operator.discover_region',return_value=([edge],1)),
+                  patch('bridge_operator.inspect_edges',return_value=[edge]) as inspect,
+                  patch.object(c,'request',return_value={'status':'ok','request_id':'route','result':{'requested_route_verified':True,'path':[]}}) as request):
+                result=o.review(run)
+            self.assertEqual(result['status'],'needs_attention');self.assertFalse(result['construction_complete'])
+            self.assertEqual(result['verified_routes'],1);self.assertEqual(result['required_routes'],2)
+            report=json.loads((o.path(run)/'review.json').read_text());self.assertEqual(report['edges'],[edge])
+            self.assertEqual(report['routes'][1]['status'],'attachment_unavailable')
+            self.assertEqual(inspect.call_args.args[1],[1]);self.assertEqual([x.args[0] for x in request.call_args_list],['route'])
+            self.assertEqual(path.read_bytes(),original)
+            for name in ['overlay.svg','profile-overlay.svg']:
+                ET.parse(o.path(run)/name)
+
+    def test_partial_review_never_completes_even_when_all_routes_pass(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=fixture();p['routes']=[{'name':'existing','source':'a','target':'a'}]
+            run=o.plan(p)['run'];o.execute(run);path=o.path(run)/'state.json';state=json.loads(path.read_text())
+            state.update(status='needs_attention',step_mutation={'game_constructed':False});path.write_text(json.dumps(state))
+            with (patch('bridge_operator.live._select_throat_port',return_value=({'edge_id':1,'node_id':2},'found')),
+                  patch('bridge_operator.discover_region',return_value=([],1)),
+                  patch.object(c,'request',return_value={'status':'ok','request_id':'route','result':{'requested_route_verified':True}})):
+                result=o.review(run)
+            self.assertEqual(result['status'],'needs_attention');self.assertEqual(result['verified_routes'],1)
+            self.assertTrue(json.loads((o.path(run)/'review.json').read_text())['all_routes_verified'])
+
+    def test_review_refuses_unfinished_or_unreconciled_native_effects(self):
+        cases=[('running',None,False,False),('needs_attention',{'game_constructed':'unknown'},False,False),
+               ('needs_attention',{'game_constructed':True},False,False),('needs_attention',None,True,False),
+               ('needs_attention',None,False,True)]
+        for status,mutation,pending,locked in cases:
+            with self.subTest(status=status,mutation=mutation,pending=pending,locked=locked),tempfile.TemporaryDirectory() as td:
+                c=FakeClient();o=Operator(runs=td,client=c);run=o.plan(fixture())['run'];o.execute(run)
+                path=o.path(run)/'state.json';state=json.loads(path.read_text());state.update(status=status,step_mutation=mutation);path.write_text(json.dumps(state))
+                if pending:
+                    c.journal=Path(td)/'journal.json';c.journal.write_text(json.dumps({'pending':{'request_id':'unknown'}}))
+                if locked:(Path(td)/'execution.lock').touch()
+                c.calls=[]
+                with self.assertRaises(ValueError):o.review(run)
+                self.assertEqual(c.calls,[]);self.assertFalse((o.path(run)/'review.json').exists())
 
     def test_reference_order_and_finite_geometry(self):
         p=fixture();p['ports']['a']['position'][0]=float('nan')
