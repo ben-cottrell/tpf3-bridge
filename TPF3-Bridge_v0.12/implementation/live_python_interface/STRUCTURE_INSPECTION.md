@@ -9,49 +9,16 @@ small set of scalar resource parameters. Resolution failures remain explicit;
 resource parameters are not asserted to be per-instance construction parameters.
 Numeric repository handles must be reacquired in the current loaded context.
 
-On build40408 the Complex Junction central flyover rails and road bridge resolve to
-`::/infrastructure/bridge/stone.bridge`; Tunnel Example F resolves to
-`::/infrastructure/tunnel/tunnel_b.tunnel`. Sloping flyover approaches are ordinary
-edges. This is readback evidence, not successful bridge/tunnel construction.
-
-## Supported next construction contract; not executed by P61
-
-Installed declarations expose `api.engine.system.baseParallelStripSystem.getStrips`
-for exact edge-to-strip identity and
-`api.engine.util.proposal.createBridgeOrTunnelProposal(strip_id, new_type_index)`
-for changing an existing strip's bridge/tunnel resource. Resolve the index with the
-appropriate repository's `find(resource_name)` in the current context. Do not pass
-an edge ID as a strip ID or reuse a handle from another load.
-
-New segment proposals also carry `SegmentAndEntity.comp: BaseEdge` with `type` and
-`typeIndex`; acceptance of structure-bearing new geometry remains to be demonstrated.
-P61 does not call either proposal path or select a new railway layout. Native asset
-generation and terrain treatment remain TPF3 responsibilities. Resource sentinels
-(such as negative dimensions) and speed units retain their native values; no project
-constraint or conversion is inferred from them.
-
-## Verification
-
-Check saved reference evidence without game calls:
-
-```text
-python tests/native/check_structure_readback.py .local_runs/live_python_interface/p61
-python tools/quiet_checks.py --suite live_client --label pif-p61-structure-final
-```
-
-Full local evidence and exact source references are in P61's HANDOFF.md and
-source_evidence.json. Native runtime reads exercise the Lua serializer; Python tests
-exercise semantic evidence acceptance. No standalone Lua checker is claimed.
+For construction and resource selection see [STRUCTURE_CONSTRUCTION.md](STRUCTURE_CONSTRUCTION.md).
+Inspect current native resources and strip identities; never reuse numeric handles
+from a different load or assume a resource is supported from its name alone.
+Readback, prepared construction and realised connectivity are distinct checks.
 
 ## Exact collision-entity diagnostics
 
-P64 adds optional `entity_ids` (1–8 exact current IDs) to `inspect`. It reports
+Optional `entity_ids` (1–8 exact current IDs) to `inspect`. It reports
 existence and applicable edge/node/construction fields without treating every
 entity as TRACK. Bounded generated-strip ranges (at most 16), model references
 and positions (at most 4), and native bounding boxes can identify which railway
 generated a collision object. Truncation is explicit. These diagnostic bounds
 are observations, not a clearance proof or authority to infer attachment.
-
-On build40408, exact generated strip ranges associated reported bridge-support
-collisions with the required P63 direct links. Local connector adjustment avoided
-them; no universal preservation policy or world-wide export was introduced.

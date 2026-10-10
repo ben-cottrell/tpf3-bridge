@@ -1,103 +1,54 @@
-# Bridge operator — current capabilities and lessons
+# Bridge operator
 
-Updated 10 October 2026. This is a compact consolidation of operator additions
-since Challenge03, not a district completion record. Commands and schemas remain
-in [OPERATOR_USAGE.md](OPERATOR_USAGE.md). The coordinator owns native execution,
-layout decisions and current district acceptance; the implementation worker owns
-assigned offline changes. Construction, path availability, observed service operation
-and visual design acceptance remain separate results.
+See [OPERATOR_USAGE.md](OPERATOR_USAGE.md) for CLI/MCP commands and plan schemas.
+The designer owns layout decisions; implementation workers own assigned code changes.
+Construction, route availability, observed service operation and design quality are
+separate conclusions.
 
-## Reusable additions
+## Current capabilities
 
-- `bridge_interfaces.py` and `bridge_station.py` register semantic station roles and
-  reacquire exact construction/terminal/frozen TRACK identities in the current
-  session. Geometry filters that identity-qualified set; proximity never creates
-  correspondence. An exposed `station_exit` supports deliberate lead extension,
-  not a guarantee of native clearance or an operational route. Reacquire ordinary
-  external roles after extension. Native line terminal indices are zero-based;
-  station-survey terminal selectors are one-based. Save identity remains unknown.
-- `bridge_station_routes.py` reviews connected terminal paths without demanding
-  obsolete free construction ports. Each endpoint may select its own registry and
-  exact revision; repeated registry loads and station surveys are reused within
-  one review. `identity_frozen` reads avoid traversing the external district while
-  retaining completeness checks. External role qualification still needs its
-  separate complete external observation. Returned path entries default to256 for
-  station review, with an explicit maximum512; these are observation/acceptance
-  bounds, not native pathfinder search limits.
-- `bridge_operator_tasks.py` reuses existing signal, station, depot, line and vehicle
-  operations through named tasks. Exact prior receipts and freshly resolved roles
-  provide identities. `observe` performs one bounded read; no automatic simulation
-  loop or polling framework is introduced. Eight offline operating templates passed
-  static/fake-client checks; that preparation is not six demonstrated services.
-- `bridge_operator.py` supports explicit plain-track coalescing of a named exact
-  chain, with complete retained boundary incidence and fresh geometry checks.
-  It preserves declared outside edges and does not silently remove branches.
-  Coalescing is a specific native fitting option, not a universal prerequisite.
-- `bridge_live.reconcile_constructed_replacement` independently checks an already
-  built replacement without replay. It requires exact saved request correlation,
-  realised chain/control/structure checks, original edge absence, declared outside
-  geometry/incidence and a directed route through every replacement edge. Any
-  changed route-length acceptance needs explicit authority/reason. It clears only
-  the Python pending journal after proof; native guard clearance and fresh-session
-  reacquisition remain separate. Ordinary authorised save/load is not crash recovery.
+- Named data plans for track, graded/structured connections, grouped construction,
+  junctions, replacement/removal, native path review, camera/capture/save.
+- Semantic station/interface roles, reacquired from exact current construction,
+  frozen TRACK and terminal identities. Geometry filters qualified identities;
+  proximity is not correspondence. Station-survey selectors are one-based; native
+  line station/terminal indices are zero-based. Save identity remains unknown.
+- Cross-registry station routes, scoped terminal-path reads and operating tasks for
+  signals, stations, depots, lines and vehicles. Observe performs one bounded read.
+- Explicit plain-track coalescing, accepted-proposal construction and reconciliation
+  of already-built replacements without replay. Keep minimal unresolved request
+  state until fresh native observations establish the outcome.
 
-## Construction and direction lessons
+## Construction limits
 
-Build junctions before dependent signals where possible: the current split producer
-rejects `split_edge_objects_present`. A specific bounded candidate change can solve
-a rejected proposal; failure of one fit does not establish native impossibility.
-Check a selected station template's actual open approach side before treating an
-identity-qualified endpoint as buildable. The built-in template5 terminus example
-is a template-specific observation, not a rule for every station.
+Build junctions before dependent signals: current splitting rejects edge objects.
+An identity-qualified station exit is not a promise of clearance. Check actual
+station orientation, modules and open approach side. Basic placement is supported;
+advanced station module assembly and numeric terrain editing remain deferred.
 
-Keep construction endpoint conventions distinct from signal travel. RN's original
-35-unit crossovers built after correcting only the target departure tangents; its
-prepared merge alternative was unused. North crossovers instead built after plain
-approach coalescing, without moving their alignment. These are different diagnosed
-cases, not grounds for a global tolerance or spacing change.
+One failed candidate does not prove native impossibility. Bounded attachment/shape
+alternatives or deliberate coalescing may help; do not infer a universal spacing,
+handle scale or radius rule from a single result. Native path review returns bounded
+observations, not an exhaustive continuous-clearance or capacity guarantee.
 
-Public signal `forward=true` means node0→node1 travel, and `false` the reverse.
-The native translation is `EdgeObject.left = not forward`; functional readback
-requires `SignalList.edgePr`'s reversed bit to equal `forward`. Commit279da44 corrects
-the previous inversion. On build40420, after normal reload, an isolated required-edge
-TRAIN test allowed northbound travel and rejected southbound travel. Evidence:
-`.local_runs/operator/district04/signal-direction-corrected-proof.json`.
-The24 explicit replacements in `signals-R6-results.json` all returned successful
-functional readback; none of those placement receipts claims a directed route proof.
+## Signal direction and service checks
 
-`functional_signal_verified` verifies attachment/type/orientation. Corrected receipts
-also expose `travel_forward`, `native_left` and `directed_route_verified:false`.
-An available route can use an unintended running track or crossover. Require the
-intended exact corridor edges and inspect path directions before asserting running
-policy. The station-route helper requires endpoint edges only; its successful result
-does not by itself prove the whole intended corridor. Physical train traversal and
-stop/service behaviour require their own native observation.
+Public `forward=true` means node0-to-node1 travel; false means the reverse. The
+adapter translates `EdgeObject.left = not forward` and expects the native reversed
+bit to equal `forward`. Do not reuse the older inverted convention. Functional
+signal readback confirms attachment/type/orientation; it does not prove the intended
+route. Require intended corridor edges and inspect travel directions when reviewing
+running policy. Station-route checks qualify endpoints, not the entire corridor.
 
-## Efficiency evidence and limits
+Passenger line create/update sets and checks the native passenger loading mask at
+each stop. Existing lines require explicit update. Also inspect service warnings
+and observe movement when operation is in scope. Alternative-platform reachability
+is distinct from seeing a train choose another platform under contention.
 
-Recorded native crossover runs each used14 calls: north run`e4dc7001cf0b4e63`
-used7.812 seconds native-call time, and RN run`9288f7b2af0d4790` used7.031 seconds.
-Their local `state.json` records supply these measurements. They are individual
-successful-case costs, not a comparative speedup or a general fitting guarantee.
-Scoped reads address an observed incomplete external read involving768 frozen
-TRACK records/786 processed station nodes. Avoiding unrelated graph traversal and
-reusing surveys are implemented mechanisms; no before/after token-saving percentage
-or credit saving has been measured. Actual GPT usage is unavailable here.
+## Working files
 
-Latest affected checks: 67 operator tests in
-`.local_checks/district04-passenger-load-final_0z7feter/report.json` and 434 shared
-client tests in `.local_checks/district04-passenger-load-shared_je32lhdg/report.json`.
-Python tests are separate from native qualification. Commit e0e890c sets the native
-passenger cargo loading mask on each passenger-station stop and verifies it after
-line create/update. Existing lines require an explicit update. On build40420, all
-six district lines / 14 stops now read passenger enabled at full fraction; UI
-warnings cleared and all six trains continued moving with no_path=false.
-
-District04 is complete for user design review: 36 directed paths checked against
-intended roads, six representative services observed including a four-stop express
-circuit. Each service's create/buy/assign/observe plan used six native calls, about
-2.9–3.3 seconds. This excludes planning, fitting and review time, and is not a token
-savings comparison. Full evidence is under `.local_runs/operator/district04/`.
-No universal connectivity, capacity, cross-save identity or host-recovery guarantee
-is added; alternate-platform occupancy choice was not forced. See the district
-DESIGN.md for final save, design assessment and limitations.
+Temporary plans, receipts and pending mutation state support current operations.
+Delete completed-run data after use; keep configuration, current unresolved state,
+reusable examples and tests. Do not retain permanent run journals, audit reports,
+activity histories or handoff archives. No host recovery, automatic replay or
+universal cross-save identity guarantee is provided.

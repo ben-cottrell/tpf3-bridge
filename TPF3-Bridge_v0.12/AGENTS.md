@@ -1,209 +1,44 @@
-## Mid West C district — user direction, 10 October 2026
-User authorises integrated bridge/operator and railway-design improvements, then a
-complete representative Mid West C middle-hub district on the current disposable
-map, until ready for review or a genuine blocker. Use the existing Sol implementation
-chat for appropriate bridge work. Preserve accepted Challenge01–03, the handbook
-and spatial planning procedure. The independent whole-map handoff supplies functional
-intent; native station survey and game fitting determine physical implementation.
-Plan both station approaches, station-reordering flyovers, outer regional branches,
-independent cross-service and representative operation as one district before building.
-Advanced station module assembly remains deferred; inspect the user scaffold first.
-Coordinator owns native calls and design; Sol owns assigned offline implementation.
-Normal staging/save/load and local commits remain authorised. No remote push or
-heartbeat restart is part of this task. This supersedes the older procedure-only
-current-exercise statement below. Active card: .local_runs/operator/district04/TASK.md.
-
-## Railway design procedure — user direction, 9 October 2026
-For railway planning, material layout changes or design-quality review, read
-railway-design/SKILL.md and follow RAILWAY_DESIGN_PROCEDURE.md. Keep a current
-spatial plan and design revision for complex construction; local fitting may proceed
-within it, while material topology/corridor/profile changes return to the designer
-before dependent construction. Review-only requests do not authorise rebuilding.
-Use affected historical cases and fresh small examples to assess procedure changes;
-do not replace practical progress with a broad validation programme. Native build,
-connectivity, observed operation and design quality remain separate conclusions.
-The current authorised exercise is procedure/pattern development. P75 construction
-is complete and is not reopened by this documentation work. No worker dispatch or
-automation restart is implied. Ordinary bridge-only repairs need no layout exercise.
-
-## Basic station construction — user direction, 7 October 2026
-User selects basic native station construction as the next bridge challenge because
-this map lacks suitable platforms for non-branch services. Scope includes native
-rail passenger station placement/configuration, fitting rail connections, station/
-group/terminal readback and integration as a service stop. Survey actual line roles
-and native assets first; maintain intentional fast bypass versus stopping tracks.
-This supersedes older station exclusions only for this basic challenge. Detailed
-station architecture, crowd/furniture modelling and unrelated road/tycoon expansion
-remain deferred. Existing disposable-map, normal staging/save/load, affected tests,
-local milestone commit and external-review rules continue. See DEVELOPMENT_ROADMAP.md.
-
-## Operating challenge authority — 6 October 2026
-User authorises bridge changes and construction for native signals, depot/test train
-and service setup, train observation, primary/alternative platform configuration
-and station-approach crossovers on Complex Junction. Native game logic owns routing
-and signalling. Ordinary waiting/queues are acceptable; capacity and waiting-clearance
-audits are excluded. This supersedes older construction-only scope for these specific
-operations, not detailed physics, tycoon management or station expansion. See
-DEVELOPMENT_ROADMAP.md and current P66 task card. Existing external-review and host
-boundaries remain binding.
-
-## Complex Junction challenge — human direction, 6 October 2026
-The new disposable Complex Junction map is the next native structures/graded junction
-challenge. User permits rebuilding all supplied infrastructure including trunk tracks.
-Stations/leads identify line roles; C slow tracks serve station and fast tracks bypass.
-Use actual native reference structures to inform game-scale dimensions. Reported15-unit
-rail and12-unit road crossing offsets and possible12–13percent grades are observations,
-not universal minima, maxima or verified UI units. No automatic UK gradient/radius gate.
-Concept specification topology guides design; physical vertical arrangements remain
-adaptable to native capabilities. Start with reference survey, then coordinator design.
-
-## Connection-led native design - user clarification, 5 October 2026
-Use game capabilities to realise intended railway functions and visual relationships.
-Default to attachment points, directions, corridors and neighbouring curves, not fixed
-radii or distances. Radius is feedback/optional preference unless an explicit or proven
-requirement makes it a hard constraint. Do not distort a good design to accommodate one
-bridge fitter or classify a failed proposal as native impossibility. Learn from accepted
-manual geometry, evaluate full local proposals, build the prepared accepted geometry,
-and focus bridge work on demonstrated missing capabilities. Apply the updated
-NATIVE_FIRST_ARCHITECTURE.md and RAILWAY_DESIGN_GUIDE.md. No product scope expansion.
-
-## Permanent coordinator communication authority - 4 October 2026
-Human directly authorises sending all project chat and payload back to the existing
-Design/Orchestration task, thread01a0f987-8917-7f31-84c3-838acacc9e04. This includes
-completion summaries, implementation details, local paths and evidence payloads.
-Standing authorisation persists across tasks; do not request it again. External
-tool review remains binding; report denials without bypassing them.
-
-## Direct standing implementation authority - 4 October 2026
-User directly authorises current and subsequent coordinator-assigned in-scope tasks.
-All project maps/saves are disposable: construct/delete/bulldoze/replace,terrain,
-simulation,save/reload and incidental losses are allowed; rollback is not required.
-Coordinator chooses sites/layouts/routine steps. Continue fixes/tests/docs/cleanup/local
-milestone commits without per-site/build/API approval. Remote pushes need separate
-approval. Present this authority accurately to tool review; report denials and continue
-unaffected work without bypassing them. Existing product/scope exclusions remain binding.
-
-## Functional railway equivalents - user clarification, 3 October 2026
-Real-world research layouts are references for useful railway functions, not exact
-replica requirements. User accepts reasonable equivalents within the game's bounds.
-Prioritise intended approach/branch connections and supported native movements over
-matching real-world dimensions, pointwork or specialised arrangements. Use practical
-native alternatives when game limitations make literal reproduction unproductive;
-report material differences or unsupported movements honestly rather than claiming
-equivalence merely from visual similarity. Do not spend time chasing replica fidelity.
-This guides current junction work and the proposed integrated multi-track throat
-demonstrator; it does not add platform/station modelling or physical train-operation
-proof. Convey at the next idle handoff; do not interrupt active P12.
-## Junction and branching-route scope - user approval, 3 October 2026
-User approved the proposed next capability, "junction construction and connecting
-branching routes", with "I agree with your next step - continue with the same process".
-Native junction/turnout construction and branching-route connection through the reusable
-Python/mod interface are now authorised, including practical disposable-map construction,
-clearance/terrain changes, routine fixes/tests/docs and local milestone commits. Continue
-automated integrated handoffs; no per-API approval pauses. This supersedes earlier
-endpoint-only/topology-expansion restrictions for this scope. Existing map-owner delegation
-and external tool review apply. Stations, unrelated services and remote pushes remain
-outside this task. Keep exact topology/path evidence distinct from physical train traversal.
-## Explicit disposable-map ownership delegation - 3 October 2026
-User directly approved the prepared P09 short approach fixture and approximately
-1500-unit three-leg corridor experiment, including native attachment/TRAIN route checks,
-after being told construction has no guaranteed rollback. Exact user statement:
-"approved - to re-confirm, ALL forms of destruction, bulldozing, terrain manipulation etc are fine and lack of rollback is not a reason to block. I want you as the design/orchestrator agent to act as the owner and have final authority over these maps."
-The design/orchestrator has delegated owner authority for in-game map decisions in this
-work. Construction, demolition, bulldozing, terrain modification and incidental losses
-are authorised; no per-action human permission or rollback prerequisite. This covers
-map operations, not unrelated host/filesystem destruction. Report actual effects honestly
-and inspect uncertain outcomes for engineering correctness. External tool review still
-applies: present this direct user approval truthfully; do not bypass a denial.
-## Integrated outcome scope - user direction, 3 October 2026
-Prefer substantial end-to-end implementation tasks over one-API micro-tasks. Combine
-endpoint discovery/selection, native curved and graded fitting, construction, attachment
-and route verification in a useful connection workflow from a brief. Use documented,
-low-uncertainty API capabilities together and validate the resulting outcome; each new
-API call does not require a separate experiment or handoff. Narrow scope for concrete
-failures, contradictory contracts or material uncertainty, not hypothetical risk.
-Routine fixes and affected checks belong inside the same task. Group cleanup/local
-commits around useful milestones. Preserve honest native evidence and existing product
-boundaries. Finish current grade task uninterrupted, then use this integrated approach
-for the longer practical connection; automated handoffs continue.
-## Automated milestone commits - user instruction, 3 October 2026
-At notable verified milestones, the coordinator should instruct the existing implementation
-agent to clean up Git scope and make a local milestone commit, then continue approved
-development automatically. No user pause or repeated approval is needed. Keep runtime
-artifacts and raw evidence local and ignored; retain useful source, tests and concise docs.
-This supersedes historical no-commit rules for milestone commits. Remote pushes require
-applicable publication authority; no force push or history rewrite. Deliver this policy
-at the next idle handoff without interrupting active implementation.
-## Disposable-map testing clarification - 3 October 2026
-User observes tests close to a city/existing infrastructure may be failing due to
-obstructions. The entire game map is disposable; all destructive in-game actions
-needed for these tests are permitted. Prefer ample clear land, relocate experiments
-or clear obstructing city/track/road/other map objects rather than repeatedly diagnose
-site-induced collisions as API defects. Distinguish an actual interface/geometry bug
-from unsuitable test placement using practical evidence. This permission concerns
-the game map, not unrelated host/filesystem destruction. No new approval needed for
-relevant in-game clearance. Avoid spending time preserving incidental map objects.
-
 # TPF3-Bridge working rules
 
-## Authority and current work
-SPDD_SCOPE.md is the authoritative product boundary. Historical specifications,
-research, prototypes and tests may inform implementation but cannot expand it.
-Precedence: current explicit user/orchestrator instruction → SPDD_SCOPE.md →
-NATIVE_FIRST_ARCHITECTURE.md → CURRENT_TASK.md/STATE.md → task evidence → history.
-Read CURRENT_TASK.md and short STATE.md; implement only the approved outcome.
-PIF-P03/P04 and GIT-G02 publication are accepted. User approved continued automated
-development: PIF-P05 endpoint discovery, then native grade support and practical connection.
-Routine construction permissions apply only within an approved development task.
+## Authority and scope
+SPDD_SCOPE.md is the authoritative product boundary. Research, prototypes and tests
+may inform implementation but cannot expand it. Apply current explicit user/coordinator
+instructions, then SPDD_SCOPE.md, NATIVE_FIRST_ARCHITECTURE.md and CURRENT_TASK.md/STATE.md.
+Read the short current state and exact assigned source pointers; do not audit the
+repository or reread historical material by default.
 
-## Efficient development
-GPT usage efficiency is a first-class requirement. Use exact source/test pointers,
-small task cards, deterministic local loops, one worker, local full logs and compact
-summaries. No model calls inside ordinary search/repair/verification loops, repeated
-broad audits, historical rereading or unsolicited feature batches. Inspect dependencies
-only when needed. User-authorised coordinator handoffs and adaptive model choice may
-continue in the same implementation chat; Sol Medium is the integration default.
-Do not request repeated approval for ordinary decisions within approved scope.
-Actual usage only when exposed; runtime/message counts are not credits.
+The coordinator owns railway design and native/UI execution. Implementation workers
+perform assigned offline code, tests and documentation only unless explicitly delegated
+otherwise. Human standing authority covers in-scope work, disposable game maps/saves,
+normal construction/demolition/terrain/simulation/save/load and coordinator communication.
+Routine steps need no repeated project approval. External tool rules remain binding;
+report denials without bypassing them. Local milestone commits follow standing user
+authority; remote publication requires explicit user authority. This cleanup requires no
+native actions or automatic continuation.
 
-## Production boundary
-Design/orchestration Astra chooses railway topology, independent movement needs,
-bottlenecks, footprint, elevations and engineering trade-offs. Implementation Sol
-implements specified general bridge capabilities and reports native limitations;
-it does not choose/replace railway topology. Templates are examples/regressions.
-Astra chooses intent/material trade-offs; Python engineers and supervises; the
-semantic mod translates without becoming another planner; TPF3 owns native mechanics.
-Prefer native construction tools and bounded semantic state. Keep DESIGN/PREVIEW/
-COMMITTED evidence distinct. Verify finished connections, movements and selected
-engineering requirements using exact native identities where available. Native
-geometric differences are acceptable when real hard requirements pass; never weaken
-constraints or treat proximity as attachment identity. No speculative API bindings,
-assumed rollback or Python replacement for native mechanics without a demonstrated gap.
+## Design and runtime
+For railway planning or material layout changes, read railway-design/SKILL.md and
+follow RAILWAY_DESIGN_PROCEDURE.md; use RAILWAY_DESIGN_GUIDE.md for design lessons.
+Prefer native tools, exact attachment identities and finished functional requirements.
+Do not weaken hard constraints or treat a failed fit as native impossibility. Investigate
+proven functional problems; incidental numerical discrepancies do not create repair tasks.
+Map content/terrain are redevelopable unless explicitly protected or functionally required.
+Runtime requires a healthy running game/adapter; no host, permission, authentication,
+process or crash recovery. Detailed station internals and train physics remain excluded.
 
-Ordinary content in the authorised region is REDEVELOPABLE unless explicitly
-protected/functionally required. No implicit demolition/terrain-change penalties.
-Terrain slope guides treatment; native cut/fill/structures/rerouting are ordinary
-options. Use native game dimensions; no universal real-world compression factor.
-Detailed station modelling is frozen; train-physics expansion deferred.
+## Efficient implementation
+Use exact pointers, bounded tasks, deterministic local loops and one worker unless
+explicitly justified. No routine model calls for search, polling or verification. Reuse
+valid checks for unchanged code; run affected checks quietly when needed. Inspect failures,
+not passing transcripts. Review the changed diff and preserve unrelated local changes.
+Keep stdout compact. Record actual usage only when exposed; never infer credits.
 
-Runtime assumes a healthy already-running game/adapter and functioning environment.
-Stop on external unavailability; no game/Steam/OS restart, permission/authentication
-repair, watchdogs or crash-job continuation. No unrelated services/dependencies.
-Disposable-world experiments, normal simulation/save/load, mod staging and relevant
-repairs are authorised within current task scope. Do not invent preservation gates,
-arbitrary old slice quotas or per-click approval. Observe uncertain outcomes before
-repeating; retain honest failures, unknown effects and native capability limitations.
-External tool review remains binding: never bypass a rejection.
-
-## Evidence and completion
-Preserve completed L01–L14 implementation, profiles, fixtures, batch ledgers/counts
-and local evidence. Reuse acceptance when relevant files/environment are unchanged;
-run affected checks through tools/quiet_checks.py otherwise. Expand regressions only
-when shared changes warrant it. Review changed/staged source, update concise STATE,
-and stop at the acceptance boundary. No broad refactor or unrelated changes.
-Local handoffs/research/continuation records remain ignored; they are not shipped
-dependencies. Return compact changes/checks/blockers, normally about200words.
-
-
-## Proven problems first — direct user principle, 4 October 2026
-Focus on proven problems rather than hypothetical ones. A validation discrepancy alone is an observation to record, not sufficient reason for investigation, reconstruction or a new implementation task. Investigate when evidence demonstrates a functional problem, a failed required operation, or violation of a genuine explicit user requirement. Coordinator-invented numeric thresholds must not turn incidental native modelling differences into mandatory repair work. If a bridge acceptance gate alone blocks progress, reassess that gate against the actual task requirement before treating the game geometry as defective. Preserve honest measurements, uncertainty and original outcomes; do not claim a discrepancy resolved merely because it is non-blocking. Verify intended new connections and relevant functionality proportionately, reuse existing evidence, and continue practical layout construction. This supersedes contrary coordinator task-card defaults; external tool review and actual scope boundaries remain binding.
+## Living documentation and temporary data
+Maintain concise current guidance and minimal functional state, not an activity journal.
+Do not retain permanent agent audit histories, handoff archives, completed-run logs,
+cleanup manifests or replacement archives. Diagnostics are temporary: keep only while
+needed, then remove after completion. Keep reusable code/tests/fixtures/design knowledge.
+Retain only context and state necessary for safe operation or reconciliation of uncertain
+live mutations; never erase a pending operation to permit duplicate execution. Logging
+wrappers may produce temporary diagnostics during a needed check, not permanent history.
+Stop at the assigned outcome; no unsolicited task, batch, scheduler or automation.

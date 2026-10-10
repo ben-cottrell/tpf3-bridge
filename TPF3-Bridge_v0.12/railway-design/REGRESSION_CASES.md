@@ -5,8 +5,7 @@ exercise, not another engine test suite. No live mutation is required for replay
 
 For a changed procedure, select cases affected by that change. Give the evaluator
 only the case's Situation/Task and relevant raw inputs plus the candidate procedure;
-retain the Review criteria for assessment afterward. Preserve the resulting plan,
-its procedure version, evidence and assessment. Do not claim independence when the
+retain the Review criteria for assessment afterward. Use the resulting plan and assessment for the review, then discard the run records. Do not claim independence when the
 author evaluates its own work or has read the expected decisions.
 
 Assess required functions, spatial coherence, native adaptability and whether major
@@ -120,10 +119,6 @@ both routes; consider deck-first construction and earth-supported approaches;
 treat rough lateral margins as guidance. Distinguish native incline rejection from
 adapter eligibility restrictions. Do not equate native acceptance with visual quality.
 
-Worked prospective case: Challenge03 R4→R5b, four routes verified; user visual review
-accepted. Challenge01/02 are accepted prospective throat cases. This supplements the
-historical status above; no independent blind replay or general reliability claim.
-
 ## R7 — A compact railway in a large urban district
 
 **Situation:** an accepted compact hub demonstration will inform a real map with
@@ -140,6 +135,3 @@ map-scale junction offsets rather than copying fixture lengths; straight platfor
 leads and coordinated fan/crossover speed progression; smooth slow sweeps adjacent
 to flyovers; ordinary open-line signals without disrupting platform decision points.
 User approximate distances/speeds retain their provenance and are not engine limits.
-
-Procedure0.6 author self-review is recorded in Challenge04's acceptance section.
-No independent blind evaluation or new native trial is claimed.

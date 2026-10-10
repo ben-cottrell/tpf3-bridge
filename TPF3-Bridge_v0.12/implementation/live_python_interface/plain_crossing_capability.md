@@ -1,6 +1,6 @@
-# Native plain crossing — P35/P36
+# Native plain crossing
 
-## P36 caller-paired connection with native fitted leads
+## Caller-paired connection with native fitted leads
 
 Version2 adds explicit `pairs` (two disjoint input/output role pairs), two native XY
 travel `axes`, `half_arm_length`, selected minimum `radius` and `max_route_length`.
@@ -46,12 +46,7 @@ physical conflict, not an independent-route witness or complete16-track embeddin
 Sampling is not continuous radius/clearance proof. Train traversal, signalling,
 reservations, simultaneous operation and capacity remain unprobed.
 
-Evidence: `.local_runs/live_python_interface/p36/`: brief/prepare/execute/inspect JSON,
-independent_checks.json,checks.json,HANDOFF.md. Two pre-mutation fit-handle failures and
-the first incomplete conflict inspection are preserved. The corrected inspection is
-read-only; completed construction was not repeated. Version1 remains compatible.
-
-## P35 version1 orthogonal observation
+## Version1 orthogonal crossing
 
 **Qualified observation: level orthogonal straight-only crossing on build40408.**
 The native engine accepted one documented generic proposal: four ordinary NORMAL
@@ -87,15 +82,6 @@ pending journal and cannot be blindly replayed. A completed current-session reco
 supports fresh-process read-only inspection; it is not a cross-load identity promise.
 File integrity and native semantic acceptance remain separate.
 
-Demonstration: centre(-1800,-4700,2.25), native node103501, four added TRACKs
-103502/103705/103707/103708, zero removed nodes/segments. Local observed terrain
-selected height; native ordinary cut/fill was allowed. Four current straight TRAIN
-paths each contain four physical TRACKs and two internal transport rows on103501.
-Eight turn queries returned no path, an observed result rather than global no-route
-proof. BaseNodeConfig was unavailable; double-slip identity remains unknown, not false.
-The generated central transport has four bidirectional TRAIN rows/five transport
-node indices. No named engine subtype or internal scheduler reconstruction is claimed.
-
 P34 route-set inspection reacquires a caller-named junction when a tiny spatial box
 omits native movement bounds. Exact fresh node identity/incidence and current TRACK
 qualification remain required; generic tolerances are unchanged. All four paths are
@@ -110,9 +96,3 @@ formation without claiming semantics in advance. Documented slip conversion fals
 single slip, not plain diamond. RailroadCrossing resources refer to road–rail crossings.
 [Proposal API](https://wiki.transportfever3.com/script-doc/api/engine/util.html#UtilProposal.createDoubleSlipSwitchProposal)
 and [road–rail resources](https://wiki.transportfever3.com/doku.php?id=modding:infrastructure:railroadcrossings).
-
-Raw original source qualification and empirical receipts/checks/CLI records/matrix:
-`.local_runs/live_python_interface/p35/` and its `empirical/` child. Existing unrelated
-engineering tests are reused; affected live-client/route-set regressions use the
-quiet runner. Larger topology, footprint, bottlenecks and further acute crossings remain
-Astra/design decisions; this primitive chooses no replacement railway layout.

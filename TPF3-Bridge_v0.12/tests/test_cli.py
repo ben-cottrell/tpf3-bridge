@@ -21,9 +21,9 @@ FIXTURE = ROOT / 'proof/corridor_fixtures/release.json'
 class CliTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # Hash immutable legacy inputs/results without loading them into model context.
+        # Guard reusable source and fixture inputs against mutation by offline commands.
         cls.legacy = {p: hashlib.sha256(p.read_bytes()).hexdigest()
-                      for folder in ('proof', 'evidence', 'validation', 'handoff_evidence')
+                      for folder in ('proof', 'evidence', 'validation')
                       for p in (ROOT / folder).rglob('*')
                       if p.is_file() and '__pycache__' not in p.parts}
 

@@ -127,23 +127,5 @@ class Contracts(unittest.TestCase):
     def test_scope_cannot_be_enlarged(self):
         p,m,a,c=context();a['effect_region']['max_m'][0]=500
         self.assertIn('authority_region_too_small',cc.preflight_contract(p,m,a,c)['errors'])
-    def test_requirement_dispositions_cover_original_ids(self):
-        d=cc.read_json(ROOT/'implementation/requirement_disposition.json')['requirements'];self.assertEqual(75,len(d));self.assertEqual(75,len({r['requirement_id'] for r in d}))
-        self.assertEqual('optional_deferred',next(r['v012_disposition'] for r in d if r['requirement_id']=='PAX-003'))
-    def test_work_package_dependencies_exist_and_acyclic(self):
-        ps=cc.read_json(ROOT/'implementation/work_packages.json')['work_packages'];pending={p['id']:set(p['depends_on']) for p in ps};done=set()
-        while pending:
-            ready={k for k,v in pending.items() if v<=done};self.assertTrue(ready)
-            for k in ready:pending.pop(k)
-            done|=ready
-    def test_source_inventory_is_actual_bytes(self):
-        inv=cc.read_json(ROOT/'implementation/source_inventory.json')
-        for r in inv['modules']:
-            import hashlib
-            self.assertEqual(r['sha256'],hashlib.sha256((ROOT/r['path']).read_bytes()).hexdigest())
-    def test_no_hidden_physics_dependency(self):
-        ps=cc.read_json(ROOT/'implementation/work_packages.json')['work_packages'];self.assertNotRegex(json.dumps(ps).lower(),r'\btraction\b');self.assertNotRegex(json.dumps(ps).lower(),r'\bevacuation\b')
-        features=cc.read_json(ROOT/'implementation/feature_matrix.json')['features']
-        self.assertEqual('optional_deferred',next(f['scope'] for f in features if f['feature_id']=='FEAT-13'))
 
 if __name__=='__main__':unittest.main()

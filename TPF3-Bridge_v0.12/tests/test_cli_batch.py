@@ -212,8 +212,27 @@ class BatchTests(unittest.TestCase):
             self.run_batch(['timeout'])
         self.assertEqual(self.record()['invocations'], 1)
 
+    @contextlib.contextmanager
+    def dry_run_fixture(self, batch=None):
+        # A CLI test supplies its own synthetic queue, never a completed project batch.
+        queue = json.loads(json.dumps(self.queue))
+        if batch == 'connection-l06-l08':
+            for task, number in zip(queue['tasks'], range(6, 9)):
+                task['id'] = f'L{number:02}'
+        elif batch == 'pair-l09-l14':
+            queue['tasks'] = [dict(queue['tasks'][0], id=f'L{number:02}') for number in range(9, 15)]
+        queue_path = runner.BATCHES[batch][0] if batch else runner.QUEUE
+        path = self.root / queue_path
+        path.write_text(json.dumps(queue), encoding='utf-8')
+        pinned = runner.digest(path)
+        batches = dict(runner.BATCHES)
+        if batch:
+            batches[batch] = (queue_path, pinned)
+        with patch.object(runner, 'ROOT', self.root), patch.object(runner, 'BATCHES', batches), patch.object(runner, 'APPROVED_QUEUE_SHA256', pinned):
+            yield
+
     def test_dry_run_never_launches(self):
-        with patch.object(runner.shutil, 'which', return_value='FAKE_NOT_CODEX'), patch.object(runner, 'process') as process:
+        with self.dry_run_fixture(None), patch.object(runner.shutil, 'which', return_value='FAKE_NOT_CODEX'), patch.object(runner, 'process') as process:
             stdout = io.StringIO()
             with contextlib.redirect_stdout(stdout):
                 self.assertEqual(runner.main(['--dry-run']), 0)
@@ -394,7 +413,7 @@ class BatchTests(unittest.TestCase):
                 self.run_named()
 
     def test_named_dry_run_is_read_only_and_queue_is_pinned(self):
-        with patch.object(runner.shutil, 'which', return_value='FAKE_NOT_CODEX'), patch.object(runner, 'run_batch') as batch:
+        with self.dry_run_fixture('connection-l06-l08'), patch.object(runner.shutil, 'which', return_value='FAKE_NOT_CODEX'), patch.object(runner, 'run_batch') as batch:
             stdout = io.StringIO()
             with contextlib.redirect_stdout(stdout):
                 self.assertEqual(runner.main(['--batch', 'connection-l06-l08', '--dry-run']), 0)
@@ -526,7 +545,7 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(self.launches, [])
 
     def test_pair_dry_run_limits_and_no_launch(self):
-        with patch.object(runner.shutil, 'which', return_value='FAKE_NOT_CODEX'), patch.object(runner, 'run_batch') as batch:
+        with self.dry_run_fixture('pair-l09-l14'), patch.object(runner.shutil, 'which', return_value='FAKE_NOT_CODEX'), patch.object(runner, 'run_batch') as batch:
             out = io.StringIO()
             with contextlib.redirect_stdout(out):
                 self.assertEqual(runner.main(['--batch', 'pair-l09-l14', '--dry-run']), 0)

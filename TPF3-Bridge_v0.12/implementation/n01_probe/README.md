@@ -1,10 +1,12 @@
 # Development native adapter
 
-prepared_mod/ contains the reusable live development mod. Historical N01 identity
-and resource names remain stable; the current code supports native inspection,
-fitting, explicit construction and readback, not just read-only activation.
+prepared_mod/ is the reusable TPF3 development mod. Its stable package identity is
+`tpf3_bridge_n01_c04_20261001`; the current implementation supports native inspection,
+fitting, explicit construction and readback, including basic station/operating workflows.
 See [live interface usage](../live_python_interface/README.md).
 
-Local continuation records, legacy candidate scripts and three transport-test data
-modules remain ignored in place to preserve evidence paths. They are not dependencies
-of the current live callback and do not ship. No proprietary game source is included.
+Use normal user staging and save/load activation in a healthy running game. Do not
+edit base-game resources, assume hot reload or repair the host environment. No proprietary
+game source is included. Generated request modules and reconciliation state are temporary
+functional data, not shipped source or permanent audit history. Remove completed diagnostic
+material after use; preserve pending-operation state until uncertain effects are resolved.

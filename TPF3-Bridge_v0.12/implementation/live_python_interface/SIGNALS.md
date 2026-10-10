@@ -9,11 +9,10 @@ Use `execute=True` explicitly to submit one new signal. Brief fields:
 ```
 
 IDs are examples; reacquire them in the current loaded world. Parameter is strictly
-inside the native edge (0..1). `forward` binds the native `left` control; committed
-readback requires `reversed == not forward`. Do not infer permitted travel from
-that label alone. In P73 on build40408, `forward: false` restored the selected
-node0-to-node1 fast path where `true` blocked it. Verify the intended native path
-and actual operation. One-way behaviour is explicit; proximity is not identity.
+inside the native edge (0..1). Public `forward=true` requests node0-to-node1 travel;
+false requests the reverse. Native `EdgeObject.left = not forward`, and readback
+requires the native reversed bit to equal `forward`. Verify the intended native
+path independently; signal attachment/type/orientation alone is not route proof.
 The existing low-level CLI also supports `operating_inspect` with `signal_placement`
 and `operating_control` with `action: signal_place`, fresh target/seed revisions and
 `execute: true`. Prefer the callable workflow to obtain these revisions.

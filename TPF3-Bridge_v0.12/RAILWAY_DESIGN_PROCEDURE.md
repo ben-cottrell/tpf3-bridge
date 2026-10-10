@@ -1,9 +1,5 @@
 # Railway design procedure
 
-Version 0.6 — 10 October 2026. Shefford and accepted Challenge01/02 inform the
-procedure. Challenge03 adds a user-accepted shallow flying-junction case; accepted
-Challenge04 adds urban reservations, speed progression and open-line signal planning.
-
 Purpose: produce coherent game-scale railways without repeatedly turning local
 construction difficulties into unplanned layout changes. The handbook explains
 lessons; this procedure determines when to apply them. Native acceptance,
@@ -12,8 +8,9 @@ connectivity, operation and design quality are separate outcomes.
 ## 1. Establish the brief and actual site
 
 Use one [design record](railway-design/DESIGN_RECORD_TEMPLATE.md) per challenge.
-Keep transient snapshots and full fitting logs under an ignored local run folder;
-keep transferable patterns and concise evaluation results in versioned documents.
+Keep only the current working plan and state needed to finish the operation.
+Discard completed snapshots, candidate logs and run records. Preserve transferable
+lessons in the handbook and reusable patterns, not an activity history.
 
 - Express required directed movements, track roles and exclusions. Include station
   arrival AND departure, turnarounds, intended alternate platforms and depot access
@@ -180,7 +177,7 @@ a moving train alone does not establish a useful passenger service.
 
 Report four separate conclusions: built, connected, observed operating, and design
 quality reviewed. Record shortcomings even if the capability challenge is complete.
-Retain comparable plan/profile views and distinguish user acceptance from the
+Use comparable plan/profile views during review and distinguish user acceptance from the
 designer's judgement. Do not present a merely working layout as an aesthetic baseline.
 
 Compare the result with its selected plan using a few relevant measures, with the
@@ -191,30 +188,6 @@ universal numeric pass threshold. Separate useful exploratory trials from rework
 caused by omitted requirements or unplanned workarounds.
 
 Update a pattern only from a demonstrated result or explicit design judgement,
-with its applicability and uncertainty. Preserve the previous case and why it
-changed. For procedure changes, run affected [regression cases](railway-design/REGRESSION_CASES.md).
+with its applicability and uncertainty. Update the current guidance in place;
+do not keep superseded cases or revision archives. For procedure changes, run affected [regression cases](railway-design/REGRESSION_CASES.md).
 Historical replay detects missed lessons; it does not prove transfer to a new site.
-
-## Initial evaluation sequence
-
-1. Retrospective P75 review: identify where this procedure would have intervened.
-   Recorded in [the first review](railway-design/P75_REVIEW.md); no reconstruction.
-2. Inspect a small manually built fan pattern and document its actual geometry.
-   Completed for [Shefford's two mirrored fans](railway-design/examples/SHEFFORD_FANS.md):
-   29 tracks captured and all six intended native directional paths verified.
-3. The user also supplied mirrored 5/10 versions; these are reference data, not
-   successful transfer by the agent. First prospective test:
-   [an oblique two-track/four-lead throat](railway-design/CHALLENGE_01.md), including
-   all arrivals and returns, planned before fitting. Built on the unchanged fixture:
-   eight directed paths pass, with no rejected proposals or rebuilds. See its
-   [plan comparison and limits](railway-design/examples/challenge01/DESIGN.md).
-   User accepted its visual result; this single composition does not prove reliability.
-4. A separate [six-lead transfer case](railway-design/examples/challenge02/DESIGN.md)
-   now combines30-degree receiving alignment, larger lateral offset and nested
-   three-exit fans. All12 paths pass; original topology retained through local
-   crossover fitting. User accepted its visual result. This remains
-   a related family, not proof across arbitrary junctions.
-5. Exercise an unfamiliar combination after these small examples succeed. Broaden
-   the library when a real failure reveals a missing principle.
-
-Do not start another full-junction rebuild just to evaluate these instructions.

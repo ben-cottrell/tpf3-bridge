@@ -228,17 +228,7 @@ edge identity. Do not silently discard objects or weaken the split check.
 
 A rejected native proposal is not by itself a bridge defect. Try a finite set of
 already-supported representations/handle choices that retain the brief's actual
-constraints. District04's northern depot is a concrete example: structured
-`connect` endpoint cubics at three approach locations rejected with Construction
-Not Possible, despite accepted through subdivision and preserved endpoint grade.
-Operator run `687aeaee166540ab` then built using `branch` with the first candidate
-`{"branch":"endpoint_cubic_graded","through":"subdivide","handle_scale":1.25}`.
-Preparation `5895890e068049ddb477543864d82e3f` explicitly selected that candidate;
-build receipt `c968f5a2edf946e8bbbdbf2d4f021a07` records the result. The fresh-split
-fallback was unused. This demonstrates one successful graded turnout/shape change,
-not a universal handle value, native rejection diagnosis or completed service.
-
-`connect` adds `source_interior`/`target_interior` for a mixed free/interior or
+constraints. `connect` adds `source_interior`/`target_interior` for a mixed free/interior or
 two-interior proposal, evaluated together with its through-track replacements.
 `representation`/`leg_representations`, `handle_scale`, `fit_radius` and optional
 hard `radius` retain the existing native contracts. Up to6 guides and16 segments.
@@ -272,7 +262,7 @@ edge snapshots>]}`; every binding is freshly read/compared before use. Group out
 is retained in member receipt order. Multi-edge curve references use sampled native
 chain length fractions, or explicit one-based `segment` for segment-local `u`.
 Distinct chains require an explicit segment. Through replacements follow exact
-native `original_edge`/`replacement_edges` receipt lineage, retaining old evidence.
+native `original_edge`/`replacement_edges` receipt lineage, retaining required lineage while the operation is unresolved.
 
 Attachment alternatives are an ordered `attachments:[{source,target},...]` list
 within designer-authored absolute `attachment_windows:{source:{min,max},target:{min,max}}`.
@@ -325,23 +315,6 @@ save/load epoch requires a newly inspected design. This is not crash recovery.
 Grade02 wrappers/profile/continuation are offline tested; the coordinator's flying
 junction will supply their new integrated live evidence. No native scripts/API
 bindings, staged files, model loops or host recovery were added by this extension.
-
-## Integrated native evidence — 10 October 2026
-
-Challenge03 R5b completed on build40420: standalone level bridge first, normal earth
-ramps, native removal and fresh binding across save/load, explicit remaining-work
-continuation,4/4 directed paths and both route-bound crossing observations. Native
-camera, screenshot-file completion and checkpoint-file completion passed. R4 had
-also exercised honest partial review. See railway-design/examples/challenge03/DESIGN.md.
-38 operator tests and423 shared-client regressions passed in the standalone-structure
-implementation milestone; no code changed for the final native design fitting.
-
-Interior discovery now requires strict native parameters0<u<1 and nondegenerate
-split pieces, rather than an arbitrary percentage of an edge. Normal native
-proposal evaluation remains authoritative; a short piece is not automatically valid.
-A role at an existing connected endpoint is not a free/interior port. Inspect the
-actual edge and choose a deliberate local alternative; do not label this native
-construction rejection. Numeric bounded terrain editing remains unsupported.
 
 ## District interfaces and operations
 
@@ -400,8 +373,8 @@ Omit terminal selection to retain an explicitly unqualified lead role.
 reacquires current identities/topology, even after load; optional `names` selects
 only needed roles. Ambiguous, missing or incomplete associations stop. Save identity
 remains unknown; this is semantic role reacquisition in the current world, not a
-cross-save identity guarantee. Full observations stay local; summaries show up to8
-roles. New registry revisions preserve the previous record locally.
+cross-save identity guarantee. Temporary observations stay local; summaries show up to8
+roles. Registry revisions bind current roles; discard superseded records after dependent work completes.
 
 Plans can declare `interface_registry`, `interface_revision` and
 `role_refs:{"port_alias":"MW_up"}` and omit those ports' coordinate boilerplate.
@@ -423,16 +396,13 @@ The installed built-in modular passenger template5 is a terminus, not a through
 station. Its default head building is at negative localY; the open approach is
 positive localY, with world direction`[-sin(angle),cos(angle),0]`. This is a
 source-qualified hint for the untouched template, not a universal station rule or
-native buildability guarantee. District04 Cross approached the head/buffer side:
-both5/30-unit extensions received native Collision despite an exact free, unowned
-TRACK endpoint. RN/RS approached the open side. The current catalogue exposes
+native buildability guarantee. The current catalogue exposes
 template parameters; it does not expose an explicit approach-end/buildable-port
 field. Registry endpoint qualification establishes identity/incidence, not clearance
 past buildings/buffers. Check the selected native template/orientation and actual
 proposal; do not infer an API defect or globally reject endpoints from geometry.
 Edited modules may change the layout. Replacing/rotating a station requires fresh
-group/terminal/lead identities before applying old operating recipes. Evidence and
-the two installed resource hashes: local District04`STATION_APPROACH_LESSON.json`.
+group/terminal/lead identities before applying old operating recipes.
 
 Use `{"result":"earlier_task","path":["vehicle","id"]}` for exact prior receipts,
 or `{"role":"MW_up","field":"edge_id"}` / `field:"operating_terminal"` for freshly
@@ -442,11 +412,8 @@ revisions; purchase preparation checks explicit depot revision and selected asse
 Signal `forward=true` requests travel along the current edge's node0→node1
 orientation; `false` requests node1→node0. Keep caller tangent calculations in that
 convention. The adapter maps native `EdgeObject.left = not forward` and qualifies
-`SignalList.edgePr`'s reversed bit as `forward`. On build40420 an isolated required-
-edge route across signal59195/edge59196 proved the previous direct `left=forward`
-mapping permitted the opposite direction. Historical placement receipts with
-`functional_signal_verified` certified attachment/type/orientation bits only;
-they did not prove the intended permitted travel or running-track policy.
+`SignalList.edgePr`'s reversed bit as `forward`. Verify intended travel independently; attachment/type/orientation bits alone do not
+prove a directed route on the intended running road.
 
 Corrected placement reports `travel_forward`, `native_left` and
 `directed_route_verified:false`. Native route acceptance and observed operation
@@ -491,16 +458,6 @@ edge; the receipt reports actual incidence, including the third edge. Only inter
 chain nodes are removed. This is coalescing, not a general degree-three junction
 replacement or implicit branch deletion. Native acceptance and any benefit to
 crossover fitting require a specific native experiment.
-
-District04 north qualification on build40420/session
-`pif_1791633971_20270220`: run `b2784f810e134b11` merged both plain approaches,
-retaining exact outside edges/geometry and native through routes. Run
-`e4dc7001cf0b4e63` then built both previously rejected35-unit crossovers on the
-first attempt (14calls,7.812seconds native-call time), without moving the alignment
-or rebuilding the fan. This demonstrates segmentation sensitivity for that case;
-it is not a universal crossover-spacing rule or general native acceptance guarantee.
-Exact state/receipt evidence remains under `.local_runs/operator/<run>/` and the
-corresponding session's local native response records. No train-traversal claim.
 
 RN qualification is a separate input-direction lesson: run`9288f7b2af0d4790`
 on the same build/session built both original35-unit crossovers after changing only
@@ -584,3 +541,6 @@ connected readback. This demonstrates that attachment on that build/context, not
 train traversal or all exits. The complete operator additions and split diagnostics
 still require the coordinator's normal staging/load and specific qualification; no new API,
 dependency, physics, server, watchdog or environment recovery is introduced.
+
+Completed working records and diagnostics are disposable. Keep only current functional
+state; remove completed logs and superseded plans after use.

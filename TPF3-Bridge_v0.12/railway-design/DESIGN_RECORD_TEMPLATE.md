@@ -1,7 +1,8 @@
 # Design record — <challenge>
 
 Copy into the challenge's local working folder; omit irrelevant fields for simple
-connections. This is one evolving record, not a collection of per-tool forms.
+connections. This is temporary working state, not an audit trail. Remove it at
+completion after integrating useful lessons into current guidance.
 
 ## Identity and brief
 
@@ -35,13 +36,13 @@ connections. This is one evolving record, not a collection of per-tool forms.
 - Applicable material-redesign triggers:
 - Next useful whole-family review point:
 
-## Changes and decisions
+## Current adjustments
 
-| Revision / observation | Local fit or redesign; why | Affected routes / reserved space | Chosen response and updated plan |
-| --- | --- | --- | --- |
+- Current deviations from the selected arrangement and their effects on neighbours:
+- Updated plan or next required design decision:
 
-Record meaningful changes; retain full candidate logs elsewhere. A failed preview
-without mutation does not establish a built defect or native impossibility.
+Update this section in place. Do not retain a revision journal or candidate archive.
+A failed preview alone does not establish a built defect or native impossibility.
 
 ## Review and completion
 
@@ -52,5 +53,5 @@ without mutation does not establish a built defect or native impossibility.
 - Relevant comparable measurements and measurement boundaries:
 - Required human design corrections / major rebuilds and their causes:
 - Built / connected / operating / design-quality conclusions separately:
-- Useful learned pattern; limitations and evidence location:
+- Useful lesson to integrate into current guidance; limitations:
 - Next step or genuine blocker:
