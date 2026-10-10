@@ -410,7 +410,17 @@ each boundary must retain all outside edges/geometry and exactly one new chain
 edge; the receipt reports actual incidence, including the third edge. Only internal
 chain nodes are removed. This is coalescing, not a general degree-three junction
 replacement or implicit branch deletion. Native acceptance and any benefit to
-crossover fitting remain unproven until a coordinator experiment.
+crossover fitting require a specific native experiment.
+
+District04 north qualification on build40420/session
+`pif_1791633971_20270220`: run `b2784f810e134b11` merged both plain approaches,
+retaining exact outside edges/geometry and native through routes. Run
+`e4dc7001cf0b4e63` then built both previously rejected35-unit crossovers on the
+first attempt (14calls,7.812seconds native-call time), without moving the alignment
+or rebuilding the fan. This demonstrates segmentation sensitivity for that case;
+it is not a universal crossover-spacing rule or general native acceptance guarantee.
+Exact state/receipt evidence remains under `.local_runs/operator/<run>/` and the
+corresponding session's local native response records. No train-traversal claim.
 
 `station-routes --input routes.json` / MCP `review_station_routes(brief)` reviews
 up to8 named `arrival`/`departure` paths. Brief fields are registry `name`, `revision`
