@@ -5680,6 +5680,110 @@ class ConstructedStructuredJunctionTests(unittest.TestCase):
                 self.ready['result']['segments'][0]['controls']['p0']=[5,0,0]
 
 
+class ConstructedReplacementReconciliationTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        root=Path(self.tmp.name);self.client=LiveClient(root/'mod',root/'log',root/'evidence','current',.02)
+        self.client.evidence.mkdir(parents=True,exist_ok=True)
+        def edge(i,n0,n1,x):
+            return {'id':i,'node0':n0,'node1':n1,'p0':[x,0,0],'p1':[x+10,0,0],
+                    't0':[10,0,0],'t1':[10,0,0],'template':'track','style':'style','road_type':'TRACK',
+                    'endpoint_node_position_match':True,'structure':{'classification':'NORMAL'}}
+        self.source=edge(10,1,2,0);self.target=edge(20,3,4,20);self.built=edge(30,2,3,10)
+        self.built['engineering_checks']={'sampled_verified':True,'samples':17,'max_sampled_grade':0}
+        self.params={'new_alignment':True,'source':{'edge_id':10,'node_id':2,'pos':[10,0,0],'edge_snapshot':self.source},
+                     'target':{'edge_id':20,'node_id':3,'pos':[20,0,0],'edge_snapshot':self.target},
+                     'replace_chain':[edge(5,2,3,10)],'radius':0,'vertical':{'max_grade':.25},
+                     'region':{'min':[9,-5,-5],'max':[21,5,5]},'max_route_length':800,'prepare':True}
+        self.pending={'operation':'structured_chain','request_id':'built','params':{'execute':True,'prepared_request':'ready'}}
+        self.original={'session':'current','request_id':'built','operation':'structured_chain','status':'mutation_unverified',
+                       'result':{'game_constructed':True,'returned_edges':[30],'prepared_request':'ready','error':'replacement_through_route_unverified'}}
+        self.ready={'session':'current','request_id':'ready','operation':'structured_chain','status':'ok',
+                    'result':{'segments':[{'controls':{k:self.built[k] for k in ('p0','p1','t0','t1')},'structure':{'classification':'NORMAL'}}]}}
+        self.revision={'original_request':'built','max_route_length':2000,'reason':'full route includes retained boundary edges','authority':'coordinator'}
+        self.defect=None;self.calls=[]
+        self.persist()
+
+    def persist(self):
+        self.client.journal.write_text(json.dumps({'session':'current','next_sequence':4,'pending':self.pending}))
+        for name,record in [('built.response.json',self.original),('ready.response.json',self.ready),
+                            ('built.request.json',{'session':'current','request_id':'built','operation':'structured_chain','params':self.pending['params']}),
+                            ('ready.request.json',{'session':'current','request_id':'ready','operation':'structured_chain','params':self.params})]:
+            (self.client.evidence/name).write_text(json.dumps(record))
+
+    def request(self,op,q):
+        self.calls.append((op,q));result={}
+        if op=='inspect' and q.get('geometry_constraints'):
+            result={'edges':[copy.deepcopy(self.built)]}
+            if self.defect=='control':result['edges'][0]['t1'][0]+=1
+            if self.defect=='structure':result['edges'][0]['structure']['classification']='BRIDGE'
+            if self.defect=='engineering':result['edges'][0]['engineering_checks']['max_sampled_grade']=.5
+        elif op=='inspect' and q.get('entity_ids'):
+            result={'entities':[{'entity':i,'exists':self.defect=='retained_old'} for i in q['entity_ids']]}
+        elif op=='inspect':
+            result={'edges':copy.deepcopy([self.source,self.target])}
+            if self.defect=='outside':result['edges'][0]['p1'][0]+=1
+        elif op=='discover_junction':
+            node,ids=(2,[10,30]) if q['region']['min'][0]==9 else (3,[20,30])
+            if self.defect=='incidence':ids.append(99)
+            result={'complete':True,'truncated':False,'candidates':[{'node_id':node,'incidence_complete':True,
+                    'incident_output_truncated':False,'incident_edges':ids,'incident_count':len(ids),'construction_owner':-1}]}
+        elif op=='route':
+            result={'requested_route_verified':self.defect!='route','max_length':q['max_length'],
+                    'path_count':5,'truncated':False,'total_path_length':845.4894}
+            if self.defect=='pending_changed':self.client.journal.write_text(json.dumps({'session':'current','pending':{'request_id':'other'}}))
+        else:raise AssertionError('mutation/unexpected operation: '+op)
+        return {'session':'other' if self.defect=='session' else 'current','operation':op,'request_id':str(len(self.calls)), 'status':'ok','result':result}
+
+    def reconcile(self):
+        from bridge_live import reconcile_constructed_replacement
+        with patch.object(self.client,'request',side_effect=self.request):
+            return reconcile_constructed_replacement(self.client,acceptance_revision=self.revision)
+
+    def test_exact_replacement_revised_route_proof_clears_only_python_pending(self):
+        original=(self.client.evidence/'built.response.json').read_bytes()
+        result=self.reconcile()
+        self.assertEqual(result['status'],'ok');self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+        self.assertEqual(result['result']['ordered_edges'],[30])
+        self.assertEqual(result['result']['acceptance_revision']['original_criteria'],{'max_route_length':800})
+        self.assertFalse(result['result']['native_guard_cleared']);self.assertTrue(result['result']['next_mutation_requires_normal_save_load'])
+        self.assertEqual(original,(self.client.evidence/'built.response.json').read_bytes())
+        route_params=self.calls[-1][1]
+        self.assertEqual((route_params['source_node'],route_params['target_node']),(1,4))
+        self.assertEqual(route_params['required_edges'],[10,30,20]);self.assertEqual(route_params['max_length'],2000)
+        self.assertTrue(all(op in ('inspect','discover_junction','route') for op,_ in self.calls))
+
+    def test_failed_current_proofs_preserve_pending_and_never_replay(self):
+        for defect in ('control','structure','engineering','outside','retained_old','incidence','route','session','pending_changed'):
+            with self.subTest(defect=defect):
+                self.persist();self.defect=defect
+                with self.assertRaises(LiveError):self.reconcile()
+                state=json.loads(self.client.journal.read_text())
+                self.assertEqual(state['pending'],{'request_id':'other'} if defect=='pending_changed' else self.pending)
+
+    def test_original_bound_and_mismatched_revision_do_not_clear_pending(self):
+        self.revision['max_route_length']=800
+        with self.assertRaises(LiveError):self.reconcile()
+        self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+        self.revision['original_request']='unrelated'
+        self.calls=[]
+        with self.assertRaises(ValueError):self.reconcile()
+        self.assertEqual(self.calls,[])
+
+    def test_mismatched_execution_receipt_and_prepare_session_stop_before_reads(self):
+        for defect in ('execution','preparation'):
+            with self.subTest(defect=defect):
+                self.persist();self.calls=[]
+                path=self.client.evidence/('built.request.json' if defect=='execution' else 'ready.response.json')
+                record=json.loads(path.read_text())
+                if defect=='execution':record['params']['prepared_request']='unrelated'
+                else:record['session']='previous'
+                path.write_text(json.dumps(record))
+                with self.assertRaises(LiveError):self.reconcile()
+                self.assertEqual(self.calls,[])
+                self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+
+
 class RejectedStructuredChainTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)

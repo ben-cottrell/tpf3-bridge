@@ -503,6 +503,21 @@ These coordinates/role labels are illustrative; use registered role names and
 current terminal endpoint geometry. Registry overrides require `role`; ordinary
 free-boundary endpoints retain their existing discovery/ownership checks.
 
+For an already-built structured replacement left `mutation_unverified`, use
+`bridge_live.reconcile_constructed_replacement(client, original_client=None,
+acceptance_revision={"original_request": "<build request>", "max_route_length":
+2000, "reason": "<explicit reason>", "authority": "<authoriser>"})`.
+The number is illustrative, not an automatic relaxed default. Native route length
+covers the complete boundary-to-boundary path, including retained approach edges.
+The helper only reads current state: exact prepared controls/structures, sampled
+engineering bounds, original edge removal, preserved outside geometry and boundary
+incidence, then native TRAIN route with every replacement edge required. It records
+the original/revised criteria and source hashes; failed proof leaves pending intact.
+It never rebuilds, refits or rewrites the original receipts. Success clears only
+the original Python journal. It does **not** clear the native mutation guard:
+perform normal authorised save/load and reacquire the current session before further
+mutation, confirming the fresh adapter is usable. No process restart is implied.
+
 Optional endpoint placement/heading tolerances default to0.15/2degrees. Geometry
 only filters exact terminal-component endpoints. Explicit travel direction determines
 entry versus exit orientation and is checked against current edge tangent. Ordinary

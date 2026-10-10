@@ -2633,6 +2633,122 @@ def reconcile_constructed_interior(client, original_client=None):
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
 
 
+def reconcile_constructed_replacement(client, original_client=None, *, acceptance_revision):
+    """Read-only proof of an exact constructed replacement; never clears a native guard.
+
+    Only the named route-length acceptance bound may change. Original preparation,
+    geometry, structures and receipts remain authoritative and are not rewritten.
+    """
+    old=original_client or client;state=json.loads(old.journal.read_text());pending=state.get('pending')
+    if not pending or pending.get('operation')!='structured_chain' or pending['params'].get('execute') is not True:
+        raise LiveError('reconciliation_required','no pending constructed replacement')
+    rid=pending['request_id'];pid=pending['params'].get('prepared_request');revision=acceptance_revision
+    if (not isinstance(revision,dict) or set(revision)!={'original_request','max_route_length','reason','authority'}
+            or revision['original_request']!=rid or type(revision['max_route_length']) not in (int,float)
+            or not math.isfinite(revision['max_route_length']) or not 0<revision['max_route_length']<=100000
+            or any(not isinstance(revision[k],str) or not revision[k].strip() or len(revision[k])>500 for k in ('reason','authority'))):
+        raise ValueError('explicit bounded replacement acceptance revision required')
+    if not isinstance(pid,str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,80}',pid):
+        raise LiveError('reconciliation_required','exact replacement preparation unavailable',rid)
+    files={suffix:old.evidence/(ident+'.'+suffix+'.json') for suffix,ident in [('request',pid),('response',pid)]}
+    execution_path=old.evidence/(rid+'.request.json');execution=json.loads(execution_path.read_text())
+    original_path=old.evidence/(rid+'.response.json');original=json.loads(original_path.read_text())
+    prepared=json.loads(files['request'].read_text());ready=json.loads(files['response'].read_text())
+    params=prepared['params'];value=original.get('result',{});segments=ready.get('result',{}).get('segments',[]);ids=value.get('returned_edges')
+    if (state.get('session')!=old.session or original.get('session')!=old.session or original.get('request_id')!=rid
+            or execution.get('session')!=old.session or execution.get('request_id')!=rid or execution.get('operation')!='structured_chain'
+            or execution.get('params')!=pending['params']
+            or original.get('operation')!='structured_chain' or original.get('status')!='mutation_unverified'
+            or value.get('game_constructed') is not True or value.get('prepared_request')!=pid
+            or prepared.get('session')!=old.session or prepared.get('request_id')!=pid or prepared.get('operation')!='structured_chain'
+            or ready.get('session')!=old.session or ready.get('request_id')!=pid or ready.get('operation')!='structured_chain' or ready.get('status')!='ok'
+            or params.get('new_alignment') is not True or params.get('junctions') or params.get('freestanding')
+            or not 1<=len(segments)<=16 or not isinstance(ids,list) or len(ids)!=len(segments)
+            or len(set(ids))!=len(ids) or any(type(i) is not int or i<=0 for i in ids)):
+        raise LiveError('reconciliation_required','exact prepared replacement receipt required',rid)
+    originals=params.get('replace_chain',[]);removed=[e['id'] for e in originals]
+    if not 1<=len(removed)<=16 or len(set(removed))!=len(removed) or set(removed)&set(ids):
+        raise LiveError('reconciliation_required','exact original replacement chain required',rid)
+    previous=params.get('max_route_length',8000)
+    if type(previous) not in (int,float) or not math.isfinite(previous) or previous<=0:raise ValueError('original route bound unavailable')
+    observations=[];session=client.session
+    def observe(operation,q):
+        response=client.request(operation,q)
+        if response.get('status')!='ok' or response.get('session')!=session or response.get('operation')!=operation or client.session!=session:
+            raise LiveError('reconciliation_required','fresh replacement observation failed',rid)
+        observations.append(response)
+        return response['result']
+    bounds={'region':params['region'],'radius':params['radius'],'max_grade':params['vertical']['max_grade']}
+    rows=observe('inspect',{'edge_ids':ids,'structures':True,'geometry_constraints':bounds}).get('edges',[])
+    remaining={e['id']:e for e in rows};current=params['source']['node_id'];ordered=[];nodes=[current]
+    if len(rows)!=len(ids) or set(remaining)!=set(ids):raise LiveError('reconciliation_required','replacement receipt edges unavailable',rid)
+    for segment in segments:
+        matches=[e for e in remaining.values() if e['node0']==current]
+        if len(matches)!=1:raise LiveError('reconciliation_required','exact directed replacement chain unavailable',rid)
+        e=matches[0];controls=segment['controls'];structure=segment['structure'];actual=e.get('structure',{});checks=e.get('engineering_checks',{})
+        radius=checks.get('min_sampled_radius');grade=checks.get('max_sampled_grade')
+        if (e.get('road_type')!='TRACK' or e.get('endpoint_node_position_match') is not True
+                or e['template']!=params['source']['edge_snapshot']['template'] or e['style']!=params['source']['edge_snapshot']['style']
+                or any(len(e[k])!=3 or any(abs(e[k][i]-controls[k][i])>.001 for i in range(3)) for k in ('p0','p1','t0','t1'))
+                or actual.get('classification')!=structure['classification'] or actual.get('resource_name')!=structure.get('resource_name')
+                or checks.get('sampled_verified') is not True or checks.get('samples')!=17
+                or (radius is not None and (type(radius) not in (int,float) or not math.isfinite(radius) or radius<bounds['radius']))
+                or type(grade) not in (int,float) or not math.isfinite(grade) or grade>bounds['max_grade']+.000001):
+            raise LiveError('reconciliation_required','replacement controls/structures/engineering not verified',rid)
+        ordered.append(e['id']);current=e['node1'];nodes.append(current);remaining.pop(e['id'])
+    if remaining or current!=params['target']['node_id']:raise LiveError('reconciliation_required','exact replacement target missing',rid)
+    outside={};boundary_rows=[]
+    for side in ('source','target'):
+        port=params[side];spec=params.get('replacement_boundaries',{}).get(side)
+        snapshots=spec['edges'] if spec else [port['edge_snapshot']]
+        outside.update({e['id']:e for e in snapshots})
+        boundary_rows.append((side,port,snapshots))
+    current_outside=observe('inspect',{'edge_ids':list(outside),'structures':True}).get('edges',[])
+    if len(current_outside)!=len(outside) or {e['id'] for e in current_outside}!=set(outside):raise LiveError('reconciliation_required','outside edges missing',rid)
+    for e in current_outside:
+        expected=outside[e['id']]
+        if any(e.get(k)!=expected.get(k) for k in ('id','node0','node1','p0','p1','t0','t1','template','style','road_type')) or ('structure' in expected and e.get('structure')!=expected['structure']):
+            raise LiveError('reconciliation_required','outside geometry/identity changed',rid)
+    for offset in range(0,len(removed),8):
+        wanted=removed[offset:offset+8]
+        entities=observe('inspect',{'edge_ids':[ordered[0]],'entity_ids':wanted}).get('entities',[])
+        if len(entities)!=len(wanted) or {e['entity'] for e in entities}!=set(wanted) or any(e.get('exists') is not False for e in entities):
+            raise LiveError('reconciliation_required','removed replacement IDs not proven absent',rid)
+    for side,port,snapshots in boundary_rows:
+        pos=port['pos'];q={'region':{'min':[x-1 for x in pos],'max':[x+1 for x in pos]},'max_edges':16}
+        discovered=observe('discover_junction',q)
+        wanted={e['id'] for e in snapshots}|{ordered[0 if side=='source' else -1]}
+        matches=[c for c in discovered.get('candidates',[]) if c['node_id']==port['node_id']]
+        if (discovered.get('complete') is not True or discovered.get('truncated') is not False or not matches
+                or any(c.get('incidence_complete') is not True or c.get('incident_output_truncated') is not False
+                       or c.get('incident_count')!=len(wanted) or set(c.get('incident_edges',[]))!=wanted
+                       or c.get('construction_owner') not in (None,'none',-1,0) for c in matches)):
+            raise LiveError('reconciliation_required','preserved replacement boundary incidence unverified',rid)
+    first=params['source']['edge_snapshot'];last=params['target']['edge_snapshot']
+    q={'source_edge':first['id'],'source_node':first['node1'] if first['node0']==nodes[0] else first['node0'],
+       'target_edge':last['id'],'target_node':last['node1'] if last['node0']==nodes[-1] else last['node0'],
+       'mode':'TRAIN','required_edges':list(dict.fromkeys([first['id'],*ordered,last['id']])),
+       'max_length':revision['max_route_length'],'max_path_entries':256}
+    path=observe('route',q)
+    length=path.get('total_path_length');count=path.get('path_count')
+    if (path.get('requested_route_verified') is not True or path.get('max_length')!=q['max_length']
+            or path.get('truncated') is not False or type(count) is not int or not 0<count<=256
+            or type(length) not in (int,float) or not math.isfinite(length) or not 0<=length<=q['max_length']):
+        raise LiveError('reconciliation_required','replacement through route unverified',rid)
+    latest=json.loads(old.journal.read_text())
+    if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending changed during replacement verification',rid)
+    record={'status':'reconciled_verified_replacement','original_pending':pending,'current_session':session,
+            'acceptance_revision':revision|{'original_criteria':{'max_route_length':previous}},
+            'source_files_sha256':{str(p.resolve()):hashlib.sha256(p.read_bytes()).hexdigest() for p in [original_path,execution_path,*files.values()]},
+            'ordered_edges':ordered,'ordered_nodes':nodes,'removed_edges':removed,'observations':observations,
+            'native_guard_cleared':False,'next_mutation_requires_normal_save_load':True,
+            'engineering_sampled_only':True,'automatic_replay':False,'native_effect_history_complete':False,'train_traversal':'unprobed'}
+    evidence=old.evidence/(rid+'.reconciliation.json');atomic_json(evidence,record)
+    latest.setdefault('reconciled_constructions',{})[rid]={'evidence':str(evidence.resolve()),'automatic_replay':False}
+    latest.pop('pending');atomic_json(old.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(evidence.resolve())}
+
+
 def reconcile_constructed_connection(client, discoveries, edge_ids):
     """Verify reported construction after a readback failure; no build or replay."""
     state=json.loads(client.journal.read_text());pending=state.get('pending')
