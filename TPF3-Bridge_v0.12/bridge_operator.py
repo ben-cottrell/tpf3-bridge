@@ -386,6 +386,9 @@ class Operator:
     def survey_station_exits(self,brief):
         from bridge_station import inspect_exits
         return inspect_exits(self.client(),brief)
+    def review_station_routes(self,brief):
+        from bridge_station_routes import review
+        return review(self.client(),self.interfaces(),brief)
     def attachment_diagnostics(self,intent,mode='free'):
         c=self.client();result=diagnose(c,intent,mode);path=self.runs/(uuid.uuid4().hex+'.attachment_diagnostics.json')
         live.atomic_json(path,result)
@@ -781,7 +784,7 @@ def render_profile(plan,edges,path):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['status','survey','station-survey','station-exits','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','camera','capture','save'])
+    parser.add_argument('action',choices=['status','survey','station-survey','station-exits','station-routes','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','camera','capture','save'])
     parser.add_argument('--input',type=Path);parser.add_argument('--run');parser.add_argument('--context',type=Path,default=CONTEXT)
     a=parser.parse_args()
     try:
@@ -794,6 +797,7 @@ def main():
         elif a.action=='survey':r=op.survey(**data)
         elif a.action=='station-survey':r=op.survey_station(data)
         elif a.action=='station-exits':r=op.survey_station_exits(data)
+        elif a.action=='station-routes':r=op.review_station_routes(data)
         elif a.action=='diagnose':r=op.attachment_diagnostics(**data)
         elif a.action=='register-interfaces':r=op.register_interfaces(**data)
         elif a.action=='resolve-interfaces':r=op.resolve_interfaces(**data)

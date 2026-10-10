@@ -384,6 +384,27 @@ not establish a completed train journey, capacity, signalling or visual design q
 Signal placement updates named track bindings from the native exact edge-replacement
 receipt and fresh readback; later tasks must use that current identity.
 
+`station-routes --input routes.json` / MCP `review_station_routes(brief)` reviews
+up to8 named `arrival`/`departure` paths. Brief fields are registry `name`, `revision`
+and `routes`; each route has `name`, `purpose`, `source`, `target`, `max_length`.
+Endpoints require native `guide_xyz` and explicit travel direction. Arrival target
+or departure source also names a registered terminal `role`. This reads the role's
+construction/terminal selector directly and freshly qualifies its exact frozen
+TRACK component; it does not resolve an obsolete free/station_exit build attachment.
+An opposite buffer end is a valid directed path endpoint. Current connected leads
+and construction ownership do not disqualify this read-only terminal check.
+No nearest identity or free-port buildability is inferred.
+
+Optional endpoint placement/heading tolerances default to0.15/2degrees. Geometry
+only filters exact terminal-component endpoints. Explicit travel direction determines
+entry versus exit orientation and is checked against current edge tangent. Ordinary
+outer boundary endpoints omit `role` and use fresh free-boundary discovery. The
+existing native TRAIN route check requires both current endpoint edges and reports
+actual direction/length acceptance. Missing/ambiguous/incomplete or changed station
+state stops review. Summaries show at most4 routes; full responses stay local.
+This establishes native directed path availability, not line operation, train arrival,
+stopping behaviour or physical traversal. Saved-file integrity remains separate.
+
 The coordinator demonstrated the station-only read repair and a30-unit extension
 from exact frozen station node69229/edge71764, producing edge45887/node45876 with
 connected readback. This demonstrates that attachment on that build/context, not

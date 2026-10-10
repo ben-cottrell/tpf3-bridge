@@ -81,6 +81,53 @@ class OperatorTest(unittest.TestCase):
                     v['stations'][0]['terminals'][0]['vehicle_node']['entity']=77
                     with self.assertRaises(LiveError):registry.resolve(client,'district','R1')
 
+    def station_route_fixture(self,td):
+        client=FakeClient();client.evidence=Path(td);o=Operator(runs=td,client=client)
+        v,c,roles,_=self.station_exit_fixture();edge=self.native_edge()
+        v['stations'][0]['terminals']=[{'index':1,'vehicle_edges':{},'vehicle_node':{'entity':2,'index':0}}]
+        o.interfaces().path('district').write_text(json.dumps({'name':'district','revision':'R1','roles':roles}))
+        terminal={'role':'MW_up','guide_xyz':edge['p0'],'travel_direction':[-1,0]}
+        boundary={'guide_xyz':[200,0,2],'travel_direction':[-1,0]}
+        brief={'name':'district','revision':'R1','routes':[{'name':'arrival','purpose':'arrival','source':boundary,'target':terminal,'max_length':1000},
+            {'name':'departure','purpose':'departure','source':terminal|{'travel_direction':[1,0]},'target':boundary|{'travel_direction':[1,0]},'max_length':1000}]}
+        queries=[]
+        def request(op,q,**kwargs):
+            queries.append((op,q))
+            result=v if op=='station_lookup' else {'edges':[edge]} if op=='inspect' else {'requested_route_verified':True,'total_path_length':200}
+            return {'status':'ok','request_id':op,'result':copy.deepcopy(result)}
+        return client,o,v,edge,brief,queries,request
+
+    def test_station_route_reviews_connected_owned_chain_with_explicit_arrival_and_departure(self):
+        with tempfile.TemporaryDirectory() as td:
+            client,o,v,edge,brief,queries,request=self.station_route_fixture(td)
+            # Stored station_exit is no longer a buildable free port. Terminal
+            # review requalifies the frozen chain, without resolving that role.
+            v['ports']=[{'node_id':3,'incident_count':2}]
+            with patch.object(client,'request',side_effect=request),patch('bridge_station_routes.live._select_throat_port',return_value=({'edge_id':8,'node_id':17},'free')) as boundary:
+                result=o.review_station_routes(brief)
+            self.assertEqual(result['status'],'ok');self.assertEqual(boundary.call_count,2)
+            route=[q for op,q in queries if op=='route']
+            self.assertEqual((route[0]['source_edge'],route[0]['target_edge'],route[0]['target_node']),(8,1,2))
+            self.assertEqual((route[1]['source_edge'],route[1]['source_node'],route[1]['target_edge']),(1,2,8))
+            self.assertEqual([r['purpose'] for r in result['routes']],['arrival','departure'])
+            self.assertEqual(result['line_operation'],'unprobed');self.assertFalse(result['game_constructed'])
+            self.assertTrue(all(op in ('station_lookup','inspect','route') for op,_ in queries))
+
+    def test_station_routes_reject_missing_ambiguous_incomplete_or_wrong_direction_identity(self):
+        for problem in ('missing_node','ambiguous','incomplete','wrong_direction','changed_endpoint','stale'):
+            with self.subTest(problem=problem),tempfile.TemporaryDirectory() as td:
+                client,o,v,edge,brief,queries,request=self.station_route_fixture(td)
+                if problem=='missing_node':v['stations'][0]['terminals'][0]['vehicle_node']['entity']=77
+                elif problem=='ambiguous':v['constructions'].append(copy.deepcopy(v['constructions'][0]))
+                elif problem=='incomplete':v['complete']=False
+                elif problem=='wrong_direction':brief['routes'][0]['target']['travel_direction']=[1,0]
+                elif problem=='changed_endpoint':edge['node0']=77
+                def changed(op,q,**kwargs):
+                    r=request(op,q,**kwargs)
+                    if problem=='stale' and op=='station_lookup' and sum(op=='station_lookup' for op,_ in queries)>1:r['result']['group_id']=99
+                    return r
+                with patch.object(client,'request',side_effect=changed),patch('bridge_station_routes.live._select_throat_port',return_value=({'edge_id':8,'node_id':17},'free')),self.assertRaises(LiveError):o.review_station_routes(brief)
+
     def test_station_exit_cannot_be_used_as_generic_connected_attachment(self):
         with tempfile.TemporaryDirectory() as td:
             client=FakeClient();o=Operator(runs=td,client=client);v,c,roles,request=self.station_exit_fixture()

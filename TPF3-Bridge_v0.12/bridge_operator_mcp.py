@@ -45,6 +45,11 @@ async def survey_station_exits(brief: dict) -> dict:
     return await invoke(op.survey_station_exits,brief)
 
 @server.tool(annotations=read)
+async def review_station_routes(brief: dict) -> dict:
+    """Read directed arrivals/departures to exact registered station terminal chains."""
+    return await invoke(op.review_station_routes,brief)
+
+@server.tool(annotations=read)
 async def diagnose_attachment(intent: dict, mode: str = 'free') -> dict:
     """Explain adapter attachment eligibility; does not submit a native proposal."""
     return await invoke(op.attachment_diagnostics,intent,mode)
