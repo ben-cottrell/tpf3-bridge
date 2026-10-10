@@ -19,8 +19,9 @@ connections. This is one evolving record, not a collection of per-tool forms.
 - Corridor families, track order, paired portions and intended separations:
 - Fork/merge order along each direction of travel:
 - Crossing order, ramps/landings and terrain treatment:
-- Space reserved for remaining connections:
-- Operational interfaces/turnarounds/signal intent in scope:
+- Space reserved for remaining connections, city growth and road crossings; station datum and junction offsets:
+- Platform lead allowance, fan/throat speed progression and native versus estimated feedback:
+- Operational interfaces/turnarounds/signal intent, open-line block spacing and final platform decision points in scope:
 - Alternative considered where consequential; why selected:
 - Unknowns that could change the arrangement; useful trial for each:
 - Status: concept / selected for native trial / selected for construction:

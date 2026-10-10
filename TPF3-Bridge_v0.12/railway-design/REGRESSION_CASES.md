@@ -121,5 +121,25 @@ treat rough lateral margins as guidance. Distinguish native incline rejection fr
 adapter eligibility restrictions. Do not equate native acceptance with visual quality.
 
 Worked prospective case: Challenge03 R4→R5b, four routes verified; user visual review
-pending. Challenge01/02 are accepted prospective throat cases. This supplements the
+accepted. Challenge01/02 are accepted prospective throat cases. This supplements the
 historical status above; no independent blind replay or general reliability claim.
+
+## R7 — A compact railway in a large urban district
+
+**Situation:** an accepted compact hub demonstration will inform a real map with
+large cities. Fast, slow and independent Cross pairs need an approach corridor;
+platform fans appear much faster than the throat crossovers. Flyovers and regional
+junctions in the demonstration leave too little room for future city/road growth.
+Long plain tracks have only endpoint signals. The user requests future lessons only.
+**Task:** record acceptance, then specify inputs and spatial/operating priorities
+for the future map without altering the demonstration.
+
+**Review criteria:** preserve review-only scope; explicit urban/road reservations;
+narrow shared corridor retaining fast alignment and Cross independence; appropriate
+map-scale junction offsets rather than copying fixture lengths; straight platform
+leads and coordinated fan/crossover speed progression; smooth slow sweeps adjacent
+to flyovers; ordinary open-line signals without disrupting platform decision points.
+User approximate distances/speeds retain their provenance and are not engine limits.
+
+Procedure0.6 author self-review is recorded in Challenge04's acceptance section.
+No independent blind evaluation or new native trial is claimed.

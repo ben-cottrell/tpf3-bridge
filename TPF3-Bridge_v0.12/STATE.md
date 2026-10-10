@@ -1,3 +1,13 @@
+# Challenge04 accepted — future guidance recorded (10 October 2026)
+
+User accepts the overall Mid West C design and explicitly requests no rebuilding.
+The existing save remains the accepted baseline. Procedure0.6, the handbook and
+Challenge04's user-review section preserve all eight forward-looking observations,
+including urban space, compact six-track approaches, curve/speed relationships,
+30 m platform leads and roughly 300 m open-line signals. Speed estimates remain
+unmeasured; 1.2 km / 3 km offsets are real-map planning guidance. No native mutation,
+worker dispatch or new challenge is authorised by this review. Historical state below.
+
 # Challenge04 complete — Mid West C ready for review (10 October 2026)
 
 The integrated district is built: both station approaches, two station-reordering

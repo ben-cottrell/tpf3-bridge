@@ -1,7 +1,8 @@
 # Railway design procedure
 
-Version 0.5 — 10 October 2026. Shefford and accepted Challenge01/02 inform the
-procedure. Challenge03 adds a user-accepted shallow flying-junction case.
+Version 0.6 — 10 October 2026. Shefford and accepted Challenge01/02 inform the
+procedure. Challenge03 adds a user-accepted shallow flying-junction case; accepted
+Challenge04 adds urban reservations, speed progression and open-line signal planning.
 
 Purpose: produce coherent game-scale railways without repeatedly turning local
 construction difficulties into unplanned layout changes. The handbook explains
@@ -50,6 +51,20 @@ The plan must make these decisions visible:
 | Vertical arrangement | Over/under relationships, ramps and landing space, terrain treatment |
 | Operation in scope | Station choices and return access, signal intent, depot entry/exit |
 | Scale and shape | Game-coordinate footprint, useful sweeps, compact crossing/turnout groups |
+
+Reserve city growth and road-crossing corridors as well as railway space. Record
+map-specific hub/flyover/regional-junction distances with a defined station datum;
+do not copy compact demonstration spacing into the real network. Keep principal
+fast alignment and gather slow/Cross tracks into a narrow shared approach where
+required, accepting asymmetric slow fans. See the handbook
+[Mid West C guidance](RAILWAY_DESIGN_GUIDE.md#accepted-mid-west-c-lessons--future-builds).
+
+Plan the intended speed progression: slow platform fans need not be faster and
+longer than throat crossovers. Retain the preferred approximately 30 m straight
+parallel platform leads; compare fan/crossover lengths together using native speed
+feedback when available. Approximate visual speed estimates are not measurements.
+For operating networks, include open-line block signals (user default about 300 m)
+as well as junction/station signals, preserving final platform-decision placement.
 
 Reserve the actual selected station/depot footprint, open approach side and turnout
 space before committing neighbouring corridors. A centreline-only reservation can
@@ -143,6 +158,8 @@ Review after a controlling route or coupled family is built, and after material
 native-driven revisions. Do not review every click. Use a comparable overhead view
 and the relevant profile; overlay actual geometry on the plan where available.
 
+Review adjacent ground-level slow sweeps as whole curves alongside flyovers,
+including unnecessary outward bows or inserted straights between turns.
 Ask whether paired routes remain coherent, remaining routes retain their space,
 required junction order holds, and any extra bow, crossing or structure is justified.
 If the complete footprint is unattractive or inefficient, native acceptance does

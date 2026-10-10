@@ -1,6 +1,6 @@
 # Challenge04 — Mid West C district
 
-R6 complete for user review, 10 October 2026. R1 baseline retained below, followed by revisions.
+R6 user-accepted, 10 October 2026. R1 baseline retained below, followed by revisions.
 Selected for construction following the successful native interface trial; use the
 whole district arrangement below. User authorises the complete challenge, bridge
 improvements and iteration. Challenge01–03 remain accepted baselines.
@@ -302,5 +302,38 @@ The final save has not been reloaded. Native evidence: `final-save.json`,
 local district evidence directory. Passenger configuration is verified; no populated
 catchment or capacity claim. Latest affected suites: 67 operator and 434 shared tests.
 
-Ready for user design review, with no unresolved functional blocker. Sol remains
+At handoff: ready for user design review, with no unresolved functional blocker. Sol remains
 idle and the heartbeat paused. Earlier accepted challenges and their evidence remain.
+
+## User acceptance and forward guidance — 10 October 2026
+
+The user accepts the overall design as an excellent demonstration, with minor
+future refinements only, and explicitly requests no changes to this built example.
+The review screenshot shows the ground-level slow track beside a flyover curving
+outward, straightening, then curving inward. Preserve this accepted save as the
+baseline; acceptance does not mean the details below are optimal.
+
+| Feedback | Carry forward |
+| --- | --- |
+| Slow tracks beside flyovers have awkward curve/straight/curve transitions | Design and review the complete ground-level sweep alongside the crossing; minimise unnecessary outward bow and intermediate straight sections while retaining required separation and landings. |
+| Platform fans are much gentler than throat crossovers | Allocate geometry by route purpose and speed progression. Shorter, tighter slow fans are acceptable; aim for throat crossovers no slower than the slowest relevant fan. The user's approximate 35–40 mph crossover and 75–80 mph fan estimates are unmeasured. The suggested 120 m fan / 120 m throat instead of approximately 160 / 80 m is a future comparison, not a prescribed template. |
+| Long uninterrupted tracks lack intermediate signals | Use about 300 m along-track spacing as the user's normal open-line guideline. Respect travel direction, native placement and the final station decision signal before all platform choices. No intervening incoming signal should remove intended alternative-platform choices. This is baseline block provision, not an instruction to conduct a capacity audit. |
+| Straight parallel platform exits work well | Retain approximately 30 m of straight parallel lead before fans as the preferred starting pattern. User observes improved conflict avoidance; this does not independently prove a universal conflict-free distance. |
+| Flyovers would cramp mega-cities | For the intended real map, start station-approach flyovers around 1.2 km from the station rather than this example's roughly 700 m. Reserve city growth and road-crossing space explicitly, including a plain approach interval. |
+| Throat gaps consume urban space | Keep the fast pair on its principal alignment; bring the slow pair alongside it without unnecessary inter-pair gaps. Accept asymmetric slow/regional fans and tighter curves close to platforms. |
+| Cross service turns away too early for an urban hub | Lead the East–West Cross pair alongside the main throat, making a six-track corridor, then turn it away near the flyover zone while preserving its independent railway function. |
+| Regional junctions belong outside the central city | Place regional-hub branches around 3 km from central hubs in the real-map plan. The user's network context is 15–20 km between mega-city hubs on a 48 km north–south map; allow separate regional cities and their local spokes space. |
+
+The approximate distances are user planning guidance for that map, not universal
+engine limits or surveyed requirements. Define the station datum and measure along
+the corridor when preparing its scaled plan. Local track type, terrain, native fit
+and actual road/city reservations inform detailed geometry. Do not make this
+small demonstration longer or rebuild it to imitate the whole-map spacing.
+
+Procedure 0.6 self-review (not independent testing): constrained-fan R1 remains
+outer-first with reserved 30 m platform leads; shortening is subordinate to valid
+native connections. Review-only R5 retains this accepted world unchanged. Shallow
+flyover R6 retains its level span and earth approaches while reviewing adjacent
+slow sweeps as a family. New urban-district R7 makes city space, compact track
+order, route-speed progression and open-line signals visible before construction.
+No new native tests or capacity claims arise from this documentation change.

@@ -184,6 +184,13 @@ that route-family arrangement.
 **Evidence:** [Challenge04](examples/challenge04/DESIGN.md) retains its central
 arrangement through construction. All36 directed platform routes use their intended
 running roads; six trains demonstrate circulation. The southern depot footprint
-omission caused local bypass rework and is retained as a planning failure. Final
-user design acceptance is pending; this case does not prove arbitrary whole-map
-planning or capacity. Cargo loading is a distinct operating configuration result.
+omission caused local bypass rework and is retained as a planning failure. The user accepted the overall design on 10 October with future refinements only;
+this case does not prove arbitrary whole-map planning or capacity. Cargo loading is a distinct operating configuration result.
+
+**Future refinement:** retain approximately 30 m straight platform leads, shorten
+slow fans relative to throat crossover speeds, smooth adjacent slow flyover sweeps,
+and provide about 300 m open-line signal spacing. For the real mega-city map,
+reserve urban/road space first: narrow six-track approach (including independent
+Cross pair), flyovers around 1.2 km, regional branches around 3 km. These are user
+planning preferences; full context and unmeasured speed estimates are in the linked
+review. Do not retrofit the accepted demonstration.

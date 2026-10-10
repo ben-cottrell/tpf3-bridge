@@ -11,6 +11,33 @@ firm; dimensions and particular track patterns remain design choices. This is no
 a claim that one template solves every layout or that native acceptance proves
 operational capacity.
 
+## Accepted Mid West C lessons — future builds
+
+Challenge04 was accepted on 10 October 2026; leave the demonstration unchanged.
+The complete [user review](railway-design/examples/challenge04/DESIGN.md#user-acceptance-and-forward-guidance--10-october-2026)
+records all observations and distinguishes estimates from native measurements.
+
+- Plan urban space and railway compactness together. On the intended 48 km map,
+  reserve city growth/road crossings before locating approach flyovers (about
+  1.2 km from the hub) and regional branches (about 3 km); hubs are 15–20 km apart.
+  These are map-specific planning targets, not native geometry limits.
+- Keep the fast pair aligned; gather slow tracks alongside it without unnecessary
+  gaps. Asymmetric slow fans are acceptable. Carry the independent Cross pair
+  alongside the throat as a six-track corridor, departing near the flyover zone.
+- Review the entire slow alignment beside a flyover. Avoid unnecessary bowing and
+  curve/straight/return sequences introduced by fitting individual pieces separately.
+  Preserve useful sweeps, native clearance and paired-route relationships.
+- Retain about 30 m of straight parallel platform lead before the fans. Make slow
+  fans appropriately compact; aim for throat crossovers no slower than the slowest
+  relevant fan. Use native speed feedback when available; do not infer verified
+  speeds from appearance or impose a new radius gate. The user's suggested 120 m
+  fan / 120 m throat is a comparison to try, not a fixed design requirement.
+- Include ordinary one-way block signals on long open stretches, normally about
+  300 m apart along track. Preserve the final decision signal before all intended
+  platform choices and adjust placement around pointwork/native eligibility.
+  A few working trains do not establish that sparse signalling is adequate for a
+  busy network; basic block provision does not require an unsolicited capacity study.
+
 ## Construction sequence is part of the design
 
 The intended final geometry and the intermediate construction states both matter.

@@ -4,7 +4,7 @@ Updated 10 October 2026. Current priorities supplement the historical work packa
 in implementation/work_packages.json; their old status labels are not a live
 capability inventory. Completed native evidence is recorded in CURRENT_TASK.md.
 
-## Completed for review — integrated Mid West C district
+## User-accepted — integrated Mid West C district
 
 10 October: reusable additions since Challenge03 are consolidated in
 [BRIDGE_OPERATOR.md](BRIDGE_OPERATOR.md): fresh station roles/exits, connected
@@ -23,7 +23,7 @@ and `signals-R6-results.json` in that directory. Placement verifies orientation,
 not the intended running path: exact corridor/direction checks and observed service
 operation remain separate. Earlier opposite-direction receipts remain historical.
 
-District04 is now complete for user review: all 36 directed station routes use the
+District04 is now user-accepted: all 36 directed station routes use the
 intended running roads; six trains demonstrate regional, stopping, Cross and express
 return sequences. Passenger loading repair e0e890c is natively qualified on all 14
 stops, with cleared UI warnings. Latest affected checks: 67 operator / 434 shared.
@@ -32,9 +32,24 @@ Final save: Design Challenge 04 - Mid West C Ready for Review.sav.
 Procedure 0.5 adds actual station/depot envelopes, explicit world-frame operating
 directions, turnouts before signals, intended-road checks and native loading state.
 The original district corridors survived; one avoidable depot-footprint omission
-required local southern bypass widening. Northern cut/fill and outer fixture form
-remain explicit user-review points. Keep accepted Challenge01–03 and this evidence.
+required local southern bypass widening. The user accepts the result and requests only future refinements. Keep accepted
+Challenge01–04 and their evidence.
 Next scope follows review; do not automatically launch a whole-map build.
+
+### Forward work from accepted user review
+
+Keep Challenge04 unchanged. Procedure0.6 and the handbook capture urban reservations,
+narrow six-track approaches, compact slow fans, smooth adjacent flyover curves,
+30 m straight platform leads and ordinary open-line signals around 300 m apart.
+Real-map starting targets are flyovers around 1.2 km and regional branches around
+3 km from hubs, with 15–20 km hub spacing on the 48 km map. Define station datums
+and survey the actual site before converting this guidance into a build plan.
+
+Worthwhile operator follow-ups for the next authorised build are reusable along-track
+signal distribution that preserves station decision zones, and compact native curve
+speed readback if the current interface cannot expose it. Inventory existing support
+first; these are opportunities, not diagnosed defects or an implementation dispatch.
+No rebuild, new capacity study or whole-map construction begins from this review.
 
 ## Completed baseline — graded operator and shallow flying junction
 
