@@ -1,0 +1,150 @@
+{
+  "layout": "native_offset_connection_v1",
+  "ports": {
+    "up_source": {
+      "id": "up_source",
+      "endpoint": {
+        "guide_xyz": [
+          -4500,
+          -4700,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -4502,
+            -4702,
+            31
+          ],
+          "max": [
+            -4498,
+            -4698,
+            35
+          ]
+        }
+      }
+    },
+    "up_target": {
+      "id": "up_target",
+      "endpoint": {
+        "guide_xyz": [
+          -3600,
+          -4300,
+          33
+        ],
+        "travel_direction": [
+          0.7071067811865476,
+          0.7071067811865476
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -3602,
+            -4302,
+            31
+          ],
+          "max": [
+            -3598,
+            -4298,
+            35
+          ]
+        }
+      }
+    },
+    "down_source": {
+      "id": "down_source",
+      "endpoint": {
+        "guide_xyz": [
+          -3603.5355339059324,
+          -4296.464466094068,
+          33
+        ],
+        "travel_direction": [
+          -0.7071067811865476,
+          -0.7071067811865476
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -3605.5355339059324,
+            -4298.464466094068,
+            31
+          ],
+          "max": [
+            -3601.5355339059324,
+            -4294.464466094068,
+            35
+          ]
+        }
+      }
+    },
+    "down_target": {
+      "id": "down_target",
+      "endpoint": {
+        "guide_xyz": [
+          -4500,
+          -4695,
+          33
+        ],
+        "travel_direction": [
+          -1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -4502,
+            -4697,
+            31
+          ],
+          "max": [
+            -4498,
+            -4693,
+            35
+          ]
+        }
+      }
+    }
+  },
+  "guides": [
+    {
+      "position": [
+        -4050,
+        -4550,
+        33
+      ],
+      "travel_direction": [
+        0.8660254037844387,
+        0.49999999999999994
+      ],
+      "grade": 0
+    }
+  ],
+  "side": "left",
+  "spacing": 5,
+  "spacing_tolerance": 0.05,
+  "radius": 400,
+  "max_grade": 0.04,
+  "region": {
+    "min": [
+      -4600,
+      -4800,
+      0
+    ],
+    "max": [
+      -3500,
+      -4100,
+      80
+    ]
+  },
+  "max_route_length": 2000,
+  "min_curved_length": 300
+}

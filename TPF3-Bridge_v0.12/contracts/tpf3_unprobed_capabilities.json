@@ -1,0 +1,254 @@
+{
+  "schema_version": "0.12.0",
+  "manifest_id": "tpf3-unprobed-v012",
+  "inspection_date": "2026-09-21",
+  "capabilities": [
+    {
+      "capability_id": "game.identity.read",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.coordinates.map",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.topology.read",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.terrain.read",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.assets.enumerate",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.track.construct",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.structure.construct",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.signal.construct",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.geometry.read",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.routes.verify",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.operation.receipt",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.change.observe",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.vehicle.observe",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.asset.remove",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.station.modify",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.preview.validate",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.world.pause",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.signal.configure",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    },
+    {
+      "capability_id": "game.line.configure",
+      "environment": "game",
+      "game_build": null,
+      "adapter_build": null,
+      "evidence": {
+        "level": "unknown",
+        "record_refs": [],
+        "native_symbols": [],
+        "probe_ids": [],
+        "limits_ref": null
+      }
+    }
+  ]
+}

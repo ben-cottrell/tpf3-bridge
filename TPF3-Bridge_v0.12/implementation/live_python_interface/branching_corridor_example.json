@@ -1,0 +1,169 @@
+{
+  "layout": "curved_main_branches_v1",
+  "main_record": ".local_runs/live_python_interface/p25/build_summary.json",
+  "branches": [
+    {
+      "id": "branch_up",
+      "track": "U1",
+      "source": {
+        "guide_xyz": [
+          -2144.4365539189403,
+          -4144.43655391894,
+          33.0
+        ],
+        "travel_direction": [
+          0.7071067811865476,
+          0.7071067811865476
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -2146.4365539189403,
+            -4146.43655391894,
+            31.0
+          ],
+          "max": [
+            -2142.4365539189403,
+            -4142.43655391894,
+            35.0
+          ]
+        }
+      },
+      "target": {
+        "guide_xyz": [
+          -1755.527824266339,
+          -3896.9491805036487,
+          33.0
+        ],
+        "travel_direction": [
+          0.7071067811865476,
+          0.7071067811865476
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -1757.527824266339,
+            -3898.9491805036487,
+            31.0
+          ],
+          "max": [
+            -1753.527824266339,
+            -3894.9491805036487,
+            35.0
+          ]
+        }
+      },
+      "lead_length": 400
+    },
+    {
+      "id": "branch_down",
+      "track": "D4",
+      "source": {
+        "guide_xyz": [
+          -3320.0,
+          -4685.0,
+          33.0
+        ],
+        "travel_direction": [
+          -1.0,
+          -0.0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -3322.0,
+            -4687.0,
+            31.0
+          ],
+          "max": [
+            -3318.0,
+            -4683.0,
+            35.0
+          ]
+        }
+      },
+      "target": {
+        "guide_xyz": [
+          -4020.0,
+          -4605.0,
+          33.0
+        ],
+        "travel_direction": [
+          -1.0,
+          -0.0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -4022.0,
+            -4607.0,
+            31.0
+          ],
+          "max": [
+            -4018.0,
+            -4603.0,
+            35.0
+          ]
+        }
+      },
+      "lead_length": 200
+    }
+  ],
+  "movements": [
+    {
+      "from": "U1:source",
+      "to": "U1:target",
+      "track": "U1",
+      "kind": "through"
+    },
+    {
+      "from": "U2:source",
+      "to": "U2:target",
+      "track": "U2",
+      "kind": "through"
+    },
+    {
+      "from": "D3:source",
+      "to": "D3:target",
+      "track": "D3",
+      "kind": "through"
+    },
+    {
+      "from": "D4:source",
+      "to": "D4:target",
+      "track": "D4",
+      "kind": "through"
+    },
+    {
+      "from": "U1:source",
+      "to": "branch_up",
+      "track": "U1",
+      "kind": "branch"
+    },
+    {
+      "from": "D4:source",
+      "to": "branch_down",
+      "track": "D4",
+      "kind": "branch"
+    }
+  ],
+  "radius": 400,
+  "max_grade": 0.04,
+  "region": {
+    "min": [
+      -4400,
+      -4900,
+      0
+    ],
+    "max": [
+      -1500,
+      -3700,
+      80
+    ]
+  },
+  "max_route_length": 2500
+}

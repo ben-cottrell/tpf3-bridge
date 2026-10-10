@@ -1,0 +1,2 @@
+# Development-only schema validation; not a new dependency of proof/.
+jsonschema==4.26.0

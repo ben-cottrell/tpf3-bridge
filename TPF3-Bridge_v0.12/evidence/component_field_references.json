@@ -1,0 +1,39 @@
+{
+  "schema_version": "0.8.0",
+  "records": [
+    {
+      "id": "WCML_G_TYPE_FIELD_STUDY_2022",
+      "source_id": "S067",
+      "source_locator": "Section 2, paragraphs 1 and last: studied CEN56 113A shallow-depth G-type installation",
+      "scope": "dated_field_installation_not_product_family_approval",
+      "component_description": "CEN56 113A shallow-depth G-type switch and crossing",
+      "quantities": {
+        "reported_switch_radius_m": 1650.0,
+        "reported_crossing_ratio_denominator": 28.0,
+        "reported_nominal_gauge_mm": 1435.0,
+        "reported_facing_through_line_speed_kmh": 200.0,
+        "reported_trailing_diverging_line_speed_kmh": 105.0
+      },
+      "geometry": null,
+      "geometry_missing": ["toe_datum", "full_route_curves", "switch_to_crossing_spacing", "end_ports", "rail_reference_conversion", "hardware_and_bearer_envelope"],
+      "speed_kind": "reported_local_line_speed_not_general_rating",
+      "source_figure_is_dimensional_component_drawing": false,
+      "eligible_for_station_placement": false
+    },
+    {
+      "id": "REPOINT_NR60_C_INSPIRED_BEAM_2024",
+      "source_id": "S068",
+      "source_locator": "Section 2.2: movable stub beams based on NR60 inclined C-switch drawing REPW2001",
+      "scope": "research_stub_switch_model_not_conventional_turnout_geometry",
+      "component_description": "REPOINT movable stub rail based on an NR60 inclined C-switch drawing",
+      "quantities": {"movable_stub_beam_length_m": 7.8},
+      "geometry": null,
+      "geometry_missing": ["complete_conventional_component", "route_curves", "crossing", "ports", "hardware_envelope"],
+      "speed_kind": "not_supplied",
+      "source_figure_is_dimensional_component_drawing": false,
+      "eligible_for_station_placement": false
+    }
+  ],
+  "authentic_complete_turnout_imported": false,
+  "construction_authorised": false
+}

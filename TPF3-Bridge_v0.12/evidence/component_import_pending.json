@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.5.0",
+  "component_id": "VOESTALPINE_UK_DIMENSIONS_PENDING",
+  "display_name": "Acquisition target; not a verified UK product variant",
+  "origin_kind": "external_reference",
+  "source": {
+    "source_id": "S063",
+    "issue": "Product page inspected 2026-09-20",
+    "locator": "Turnout systems for all applications; no selected dimensional drawing",
+    "reuse_status": "unresolved",
+    "geometry_evidence": "metadata_only"
+  },
+  "geometry": null,
+  "limits": {
+    "diverging_speed_mps": null,
+    "speed_evidence": "unresolved",
+    "application_profile": "gb_conventional_passenger_pending_variant"
+  }
+}

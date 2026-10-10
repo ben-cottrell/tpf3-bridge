@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.12.0",
+  "status": "blocked",
+  "job_ref": "example-job",
+  "result_ref": "example-decision",
+  "summary": "Illustrative result; no server or game operation was run.",
+  "detail_refs": [
+    "example-detail"
+  ],
+  "error_codes": [
+    "example_not_executed"
+  ],
+  "event_sequence": 0
+}

@@ -1,0 +1,14 @@
+# Temporary diagnostics and minimal local operating state; never publish.
+# Remove completed diagnostic data after use; no permanent audit/history archives.
+/.local_checks/
+/.local_runs/
+/.task_batch/
+/.local_tools/
+
+# Regenerable Python caches.
+__pycache__/
+*.py[cod]
+
+# Generated native request modules, not reusable mod source.
+/implementation/n01_probe/prepared_mod/content/scripts/pif_requests/
+/implementation/n01_probe/prepared_mod/content/scripts/pif_live/

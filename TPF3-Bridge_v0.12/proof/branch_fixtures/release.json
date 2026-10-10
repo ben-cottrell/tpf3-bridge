@@ -1,0 +1,50 @@
+{
+  "schema_version": "0.10.0",
+  "fidelity": "gb_reference_inspired_synthetic_junction",
+  "junction": {
+    "span_m": 6000.0,
+    "track_centres_m": 3.4,
+    "rail_height_m": 20.0,
+    "west_spread_y_m": -120.0,
+    "branch_centre_y_m": 240.0,
+    "merge_x_m": 1500.0,
+    "diverge_x_m": 1800.0,
+    "branch_parallel_x_m": 4500.0,
+    "spread_finish_x_m": 1200.0,
+    "level_change_m": 7.5,
+    "ramp_m": 750.0,
+    "plateau_m": 100.0,
+    "minimum_radius_m": 300.0,
+    "maximum_grade": 0.02,
+    "minimum_vertical_radius_m": 5000.0,
+    "crossing_half_band_m": 4.0,
+    "lower_envelope_m": 4.5,
+    "electrification_m": 0.8,
+    "deck_depth_m": 1.2,
+    "allowance_m": 0.3,
+    "site_y_min_m": -150.0,
+    "site_y_max_m": 270.0,
+    "holding_stop_x_m": 2200.0
+  },
+  "performance": {
+    "main_speed_mph": 60.0,
+    "branch_speed_mph": 15.0,
+    "acceleration_mps2": 0.6,
+    "braking_mps2": 0.7,
+    "setup_ms": 5000,
+    "release_ms": 3000
+  },
+  "formation_reference_key": "unit_12car_length_m",
+  "repetitions": 6,
+  "headway_ms": 240000,
+  "ramp_trials_m": [
+    600,
+    750,
+    900,
+    1050
+  ],
+  "height_trials_m": [
+    6.5,
+    7.5
+  ]
+}

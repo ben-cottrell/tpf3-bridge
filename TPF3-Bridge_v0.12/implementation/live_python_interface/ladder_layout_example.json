@@ -1,0 +1,702 @@
+{
+  "layout": "native_two_ladder_fan_v1",
+  "roles": {
+    "A1": {
+      "kind": "approach",
+      "endpoint": {
+        "guide_xyz": [
+          -1800,
+          -3000,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -1802,
+            -3002,
+            31
+          ],
+          "max": [
+            -1798,
+            -2998,
+            35
+          ]
+        }
+      }
+    },
+    "A2": {
+      "kind": "approach",
+      "endpoint": {
+        "guide_xyz": [
+          -1800,
+          -2995,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -1802,
+            -2997,
+            31
+          ],
+          "max": [
+            -1798,
+            -2993,
+            35
+          ]
+        }
+      }
+    },
+    "N1": {
+      "kind": "destination",
+      "endpoint": {
+        "guide_xyz": [
+          400,
+          -3000,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            398,
+            -3002,
+            31
+          ],
+          "max": [
+            402,
+            -2998,
+            35
+          ]
+        }
+      }
+    },
+    "N2": {
+      "kind": "destination",
+      "endpoint": {
+        "guide_xyz": [
+          400,
+          -2920,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            398,
+            -2922,
+            31
+          ],
+          "max": [
+            402,
+            -2918,
+            35
+          ]
+        }
+      }
+    },
+    "N3": {
+      "kind": "destination",
+      "endpoint": {
+        "guide_xyz": [
+          400,
+          -2840,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            398,
+            -2842,
+            31
+          ],
+          "max": [
+            402,
+            -2838,
+            35
+          ]
+        }
+      }
+    },
+    "A3": {
+      "kind": "approach",
+      "endpoint": {
+        "guide_xyz": [
+          -1800,
+          -3005,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -1802,
+            -3007,
+            31
+          ],
+          "max": [
+            -1798,
+            -3003,
+            35
+          ]
+        }
+      }
+    },
+    "A4": {
+      "kind": "approach",
+      "endpoint": {
+        "guide_xyz": [
+          -1800,
+          -3010,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -1802,
+            -3012,
+            31
+          ],
+          "max": [
+            -1798,
+            -3008,
+            35
+          ]
+        }
+      }
+    },
+    "S1": {
+      "kind": "destination",
+      "endpoint": {
+        "guide_xyz": [
+          400,
+          -3080,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            398,
+            -3082,
+            31
+          ],
+          "max": [
+            402,
+            -3078,
+            35
+          ]
+        }
+      }
+    },
+    "S2": {
+      "kind": "destination",
+      "endpoint": {
+        "guide_xyz": [
+          400,
+          -3160,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            398,
+            -3162,
+            31
+          ],
+          "max": [
+            402,
+            -3158,
+            35
+          ]
+        }
+      }
+    },
+    "S3": {
+      "kind": "destination",
+      "endpoint": {
+        "guide_xyz": [
+          400,
+          -3240,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            398,
+            -3242,
+            31
+          ],
+          "max": [
+            402,
+            -3238,
+            35
+          ]
+        }
+      }
+    }
+  },
+  "groups": [
+    {
+      "id": "north",
+      "inbound": "A1",
+      "outbound": "A2",
+      "destinations": [
+        "N1",
+        "N2",
+        "N3"
+      ],
+      "spine_guides": [
+        {
+          "position": [
+            -1200,
+            -3000,
+            33
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "grade": 0
+        },
+        {
+          "position": [
+            -400,
+            -3000,
+            33
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "grade": 0
+        }
+      ],
+      "arm_end": {
+        "guide_xyz": [
+          -1400,
+          -2920,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -1402,
+            -2922,
+            31
+          ],
+          "max": [
+            -1398,
+            -2918,
+            35
+          ]
+        }
+      },
+      "junctions": [
+        {
+          "guide_xyz": [
+            -800,
+            -3000,
+            33
+          ],
+          "travel_direction": [
+            -1,
+            0
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -802,
+              -3002,
+              31
+            ],
+            "max": [
+              -798,
+              -2998,
+              35
+            ]
+          }
+        },
+        {
+          "guide_xyz": [
+            -300,
+            -3000,
+            33
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -302,
+              -3002,
+              31
+            ],
+            "max": [
+              -298,
+              -2998,
+              35
+            ]
+          }
+        },
+        {
+          "guide_xyz": [
+            0,
+            -3000,
+            33
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -2,
+              -3002,
+              31
+            ],
+            "max": [
+              2,
+              -2998,
+              35
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "south",
+      "inbound": "A3",
+      "outbound": "A4",
+      "destinations": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "spine_guides": [
+        {
+          "position": [
+            -1700,
+            -3005,
+            33
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "grade": 0
+        },
+        {
+          "position": [
+            -1000,
+            -3080,
+            33
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "grade": 0
+        },
+        {
+          "position": [
+            -300,
+            -3080,
+            33
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "grade": 0
+        }
+      ],
+      "arm_end": {
+        "guide_xyz": [
+          -1400,
+          -3160,
+          33
+        ],
+        "travel_direction": [
+          1,
+          0
+        ],
+        "heading_tolerance_deg": 0.1,
+        "max_edges": 16,
+        "region": {
+          "min": [
+            -1402,
+            -3162,
+            31
+          ],
+          "max": [
+            -1398,
+            -3158,
+            35
+          ]
+        }
+      },
+      "junctions": [
+        {
+          "guide_xyz": [
+            -800,
+            -3080,
+            33
+          ],
+          "travel_direction": [
+            -1,
+            0
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -802,
+              -3082,
+              31
+            ],
+            "max": [
+              -798,
+              -3078,
+              35
+            ]
+          }
+        },
+        {
+          "guide_xyz": [
+            -250,
+            -3080,
+            33
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -252,
+              -3082,
+              31
+            ],
+            "max": [
+              -248,
+              -3078,
+              35
+            ]
+          }
+        },
+        {
+          "guide_xyz": [
+            0,
+            -3080,
+            33
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -2,
+              -3082,
+              31
+            ],
+            "max": [
+              2,
+              -3078,
+              35
+            ]
+          }
+        }
+      ],
+      "spine_radius": 400
+    }
+  ],
+  "movements": [
+    {
+      "from": "A1",
+      "to": "N1",
+      "via": [
+        "north_junction_0",
+        "north_junction_1",
+        "north_junction_2"
+      ]
+    },
+    {
+      "from": "N1",
+      "to": "A2",
+      "via": [
+        "north_junction_2",
+        "north_junction_1",
+        "north_junction_0"
+      ]
+    },
+    {
+      "from": "A1",
+      "to": "N2",
+      "via": [
+        "north_junction_0",
+        "north_junction_1",
+        "north_junction_2"
+      ]
+    },
+    {
+      "from": "N2",
+      "to": "A2",
+      "via": [
+        "north_junction_2",
+        "north_junction_1",
+        "north_junction_0"
+      ]
+    },
+    {
+      "from": "A1",
+      "to": "N3",
+      "via": [
+        "north_junction_0",
+        "north_junction_1"
+      ]
+    },
+    {
+      "from": "N3",
+      "to": "A2",
+      "via": [
+        "north_junction_1",
+        "north_junction_0"
+      ]
+    },
+    {
+      "from": "A3",
+      "to": "S1",
+      "via": [
+        "south_junction_0",
+        "south_junction_1",
+        "south_junction_2"
+      ]
+    },
+    {
+      "from": "S1",
+      "to": "A4",
+      "via": [
+        "south_junction_2",
+        "south_junction_1",
+        "south_junction_0"
+      ]
+    },
+    {
+      "from": "A3",
+      "to": "S2",
+      "via": [
+        "south_junction_0",
+        "south_junction_1",
+        "south_junction_2"
+      ]
+    },
+    {
+      "from": "S2",
+      "to": "A4",
+      "via": [
+        "south_junction_2",
+        "south_junction_1",
+        "south_junction_0"
+      ]
+    },
+    {
+      "from": "A3",
+      "to": "S3",
+      "via": [
+        "south_junction_0",
+        "south_junction_1"
+      ]
+    },
+    {
+      "from": "S3",
+      "to": "A4",
+      "via": [
+        "south_junction_1",
+        "south_junction_0"
+      ]
+    }
+  ],
+  "radius": 120,
+  "region": {
+    "min": [
+      -1950,
+      -3400,
+      30
+    ],
+    "max": [
+      650,
+      -2800,
+      36
+    ]
+  },
+  "vertical": {
+    "max_grade": 0.04
+  },
+  "max_route_length": 3500,
+  "placement_tolerance": 0.5,
+  "spacing": 5,
+  "turnout_radius": 400
+}

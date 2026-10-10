@@ -1,0 +1,26 @@
+{
+  "authority_ref": "example-host-approval",
+  "issued_by": "trusted_local_host",
+  "principal_ref": "local-user",
+  "plan_hash": "406089e88fcc1e996fa6e3760a80a865a85eb33f8efe28db9b2bd52163ca3ae3",
+  "save_id": "fixture-save",
+  "load_epoch": "load-1",
+  "effect_region": {
+    "min_m": [
+      -10,
+      -50,
+      -10
+    ],
+    "max_m": [
+      1100,
+      50,
+      100
+    ]
+  },
+  "expires_unix_ms": 1900000000000,
+  "allowed_kinds": [
+    "build_track"
+  ],
+  "permitted_delete_refs": [],
+  "maximum_write_attempts": 10
+}

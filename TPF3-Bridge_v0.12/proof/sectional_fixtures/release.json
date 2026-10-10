@@ -1,0 +1,312 @@
+{
+  "schema_version": "0.4.0",
+  "fidelity": "synthetic_geometry_with_separate_UK_reference_checks",
+  "description": "Four-platform bank with separate arrival/departure external leads but a shared fan. UK values are separately sourced; the component and motion models remain explicitly synthetic/project-selected.",
+  "geometry_profile": {
+    "minimum_radius_m": 300.0,
+    "envelope_half_width_m": 1.75,
+    "envelope_gap_m": 0.5,
+    "flatness_m": 0.01,
+    "length_gap_m": 0.0001,
+    "fidelity": "synthetic"
+  },
+  "fan": {
+    "platform_count": 4,
+    "spacing_m": 12.0,
+    "turnout_span_m": 50.0,
+    "branch_slope": 0.1,
+    "first_toe_x_m": 50.0,
+    "toe_step_m": 150.0,
+    "platform_start_x_m": 650.0,
+    "boarding_length_m": 260.0,
+    "margin_m": 5.0,
+    "site_end_x_m": 1000.0
+  },
+  "access": {
+    "lead_length_m": 400.0,
+    "departure_offset_m": 12.0,
+    "turnout_span_m": 60.0,
+    "branch_slope": 0.08,
+    "common_link_m": 20.0
+  },
+  "motion": {
+    "speed_mps": 6.7056,
+    "acceleration_mps2": 0.6,
+    "braking_mps2": 0.7,
+    "setup_ms": 5000,
+    "release_ms": 3000,
+    "provenance": "project_selected_uncalibrated_level_track_profile"
+  },
+  "visits": [
+    {
+      "id": "V01",
+      "stock_id": "S01",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 0,
+      "planned_departure_ms": 480000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "V02",
+      "stock_id": "S02",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 150000,
+      "planned_departure_ms": 630000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "V03",
+      "stock_id": "S03",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 300000,
+      "planned_departure_ms": 780000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "V04",
+      "stock_id": "S04",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 450000,
+      "planned_departure_ms": 930000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "V05",
+      "stock_id": "S05",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 600000,
+      "planned_departure_ms": 1080000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "V06",
+      "stock_id": "S06",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 750000,
+      "planned_departure_ms": 1230000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "empty_stock"
+    },
+    {
+      "id": "V07",
+      "stock_id": "S07",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 900000,
+      "planned_departure_ms": 1380000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "V08",
+      "stock_id": "S08",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 1050000,
+      "planned_departure_ms": 1530000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "V09",
+      "stock_id": "S09",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 1200000,
+      "planned_departure_ms": 1680000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "V10",
+      "stock_id": "S10",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 1350000,
+      "planned_departure_ms": 1830000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "V11",
+      "stock_id": "S11",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 1500000,
+      "planned_departure_ms": 1980000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "V12",
+      "stock_id": "S12",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160,
+      "requested_entry_ms": 1650000,
+      "planned_departure_ms": 2130000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "empty_stock"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "nominal",
+      "closed_platform_ids": [],
+      "length_override_m": null,
+      "entry_spacing_override_ms": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000,
+      "late_stock_cycle": false
+    },
+    {
+      "id": "bunched",
+      "closed_platform_ids": [],
+      "length_override_m": null,
+      "entry_spacing_override_ms": 60000,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000,
+      "late_stock_cycle": false
+    },
+    {
+      "id": "p1_closed",
+      "closed_platform_ids": [
+        "P1"
+      ],
+      "length_override_m": null,
+      "entry_spacing_override_ms": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000,
+      "late_stock_cycle": false
+    },
+    {
+      "id": "all_platforms_closed",
+      "closed_platform_ids": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "length_override_m": null,
+      "entry_spacing_override_ms": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000,
+      "late_stock_cycle": false
+    },
+    {
+      "id": "long_trains",
+      "closed_platform_ids": [],
+      "length_override_m": 240,
+      "entry_spacing_override_ms": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000,
+      "late_stock_cycle": false
+    },
+    {
+      "id": "overlength",
+      "closed_platform_ids": [],
+      "length_override_m": 251,
+      "entry_spacing_override_ms": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000,
+      "late_stock_cycle": false
+    },
+    {
+      "id": "short_horizon",
+      "closed_platform_ids": [],
+      "length_override_m": null,
+      "entry_spacing_override_ms": null,
+      "horizon_ms": 600000,
+      "evaluation_budget": 100000,
+      "late_stock_cycle": false
+    },
+    {
+      "id": "zero_budget",
+      "closed_platform_ids": [],
+      "length_override_m": null,
+      "entry_spacing_override_ms": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 0,
+      "late_stock_cycle": false
+    },
+    {
+      "id": "late_stock_cycle",
+      "closed_platform_ids": [],
+      "length_override_m": null,
+      "entry_spacing_override_ms": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000,
+      "late_stock_cycle": true
+    }
+  ]
+}

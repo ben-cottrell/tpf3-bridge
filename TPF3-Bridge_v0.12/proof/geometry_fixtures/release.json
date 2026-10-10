@@ -1,0 +1,288 @@
+{
+  "schema_version": "0.3.0",
+  "fidelity": "synthetic",
+  "profile": {
+    "minimum_radius_m": 300.0,
+    "envelope_half_width_m": 1.75,
+    "envelope_gap_m": 0.5,
+    "flatness_m": 0.01,
+    "length_gap_m": 0.0001,
+    "fidelity": "synthetic"
+  },
+  "crossover": {
+    "spacing_m": 4.5,
+    "turnout_span_m": 40.0,
+    "branch_slope": 0.075,
+    "maximum_span_m": 120.0,
+    "linked_controller": true
+  },
+  "fan": {
+    "platform_count": 4,
+    "spacing_m": 12.0,
+    "turnout_span_m": 50.0,
+    "branch_slope": 0.1,
+    "first_toe_x_m": 50.0,
+    "toe_step_m": 150.0,
+    "platform_start_x_m": 650.0,
+    "boarding_length_m": 260.0,
+    "margin_m": 5.0,
+    "site_end_x_m": 1000.0
+  },
+  "timing": {
+    "speed_mps": 8.0,
+    "setup_ms": 5000,
+    "release_ms": 3000
+  },
+  "visits": [
+    {
+      "id": "G01",
+      "stock_id": "S01",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 0,
+      "planned_departure_ms": 370000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "G02",
+      "stock_id": "S02",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 300000,
+      "planned_departure_ms": 670000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "G03",
+      "stock_id": "S03",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 600000,
+      "planned_departure_ms": 970000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "G04",
+      "stock_id": "S04",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 900000,
+      "planned_departure_ms": 1270000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "empty_stock"
+    },
+    {
+      "id": "G05",
+      "stock_id": "S05",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 1200000,
+      "planned_departure_ms": 1570000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "G06",
+      "stock_id": "S06",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 1500000,
+      "planned_departure_ms": 1870000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "G07",
+      "stock_id": "S07",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 1800000,
+      "planned_departure_ms": 2170000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "G08",
+      "stock_id": "S08",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 2100000,
+      "planned_departure_ms": 2470000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "G09",
+      "stock_id": "S09",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 2400000,
+      "planned_departure_ms": 2770000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "G10",
+      "stock_id": "S10",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 2700000,
+      "planned_departure_ms": 3070000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "empty_stock"
+    },
+    {
+      "id": "G11",
+      "stock_id": "S11",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 3000000,
+      "planned_departure_ms": 3370000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    },
+    {
+      "id": "G12",
+      "stock_id": "S12",
+      "inbound_group": "A",
+      "outbound_group": "A",
+      "length_m": 160.0,
+      "requested_entry_ms": 3300000,
+      "planned_departure_ms": 3670000,
+      "dwell_ms": 60000,
+      "turnback_ms": 180000,
+      "dispatch_ms": 20000,
+      "predecessor": null,
+      "external_cycle_ms": 0,
+      "outgoing_kind": "passenger"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "nominal",
+      "closed_platform_ids": [],
+      "train_length_override_m": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000
+    },
+    {
+      "id": "p1_closed",
+      "closed_platform_ids": [
+        "P1"
+      ],
+      "train_length_override_m": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000
+    },
+    {
+      "id": "three_platforms_closed",
+      "closed_platform_ids": [
+        "P1",
+        "P2",
+        "P3"
+      ],
+      "train_length_override_m": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000
+    },
+    {
+      "id": "all_platforms_closed",
+      "closed_platform_ids": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "train_length_override_m": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000
+    },
+    {
+      "id": "long_trains",
+      "closed_platform_ids": [],
+      "train_length_override_m": 240.0,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000
+    },
+    {
+      "id": "overlength",
+      "closed_platform_ids": [],
+      "train_length_override_m": 280.0,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 100000
+    },
+    {
+      "id": "short_horizon",
+      "closed_platform_ids": [],
+      "train_length_override_m": null,
+      "horizon_ms": 1200000,
+      "evaluation_budget": 100000
+    },
+    {
+      "id": "zero_search_budget",
+      "closed_platform_ids": [],
+      "train_length_override_m": null,
+      "horizon_ms": 7200000,
+      "evaluation_budget": 0
+    }
+  ],
+  "description": "Authored geometry-to-resource unit examples. One bidirectional approach with four terminal roads. Not a replica and not the complete four-approach v0.2 station."
+}

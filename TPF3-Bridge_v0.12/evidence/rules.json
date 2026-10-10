@@ -1,0 +1,66 @@
+{
+  "schema_version": "0.2.0",
+  "profile_status": "partial_clause_experiment_not_full_uk_profile",
+  "source_id": "S058",
+  "source_issue": "2",
+  "source_date": "2025-05",
+  "source_url": "https://assets.publishing.service.gov.uk/media/68148eed3c3bba3526f03b25/ntsn-infrastructure-issue-2-May-2025.pdf",
+  "reviewed_on": "2026-09-20",
+  "source_bytes_sha256": null,
+  "extraction_method": "selected text plus page images; original PDF not archived",
+  "rules": [
+    {
+      "id": "NTSN2_PLATFORM_CANT",
+      "domain": "rail_platform_interface",
+      "clause": "4.2.4.2(2)",
+      "pdf_page_1based": 30,
+      "quantity": "cant_magnitude",
+      "operator": "<=",
+      "value": 110,
+      "units": "mm",
+      "applicability": [
+        "clause applicability explicitly confirmed for the selected project/profile",
+        "adjacent platform intended for normal-service stops",
+        "no unresolved alternative requirement"
+      ],
+      "missing_input_result": "unassessed",
+      "execution": "proof/railproof/rules.py:platform_cant",
+      "status": "scoped_evaluator_tested_not_full_profile_approved"
+    },
+    {
+      "id": "NTSN2_PLATFORM_RADIUS",
+      "domain": "rail_platform_interface",
+      "clause": "4.2.9.4(1)-(2)",
+      "pdf_page_1based": 42,
+      "quantity": "minimum_horizontal_radius_along_platform",
+      "operator": ">=",
+      "value": 300,
+      "units": "m",
+      "applicability": [
+        "clause applicability explicitly confirmed",
+        "new line",
+        "no unresolved alternative requirement"
+      ],
+      "straight_geometry": "explicitly represented; no floating infinity",
+      "existing_track_treatment": "not_applicable_for_this_new_line_criterion; other checks remain unresolved",
+      "missing_input_result": "unassessed",
+      "execution": "proof/railproof/rules.py:platform_radius",
+      "status": "scoped_evaluator_tested_not_full_profile_approved"
+    },
+    {
+      "id": "GB_PLATFORM_NATIONAL_INTERFACE_PENDING",
+      "domain": "rail_platform_interface",
+      "clause": "7.7.17.6-7",
+      "pdf_page_1based": 76,
+      "quantity": "height_and_offset",
+      "value": null,
+      "units": null,
+      "applicability": [
+        "selected GB national-technical-rule route"
+      ],
+      "missing_input_result": "unassessed",
+      "execution": "proof/railproof/rules.py:gb_platform_interface",
+      "status": "guard_only_national_values_not_imported"
+    }
+  ]
+}

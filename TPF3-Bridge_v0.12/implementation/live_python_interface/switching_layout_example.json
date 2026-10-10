@@ -1,0 +1,91 @@
+{
+  "layout": "widened_uudd_switching_v1",
+  "route_reference": {
+    "origin": [
+      3500,
+      6500,
+      33
+    ],
+    "heading_deg": -50,
+    "up": "increasing"
+  },
+  "tracks": [
+    {
+      "id": "U1",
+      "direction": "UP"
+    },
+    {
+      "id": "U2",
+      "direction": "UP"
+    },
+    {
+      "id": "D1",
+      "direction": "DOWN"
+    },
+    {
+      "id": "D2",
+      "direction": "DOWN"
+    }
+  ],
+  "movements": [
+    {
+      "from": "U1:west",
+      "to": "U1:east"
+    },
+    {
+      "from": "U2:west",
+      "to": "U2:east"
+    },
+    {
+      "from": "D1:east",
+      "to": "D1:west"
+    },
+    {
+      "from": "D2:east",
+      "to": "D2:west"
+    },
+    {
+      "from": "U1:west",
+      "to": "branch_up"
+    },
+    {
+      "from": "branch_down",
+      "to": "D2:west"
+    },
+    {
+      "from": "U2:west",
+      "to": "U1:east"
+    },
+    {
+      "from": "D2:east",
+      "to": "D1:west"
+    }
+  ],
+  "spacing": 5,
+  "radius": 120,
+  "max_grade": 0.04,
+  "region": {
+    "min": [
+      3000,
+      4700,
+      0
+    ],
+    "max": [
+      5200,
+      7100,
+      80
+    ]
+  },
+  "asset_region": {
+    "min": [
+      1786,
+      4514,
+      0
+    ],
+    "max": [
+      1808,
+      4528,
+      80
+    ]
+  }
+}

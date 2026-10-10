@@ -1,0 +1,90 @@
+{
+  "schema_version": "0.12.0",
+  "examples": [
+    {
+      "path": "examples/design_brief.json",
+      "definition": "DesignBrief",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/construction_plan.json",
+      "definition": "ConstructionPlan",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/authority_example.json",
+      "definition": "Authority",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/decision_packet.json",
+      "definition": "DecisionPacket",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/realisation_report.json",
+      "definition": "RealisationReport",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/snapshot.json",
+      "definition": "Snapshot",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/receipt.json",
+      "definition": "Receipt",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/inspectinput.json",
+      "definition": "InspectInput",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/designinput.json",
+      "definition": "DesignInput",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/reviseinput.json",
+      "definition": "ReviseInput",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/commitinput.json",
+      "definition": "CommitInput",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/statusinput.json",
+      "definition": "StatusInput",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/explaininput.json",
+      "definition": "ExplainInput",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/observeinput.json",
+      "definition": "ObserveInput",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/cancelinput.json",
+      "definition": "CancelInput",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "examples/tool_response.json",
+      "definition": "ToolResponse",
+      "kind": "authored_contract_example_not_runtime_output"
+    },
+    {
+      "path": "tpf3_unprobed_capabilities.json",
+      "definition": "CapabilityManifest",
+      "kind": "current_unprobed_manifest"
+    }
+  ]
+}
