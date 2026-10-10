@@ -4,7 +4,33 @@ Updated 10 October 2026. Current priorities supplement the historical work packa
 in implementation/work_packages.json; their old status labels are not a live
 capability inventory. Completed native evidence is recorded in CURRENT_TASK.md.
 
-## Current milestone — graded operator and shallow flying junction
+## Current work — integrated district operator qualification
+
+10 October: reusable additions since Challenge03 are consolidated in
+[BRIDGE_OPERATOR.md](BRIDGE_OPERATOR.md): fresh station roles/exits, connected
+terminal route review across registries, scoped identity/frozen observations,
+named operating tasks, explicit plain-track coalescing and read-only reconciliation
+of built replacements. Commands remain in OPERATOR_USAGE.md. Specific native
+coalescing/crossover and station-extension cases are demonstrated; these do not
+establish general layout reliability or whole-district service completion.
+
+Signal direction inversion is corrected in279da44. Public `forward=true` means
+node0→node1 travel; native `left=not forward`, with readback reversed bit equal to
+`forward`. On build40420, after normal reload, the isolated required-edge test
+allowed north and rejected south;24 district replacements have functional readback.
+Evidence: `.local_runs/operator/district04/signal-direction-corrected-proof.json`
+and `signals-R6-results.json` in that directory. Placement verifies orientation,
+not the intended running path: exact corridor/direction checks and observed service
+operation remain separate. Earlier opposite-direction receipts remain historical.
+
+434 client/64 operator checks pass in the signal-fix reports named in
+BRIDGE_OPERATOR.md; reuse these for unchanged code. Recorded successful north/RN
+crossover cases cost14 calls each,7.812/7.031 seconds native-call time respectively;
+no comparative token/credit-saving claim follows. District04's36-route and six-service
+qualification is coordinator-owned and still pending in this consolidation.
+Do not declare the district complete or launch an unsolicited follow-on task.
+
+## Completed baseline — graded operator and shallow flying junction
 
 10 October: Challenge02 accepted by the user. OPERATOR-GRADE-02 and Challenge03
 are complete for final visual review: four directed paths, short level12° bridge,
