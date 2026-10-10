@@ -1,3 +1,18 @@
+## Mid West C district — user direction, 10 October 2026
+User authorises integrated bridge/operator and railway-design improvements, then a
+complete representative Mid West C middle-hub district on the current disposable
+map, until ready for review or a genuine blocker. Use the existing Sol implementation
+chat for appropriate bridge work. Preserve accepted Challenge01–03, the handbook
+and spatial planning procedure. The independent whole-map handoff supplies functional
+intent; native station survey and game fitting determine physical implementation.
+Plan both station approaches, station-reordering flyovers, outer regional branches,
+independent cross-service and representative operation as one district before building.
+Advanced station module assembly remains deferred; inspect the user scaffold first.
+Coordinator owns native calls and design; Sol owns assigned offline implementation.
+Normal staging/save/load and local commits remain authorised. No remote push or
+heartbeat restart is part of this task. This supersedes the older procedure-only
+current-exercise statement below. Active card: .local_runs/operator/district04/TASK.md.
+
 ## Basic station construction — user direction, 7 October 2026
 User selects basic native station construction as the next bridge challenge because
 this map lacks suitable platforms for non-branch services. Scope includes native

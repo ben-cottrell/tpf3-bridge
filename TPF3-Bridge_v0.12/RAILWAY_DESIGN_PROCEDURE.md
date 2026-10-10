@@ -1,7 +1,7 @@
 # Railway design procedure
 
-Version 0.4 — 10 October 2026. Shefford and accepted Challenge01/02 inform the
-procedure. Challenge03 adds a shallow flying-junction case awaiting user review.
+Version 0.5 — 10 October 2026. Shefford and accepted Challenge01/02 inform the
+procedure. Challenge03 adds a user-accepted shallow flying-junction case.
 
 Purpose: produce coherent game-scale railways without repeatedly turning local
 construction difficulties into unplanned layout changes. The handbook explains
@@ -16,7 +16,9 @@ keep transferable patterns and concise evaluation results in versioned documents
 
 - Express required directed movements, track roles and exclusions. Include station
   arrival AND departure, turnarounds, intended alternate platforms and depot access
-  when these belong to the task. Do not silently introduce extra services.
+  when these belong to the task. Specify travel in a common world/local frame on
+  both sides of a station; mirroring geometry must not silently invert UP/DOWN.
+  Do not silently introduce extra services.
 - Distinguish user requirements, observed native requirements, design preferences
   and hypotheses. Record preservation requirements explicitly; disposable existing
   geometry does not acquire protection merely because it has been built.
@@ -48,6 +50,10 @@ The plan must make these decisions visible:
 | Vertical arrangement | Over/under relationships, ramps and landing space, terrain treatment |
 | Operation in scope | Station choices and return access, signal intent, depot entry/exit |
 | Scale and shape | Game-coordinate footprint, useful sweeps, compact crossing/turnout groups |
+
+Reserve the actual selected station/depot footprint, open approach side and turnout
+space before committing neighbouring corridors. A centreline-only reservation can
+miss a building collision even when the approach curve itself fits.
 
 Reservation means visible space in the plan; it is not a claim of native clearance.
 Exact control points can remain provisional. State which attachment regions or
@@ -93,6 +99,9 @@ Choose the construction sequence by remaining spatial freedom and native staging
   together with both ramps. A shallow level span can be longer but much narrower.
   Where appropriate, establish it unconnected before fitting earth-supported
   approaches. Treat example margins as preferences until the native fit is observed.
+- Complete planned depot and service turnouts before placing dependent signals
+  where possible. The current split producer excludes edges carrying objects;
+  discovering this after signalling creates avoidable rework.
 - Use observed elevations and terrain floors for the actual site. The Complex
   Junction z=1 floor is a user constraint there, not a universal world water level.
 
@@ -146,6 +155,12 @@ audit. Keep nonblocking diagnostic discrepancies as observations.
 
 ## 6. Close and learn without declaring premature success
 
+For directional services, check that the native path uses the intended running
+roads; route availability alone can pass on an unintended opposite road. Separate
+signal attachment/orientation readback from allowed travel. In operating challenges,
+also inspect actual line loading configuration and visible native service warnings;
+a moving train alone does not establish a useful passenger service.
+
 Report four separate conclusions: built, connected, observed operating, and design
 quality reviewed. Record shortcomings even if the capability challenge is complete.
 Retain comparable plan/profile views and distinguish user acceptance from the
@@ -180,7 +195,7 @@ Historical replay detects missed lessons; it does not prove transfer to a new si
 4. A separate [six-lead transfer case](railway-design/examples/challenge02/DESIGN.md)
    now combines30-degree receiving alignment, larger lateral offset and nested
    three-exit fans. All12 paths pass; original topology retained through local
-   crossover fitting. Designer reviewed, user visual feedback pending. This remains
+   crossover fitting. User accepted its visual result. This remains
    a related family, not proof across arbitrary junctions.
 5. Exercise an unfamiliar combination after these small examples succeed. Broaden
    the library when a real failure reveals a missing principle.

@@ -1,3 +1,25 @@
+# Challenge04 complete — Mid West C ready for review (10 October 2026)
+
+The integrated district is built: both station approaches, two station-reordering
+flyovers, two outer regional branches, independent Cross pair, seven destination
+stations, four depots and 24 one-way signals. All 36 directed station routes pass on
+the intended running roads and cover all 18 C platforms. Six representative trains
+completed return sequences, including the four-stop express circuit.
+
+Sol delivered the reusable operator changes and corrected native signal direction
+and passenger loading. All 14 service stops now have verified passenger loading;
+post-fix observation finds all six trains moving with no_path=false, and the red
+line warnings cleared. Latest affected checks: 67 operator and 434 shared tests pass.
+Alternative platforms are configured and reachable; forced occupied-platform choice
+and passenger demand/capacity were not tested.
+
+Final save: Design Challenge 04 - Mid West C Ready for Review.sav (paused).
+Save callback and stable file/hash verified; final save has not been reloaded.
+Design quality awaits user review, especially the northern cut/fill and outer
+operating fixtures. Procedure 0.5 and the district record preserve the lessons.
+See railway-design/examples/challenge04/DESIGN.md and BRIDGE_OPERATOR.md.
+Sol is idle; no further work is queued, no remote push or heartbeat restart.
+
 # Challenge03 complete — ready for visual review (10 October 2026)
 
 Double-track flying junction R5b built: short level 12° crossing, earth-supported

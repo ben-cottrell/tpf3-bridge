@@ -161,8 +161,29 @@ longitudinal length for lateral compactness.
 **Evidence:** R5b native build,4/4 TRAIN paths, short12° deck, approximately7.5 units
 laterally beyond outer rails; sampled rail footprint717.8×94.7. The user supplied
 10–15° and5–10-unit visual guidance; these are not universal limits. No trains run.
-Designer-reviewed; user acceptance pending. [Record](examples/challenge03/DESIGN.md).
+Designer-reviewed and user-accepted on10October2026. [Record](examples/challenge03/DESIGN.md).
 
 **Limits:** earthworks/abutments may need more room at other sites. Terrain, track
 resource and native turnout shape matter. An adapter selection restriction is not
 native rejection. R4's native success did not make its broad geometry acceptable.
+
+
+## D4 — Plan a station district as connected route families
+
+**Context:** Mid West C combines18 native platforms, two station reorders, two
+regional flying junctions and an independent cross pair. Fast and slow networks
+remain separate; the slow banks terminate rather than form an accidental bypass.
+
+**Pattern:** reserve fans, reorders, ordinary track order, regional branches and
+receiving interfaces together. Use one common direction frame on both approaches.
+Carry actual station/depot footprints and open sides in those reservations. Finish
+turnouts before signals, then place the incoming decision signals before all
+platform choices. Native fitting may adjust local representation without changing
+that route-family arrangement.
+
+**Evidence:** [Challenge04](examples/challenge04/DESIGN.md) retains its central
+arrangement through construction. All36 directed platform routes use their intended
+running roads; six trains demonstrate circulation. The southern depot footprint
+omission caused local bypass rework and is retained as a planning failure. Final
+user design acceptance is pending; this case does not prove arbitrary whole-map
+planning or capacity. Cargo loading is a distinct operating configuration result.

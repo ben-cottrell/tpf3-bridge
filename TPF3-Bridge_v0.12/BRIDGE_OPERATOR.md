@@ -84,13 +84,20 @@ TRACK records/786 processed station nodes. Avoiding unrelated graph traversal an
 reusing surveys are implemented mechanisms; no before/after token-saving percentage
 or credit saving has been measured. Actual GPT usage is unavailable here.
 
-Latest affected checks are434 live-client tests at
-`.local_checks/district04-signal-direction-fix__md9d8xo/report.json` and64 operator
-tests at `.local_checks/district04-signal-direction-operator_vmt76p3x/report.json`.
-They validate Python behaviour, not Lua execution. Native signal qualification
-above is separate. No unchanged suites were rerun for this documentation update.
-Detailed compact implementation records remain under `.local_runs/operator/district04/`.
+Latest affected checks: 67 operator tests in
+`.local_checks/district04-passenger-load-final_0z7feter/report.json` and 434 shared
+client tests in `.local_checks/district04-passenger-load-shared_je32lhdg/report.json`.
+Python tests are separate from native qualification. Commit e0e890c sets the native
+passenger cargo loading mask on each passenger-station stop and verifies it after
+line create/update. Existing lines require an explicit update. On build40420, all
+six district lines / 14 stops now read passenger enabled at full fraction; UI
+warnings cleared and all six trains continued moving with no_path=false.
 
-District04 whole-route, six-service and design-quality completion remain pending
-the coordinator's current acceptance. No universal connectivity, capacity,
-reservation, cross-save identity or host-recovery guarantee is added.
+District04 is complete for user design review: 36 directed paths checked against
+intended roads, six representative services observed including a four-stop express
+circuit. Each service's create/buy/assign/observe plan used six native calls, about
+2.9–3.3 seconds. This excludes planning, fitting and review time, and is not a token
+savings comparison. Full evidence is under `.local_runs/operator/district04/`.
+No universal connectivity, capacity, cross-save identity or host-recovery guarantee
+is added; alternate-platform occupancy choice was not forced. See the district
+DESIGN.md for final save, design assessment and limitations.

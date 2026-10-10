@@ -4,7 +4,7 @@ Updated 10 October 2026. Current priorities supplement the historical work packa
 in implementation/work_packages.json; their old status labels are not a live
 capability inventory. Completed native evidence is recorded in CURRENT_TASK.md.
 
-## Current work — integrated district operator qualification
+## Completed for review — integrated Mid West C district
 
 10 October: reusable additions since Challenge03 are consolidated in
 [BRIDGE_OPERATOR.md](BRIDGE_OPERATOR.md): fresh station roles/exits, connected
@@ -23,12 +23,18 @@ and `signals-R6-results.json` in that directory. Placement verifies orientation,
 not the intended running path: exact corridor/direction checks and observed service
 operation remain separate. Earlier opposite-direction receipts remain historical.
 
-434 client/64 operator checks pass in the signal-fix reports named in
-BRIDGE_OPERATOR.md; reuse these for unchanged code. Recorded successful north/RN
-crossover cases cost14 calls each,7.812/7.031 seconds native-call time respectively;
-no comparative token/credit-saving claim follows. District04's36-route and six-service
-qualification is coordinator-owned and still pending in this consolidation.
-Do not declare the district complete or launch an unsolicited follow-on task.
+District04 is now complete for user review: all 36 directed station routes use the
+intended running roads; six trains demonstrate regional, stopping, Cross and express
+return sequences. Passenger loading repair e0e890c is natively qualified on all 14
+stops, with cleared UI warnings. Latest affected checks: 67 operator / 434 shared.
+Final save: Design Challenge 04 - Mid West C Ready for Review.sav.
+
+Procedure 0.5 adds actual station/depot envelopes, explicit world-frame operating
+directions, turnouts before signals, intended-road checks and native loading state.
+The original district corridors survived; one avoidable depot-footprint omission
+required local southern bypass widening. Northern cut/fill and outer fixture form
+remain explicit user-review points. Keep accepted Challenge01–03 and this evidence.
+Next scope follows review; do not automatically launch a whole-map build.
 
 ## Completed baseline — graded operator and shallow flying junction
 
