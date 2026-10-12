@@ -418,7 +418,8 @@ def review(operator,run,checks=None):
                 a,an=endpoint(q.pop('source'));z,zn=endpoint(q.pop('target'));required=q.pop('required_bindings');expect=q.pop('expected',True)
                 request=q|{'source_edge':a,'source_node':an,'target_edge':z,'target_node':zn,'required_edges':list(dict.fromkeys([a,z]+[e['id'] for n in required for e in rows[n]]))}
                 result=live.route(client,request);value=result.get('result',{});verified=value.get('requested_route_verified')
-                passed=result['status']=='ok' and verified is expect and (not expect or value.get('truncated') is False and type(value.get('path_count')) is int and 0<value['path_count']<=request.get('max_path_entries',256))
+                passed=result['status']=='ok' and (verified is True and value.get('truncated') is False and type(value.get('path_count')) is int and 0<value['path_count']<=request.get('max_path_entries',256) if expect else
+                    value.get('native_path_found') is False and value.get('reason')=='no_native_path_returned')
             elif kind=='geometry':
                 if set(q)-{'region','max_grade','classifications'}:raise ValueError('only explicit sampled geometry bounds supported')
                 if 'region' in q:bounded_box(q['region'])

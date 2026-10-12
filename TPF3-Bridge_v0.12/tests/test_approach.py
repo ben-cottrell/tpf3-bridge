@@ -238,6 +238,21 @@ class ApproachTests(unittest.TestCase):
         out.update(check_results=[{'name':c['name'],'passed':False} for c in b['checks'][:8]])
         self.assertLess(len(json.dumps(out).encode()),4096)
 
+    def test_negative_route_requires_explicit_native_absence_not_failed_required_path(self):
+        cases=[({'requested_route_verified':False,'native_path_found':True,'reason':'required_edges_missing','truncated':False},False),
+               ({'requested_route_verified':False,'native_path_found':True,'reason':'path_truncated','truncated':True},False),
+               ({'requested_route_verified':False},False),
+               ({'requested_route_verified':False,'native_path_found':False,'reason':'no_native_path_returned'},True)]
+        for value,expected in cases:
+            with self.subTest(value=value),tempfile.TemporaryDirectory() as td:
+                c=World(td);o=Operator(runs=td,client=c);b=brief()
+                b['checks']=[{'name':'reverse_blocked','kind':'route','families':['seed'],'shared_effects':[],
+                    'bindings':{'road':'seed.road'},'payload':{'source':{'binding':'road','end':'node1'},'target':{'binding':'road','end':'node0'},
+                        'required_bindings':['road'],'mode':'TRAIN','max_length':1000,'expected':False}}]
+                run=o.plan_approach(b)['run'];o.build_approach(run)
+                with patch('bridge_approach.live.route',return_value={'status':'ok','result':value}):result=o.review_approach(run)
+                self.assertEqual(result['check_results'],[{'name':'reverse_blocked','passed':expected}])
+
     def test_changed_criteria_cannot_reuse_previous_proof(self):
         with tempfile.TemporaryDirectory() as td:
             c=World(td);o=Operator(runs=td,client=c);run=o.plan_approach(brief())['run'];o.build_approach(run);o.review_approach(run)
