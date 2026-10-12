@@ -654,7 +654,12 @@ in the complete family. Height follows the reference parameter; this does not
 prove continuous 3D separation. Endpoint/gradient/region/radius checks remain
 binding. Whole-family native preview, one-use preparation and exact committed
 group readback remain required. Unknown effects stop without replay. Standalone
-Lua/native qualification of this new branch remains with the coordinator.
+Lua/native qualification of this new branch remains with the coordinator. Grouped
+committed readback compares each exact recovered segment's structure classification
+and resource name with its intended segment; missing/mismatched structure leaves
+the mutation unverified. Generated shared structures still need native strip/visual
+assessment. Initial native qualification covers plain curves/grades only; structure
+inheritance fixtures are preparation evidence, not native structure qualification.
 
 For an explicitly rejected signal addition, `bridge_live.reconcile_rejected_signal(
 client, request_id, prior_observation)` performs one exact target/object read.

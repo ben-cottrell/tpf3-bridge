@@ -3194,6 +3194,10 @@ function M.structured_chain(p,s,state,request_id,respond)
      end
      assert(current==group.target.node_id,"group_target_identity_mismatch")
      group.fitted.ids=selected
+     for j,id in ipairs(selected) do
+      local observed=structure(api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE));local wanted=group.segments[j].structure
+      assert(observed.classification==wanted.classification and observed.resource_name==wanted.resource_name,"group_structure_readback_mismatch")
+     end
      groups[i]={readback=M.readback(group.fitted),structures=M.inspect({edge_ids=selected,structures=true,parallel_strips=true})}
     end
     assert(next(remaining)==nil,"unreconciled_grouped_receipt")

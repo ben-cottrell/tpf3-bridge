@@ -21,21 +21,38 @@ function M.run(source)
   local z,dz=hermite(g.height.x,g.height.y,g.tangent.x,g.tangent.y,u)
   return {vec(x,y,z),vec(dx,dy,dz)}
  end
- local C={BASE_EDGE=1,BASE_NODE=2};local E={RoadType={TRACK=1},BaseEdgeType={NORMAL=1,BRIDGE=2,TUNNEL=3}}
+ local C={BASE_EDGE=1,BASE_NODE=2,TRANSPORT_NETWORK=3};local E={RoadType={TRACK=1},BaseEdgeType={NORMAL=1,BRIDGE=2,TUNNEL=3},TransportMode={TRAIN=1,ELECTRIC_TRAIN=2}}
  local api={type={enum=E,ComponentType=C,Vec2f={new=vec},Vec3f={new=vec}},engine={util={transport={calcPositionAndDirection=calculate}}},res={}}
  api.type.EdgeGeometry={Type={CUBIC_SPLINE=1,CUBIC_OFFSET_SPLINE=2,ARC=3,STRAIGHT=4},CubicSpline={new=function() return {} end},CubicOffsetSpline={new=function() return {} end},
   new=function() local g={};g.calcPos=function(_,u) return calculate(g,u) end;return g end}
  api.type.SimpleProposal={new=function() return {streetProposal={}} end}
  api.type.SegmentAndEntity={new=function() return {comp={}} end};api.type.NodeAndEntity={new=function() return {comp={}} end}
- local edges,nodes,incidents={}, {}, {};local d=5;local reject=false;local submissions=0;local evaluated
+ local edges,nodes,incidents,networks={}, {}, {}, {};local d=5;local reject=false;local submissions=0;local evaluated;local succeed=false;local corrupt_structure=false
  local resource={trackDistance=d,laneConfigs={{}},streetStyle='style'}
  api.res.streetTemplateRep={find=function() return 1 end,get=function() return resource end,findAndGet=function() return resource end}
- for _,name in ipairs({'bridgeTypeRep','tunnelTypeRep'}) do api.res[name]={find=function() return 1 end,getName=function() return 'observed' end} end
- api.engine.getComponent=function(id,c) return c==C.BASE_EDGE and edges[id] or c==C.BASE_NODE and nodes[id] or nil end
+ for _,name in ipairs({'bridgeTypeRep','tunnelTypeRep'}) do api.res[name]={find=function() return 1 end,getName=function() return 'observed' end,get=function() return {} end} end
+ api.engine.getComponent=function(id,c) return c==C.BASE_EDGE and edges[id] or c==C.BASE_NODE and nodes[id] or c==C.TRANSPORT_NETWORK and networks[id] or nil end
  api.engine.system={streetSystem={getNodeSegments=function(id) return incidents[id] end},streetConnectorSystem={getConstructionEntityForNode=function() return nil end}}
  api.engine.util.proposal={makeProposalData=function(proposal) evaluated=proposal;return {errorState={critical=reject,messages={},warnings={}}} end}
- api.cmd={makeWorldBuildProposalCmd=function(p) return p end,sendCommand=function(_,callback) submissions=submissions+1;callback({},false) end}
+ api.cmd={makeWorldBuildProposalCmd=function(p) return p end,sendCommand=function(proposal,callback)
+  submissions=submissions+1;if not succeed then callback({},false);return end
+  local mapping={};local receipt={addedSegments={},addedNodes={},removedSegments={},removedNodes={}}
+  for i,row in ipairs(proposal.streetProposal.nodesToAdd) do
+   local id=10000+i;mapping[row.entity]=id;nodes[id]=clone(row.comp);receipt.addedNodes[#receipt.addedNodes+1]={entity=id}
+  end
+  for i,row in ipairs(proposal.streetProposal.edgesToAdd) do
+   local id=20000+i;local comp=clone(row.comp);comp.node0=mapping[comp.node0] or comp.node0;comp.node1=mapping[comp.node1] or comp.node1
+   edges[id]=comp
+   local g=api.type.EdgeGeometry.new();g.type=1;g.cubicSpline={pos={comp.position0,comp.position1},tangent={comp.tangent0,comp.tangent1}}
+   g.height=vec(comp.position0.z,comp.position1.z);g.tangent=vec(comp.tangent0.z,comp.tangent1.z)
+   networks[id]={edges={{transportModes={[1]=true},geometry=g}}}
+   if corrupt_structure then comp.type=E.BaseEdgeType.TUNNEL end
+   table.insert(receipt.addedSegments,1,{entity=id}) -- deliberately reverse native receipt order
+  end
+  callback({proposal={proposal=receipt}},true)
+ end}
  local native=assert(load(source,'native grouped family under test','t',setmetatable({api=api},{__index=_G})))()
+ native.inspect=function(p) return {edges=p.edge_ids} end -- avoid unrelated diagnostic APIs; actual readback remains under test
  local root_control;local fits=0
  native.fit=function(_,s,id)
   fits=fits+1;s.fits[id]={controls={clone(root_control)}}
@@ -91,11 +108,34 @@ function M.run(source)
  p=input(2,6);edges[20].position1.y=6;p.groups[2].source.edge_snapshot.p1[2]=6;nodes[41].position.y=6
  fails(p,'boundary_position_incompatible')
  p=input(2,6);reject=true;local rejected=run(p);assert(rejected.status=='no_accepted_candidate' and submissions==0);reject=false
+ -- Revalidation is immediately before submission, not just at preparation.
+ for _,change in ipairs({function() edges[20].position1.y=99 end,function() incidents[41]={20,999} end,function() resource.trackDistance=6 end}) do
+  p=input(2,6);local response,s,state=run(p);local before=submissions;change()
+  local ok=pcall(native.structured_chain,{execute=true,prepared_request='family'},s,state,'stale',function() end)
+  assert(not ok and submissions==before);resource.trackDistance=d
+ end
+ -- Mixed structures subdivide the reference and inherit in order on all roads.
+ p=input(2,6);p.groups[1].structures={{spans={{classification='NORMAL',until_u=.3},{classification='BRIDGE',resource_name='observed',until_u=.7},{classification='NORMAL',until_u=1}}}}
+ local response,s,state=run(p);local group=s.prepared_structures.family.groups[2];local seen_bridge=false;local returned_normal=false
+ for _,segment in ipairs(group.segments) do
+  if segment.structure.classification=='BRIDGE' then assert(not returned_normal);seen_bridge=true
+  elseif seen_bridge then returned_normal=true end
+ end
+ assert(seen_bridge and returned_normal)
+ succeed=true;local last
+ native.structured_chain({execute=true,prepared_request='family'},s,state,'success',function(_,status,value) last={status=status,result=value} end)
+ assert(last.status=='ok' and s.mutationPending==nil and #last.result.groups==2)
+ for i,row in ipairs(last.result.groups) do
+  local ids=row.readback.ordered_edges;assert(edges[ids[1]].node0==p.groups[i].source.node_id and edges[ids[#ids]].node1==p.groups[i].target.node_id)
+ end
+ p=input(2,6);response,s,state=run(p);corrupt_structure=true
+ native.structured_chain({execute=true,prepared_request='family'},s,state,'wrong_structure',function(_,status,value) last={status=status,result=value} end)
+ assert(last.status=='mutation_unverified' and s.mutationPending=='wrong_structure');corrupt_structure=false;succeed=false
  p=input(2,6);local response,s,state=run(p)
- local last;native.structured_chain({execute=true,prepared_request='family'},s,state,'execute',function(_,status,value) last={status=status,result=value} end)
- assert(last.status=='mutation_unverified' and submissions==1 and s.mutationPending=='execute')
+ local before=submissions;native.structured_chain({execute=true,prepared_request='family'},s,state,'execute',function(_,status,value) last={status=status,result=value} end)
+ assert(last.status=='mutation_unverified' and submissions==before+1 and s.mutationPending=='execute')
  local ok=pcall(native.structured_chain,{execute=true,prepared_request='family'},s,state,'retry',function() end)
- assert(not ok and submissions==1)
+ assert(not ok and submissions==before+1)
  return true
 end
 return M

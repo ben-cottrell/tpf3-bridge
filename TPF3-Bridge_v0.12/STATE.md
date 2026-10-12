@@ -78,6 +78,11 @@ Conversion is sampled XY, not continuous3D clearance proof. Native qualification
 this new branch is pending with coordinator; no standalone Lua checker is installed.
 Reusable fake Lua fixtures tests/native/test_signal_batch.lua and
 tests/native/test_parallel_family.lua remain prepared, unexecuted.
+Family fixture includes reordered successful receipts/exact recovery, stale
+post-prepare geometry/incidence/spacing with zero submission and mixed
+NORMAL/BRIDGE/NORMAL inheritance. Grouped committed readback now compares
+classification/resource per exact intended segment. Native structure qualification
+is unclaimed; coordinator's initial slice2 runtime scope is plain curves/grades.
 Affected quiet Python validation:563 tests passed,0 failures/errors across
 test_parallel_family.py, test_corridor_operator.py, test_operator.py,
 test_signal_batch.py, test_signal_benchmark.py and test_live_client.py.
