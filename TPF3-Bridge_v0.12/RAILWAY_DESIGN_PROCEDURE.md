@@ -60,6 +60,11 @@ Plan the intended speed progression: slow platform fans need not be faster and
 longer than throat crossovers. Retain the preferred approximately 30 m straight
 parallel platform leads; compare fan/crossover lengths together using native speed
 feedback when available. Approximate visual speed estimates are not measurements.
+Balance crossover speed with final decision-signal distance and departure clearance:
+longer/faster crossovers can consume useful capacity through a longer approach.
+Do not propagate a successful turnout gap as a native minimum without testing a
+closer arrangement. Current hub feedback favours an80m crossover trial, with the
+accepted fans retained; native fit and speed observations decide local adjustments.
 For operating networks, include open-line block signals (user default about 300 m)
 as well as junction/station signals, preserving final platform-decision placement.
 
@@ -70,6 +75,13 @@ miss a building collision even when the approach curve itself fits.
 Reservation means visible space in the plan; it is not a claim of native clearance.
 Exact control points can remain provisional. State which attachment regions or
 profiles are uncertain and which native observation would resolve each one.
+
+The plan is an intent and space allocation, not an exact curve reconstruction.
+Separate fixed requirements (route roles, connection identities, crossing order,
+explicit protections) from flexible preferences (turnout position, curve start,
+segment lengths, control points). Provide a usable local fitting envelope rather
+than making every coordinate a constraint. Choose its extent from neighbouring
+routes and reserved space; do not demand an arbitrary universal tolerance.
 
 Compare materially different arrangements where the choice controls the result:
 for example, branch before versus after a crossing, or a paired corridor versus
@@ -107,6 +119,10 @@ Choose the construction sequence by remaining spatial freedom and native staging
 - Where a demonstrated native structure sequence requires it, clear/prepare the
   corridor, construct the grouped upper tracks, then the lower connection. Other
   sites may require a different order. Design final and intermediate states.
+  Isolated bridge supports can obstruct lower-track proposals despite a15m
+  railhead height gap. At demonstrated sites, building the lower roads first
+  and restoring the identical deck resolved support staging; height separation
+  alone does not prove proposal clearance.
 - For a flying junction, compare crossing angle, lateral width and deck extent
   together with both ramps. A shallow level span can be longer but much narrower.
   Where appropriate, establish it unconnected before fitting earth-supported
@@ -123,9 +139,34 @@ An implementation assignment identifies the design revision, route family, inten
 attachments and directions, corridor/profile, neighbours still to be built, allowed
 local adjustments, and expected functional outcome. Include the relevant plan view.
 
+For delegated work, keep one coordinator responsible for current state and native
+mutations, with one implementation worker. Specialist designers may plan independent
+families concurrently when their connecting interfaces, route roles and reserved space
+are explicit. Give each a separate editing area and a compact decision package with
+the applicable lessons and current observations. Review adjoining interfaces together
+before construction. Escalate material topology or spatial trade-offs to the designer;
+routine fitting and result checks stay with the coordinator and deterministic operator.
+
 Fitting may adjust attachment position, curvature, segment representation or local
 profile while retaining the arrangement. Numerical changes can be small yet change
 which traffic can reach a turnout; classify by consequences, not a distance quota.
+
+Review curvature distribution over the whole approach. Temporary stubs and straight
+anchors support construction; they do not require long final straights joined by
+short abrupt bends. Keep neighbouring roads packed until platform fan space is
+needed, and compare width at several distances from the station before fitting.
+Check staggered platform footprints: complete lateral shifting before a projecting
+neighbour, allowing a justified straight beyond the retained 30 m lead. For required
+parallel appearance, inspect native strip coverage as well as spacing; a separately
+built native-offset tail may join the strip without rebuilding its fan. Beside ramps,
+review one continuous sweep with few controls and delay rejoining until the neighbour's
+height transition is clear. A jointly derived interior guide can move a local
+ descent envelope a few metres to clear neighbouring earthworks while retaining
+ both interfaces and the intended profile; review the complete smooth sweep.
+ Add local margin for observed terrain clipping only. Check signed curvature and heading within each realised cubic,
+not just at its endpoints: matching guide headings can conceal interior reversals
+and sign-changing curvature jumps. Derive guide positions and tangents together
+from the intended whole sweep; review residual joins after native cubic conversion.
 
 | Ordinary fitting | Material redesign: return to the spatial plan |
 | --- | --- |
@@ -140,6 +181,25 @@ the original junction with adding a workaround. Record the reason and consequenc
 update the plan and sequence before dispatching construction against that revision.
 Unaffected authorised work may continue. The designer resolves in-scope trade-offs
 autonomously; ask the user only for genuinely missing intent or scope decisions.
+
+For ordinary local rejection, the operator should automatically try nearby native
+fits within the declared envelope, starting with the preferred arrangement and
+then small adjustments. Use deterministic code for this loop, not repeated model
+turns, scripts or design revisions for individual offsets. Accept the first suitable
+native fit that preserves the intended routes, smooth sweep, neighbouring space
+and overall footprint. Do not optimise harmless differences back towards the sketch.
+Native segmentation and a short parallel continuation into a fan are acceptable.
+Exact entity binding prevents attachment to the wrong track; it does not justify
+fixing a turnout's position on the correct track to a single arbitrary coordinate.
+
+Try proposals without construction where supported, then build the selected prepared
+proposal once. Stop on uncertain effects and re-observe before further mutations.
+Report the selected displacement and compact outcome. A finite search establishes
+only sampled feasible/rejected positions, not a universal feasibility boundary;
+refine a local boundary only when doing so serves the design. Exhausting a local
+window calls for diagnosis or a wider justified window, not an automatic redesign.
+Numerical shape checks catch obvious defects; whole-family visual review remains
+necessary at useful boundaries, without reviewing every candidate.
 
 Repeated small adjustments can cumulatively change the arrangement. Compare with
 the selected revision, not just with the immediately preceding candidate.
@@ -174,6 +234,14 @@ roads; route availability alone can pass on an unintended opposite road. Separat
 signal attachment/orientation readback from allowed travel. In operating challenges,
 also inspect actual line loading configuration and visible native service warnings;
 a moving train alone does not establish a useful passenger service.
+
+After signal mutations, refresh bindings through endpoint-qualified replacement
+lineage and recheck the affected directed roads, including reverse bay arrivals.
+Use native preflight for bounded nearby signal fitting; preserve decision order
+and accepted placements. Signal-split transport rows are a query representation,
+not evidence that the physical railway needs rebuilding. Configured line choices
+and native paths can be qualified without claiming observed traversal or platform
+selection under contention.
 
 Report four separate conclusions: built, connected, observed operating, and design
 quality reviewed. Record shortcomings even if the capability challenge is complete.

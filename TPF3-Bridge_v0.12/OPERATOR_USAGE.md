@@ -7,11 +7,27 @@ and staged semantic adapter must already be healthy and running.
 
 ## CLI and data
 
+For native curve speed feedback, use the existing read-only request:
+`client.request('inspect', {'edge_ids':[edge_id], 'movement_speeds':True})`.
+Node-owned turnout movements can be read with
+`{'edge_ids':[], 'entity_ids':[node_id], 'movement_speeds':True}`. Existing limits
+remain16 track edges /8 exact entities. Per entity, speed readback examines at most64
+network rows and returns at most16 TRAIN movements with at most4 connections each.
+`movement_speeds.rows` contains `network_entity`, zero-based `movement_index`,
+`entity_kind`, native `speedLimit` and `curveSpeedLimit`, plus field availability
+states. `units` is explicitly `unknown_native_units`; the installed primary Edge
+definitions do not establish units. Inspect `available`, `complete`, `truncated`
+and each row's `connections_truncated` before assessing a route. These are native
+movement limits, distinct from structure asset limits, sampled radius and current
+vehicle speed. Include relevant node movements when comparing turnout paths.
+This additive readback awaits native qualification at the next adapter reload.
+
 Run from this project directory. The core CLI uses only the standard library:
 
 ```powershell
 python bridge_operator.py status
 python bridge_operator.py survey --input site.json
+python bridge_operator.py track-catalogue
 python bridge_operator.py plan --input implementation/operator/example_plan.json
 python bridge_operator.py execute --run <returned-run>
 python bridge_operator.py summary --run <returned-run>
@@ -23,6 +39,74 @@ The example is the tested four-step fixture, not a recommendation to rebuild its
 occupied location. Survey and select an authorised site before adapting it.
 `--context` selects an existing bridge context; the local default is
 `.local_runs/live_python_interface/p02/context.json`.
+
+For sparse disconnected guide tracks, `track-catalogue` / MCP `track_catalogue`
+reads the native `streetSystem.getNode2TrackEdgeMap` incidence map once, avoiding a
+rectangular map sweep. Optional
+input is `{"max_examined_edges":65536,"max_tracks":512,"summary_limit":32}`.
+Examined-edge bounds are1..65536, returned external tracks1..512, component summary
+limit1..128. Native enumeration deduplicates track edge IDs; only the requested
+number of edges is examined. This read-only operation has passed native qualification
+on the current game build.
+
+The catalogue excludes every construction-owned TRACK, including station frozen
+rails. It returns examined/returned/excluded counts and explicit scan, track and
+metadata truncation flags; `complete:false` never claims full coverage. Compact
+connected components provide control-point bounds, edge IDs, structure counts,
+observed endpoints and named signals. `free:true` comes from native whole-node
+incidence, rather than just the returned graph. Component detail lists are limited
+to16 endpoints/names/signals; the separate named-signal list is limited to64.
+Summary truncation is separate from native catalogue completeness. Full current
+geometry/resources/objects and component details overwrite the local
+`operator_track_catalogue.json` working snapshot, identified by `evidence`.
+No historical catalogue is retained; identities are current-session observations.
+
+For long disposable corridor rehearsals, `corridor-plan --input brief.json` / MCP
+`plan_corridor(brief)` compiles one authored data file into bounded local plans.
+`corridor-build --run <run>` / `build_corridor(run)` executes them sequentially;
+`corridor-status` / `corridor_status` returns compact current progress. No model calls
+are made between sections. The coordinator supplies every track position, construction
+direction, grade, guide, structure and section region; the compiler does not interpolate
+new waypoints or choose railway layout. Planning is offline and submits no native reads.
+
+The corridor brief uses version1, revision, surveyed adapter session, native track
+resources, max_grade, explicit stub_length5..60, named waypoints and1..128 ordered
+sections. A waypoint maps track names to `{position:[x,y,z],direction:[dx,dy],grade:g}`.
+The compiler centres an ordinary native stub on each selected waypoint, once per track;
+the specified direction follows construction progress, independently of train running
+direction. Existing outer leads may instead provide exact `front` or `back` selectors
+`{chain:<binding>,edge_id:<id>,node_id:<id>}` backed by `bindings` edge snapshots.
+Each section has `name`, `source`, `target`, an explicit world `region`, and2/4 distinct
+`members`. Member fields are `track` plus the existing optional guided structured-connect
+settings. Guides use world coordinates. Example section:
+
+```json
+{"name":"leg01","source":"w0","target":"w1",
+ "region":{"min":[-20,-20,0],"max":[620,40,40]},
+ "members":[{"track":"up"},{"track":"down"}]}
+```
+
+The native1km plan envelope, ordinary-stub0.04 grade limit, fitting rules and grouped
+segment limits remain in force. Offline compilation rejects out-of-region stub ends,
+legs whose direct length exceeds800, and proposals requiring more than20
+segments; native fitting still decides the actual curve length and segment count.
+Every next window imports exact prior stub receipts,
+and `port_refs` checks the discovered edge/node against its named binding. Recorded
+replacement receipts update carried bindings; invalidated waypoint bindings stop
+continuation before another window starts. Native
+rejection leaves completed leads/sections and the current child run available for
+inspection. `corridor-continue --run <run>` / `continue_corridor(run)` skips an already
+built child or executes a still-unattempted child; it never retries an attempted child.
+For a stopped child, use existing `continue_layout`/`continue` after inspection and
+required reconciliation, then pass its returned run as `section_run` to
+`continue_corridor`. Current corridor/child files are working construction state,
+subject to the existing temporary-file policy. Route, signal and service acceptance
+remain separate work.
+
+Native qualification has succeeded for one four-track corridor section with
+NORMAL/TUNNEL/NORMAL legs and exact grouped readback. Full ordinary corridor batches
+still require qualification. Reuse its exact retained outer anchors in separate
+remaining-work briefs; omit the built section rather than replaying it.
 
 Version1 plans require `revision`, world `origin`, absolute world `region`, named
 `ports`, native `track.template`/`track.style`, `max_grade`, `steps` and `routes`.
@@ -124,6 +208,11 @@ are invalidated. No proximity deletion or automatic replay is implied.
 
 ## Optional local stdio MCP
 
+The MCP process retains imported Python modules for its lifetime. After offline
+operator changes, use a fresh CLI process for construction when the running MCP
+module is stale; editing source does not refresh that process. Existing receipt,
+continuation and uncertain-mutation gates still apply.
+
 Only this boundary needs `mcp==2.3.0` (`requirements-operator.txt`). This installation
 already has `.local_tools/operator312/Scripts/python.exe`; no new dependency or
 network service is necessary. Actual protocol use without another model:
@@ -208,7 +297,12 @@ screenshots, saves and protocol records ignored; no credits are inferred from ti
 Version1 remains compatible. Version2 permits1000 native XY units per region axis,
 400Z and review routes up to8000. Surveys subdivide broad/truncated regions, with a
 finite64-query limit and deduplicated exact IDs; incomplete coverage fails honestly.
-Inspect reads are chunked16 edges, terrain reads8 selected points. No silent truncation.
+Inspect reads are chunked16 edges. Point-only terrain reads take1..128 selected XY
+positions in one native `terrain_samples` request, retaining caller region validation
+and exact ordered response identities. Current/base heights come directly from native
+terrain; this point-only operation has passed native qualification. No object discovery
+or spatial tile sweep is performed. Site/object inspection
+still supports its existing8 terrain points. No silent truncation.
 Branch/crossover preparation still has its existing800 local route limit: specify
 a step `max_route_length` if the overall review bound is larger.
 
@@ -271,6 +365,59 @@ native proposal is evaluated; the first accepted prepared proposal is reused.
 Candidate receipts/reasons remain in run state and native files. Route order,
 profile, corridor and hard limits are not automatically changed. Mutations are
 never retried by this search.
+
+For optimistic local fitting, `branch`/`crossover` may instead opt into metre-based
+`fit_variation`. Keep nominal `source`/`target` references and native `candidates`;
+the operator tries nominal first, then nearest offsets along the same named chains:
+
+```json
+"fit_variation": {
+  "source": {"max_shift":20,"step":5,"direction":"both"},
+  "max_attempts":32,
+  "max_requests":256,
+  "intent":{"max_extra_inflections":0}
+}
+```
+
+Positive offsets follow the chain's canonical direction; negative offsets reverse
+it. `direction` may be `forward`, `backward`, or `both` (default). A crossover may
+declare a corresponding `target` window. Named free ends/station identities stay
+exact; a branch's free target is resolved once and reused. Segment-local references
+stay within that segment. Windows clip to strict chain interiors, with at most512
+resolution intervals per end. The final window boundary is included if the step
+does not divide its extent. Combined offsets use nearest Euclidean distance,
+source before target on ties, positive before negative. Stop at the first suitable
+native acceptance; no automatic boundary survey or demolition occurs.
+
+This automates attachment trials validated by the native complete proposal. It
+does not reproduce the manual tool's interactive fitting or invent new shape
+candidates. Endpoint cubics use the existing scripted controls, whose native report
+may say `native_fit_invoked:false`; native proposal acceptance is a separate fact.
+`native_parts` retains its existing explicit radius/fit-radius prerequisites.
+
+This mode has no8-position limit. Defaults are32 attachment attempts and256 native
+fit/read requests; explicit bounds permit up to256 attempts/4096 requests. Native
+shape candidates retain their existing per-proposal limit. Exact chain readback is
+cached during this mutation-free search; every native proposal still verifies its
+current snapshots. Prepared construction and subsequent readback occur after the
+fit budget, and never retry an uncertain mutation. A stopped run needs the existing
+inspection/continuation workflow; executing it again is prohibited.
+
+Available prepared `fit.controls` are sampled for the plan region (or an explicit
+absolute `intent.envelope`), longitudinal backtracking, and extra curvature reversals
+relative to the nominal endpoint-control model. A normal S fan's nominal inflection
+is allowed. `intent.longitudinal_axis:[x,y]` overrides the nominal chord axis;
+`max_extra_inflections` defaults to0. These are sampled design checks, without new
+radius/physics limits or a continuous clearance claim. If explicit intent checks
+cannot be evaluated, construction stops before build. Without explicit intent,
+missing geometry is reported unverified; native acceptance may still be consumed.
+Rejected intent candidates retain session-local prepared handles; existing native
+capacity/errors may stop the bounded search. No new native discard API is assumed.
+
+Run state `fit_variations[step]` reports attempt/request counts, requested offsets,
+actual offsets derived from selected native attachment parameters, geometry-check
+availability and the sampled rejection range. That range is not a proven feasibility
+boundary. Manual `attachments` and `fit_variation` cannot be combined.
 
 Numeric local terrain editing is **unsupported**. Normal native construction
 cut/fill, or explicitly prepared terrain, is the precondition. Optional
@@ -383,6 +530,59 @@ rechecks them before any mutation. Changed role geometry, session or registry re
 a fresh plan. Material role changes require a new registry revision. Mode must match
 the deliberate construction attachment choice; the operator does not change topology.
 
+Version2 adds `signal_chain` for deterministic one-way blocks along freshly inspected
+named track chains. Build junctions/depot branches first. Example step:
+
+```json
+{"name":"main_blocks","kind":"signal_chain","chains":["main_west","main_east"],
+ "forward":true,"spacing":300,"start_offset":100,"end_clearance":100,"max_count":32}
+```
+
+Chains must supply a simple connected ordered sequence of at most64 distinct native
+edges. `forward:true` follows their declared order, handling reversed native edges;
+`false` traverses the whole sequence backwards. For one edge, true means node0 to node1.
+Spacing/start offset are positive native distances; end clearance is nonnegative.
+Distances use sampled 3D cubic arc length. Placement at an exact native node fails
+before construction; adjust the offset. `max_count` is1..64, and an exceeded count
+fails before placing any signals. An existing native signal template is still required
+by the usual placement preparation. Every signal uses fresh native preparation and
+updates exact replacement identities before the next placement. Partial successes
+remain in `signal_chains` working state; inspect/reconcile them before continuation,
+and never replay an attempted run. This checks signal attachment/orientation, while
+intended directed routes still require normal route review.
+
+For large maps, supply optional `seed_id` on `signal_chain` or a `place_signal`
+brief. Read-only `operating_inspect` with `{"signal_seed":{"seed_id":232597}}`
+qualifies that exact observed signal directly: SignalList, TRACK attachment,
+native resource and current revision. Preparation and build recheck it without
+global entity enumeration; invalid or stale seeds fail before submission. The ID
+above is an example and must be observed in the current map. Without `seed_id`,
+the existing bounded global fallback remains and may report search exhaustion.
+
+For an explicitly rejected signal addition, `bridge_live.reconcile_rejected_signal(
+client, request_id, prior_observation)` performs one exact target/object read.
+It requires the original pre-placement receipt and unchanged target revision,
+nodes and complete objects, records the requested addition absent, and never
+replays it. Other effects remain unknown. The current explicit rejected callback
+clears its native guard; preserve successful placements and prepare only remaining
+work afterwards.
+
+`place_signal` and a version2 `signal` brief optionally accept
+`"fit_offsets_m":[-2,-5,-10,-20]`. Offsets are sampled metres in the requested
+travel direction on the same exact edge; negative values stay earlier in travel.
+Supply1..8 distinct finite nonzero offsets within20m. Nominal native preflight
+comes first; out-of-edge candidates are skipped, then the first native-accepted
+candidate is submitted once. All rejections stop without a command; unknown
+build effects stop without retry. Existing-signal replacement remains exact and
+cannot use this option. Receipts report candidate parameters, sampled displacement
+and attempts; they do not prove a global feasibility boundary.
+
+Signals subdivide a BASE_EDGE into native TRAIN movement rows. Route attachment
+selects the unique row at the requested physical endpoint; native continuity,
+one-way direction and required-edge checks still apply across the complete path.
+Replacement lineage must include endpoint identities because native IDs may be
+recycled. Refresh current bindings and requalify affected routes after placement.
+
 Version2 task kinds `signal`, `station`, `depot` use the existing respective placement
 briefs/preparation/readback. `operating` uses existing `brief.action` values:
 `vehicle_buy`, `line_create`, `line_update`, `vehicle_assign`, `vehicle_stop`,
@@ -422,7 +622,8 @@ require the intended exact corridor edges using existing route `required_edges`
 and inspect their direction before claiming the selected running-track policy.
 Previously placed signals require explicit fresh-identity replacement after the
 corrected adapter is staged and normally loaded; changing code does not repair
-existing map signals. Preserve old receipts and failed/wrong-track route evidence.
+existing map signals. Keep only unresolved state needed for correction; discard
+completed receipts and temporary route diagnostics after use.
 Operating effects remain separate from railway construction: unknown operating effects
 block continuation/review even when `game_constructed:false`. Partial effects remain
 visible and no rollback/replay is assumed. Observation/purchase/path availability do
@@ -497,6 +698,15 @@ These coordinates/role labels are illustrative; use registered role names and
 current terminal endpoint geometry. Registry overrides require `role`; ordinary
 free-boundary endpoints retain their existing discovery/ownership checks.
 
+For an explicitly rejected resource-seeded `test_approach` fixture, use
+`bridge_live.reconcile_rejected_fixture(client)` or fresh CLI `reconcile-fixture`
+with empty params and the current context. It verifies saved request/session/error,
+finite seed/resources/native bounds and a complete bounded zero-TRACK footprint.
+An anchored fixture still requires its original `discovery`. Reconciliation sends
+only reads, preserves unknown other effects and never replays construction. It
+closes Python pending evidence; the native mutation guard remains until normal
+save/load. Original operator uncertainty is retained and blocks direct continuation.
+
 For an already-built structured replacement left `mutation_unverified`, use
 `bridge_live.reconcile_constructed_replacement(client, original_client=None,
 acceptance_revision={"original_request": "<build request>", "max_route_length":
@@ -511,6 +721,17 @@ It never rebuilds, refits or rewrites the original receipts. Success clears only
 the original Python journal. It does **not** clear the native mutation guard:
 perform normal authorised save/load and reacquire the current session before further
 mutation, confirming the fresh adapter is usable. No process restart is implied.
+
+An already-built interior branch has the same explicit readback-budget option:
+`bridge_live.reconcile_constructed_interior(client, original_client=None,
+acceptance_revision={"original_request":"<build request>", "max_route_length":2000,
+"reason":"<complete movement exceeds the original readback budget>",
+"authority":"<authoriser>"})`. Only that readback criterion may change (up to
+8000 native units); source/target identities, prepared shape, region, radius and
+grade remain unchanged. Native verification must still prove both split movements,
+exact junction identity and branch geometry. Failure retains pending; success clears
+only Python pending and still requires normal save/load before another mutation.
+The new curve's existing construction length limit remains unchanged.
 
 Optional endpoint placement/heading tolerances default to0.15/2degrees. Geometry
 only filters exact terminal-component endpoints. Explicit travel direction determines

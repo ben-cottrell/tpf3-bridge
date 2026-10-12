@@ -3,7 +3,8 @@
 A native-first British-railway construction assistant for a healthy, already-running
 Transport Fever 3 sandbox. Python handles engineering intent, orchestration and
 acceptance; the semantic mod translates native capabilities; TPF3 owns game mechanics.
-The current Mid West C district is user-accepted. No new task or automation is queued.
+Mid West C and the Giganto1 corridor rehearsal are user-accepted. Current work is
+checkpoint preparation/publication; efficiency implementation awaits reviewed architecture.
 
 ## Current guidance
 

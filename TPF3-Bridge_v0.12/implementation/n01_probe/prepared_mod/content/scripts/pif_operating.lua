@@ -72,21 +72,30 @@ local function signals(x)
  return result
 end
 -- API contract reference: installed Auto Signals submit; independent bounded implementation.
-local function signal_seed()
+local function qualified_signal_seed(x)
+ local o=assert(comp(x,C.EDGE_OBJECT),"signal_seed_edge_object_missing")
+ local s=assert(comp(x,C.SIGNAL_LIST),"signal_seed_list_missing")
+ assert(#s.signals>=1 and #s.signals<=8,"signal_seed_lane_bound")
+ local edge_id=s.signals[1].edgePr[1].entity
+ local edge=assert(comp(edge_id,C.BASE_EDGE),"signal_seed_track_missing")
+ assert(edge.roadType==E.RoadType.TRACK,"signal_seed_TRACK_required")
+ local attached=false;for _,entry in ipairs(edge.objects) do if entry[1]==x then attached=true end end
+ assert(attached and o.edgeObjectConstruction~=nil,"signal_seed_attachment_required")
+ return {id=x,revision=rev(x),edge=edge_id,resource=o.edgeObjectConstruction}
+end
+local function signal_seed(p)
+ if p and p.seed_id then
+  local selected=qualified_signal_seed(id(p.seed_id))
+  if p.seed_revision then fresh(selected.id,p.seed_revision) end
+  selected.processed=1;selected.coverage="explicit_qualified_signal";selected.truncated=false
+  return selected
+ end
  local processed,visited,selected=0,0,nil
  api.engine.forEachEntity(function(x)
   visited=visited+1
   if selected or processed>=100000 then return end
   processed=processed+1
-  local ok,value=pcall(function()
-   local o=assert(comp(x,C.EDGE_OBJECT));local s=assert(comp(x,C.SIGNAL_LIST))
-   assert(#s.signals>=1 and #s.signals<=8)
-   local edge_id=s.signals[1].edgePr[1].entity
-   local edge=assert(comp(edge_id,C.BASE_EDGE));assert(edge.roadType==E.RoadType.TRACK)
-   local attached=false;for _,entry in ipairs(edge.objects) do if entry[1]==x then attached=true end end
-   assert(attached and o.edgeObjectConstruction~=nil)
-   return {id=x,revision=rev(x),edge=edge_id,resource=o.edgeObjectConstruction}
-  end)
+  local ok,value=pcall(qualified_signal_seed,x)
   if ok then selected=value end
  end)
  if selected then selected.processed=processed;selected.entity_count=visited;selected.coverage="first_qualified_signal";return selected end
@@ -100,8 +109,7 @@ local function signal_prepare(p)
  local edge=assert(comp(p.edge_id,C.BASE_EDGE),"signal_target_edge_missing")
  assert(edge.roadType==E.RoadType.TRACK,"signal_target_track_required")
  assert(#edge.objects<=15,"signal_target_object_bound")
- local seed=signal_seed();assert(seed.id,seed.availability)
- if p.seed_id then assert(seed.id==p.seed_id,"signal_template_changed");fresh(seed.id,p.seed_revision) end
+ local seed=signal_seed(p);assert(seed.id,seed.availability)
  for _,entry in ipairs(edge.objects) do
   local s=comp(entry[1],C.SIGNAL_LIST)
   if s then
@@ -117,7 +125,7 @@ local function signal_prepare(p)
  return edge,seed,{edge=p.edge_id,revision=rev(p.edge_id),parameter=p.parameter,forward=p.forward,
   one_way=p.one_way,seed=seed,node0=edge.node0,node1=edge.node1,command_submitted=false}
 end
-local function signal_command(p)
+local function signal_command(p,preview)
  local edge,seed,summary=signal_prepare(p)
  local before={node0=edge.node0,node1=edge.node1,p0=xyz(edge.position0),p1=xyz(edge.position1),
   t0=xyz(edge.tangent0),t1=xyz(edge.tangent1),template=edge.roadTemplate,style=edge.roadStyle,objects={}}
@@ -136,6 +144,16 @@ local function signal_command(p)
  proposal.streetProposal.edgesToRemove={p.edge_id};proposal.streetProposal.edgesToAdd={segment}
  proposal.streetProposal.edgeObjectsToAdd={addition};proposal.streetProposal.edgeObjectsToRemove=p.replace_signal_id and {p.replace_signal_id} or {}
  local context=api.type.Context.new();context.player=api.engine.util.getPlayer()
+ -- Evaluate the exact SimpleProposal before any mutation guard or submission.
+ -- This is the same established native path used by interior/crossover preparation.
+ local data=api.engine.util.proposal.makeProposalData(proposal,nil);local errors=data.errorState
+ local messages={};for i,message in ipairs(errors.messages) do if i<=16 then messages[#messages+1]=tostring(message):sub(1,400) end end
+ summary.native_proposal_evaluated=true
+ summary.accepted=not errors.critical and #errors.messages==0
+ summary.evaluation={critical=errors.critical,messages=messages,message_count=#errors.messages,
+  messages_truncated=#errors.messages>#messages,representation="same_SimpleProposal_as_build"}
+ if preview then return summary end
+ assert(summary.accepted,"native_signal_proposal_rejected")
  return api.cmd.makeWorldBuildProposalCmd(proposal,context,false,true),function(r)
   local receipt=r.proposal.proposal;assert(#receipt.addedSegments==1,"signal_replacement_receipt_unresolved")
   local replacement=id(receipt.addedSegments[1].entity);local actual=assert(comp(replacement,C.BASE_EDGE))
@@ -340,8 +358,8 @@ function M.inspect(p)
  if p.station_catalogue then return stations.catalogue() end
  if p.station_preparation then local _,r=stations.prepare(p.station_preparation);out.station_preparation=r;return out end
  if p.station_readback then local q=p.station_readback;out.station_readback=stations.readback(id(q.construction_id),q);return out end
- if p.signal_seed then out.signal_seed=signal_seed();return out end
- if p.signal_placement then local _,_,summary=signal_prepare(p.signal_placement);out.signal_placement=summary;return out end
+ if p.signal_seed then out.signal_seed=signal_seed(type(p.signal_seed)=="table" and p.signal_seed or nil);return out end
+ if p.signal_placement then out.signal_placement=signal_command(p.signal_placement,true);return out end
  if p.vehicle_asset_resources then
   assert(#p.vehicle_asset_resources>=1 and #p.vehicle_asset_resources<=8,"selected_vehicle_asset_bound")
   local function entries(values)

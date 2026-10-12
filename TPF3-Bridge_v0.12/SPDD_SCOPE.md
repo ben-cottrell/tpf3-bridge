@@ -82,6 +82,6 @@ supervise processes, restore crash workflows or build watchdogs.
 Detailed station crowd/furniture/access simulation, traction/braking/adhesion physics,
 a second reservation/signalling simulator, general tycoon/fleet/revenue management,
 regulatory certification and open-ended map improvement are outside scope. Basic native
-stations and representative services do not imply those expansions. Publication remains
-externally blocked; do not retry or push. Architecture details are in
+stations and representative services do not imply those expansions. Remote publication requires
+explicit user authority. Architecture details are in
 NATIVE_FIRST_ARCHITECTURE.md; practical design guidance is in the handbook/procedure.

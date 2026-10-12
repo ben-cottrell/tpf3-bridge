@@ -33,6 +33,7 @@ completion after integrating useful lessons into current guidance.
 - Revision and plan references supplied to the operator:
 - Attachment regions, travel directions, through tracks and intended outcome:
 - Allowed local adjustments and remaining neighbours to accommodate:
+- Fixed functional requirements versus flexible geometry; local automatic fitting envelope:
 - Applicable material-redesign triggers:
 - Next useful whole-family review point:
 

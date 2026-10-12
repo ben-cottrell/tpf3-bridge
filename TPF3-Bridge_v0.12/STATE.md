@@ -1,5 +1,12 @@
 # Current state
 
+## Current accepted rehearsal
+Giganto1 is user-accepted. `Giganto1 Corridor Review Ready` completed, including
+220 ordinary block signals and34 station/junction boundary signals (254 total).
+All58 directed station/junction checks and24 corridor/handoff checks passed.
+Native stopping line233671 is configured with verified readback; no train traversal
+or contention-dependent alternate-platform use is claimed. No layout repair is requested.
+
 ## Accepted application
 Challenge04 (Mid West C) is user-accepted; no rebuilding requested. Both station
 approaches, station-reordering flyovers, regional branches and independent Cross
@@ -24,7 +31,10 @@ fitting, exact attachment, graded connections, junctions, bridges/tunnels, expli
 replacement/removal, native path checks, basic stations, signals, depots and services.
 bridge_operator.py provides named plans, fresh station/interface roles, scoped terminal
 route review, cross-registry endpoints, coalescing, operating tasks, review/continuation,
-camera/capture/save and existing local stdio integration. Native signal direction and
+camera/capture/save and existing local stdio integration. bridge_corridor.py adds
+bounded authored multi-window corridor plans over the same operator primitives;
+sparse track catalogue, point terrain reads, nearby fitting and signal-chain placement
+are reusable. No route-design engine or exact native-geometry reconstruction is implied. Native signal direction and
 passenger stop loading are corrected and qualified on build40420.
 
 Working source and reusable tests are retained. Completed reports and activity logs
@@ -42,8 +52,10 @@ Future design guidance includes urban space reservations, coherent compact appro
 speed/curve progression and sensible lead/signal placement. Handbook/procedure dimensions
 are contextual guidance, not new universal engineering gates; speed estimates are unmeasured.
 
-No ongoing task, batch, worker dispatch or automation. Coordinator owns design/native/UI;
-workers remain within assignment. Remote publication requires explicit user authority.
+Only checkpoint preparation/cleanup/publication is active. No efficiency implementation,
+new batch or automation starts before reviewed coordinator architecture. Coordinator owns
+native/save operations; workers remain within assignment. This checkpoint's push is
+user-authorised to the current upstream, subject to external approval.
 
 Keep only current context and state needed to reconcile uncertain live mutations. Temporary
 diagnostics are removed after use; no permanent journals, audits, handoff archives or

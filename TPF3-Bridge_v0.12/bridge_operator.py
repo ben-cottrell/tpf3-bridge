@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import copy
 import hashlib
+import heapq
 import html
 import json
 import math
@@ -28,6 +29,7 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
 
 def no_step_effects(state):
+    if state.get('signal_chains',{}).get(state.get('current_step'),{}).get('placements'):return False
     mutation=state.get('step_mutation')
     if 'step_mutation' in state and mutation is None:return True
     return bool(mutation and mutation.get('game_constructed') is False and not mutation.get('native_operating_state_changed') and mutation.get('operating_effects')!='unknown')
@@ -170,23 +172,200 @@ def chain_point(rows,u,segment=None):
         current+=length
     raise ValueError('native chain has no regular sampled length')
 
+
+def fit_variation_config(step):
+    value=step.get('fit_variation')
+    if value is None:return None
+    if not isinstance(value,dict) or set(value)-{'source','target','max_attempts','max_requests','intent'} or not {'source','target'}&value.keys():raise ValueError('fit_variation requires declared source/target windows')
+    if step['kind'] not in ('branch','crossover') or step.get('attachments'):raise ValueError('fit_variation supports branch/crossover without manual alternatives')
+    for end in ('source','target'):
+        if end not in value:continue
+        spec=value[end];ref=step[end]
+        if not isinstance(ref,dict) or end=='target' and step['kind']!='crossover':raise ValueError('fit_variation slides interior named chain references only; free endpoints stay exact')
+        if not isinstance(spec,dict) or set(spec)-{'max_shift','step','direction'} or not {'max_shift','step'}<=spec.keys():raise ValueError('fit_variation requires max_shift and step metres')
+        for key in ('max_shift','step'):
+            if type(spec[key]) not in (int,float) or not math.isfinite(spec[key]) or spec[key]<=0:raise ValueError('fit_variation finite positive window/resolution required')
+        ratio=spec['max_shift']/spec['step']
+        if not math.isfinite(ratio) or spec['step']>spec['max_shift'] or math.ceil(ratio)>512:raise ValueError('fit_variation window requires1..512 resolution intervals')
+        if spec.get('direction','both') not in ('both','forward','backward'):raise ValueError('fit_variation direction is canonical forward/backward/both')
+    for key,default,upper in [('max_attempts',32,256),('max_requests',256,4096)]:
+        if type(value.get(key,default)) is not int or not 1<=value.get(key,default)<=upper:raise ValueError('fit_variation bounded '+key+' required')
+    intent=value.get('intent',{})
+    if not isinstance(intent,dict) or set(intent)-{'envelope','longitudinal_axis','max_extra_inflections'}:raise ValueError('unsupported fit_variation intent check')
+    if 'envelope' in intent:
+        region=intent['envelope'];vector(region['min'],3);vector(region['max'],3)
+        if any(a>=b for a,b in zip(region['min'],region['max'])):raise ValueError('ordered fit_variation envelope required')
+    if 'longitudinal_axis' in intent:unit(intent['longitudinal_axis'])
+    if type(intent.get('max_extra_inflections',0)) is not int or not 0<=intent.get('max_extra_inflections',0)<=16:raise ValueError('bounded extra inflection allowance required')
+    return value
+
+
+def chain_distance_table(rows,ref):
+    """Match chain_point's64-interval arc estimate; segment-local u stays local."""
+    selected=rows if 'segment' not in ref else rows[ref['segment']-1:ref['segment']]
+    if not selected or len(selected)>64 or len(selected)>1 and any(a['node1']!=b['node0'] for a,b in zip(selected,selected[1:])):raise ValueError('fit_variation requires one directed continuous named chain')
+    points=[];distance=0
+    for row in selected:
+        previous=cubic(row,0)[0]
+        points.append((distance,row['id'],0))
+        for j in range(1,65):
+            point=cubic(row,j/64)[0];distance+=math.dist(previous,point);points.append((distance,row['id'],j/64));previous=point
+    if distance<=0:raise ValueError('fit_variation chain length unavailable')
+    def at_parameter(eid,u):
+        part=[x for x in points if x[1]==eid]
+        if not part:raise ValueError('fit attachment escaped named chain')
+        for a,b in zip(part,part[1:]):
+            if a[2]<=u<=b[2]:return a[0]+(b[0]-a[0])*(u-a[2])/(b[2]-a[2])
+        raise ValueError('fit attachment parameter outside named chain')
+    nominal=at_parameter(selected[0]['id'],ref['u']) if len(selected)==1 else ref['u']*distance
+    return points,distance,nominal,at_parameter
+
+
+def fit_variation_positions(step,chains):
+    cfg=fit_variation_config(step);options=[];tables={}
+    for end in ('source','target'):
+        ref=step[end]
+        if end not in cfg:options.append([(0,ref)]);continue
+        table,total,nominal,measure=chain_distance_table(chains[ref['curve']],ref);tables[end]=(nominal,measure)
+        spec=cfg[end];shifts=[0];count=math.ceil(spec['max_shift']/spec['step'])
+        for i in range(1,count+1):
+            amount=min(i*spec['step'],spec['max_shift'])
+            if spec.get('direction','both')!='backward':shifts.append(amount)
+            if spec.get('direction','both')!='forward':shifts.append(-amount)
+        choices=[]
+        for shift in shifts:
+            at=nominal+shift
+            if not 0<at<total:continue
+            if len(chains[ref['curve']])==1 or 'segment' in ref:
+                for a,b in zip(table,table[1:]):
+                    if a[0]<=at<=b[0] and b[0]>a[0]:u=a[2]+(b[2]-a[2])*(at-a[0])/(b[0]-a[0]);break
+            else:u=at/total
+            choices.append((shift,ref|{'u':u}))
+        options.append(choices)
+    if any(not choices for choices in options):return [],tables
+    heap=[(0,0,0,0)];seen={(0,0)};result=[]
+    while heap and len(result)<cfg.get('max_attempts',32):
+        _,_,i,j=heapq.heappop(heap);a,b=options[0][i],options[1][j]
+        result.append(({'source':a[1],'target':b[1]},{'source':a[0],'target':b[0]}))
+        for x,y in ((i+1,j),(i,j+1)):
+            if x<len(options[0]) and y<len(options[1]) and (x,y) not in seen:
+                seen.add((x,y));sa,sb=options[0][x][0],options[1][y][0];heapq.heappush(heap,(sa*sa+sb*sb,abs(sb),x,y))
+    return result,tables
+
+
+def fit_geometry_check(controls,nominal,intent,region):
+    """Sample declared intent, never substitute a radius/physics qualification."""
+    def sample(rows):
+        if not isinstance(rows,list) or not rows:return None
+        points=[];signs=[]
+        try:
+            for c in rows:
+                for key in ('p0','p1','t0','t1'):vector(c[key],3)
+                for j in range(65):
+                    u=j/64;points.append(cubic(c,u)[0])
+                    d=[(6*u*u-6*u)*c['p0'][i]+(3*u*u-4*u+1)*c['t0'][i]+(-6*u*u+6*u)*c['p1'][i]+(3*u*u-2*u)*c['t1'][i] for i in range(2)]
+                    dd=[(12*u-6)*c['p0'][i]+(6*u-4)*c['t0'][i]+(-12*u+6)*c['p1'][i]+(6*u-2)*c['t1'][i] for i in range(2)]
+                    k=(d[0]*dd[1]-d[1]*dd[0])/math.hypot(*d)**3
+                    if abs(k)>1e-7:signs.append(1 if k>0 else -1)
+        except (KeyError,TypeError,ValueError,ZeroDivisionError):return None
+        return points,sum(a!=b for a,b in zip(signs,signs[1:]))
+    actual=sample(controls);baseline=sample(nominal)
+    if actual is None:return {'available':False,'sampled_only':True,'passed':None,'reason':'prepared branch controls unavailable'}
+    points,reversals=actual;axis=intent.get('longitudinal_axis')
+    if axis is None:
+        reference=baseline[0] if baseline else points;delta=[reference[-1][i]-reference[0][i] for i in range(2)];axis=unit(delta) if math.hypot(*delta)>1e-9 else None
+    else:axis=unit(axis)
+    reasons=[]
+    if any(not in_region(point,intent.get('envelope',region)) for point in points):reasons.append('sampled envelope exceeded')
+    if axis and any(sum((b[i]-a[i])*axis[i] for i in range(2))<-.001 for a,b in zip(points,points[1:])):reasons.append('sampled longitudinal backtracking')
+    if baseline and reversals>baseline[1]+intent.get('max_extra_inflections',0):reasons.append('extra sampled curvature reversals')
+    return {'available':True,'sampled_only':True,'passed':not reasons,'reasons':reasons,'inflections':reversals,
+            'nominal_inflections':baseline[1] if baseline else None,'inflection_comparison':'checked' if baseline else 'unavailable','backtracking_check':'checked' if axis else 'unavailable'}
+
+def signal_chain_locations(rows,forward,spacing,start_offset,end_clearance,max_count):
+    """Sample native cubics by travelled distance, retaining canonical edge direction."""
+    if not rows or len(rows)>64 or len({r['id'] for r in rows})!=len(rows):raise ValueError('signal chain requires1..64 distinct exact edges')
+    if len(rows)>1:
+        shared={rows[0]['node0'],rows[0]['node1']} & {rows[1]['node0'],rows[1]['node1']}
+        if len(shared)!=1:raise ValueError('signal chain requires a simple ordered chain')
+        current=rows[0]['node1'] if rows[0]['node0'] in shared else rows[0]['node0']
+    else:current=rows[0]['node0']
+    oriented=[];visited={current}
+    for index,row in enumerate(rows):
+        if current not in (row['node0'],row['node1']):raise ValueError('signal chain ordered edges are disconnected')
+        direction=current==row['node0'];current=row['node1' if direction else 'node0']
+        if current in visited:raise ValueError('signal chain must not loop')
+        visited.add(current);oriented.append((index,row,direction))
+    if not forward:oriented=[(index,row,not direction) for index,row,direction in reversed(oriented)]
+    samples=[];total=0
+    for index,row,direction in oriented:
+        previous=cubic(row,0 if direction else 1)[0]
+        for j in range(1,129):
+            a=(j-1)/128 if direction else 1-(j-1)/128;b=j/128 if direction else 1-j/128
+            point=cubic(row,b)[0];length=math.dist(previous,point)
+            if length>0:samples.append((total,total+length,index,a,b,direction))
+            total+=length;previous=point
+    count=max(0,math.floor((total-end_clearance-start_offset)/spacing+1e-9)+1)
+    if count>max_count:raise ValueError('signal chain placement count exceeds explicit max_count')
+    placements=[];cursor=0
+    for j in range(count):
+        distance=start_offset+j*spacing
+        while cursor<len(samples)-1 and distance>samples[cursor][1]:cursor+=1
+        lo,hi,index,a,b,direction=samples[cursor];parameter=a+(b-a)*(distance-lo)/(hi-lo)
+        if not 0<parameter<1:raise ValueError('signal distance falls on native node; adjust start_offset')
+        placements.append({'edge_index':index,'parameter':parameter,'forward':direction,'distance':distance})
+    return placements,total
+
+
+def catalogue_components(edges):
+    """Summarise the returned native graph only; incidence identifies actual free ends."""
+    by_id={e['id']:e for e in edges}
+    if len(by_id)!=len(edges):raise ValueError('catalogue contains duplicate exact edge identities')
+    nodes={}
+    for e in edges:
+        for node in (e['node0'],e['node1']):nodes.setdefault(node,[]).append(e['id'])
+    unseen=set(by_id);components=[]
+    while unseen:
+        pending=[min(unseen)];ids=set()
+        while pending:
+            ident=pending.pop()
+            if ident in ids:continue
+            ids.add(ident);unseen.discard(ident);edge=by_id[ident]
+            for node in (edge['node0'],edge['node1']):pending.extend(i for i in nodes[node] if i not in ids)
+        rows=[by_id[i] for i in sorted(ids)];endpoints=[];signals=[];controls=[];structures={}
+        for e in rows:
+            controls.extend([e['p0'],e['p1'],[e['p0'][i]+e['t0'][i]/3 for i in range(3)],[e['p1'][i]-e['t1'][i]/3 for i in range(3)]])
+            kind=e['structure']['classification'];structures[kind]=structures.get(kind,0)+1
+            for index,node in enumerate((e['node0'],e['node1'])):
+                if len(nodes[node])!=1:continue
+                incidence=next(r for r in e['endpoint_incidence'] if r['node_id']==node)
+                tangent=e['t0' if index==0 else 't1'];sign=-1 if index==0 else 1
+                magnitude=math.hypot(*tangent[:2])
+                endpoints.append({'node_id':node,'edge_id':e['id'],'position':e['p0' if index==0 else 'p1'],
+                                  'outward_direction':[sign*x/magnitude for x in tangent[:2]] if magnitude else None,
+                                  'grade':sign*tangent[2]/magnitude if magnitude else None,
+                                  'free':incidence['free'],'incident_count':incidence['incident_count']})
+            for obj in e.get('objects',[]):
+                if obj.get('signal'):signals.append({'id':obj['id'],'name':obj['name'],'edge_id':e['id'],
+                                                    'parameter':obj['parameter'],'position':obj['position'],'resource':obj['resource'],
+                                                    'lanes':obj['signal']['lanes']})
+        components.append({'edge_ids':sorted(ids),'edge_count':len(ids),'control_bounds':box(controls,0),
+                           'endpoints':endpoints,'endpoint_count':len(endpoints),'free_endpoint_count':sum(r['free'] for r in endpoints),
+                           'structures':structures,'names':[{'edge_id':e['id'],'name':e['name']} for e in rows if e['name']!='unnamed'],
+                           'signals':signals,'signal_count':len(signals)})
+    return components
+
+
 def terrain_samples(client,region,positions):
     if not 1<=len(positions)<=128:raise ValueError('1..128 selected terrain samples required')
-    samples=[]
-    for offset in range(0,len(positions),8):
-        batch=positions[offset:offset+8]
-        areas=[batch]
-        area=box([[*pos,(region['min'][2]+region['max'][2])/2] for pos in batch])
-        if any(area['max'][i]-area['min'][i]>400 for i in range(2)):areas=[[pos] for pos in batch]
-        for selected in areas:
-            area=box([[*pos,(region['min'][2]+region['max'][2])/2] for pos in selected])
-            if any(not in_region([*pos,(region['min'][2]+region['max'][2])/2],region) for pos in selected):raise ValueError('terrain sample outside authorised region')
-            r=client.request('inspect',{'edge_ids':[],'site':{'region':area,'positions':selected}})
-            if r['status']!='ok':raise live.LiveError(r['status'],native_failure(r),r['request_id'])
-            found=r['result']['site']['terrain']
-            if len(found)!=len(selected) or any(row['xy']!=pos for row,pos in zip(found,selected)):raise ValueError('terrain sample identity/coverage incomplete')
-            samples.extend(found)
-    return samples
+    for pos in positions:
+        vector(pos,2)
+        if not in_region([*pos,(region['min'][2]+region['max'][2])/2],region):raise ValueError('terrain sample outside authorised region')
+    r=client.request('terrain_samples',{'positions':positions})
+    if r['status']!='ok':raise live.LiveError(r['status'],native_failure(r),r['request_id'])
+    found=r['result'].get('terrain',[])
+    if len(found)!=len(positions) or any(row.get('xy')!=pos for row,pos in zip(found,positions)):raise ValueError('terrain sample identity/coverage incomplete')
+    return found
 
 def crossing_observations(plan,edges,route_paths):
     observations=[]
@@ -279,11 +458,18 @@ def validate_plan(p):
     if not isinstance(p['steps'],list) or not p['steps']:
         raise ValueError('construction steps required')
     names=set(p.get('bindings',{}))|set(p.get('result_bindings',{}))
+    port_refs=p.get('port_refs',{})
+    if not isinstance(port_refs,dict) or any(name not in p['ports'] for name in port_refs):raise ValueError('exact port_refs require named ports')
+    for spec in port_refs.values():
+        if not isinstance(spec,dict) or set(spec) not in ({'chain','end'},{'chain','edge_id','node_id'}) or not isinstance(spec['chain'],str):raise ValueError('exact port reference requires a named chain and endpoint selector')
+        if 'end' in spec and spec['end'] not in ('node0','node1'):raise ValueError('single-edge port end must be node0 or node1')
+        if 'edge_id' in spec and any(type(spec[k]) is not int or spec[k]<=0 for k in ('edge_id','node_id')):raise ValueError('exact positive edge/node port identities required')
     for binding in p.get('bindings',{}).values():
         if not isinstance(binding,dict) or not binding.get('edges'):raise ValueError('binding requires observed exact edges')
     def ref(r):
         if isinstance(r,str):
             if r not in p['ports']:raise ValueError('unknown port '+r)
+            if r in port_refs and port_refs[r]['chain'] not in names:raise ValueError('exact port requires an earlier chain receipt')
         elif isinstance(r,dict) and set(r) in ({'curve','u'},{'curve','segment','u'}):
             if r['curve'] not in names or type(r['u']) not in (int,float) or not 0<r['u']<1:
                 raise ValueError('curve reference must refer to an earlier step at an interior parameter')
@@ -293,14 +479,22 @@ def validate_plan(p):
         if not re.fullmatch(r'[A-Za-z0-9_-]+',s['name']) or s['name'] in names:
             raise ValueError('unique simple step names required')
         kind=s['kind']
-        if kind not in ('stub','extend','connect','branch','crossover','group','structure_seed','remove','terrain_check') and kind not in tasks.KINDS:raise ValueError('unsupported construction step')
-        if p['version']==1 and kind in {'group','structure_seed','remove','terrain_check'}|tasks.KINDS:raise ValueError('new operation requires version2')
+        if kind not in ('stub','extend','connect','branch','crossover','group','structure_seed','remove','terrain_check','signal_chain') and kind not in tasks.KINDS:raise ValueError('unsupported construction step')
+        if p['version']==1 and kind in {'group','structure_seed','remove','terrain_check','signal_chain'}|tasks.KINDS:raise ValueError('new operation requires version2')
         if kind=='stub':
             ref(s['port'])
             if not isinstance(s['port'],str):raise ValueError('stub requires a named port')
             if 'direction' in s:unit(s['direction'])
             if not 5<=s['length']<=60:raise ValueError('native fixture length5..60 required')
             if type(s.get('grade',0)) not in (int,float) or not math.isfinite(s.get('grade',0)) or abs(s.get('grade',0))>min(p['max_grade'],.04):raise ValueError('stub grade within native .04 and selected bound required')
+        elif kind=='signal_chain':
+            if set(s)-{'seed_id'}!={'name','kind','chains','forward','spacing','start_offset','end_clearance','max_count'}:raise ValueError('explicit signal_chain fields required')
+            if 'seed_id' in s and (type(s['seed_id']) is not int or s['seed_id']<=0):raise ValueError('signal_chain seed_id requires an exact positive native signal ID')
+            if not isinstance(s['chains'],list) or not 1<=len(s['chains'])<=32 or any(not isinstance(n,str) or n not in names for n in s['chains']):raise ValueError('signal_chain requires earlier named chains')
+            if type(s['forward']) is not bool:raise ValueError('signal_chain requires explicit forward direction')
+            for key in ('spacing','start_offset','end_clearance'):
+                if type(s[key]) not in (int,float) or not math.isfinite(s[key]) or s[key]<0 or (key!='end_clearance' and s[key]==0):raise ValueError('signal_chain requires positive spacing/start_offset and nonnegative end_clearance')
+            if type(s['max_count']) is not int or not 1<=s['max_count']<=64:raise ValueError('signal_chain max_count must be1..64')
         elif kind in tasks.KINDS:
             if not isinstance(s.get('brief'),dict):raise ValueError('explicit operating brief required')
             tasks.validate(kind,s['brief'],names)
@@ -330,6 +524,9 @@ def validate_plan(p):
             for pos in s['positions']:vector(pos,2)
         else:
             ref(s['source']);ref(s['target'])
+            if kind=='extend':
+                radius=s.get('radius',1)
+                if type(radius) not in (int,float) or not math.isfinite(radius) or radius<=0:raise ValueError('extend radius must be finite and positive')
             if kind=='connect':validate_structures(s)
             if 'replace_chain' in s and (kind!='connect' or s['replace_chain'] not in names):raise ValueError('replacement requires an earlier exact chain')
             if 'replacement_boundaries' in s or 'coalesce_plain' in s:
@@ -352,6 +549,9 @@ def validate_plan(p):
                     if any(a>=b for a,b in zip(window['min'],window['max'])):raise ValueError('ordered attachment windows required')
                 for alternative in alternatives:ref(alternative['source']);ref(alternative['target'])
         names.add(s['name'])
+        if 'fit_variation' in s:fit_variation_config(s)
+        if kind in ('branch','crossover') and len(s.get('guides',[]))>2:
+            raise ValueError('branch/crossover support at most two local shape guides')
         for g in s.get('guides',[]):
             vector(g['position'],3);unit(g['travel_direction'])
             if type(g.get('grade')) not in (int,float) or not math.isfinite(g['grade']):raise ValueError('finite guide grade required')
@@ -411,6 +611,26 @@ class Operator:
         live.atomic_json(path,record)
         return out
 
+    def track_catalogue(self,max_examined_edges=65536,max_tracks=512,summary_limit=32):
+        for key,value,upper in [('max_examined_edges',max_examined_edges,65536),('max_tracks',max_tracks,512),('summary_limit',summary_limit,128)]:
+            if type(value) is not int or not 1<=value<=upper:raise ValueError(f'{key} requires an integer within1..{upper}')
+        c=self.client();response=c.request('track_catalogue',{'max_examined_edges':max_examined_edges,'max_tracks':max_tracks})
+        if response['status']!='ok':raise live.LiveError(response['status'],native_failure(response),response['request_id'])
+        result=response['result'];edges=result['edges']
+        if len(edges)>max_tracks or result['returned_tracks']!=len(edges):raise ValueError('catalogue returned-track bound/count mismatch')
+        components=catalogue_components(edges)
+        path=c.evidence/'operator_track_catalogue.json'
+        live.atomic_json(path,{'session':c.session,'catalogue':result,'components':components})
+        compact=[]
+        for component in components[:summary_limit]:
+            compact.append(component|{'endpoints':component['endpoints'][:16],'names':component['names'][:16],'signals':component['signals'][:16],
+                                      'details_truncated':max(len(component['endpoints']),len(component['names']),len(component['signals']))>16})
+        named=[signal for component in components for signal in component['signals'] if signal['name']!='unnamed']
+        return {k:v for k,v in result.items() if k!='edges'}|{'status':'ok','session':c.session,'component_count':len(components),
+            'components':compact,'component_summary_truncated':len(components)>summary_limit,
+            'named_signals':named[:64],'named_signal_count':len(named),'named_signals_truncated':len(named)>64,
+            'graph_scope':'returned_external_tracks_only','evidence':str(path)}
+
     def plan(self, plan):
         plan=copy.deepcopy(plan)
         used_roles=set(plan.get('role_refs',{}).values())|tasks.role_names(plan['steps'])
@@ -464,6 +684,22 @@ class Operator:
             return self._execute(run)
         finally:lock.unlink()
 
+    def plan_corridor(self,brief):
+        from bridge_corridor import plan_corridor
+        return plan_corridor(self,brief)
+
+    def build_corridor(self,run):
+        from bridge_corridor import build_corridor
+        return build_corridor(self,run)
+
+    def corridor_status(self,run):
+        from bridge_corridor import corridor_status
+        return corridor_status(self,run)
+
+    def continue_corridor(self,run,section_run=None):
+        from bridge_corridor import build_corridor
+        return build_corridor(self,run,continuing=True,section_run=section_run)
+
     def continue_plan(self,run,revision,steps=None,updates=None,bindings=None,reconciled_step=None):
         """Fresh, auditable remaining work; never replay successful native steps."""
         folder=self.path(run);parent=json.loads((folder/'state.json').read_text());old=json.loads((folder/'plan.json').read_text())
@@ -514,8 +750,12 @@ class Operator:
             session=c.session
             evidence=c.evidence
             allow_rejection=False
+            fit_budget=None
             def request(_,op,params,**kwargs):
                 mutating=live.is_mutation(op,params)
+                if _.fit_budget is not None and not mutating:
+                    if _.fit_budget['used']>=_.fit_budget['limit']:raise live.LiveError('fit_variation_budget','declared fit request budget exhausted')
+                    _.fit_budget['used']+=1
                 if mutating:state['step_mutation']={'operation':op,'game_constructed':'unknown'};persist()
                 start=time.monotonic();r=c.request(op,params,**kwargs)
                 state['calls']+=1;state['native_seconds']+=time.monotonic()-start
@@ -529,6 +769,7 @@ class Operator:
                 return r
         rc=Recorded()
         prior={}
+        fit_chain_cache=None
         def world(port):return [port['position'][i]+p['origin'][i] for i in range(3)]
         def intent(ref):
             if isinstance(ref,str):
@@ -547,6 +788,16 @@ class Operator:
                 if kind!='extend' or interior or connected:raise ValueError('qualified station_exit supports deliberate lead extension only')
                 a=role['candidate']
             else:a,_=live._select_throat_port(rc,loc,interior=interior,tolerance=loc['placement_tolerance'],connected=connected)
+            exact=p.get('port_refs',{}).get(ref) if isinstance(ref,str) else None
+            if exact:
+                binding=state['steps'].get(exact['chain']) or prior.get(exact['chain']);rows=binding['edges']
+                if 'end' in exact:
+                    if len(rows)!=1:raise ValueError('exact named end requires one native edge')
+                    expected_edge,expected_node=rows[0]['id'],rows[0][exact['end']]
+                else:expected_edge,expected_node=exact['edge_id'],exact['node_id']
+                if not any(e['id']==expected_edge and expected_node in (e['node0'],e['node1']) for e in rows) or (a['edge_id'],a['node_id'])!=(expected_edge,expected_node):raise ValueError('discovered port differs from exact authored chain endpoint')
+            if fit_chain_cache is not None and isinstance(ref,dict) and a['edge_id'] not in {e['id'] for e in chain(ref['curve'])}:
+                raise ValueError('fit attachment escaped the same named chain')
             if isinstance(ref,str) and 'grade' in p['ports'][ref]:
                 expected=p['ports'][ref]['grade']
                 if type(a.get('grade')) not in (int,float) or abs(a['grade']-expected)>p.get('grade_tolerance',.001):raise ValueError('attachment grade does not meet declared port')
@@ -554,7 +805,17 @@ class Operator:
         def chain(name):
             binding=state['steps'].get(name) or prior.get(name)
             if not binding:raise ValueError('named earlier result unavailable')
-            return fresh_binding(rc,binding)
+            if fit_chain_cache is None:return fresh_binding(rc,binding)
+            if name not in fit_chain_cache:fit_chain_cache[name]=fresh_binding(rc,binding)
+            return fit_chain_cache[name]
+        def follow_replacement(original,replacement,changed,request_id):
+            for binding in list(state['steps'].values())+list(prior.values()):
+                old=binding.get('edges',[])
+                if any(e['id']==original for e in old):
+                    binding.setdefault('original_edges',copy.deepcopy(old))
+                    binding['edges']=[new for e in old for new in (changed if e['id']==original else [e])]
+            state.setdefault('lineage',[]).append({'request_id':request_id,'original_edge':original,'replacement_edges':replacement})
+            if prior:state['bindings']=prior
         def structure_query(spec):
             replacement=chain(spec['replace_chain']) if spec.get('replacement_boundaries') else None
             if replacement is not None:
@@ -579,17 +840,48 @@ class Operator:
             if replacement is not None:q.update(replacement_boundaries=spec['replacement_boundaries'],coalesce_plain=True)
             return q
         def fit_step(s):
-            alternatives=s.get('attachments',[{'source':s['source'],'target':s['target']}]);attempts=[]
+            nonlocal fit_chain_cache
+            cfg=fit_variation_config(s);tables={};nominal_controls=None;summary=None;fixed={}
+            if cfg:
+                fit_chain_cache={};rc.fit_budget={'used':0,'limit':cfg.get('max_requests',256)}
+                for end in ('source','target'):
+                    if isinstance(s[end],dict):chain(s[end]['curve'])
+                variations,tables=fit_variation_positions(s,fit_chain_cache)
+                if any(not in_region(intent(s[end])['guide_xyz'],p['region']) for end in ('source','target')):raise ValueError('nominal fit attachment outside authorised region')
+                variations=[(a,d) for a,d in variations if all(in_region(intent(a[end])['guide_xyz'],p['region']) for end in ('source','target'))]
+                summary={'attempt_count':0,'selected_requested_shift_m':None,'selected_actual_shift_m':None,'sampled_rejection_range_m':{},'boundary_proven':False,'nominal_geometry':'unavailable'}
+                state.setdefault('fit_variations',{})[s['name']]=summary
+                shape=s.get('candidates',[{'branch':'endpoint_cubic_graded'}])[0]
+                if shape['branch'] in ('endpoint_cubic_level','endpoint_cubic_graded','guided_cubic_level'):
+                    start,end=intent(s['source']),intent(s['target'])
+                    points=[(start['guide_xyz'],start['travel_direction'])]
+                    if shape['branch']=='guided_cubic_level':points.extend((world(g),g['travel_direction']) for g in s.get('guides',[]))
+                    points.append((end['guide_xyz'],[-x for x in end['travel_direction']] if s['kind']=='branch' else end['travel_direction']))
+                    nominal_controls=[]
+                    for (a,da),(b,db) in zip(points,points[1:]):
+                        length=math.dist(a,b)*shape.get('handle_scale',1);da=unit(da[:2]);db=unit(db[:2])
+                        nominal_controls.append({'p0':a,'p1':b,'t0':[length*x for x in da]+[0],'t1':[length*x for x in db]+[0]})
+                    summary['nominal_geometry']='endpoint_control_model'
+            else:variations=[(a,{}) for a in s.get('attachments',[{'source':s['source'],'target':s['target']}])]
+            attempts=[]
             state.setdefault('candidates',{})[s['name']]=attempts
-            for number,alternative in enumerate(alternatives,1):
+            for number,(alternative,shifts) in enumerate(variations,1):
                 spec=s|alternative
+                if summary:summary['attempt_count']=number;summary['requests_used']=rc.fit_budget['used']
                 for end,window in s.get('attachment_windows',{}).items():
                     if end in ('source','target') and not in_region(intent(spec[end])['guide_xyz'],window):raise ValueError('attachment outside designer window')
                 rc.allow_rejection=True
                 try:
                     if s['kind']=='connect':prepared=rc.request('structured_chain',structure_query(spec)|{'prepare':True})
                     else:
-                        a,al=resolve(spec['source'],True);b,bl=resolve(spec['target'],s['kind']=='crossover')
+                        if cfg and isinstance(spec['source'],str):
+                            if 'source' not in fixed:fixed['source']=resolve(spec['source'],True)
+                            a,al=fixed['source']
+                        else:a,al=resolve(spec['source'],True)
+                        if cfg and isinstance(spec['target'],str):
+                            if 'target' not in fixed:fixed['target']=resolve(spec['target'],False)
+                            b,bl=fixed['target']
+                        else:b,bl=resolve(spec['target'],s['kind']=='crossover')
                         q={'source':a,'target':b,'location':al,'region':p['region'],'vertical':{'max_grade':p['max_grade']},
                            'max_route_length':s.get('max_route_length',p.get('max_route_length',800)),'radius':s.get('radius',0)}
                         if 'guides' in s:q['guides']=[{'pos':world(g),'direction':g['travel_direction']} for g in s['guides']]
@@ -598,14 +890,39 @@ class Operator:
                         else:prepared=live.prepare_interior_junction(rc,q,shapes)
                 except live.LiveError as exc:
                     if getattr(exc,'status',None)!='no_eligible_candidates':raise
-                    attempts.append({'index':number,'attachments':alternative,'status':exc.status,'reason':str(exc)[:300]});persist();continue
+                    attempts.append({'index':number,'attachments':alternative,'shift_m':shifts,'status':exc.status,'reason':str(exc)[:300]})
+                    if summary:
+                        summary['requests_used']=rc.fit_budget['used']
+                        for end,shift in shifts.items():
+                            limits=summary['sampled_rejection_range_m'].setdefault(end,[shift,shift]);limits[0]=min(limits[0],shift);limits[1]=max(limits[1],shift)
+                    persist();continue
                 finally:rc.allow_rejection=False
-                attempts.append({'index':number,'attachments':alternative,'status':prepared['status'],'request_id':prepared['request_id'],
-                                 'reason':native_failure(prepared) if prepared['status']!='ok' else None});persist()
-                if prepared['status']=='ok':
+                attempt={'index':number,'attachments':alternative,'status':prepared['status'],'request_id':prepared['request_id'],
+                         'reason':native_failure(prepared) if prepared['status']!='ok' else None}
+                if cfg:
+                    attempt['shift_m']=shifts;summary['requests_used']=rc.fit_budget['used']
+                    if prepared.get('result',{}).get('game_constructed') is not False:
+                        state['step_mutation']=state['last_response'].copy();persist();raise live.LiveError('fit_variation_uncertain','preparation effects are not confirmed absent',prepared['request_id'])
+                    if prepared['status']=='ok':
+                        fit=prepared.get('result',{}).get('fit');controls=fit.get('controls') if isinstance(fit,dict) else None
+                        check=fit_geometry_check(controls,nominal_controls,cfg.get('intent',{}),p['region']);attempt['geometry_checks']=check
+                        if cfg.get('intent') and (not check['available'] or ('max_extra_inflections' in cfg['intent'] and check.get('inflection_comparison')!='checked')):
+                            attempts.append(attempt);summary['geometry_checks']=check;persist();raise live.LiveError('fit_geometry_unavailable','explicit geometry intent cannot be checked before construction',prepared['request_id'])
+                        if check['passed'] is False:attempt.update(status='intent_rejected',reason='; '.join(check['reasons']))
+                    if attempt['status']!='ok':
+                        for end,shift in shifts.items():
+                            limits=summary['sampled_rejection_range_m'].setdefault(end,[shift,shift]);limits[0]=min(limits[0],shift);limits[1]=max(limits[1],shift)
+                attempts.append(attempt);persist()
+                if attempt['status']=='ok':
+                    if cfg:
+                        geometry=fit.get('candidate_geometry',{}) if isinstance(fit,dict) else {}
+                        summary.update(selected_requested_shift_m=shifts,selected_actual_shift_m={end:measure((a if end=='source' else b)['edge_id'],(a if end=='source' else b)['parameter'])-nominal for end,(nominal,measure) in tables.items()},geometry_checks=attempt['geometry_checks'],
+                                       native_proposal_evaluated=prepared['result'].get('native_proposal_evaluated'),native_shape_fit_invoked=geometry.get('native_fit_invoked') if isinstance(geometry,dict) else None)
+                        persist();rc.fit_budget=None;fit_chain_cache=None
                     if s['kind']=='connect':return rc.request('structured_chain',{'execute':True,'prepared_request':prepared['request_id']})
                     if s['kind']=='crossover':return live.build_prepared_crossover(rc,prepared)
                     return live.build_prepared_interior_junction(rc,prepared)
+            rc.fit_budget=None;fit_chain_cache=None
             if attempts:raise live.LiveError('no_accepted_candidate',attempts[-1]['reason'] or 'no accepted attachment in configured alternatives')
             raise ValueError('no attachment alternatives supplied')
         try:
@@ -620,7 +937,29 @@ class Operator:
             for name,binding in p.get('bindings',{}).items():prior.setdefault(name,{}).update(edges=fresh_binding(rc,binding))
             for s in p['steps']:
                 state['current_step']=s['name'];state['current_step_start_calls']=state['calls'];state['step_mutation']=None;persist();kind=s['kind']
-                if kind in tasks.KINDS:
+                if kind=='signal_chain':
+                    rows=[edge for name in s['chains'] for edge in chain(name)]
+                    locations,total=signal_chain_locations(rows,s['forward'],s['spacing'],s['start_offset'],s['end_clearance'],s['max_count'])
+                    progress={'placements':[],'sampled_length':total,'sampled_only':True}
+                    state.setdefault('signal_chains',{})[s['name']]=progress;persist()
+                    for location in locations:
+                        index=location['edge_index'];original=rows[index]['id']
+                        brief={'edge_id':original,'parameter':location['parameter'],'forward':location['forward'],'one_way':True}
+                        if 'seed_id' in s:brief['seed_id']=s['seed_id']
+                        r=live.place_signal(rc,brief,execute=True)
+                        if r['status']!='ok':raise live.LiveError(r['status'],native_failure(r),r.get('request_id'))
+                        value=r['result']
+                        replacement=value['replacement_edge']
+                        # Persist the successful effect before any fallible readback.
+                        progress['placements'].append(location|{'request_id':r['request_id'],'replaced_edge':original,'replacement_edge':replacement,'signal':value.get('signal')});persist()
+                        if value['replaced_edge']!=original:raise ValueError('signal receipt replaced a different edge; inspect partial effects')
+                        changed=inspect_edges(rc,[replacement])
+                        if any(changed[0][k]!=rows[index][k] for k in ('node0','node1')) or any(abs(a-b)>.001 for k in ('p0','p1','t0','t1') for a,b in zip(changed[0][k],rows[index][k])):raise ValueError('signal replacement changed chain geometry; inspect partial effects')
+                        rows[index]=changed[0]
+                        follow_replacement(original,[replacement],changed,r['request_id']);persist()
+                    state['steps'][s['name']]={'status':'built','edges':[],'result':progress};persist()
+                    continue
+                elif kind in tasks.KINDS:
                     brief=tasks.references(s['brief'],state['steps']|prior,roles)
                     r=tasks.perform(rc,kind,brief)
                 elif kind=='stub':
@@ -687,12 +1026,7 @@ class Operator:
                     original=placement.get('original_edge');replacement=placement.get('replacement_edges',[])
                     if original and replacement:
                         changed=edges if kind=='signal' else inspect_edges(rc,replacement)
-                        for binding in list(state['steps'].values())+list(prior.values()):
-                            old=binding.get('edges',[])
-                            if any(e['id']==original for e in old):
-                                binding.setdefault('original_edges',copy.deepcopy(old))
-                                binding['edges']=[new for e in old for new in (changed if e['id']==original else [e])]
-                        state.setdefault('lineage',[]).append({'request_id':r.get('request_id'),'original_edge':original,'replacement_edges':replacement})
+                        follow_replacement(original,replacement,changed,r.get('request_id'))
                 if prior:state['bindings']=prior
                 invalidated=s.get('replace_chain') or (s.get('chain') if kind=='remove' else None)
                 if invalidated:state.setdefault('invalidated_bindings',[]).append(invalidated)
@@ -851,7 +1185,7 @@ def render_profile(plan,edges,path):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['status','survey','station-survey','station-exits','station-routes','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','camera','capture','save'])
+    parser.add_argument('action',choices=['status','survey','track-catalogue','station-survey','station-exits','station-routes','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','corridor-plan','corridor-build','corridor-status','corridor-continue','camera','capture','save'])
     parser.add_argument('--input',type=Path);parser.add_argument('--run');parser.add_argument('--context',type=Path,default=CONTEXT)
     a=parser.parse_args()
     try:
@@ -862,6 +1196,11 @@ def main():
         elif a.action=='plan':r=op.plan(data)
         elif a.action=='status':r=op.status()
         elif a.action=='survey':r=op.survey(**data)
+        elif a.action=='track-catalogue':r=op.track_catalogue(**data)
+        elif a.action=='corridor-plan':r=op.plan_corridor(data)
+        elif a.action=='corridor-build':r=op.build_corridor(a.run)
+        elif a.action=='corridor-status':r=op.corridor_status(a.run)
+        elif a.action=='corridor-continue':r=op.continue_corridor(a.run,**data)
         elif a.action=='station-survey':r=op.survey_station(data)
         elif a.action=='station-exits':r=op.survey_station_exits(data)
         elif a.action=='station-routes':r=op.review_station_routes(data)

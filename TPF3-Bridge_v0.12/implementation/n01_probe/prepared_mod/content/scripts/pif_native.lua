@@ -128,12 +128,40 @@ local function geometry_bounds(g,region,minradius,maxgrade,divisions)
  end
  return minimum,maximum
 end
+-- Native TRAIN movement limits, not track/structure resource limits or a speed
+-- inferred from radius. Installed Edge definitions do not specify their units.
+local function movement_speeds(id,kind)
+ local network=api.engine.getComponent(id,api.type.ComponentType.TRANSPORT_NETWORK)
+ local result={available=network~=nil and network.edges~=nil,units="unknown_native_units",rows={},examined_rows=0,truncated=false,
+  source="TRANSPORT_NETWORK.edges",network_entity=id,entity_kind=kind}
+ if not result.available then result.complete=false;return result end
+ for i,row in ipairs(network.edges) do
+  if i>64 then result.truncated=true;break end
+  result.examined_rows=i
+  if row.transportModes[E.TransportMode.TRAIN]==true then
+   if #result.rows>=16 then result.truncated=true;break end
+   local value={network_entity=id,movement_index=i-1,entity_kind=kind,TRAIN=true,connections={},connections_truncated=false,
+    speedLimit_state=finite(row.speedLimit) and "available" or "unavailable",curveSpeedLimit_state=finite(row.curveSpeedLimit) and "available" or "unavailable"}
+   if finite(row.speedLimit) then value.speedLimit=row.speedLimit end
+   if finite(row.curveSpeedLimit) then value.curveSpeedLimit=row.curveSpeedLimit end
+   for j,node in ipairs(row.conns or {}) do
+    if j>4 then value.connections_truncated=true;break end
+    value.connections[#value.connections+1]={entity=node.entity,index=node.index}
+   end
+   result.rows[#result.rows+1]=value
+  end
+ end
+ result.complete=not result.truncated
+ return result
+end
 function M.inspect(p)
- assert(type(p.edge_ids)=="table" and (#p.edge_ids>=1 or p.site~=nil) and #p.edge_ids<=16,"edge_read_bound")
+ assert(type(p.edge_ids)=="table" and (#p.edge_ids>=1 or p.site~=nil or p.entity_ids~=nil) and #p.edge_ids<=16,"edge_read_bound")
+ assert(p.movement_speeds==nil or type(p.movement_speeds)=="boolean","movement_speeds_flag_boolean_required")
  assert(p.structures==nil or type(p.structures)=="boolean","structures_flag_boolean_required")
  assert(p.parallel_strips==nil or type(p.parallel_strips)=="boolean","parallel_strips_flag_boolean_required")
  local out={};for _,id in ipairs(p.edge_ids) do
   local e=edge(id)
+  if p.movement_speeds==true then e.movement_speeds=movement_speeds(id,"track_edge") end
   if p.structures==true then e.structure=structure(api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE)) end
   if p.parallel_strips==true then
    e.parallel_strips={};e.parallel_strips_truncated=false
@@ -185,6 +213,7 @@ function M.inspect(p)
     local construction=api.engine.getComponent(id,api.type.ComponentType.CONSTRUCTION)
     row.base_edge=base~=nil;row.base_node=node~=nil;row.town_building=building~=nil;row.construction=construction~=nil
     if node then row.position=arr(node.position) end
+    if p.movement_speeds==true and (base or node) then row.movement_speeds=movement_speeds(id,node and "node" or base.roadType==E.RoadType.TRACK and "track_edge" or "base_edge") end
     if base then
      row.road_type=tostring(base.roadType);row.TRACK=base.roadType==E.RoadType.TRACK
      row.node0=base.node0;row.node1=base.node1;row.p0=arr(base.position0);row.p1=arr(base.position1);row.t0=arr(base.tangent0);row.t1=arr(base.tangent1)
@@ -508,6 +537,79 @@ function M.discover(p,request_id)
   edge_count=#edges,candidate_count=#candidates,truncated=truncated,complete=not truncated,game_constructed=false,
   native_save_identity="unknown",load_epoch="unknown",identity_scope="current_adapter_session_only"}
 end
+-- Sparse scaffold read: the documented street-system adjacency map avoids a tile sweep.
+-- BASE_EDGE cannot be enumerated with getEntitiesWithComponent in TPF3.
+function M.track_catalogue(p)
+ for key in pairs(p) do assert(key=="max_examined_edges" or key=="max_tracks","unsupported_track_catalogue_field") end
+ local examined_limit,track_limit=p.max_examined_edges or 65536,p.max_tracks or 512
+ assert(finite(examined_limit) and examined_limit%1==0 and examined_limit>=1 and examined_limit<=65536,"catalogue_examined_edge_bound")
+ assert(finite(track_limit) and track_limit%1==0 and track_limit>=1 and track_limit<=512,"catalogue_track_bound")
+ local mapping=api.engine.system.streetSystem.getNode2TrackEdgeMap()
+ assert(type(mapping)=="table","track_adjacency_map_unavailable")
+ local ids,seen={},{}
+ for _,segments in pairs(mapping) do for _,id in ipairs(segments) do
+  if not seen[id] then seen[id]=true;ids[#ids+1]=id end
+ end end
+ table.sort(ids)
+ local operating=ug_require('tpf3_bridge_n01_c04_20261001::/scripts/pif_operating.lua')
+ local edges,node_reads={},{};local examined,tracks,excluded,external=0,0,0,0;local metadata_truncated=false
+ local function bounded_name(id)
+  local c=api.engine.getComponent(id,api.type.ComponentType.NAME);local name=c and c.name or "unnamed"
+  assert(type(name)=="string","entity_name_unavailable");return name:sub(1,80),#name>80
+ end
+ for index=1,math.min(#ids,examined_limit) do
+  local id=ids[index];examined=examined+1
+  local base=assert(api.engine.getComponent(id,api.type.ComponentType.BASE_EDGE),"catalogue_edge_missing")
+  if base.roadType==E.RoadType.TRACK then
+   tracks=tracks+1;local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForEdge(id)
+   assert(owner==nil or type(owner)=="number","construction_owner_unavailable")
+   if owner and owner>0 then excluded=excluded+1 else
+    external=external+1
+    if #edges<track_limit then
+     local row=edge(id);row.structure=structure(base);row.name,row.name_truncated=bounded_name(id);row.construction_owner="none"
+     row.endpoint_incidence={}
+     for _,node in ipairs({row.node0,row.node1}) do
+      if not node_reads[node] then
+       local all,node_owner=incidence(node)
+       node_reads[node]={node_id=node,incident_count=#all,free=#all==1 and all[1]==id and not(node_owner and node_owner>0),construction_owner=node_owner or "none"}
+      end
+      row.endpoint_incidence[#row.endpoint_incidence+1]=node_reads[node]
+     end
+     if #base.objects<=16 then
+      row.objects=operating.inspect({track_ids={id},limit=1}).tracks.records[1].objects
+      for _,object in ipairs(row.objects) do
+       if object.signal then object.name,object.name_truncated=bounded_name(object.id) end
+      end
+     else row.objects={};row.objects_truncated=true;metadata_truncated=true end
+     edges[#edges+1]=row
+    end
+   end
+  end
+ end
+ local scan_truncated=examined<#ids;local tracks_truncated=external>#edges
+ return {edges=edges,enumerated_edges=#ids,examined_edges=examined,examined_TRACK=tracks,
+  excluded_construction_tracks=excluded,external_tracks_observed=external,returned_tracks=#edges,
+  max_examined_edges=examined_limit,max_tracks=track_limit,scan_truncated=scan_truncated,
+  tracks_truncated=tracks_truncated,metadata_truncated=metadata_truncated,
+  truncated=scan_truncated or tracks_truncated or metadata_truncated,
+  complete=not(scan_truncated or tracks_truncated or metadata_truncated),external_only=true,
+  exclusion="all_construction_owned_TRACK",game_constructed=false,
+  enumeration_api="streetSystem.getNode2TrackEdgeMap",native_qualification="pending",
+  identity_scope="current_adapter_session_only",native_save_identity="unknown"}
+end
+-- Point-only terrain sampling avoids the unrelated entity search in site inspection.
+function M.terrain_samples(p)
+ for key in pairs(p) do assert(key=="positions","unsupported_terrain_sample_field") end
+ assert(type(p.positions)=="table" and #p.positions>=1 and #p.positions<=128,"terrain_sample_bound")
+ for _,pos in ipairs(p.positions) do vector(pos);assert(#pos==2,"terrain_position_needs_xy") end
+ local rows={}
+ for _,pos in ipairs(p.positions) do
+  local xy=api.type.Vec2f.new(pos[1],pos[2]);local valid=api.engine.terrain.isValidCoordinate(xy)
+  assert(valid,"terrain_position_outside_map")
+  rows[#rows+1]={xy=pos,height=api.engine.terrain.getHeightAt(xy),base_height=api.engine.terrain.getBaseHeightAt(xy),valid=valid}
+ end
+ return {terrain=rows,game_constructed=false,sampled_only=true}
+end
 -- Bounded named station catalogue followed by exact external TRACK incidence.
 function M.station_lookup(p)
  local lookup_scope=p.lookup_scope or "external"
@@ -796,12 +898,20 @@ local function node_id(n)
  return {entity=n.entity,index=n.index}
 end
 local function same_node(a,b) return a.entity==b.entity and a.index==b.index end
-local function rail_lane(id,mode,junction_node,junction_nodes)
+local function rail_lane(id,mode,junction_node,junction_nodes,endpoint_node)
  local base=edge(id);local n=api.engine.getComponent(id,api.type.ComponentType.TRANSPORT_NETWORK)
  assert(n and n.edges,"transport_network_unavailable")
- local found,index=nil,nil
+ assert(endpoint_node==base.node0 or endpoint_node==base.node1,"route_not_edge_endpoint")
+ local found,index,count=nil,nil,0
  for i,row in ipairs(n.edges) do
-  if row.transportModes[mode]==true then assert(not found,"ambiguous_rail_transport_lane");found=row;index=i-1 end
+  if row.transportModes[mode]==true then
+   count=count+1;assert(#row.conns==2,"rail_transport_lane_unavailable")
+   -- Signals subdivide one physical TRACK into native movement rows joined at
+   -- virtual nodes. Only one row may touch the requested physical endpoint.
+   if row.conns[1].entity==endpoint_node or row.conns[2].entity==endpoint_node then
+    assert(not found,"ambiguous_rail_endpoint_lane");found=row;index=i-1
+   end
+  end
  end
  assert(found and #found.conns==2,"rail_transport_lane_unavailable")
  local p0=sample(found.geometry,0);local p1=sample(found.geometry,1)
@@ -816,7 +926,13 @@ local function rail_lane(id,mode,junction_node,junction_nodes)
    if #segments>=3 then trimmed=true end
   end
  end
- if trimmed then
+ if count>1 then
+  local side=endpoint_node==base.node0 and 1 or 2
+  assert(found.conns[side].entity==endpoint_node,"transport_orientation_unestablished")
+  if not trimmed then
+   assert(distance(side==1 and p0 or p1,side==1 and base.p0 or base.p1)<=.001,"transport_orientation_unestablished")
+  end
+ elseif trimmed then
   -- Turnout movement edges are trimmed. Native connection entities establish
   -- correspondence; their indexes name distinct native junction ports.
   assert(found.conns[1].entity==base.node0 and found.conns[2].entity==base.node1,"junction_transport_identity_mismatch")
@@ -830,7 +946,7 @@ function M.route(p)
  local path_limit=p.max_path_entries or 64
  assert(finite(path_limit) and path_limit%1==0 and path_limit>=1 and path_limit<=512,"route_path_entry_bound")
  local mode=E.TransportMode[p.mode]
- local a,start,index=rail_lane(p.source_edge,mode,p.junction_node,p.junction_nodes);local b,finish,target_index=rail_lane(p.target_edge,mode,p.junction_node,p.junction_nodes)
+ local a,start,index=rail_lane(p.source_edge,mode,p.junction_node,p.junction_nodes,p.source_node);local b,finish,target_index=rail_lane(p.target_edge,mode,p.junction_node,p.junction_nodes,p.target_node)
  assert((p.source_edge~=p.target_edge or p.single_edge==true) and p.source_node~=p.target_node,"distinct_route_attachments_required")
  assert(p.source_node==a.node0 or p.source_node==a.node1,"source_not_edge_endpoint")
  assert(p.target_node==b.node0 or p.target_node==b.node1,"target_not_edge_endpoint")
@@ -1351,6 +1467,20 @@ end
 -- Disposable-world test fixture, not a planner: place one short independent
 -- approach at a native-fitted finish, with the same template, tangent and grade.
 -- Native evaluation and one coherent remove/replace/add proposal. No Python fitter.
+-- Vec2f world-coordinate evaluation loses a few ULPs when the same Hermite
+-- curve is evaluated through different subdivisions. This allowance is confined
+-- to that equivalence check; attachment freshness and native fitting retain their
+-- existing tolerances. Four ULPs at y=13600 are 3.90625 mm, not a design clearance.
+local function subdivision_position_near(a,b,control)
+ for i=1,3 do
+  if not(finite(a[i]) and finite(b[i]) and finite(control.p0[i]) and finite(control.p1[i])) then return false end
+  local scale=math.max(math.abs(a[i]),math.abs(b[i]),math.abs(control.p0[i]),math.abs(control.p1[i]))
+  local ulp=2^-23
+  while scale>=2 do scale=scale/2;ulp=ulp*2 end
+  if math.abs(a[i]-b[i])>math.max(.001,4*ulp) then return false end
+ end
+ return true
+end
 local function interior_splits(a,parameter,region,radius,max_grade,second_parameter)
   assert(finite(parameter) and parameter>0 and parameter<1,"nondegenerate_native_split_parameter_required")
   local g=cubic({p0=a.p0,p1=a.p1,t0=a.t0,t1=a.t1,length=1});local splits={}
@@ -1367,7 +1497,7 @@ local function interior_splits(a,parameter,region,radius,max_grade,second_parame
    geometry_bounds(cubic(splits[i]),region,radius,max_grade)
    for _,u in ipairs({0,.25,.5,.75,1}) do
     local original=g:calcPos(x+u*(y-x));local derived=cubic(splits[i]):calcPos(u)
-    assert(near(arr(original[1]),arr(derived[1]),.001) and angle(arr(original[2]),arr(derived[2]))<=.1,"native_subdivision_mismatch")
+    assert(subdivision_position_near(arr(original[1]),arr(derived[1]),a) and angle(arr(original[2]),arr(derived[2]))<=.1,"native_subdivision_mismatch")
     in_region(arr(derived[1]),region)
    end
   end

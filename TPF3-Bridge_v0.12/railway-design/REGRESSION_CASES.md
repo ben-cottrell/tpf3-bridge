@@ -99,14 +99,13 @@ rebuilds and unsolicited user corrections. Include comparable images and explana
 Correctness cannot be traded away for a smaller footprint. A larger route may be
 justified by a demonstrated native constraint. No aggregate score hides that trade-off.
 
-Baseline policy: retain the previous record and procedure version. If an affected
-case regresses, revise the procedure or document the deliberate requirement change;
-do not silently weaken expectations. P75 is a functional baseline and a source of
-counterexamples, not the accepted aesthetic target. A fresh, user-reviewed reference
-can establish a design-quality baseline for its stated context.
+Baseline policy: retain reusable requirements and review criteria in the current
+procedure. If an affected case regresses, revise the procedure or explain the
+intentional requirement change; do not silently weaken expectations. Keep current
+accepted design lessons, not previous run records or procedure archives.
 
-Current status: cases written; no independent replay or prospective native transfer
-test completed. The separate P75 retrospective is a worked application only.
+Successful live challenges demonstrate transfer for their tested arrangements;
+they do not establish that every regression case has been independently replayed.
 
 ## R6 — A native-accepted flyover is too wide
 
@@ -126,6 +125,8 @@ large cities. Fast, slow and independent Cross pairs need an approach corridor;
 platform fans appear much faster than the throat crossovers. Flyovers and regional
 junctions in the demonstration leave too little room for future city/road growth.
 Long plain tracks have only endpoint signals. The user requests future lessons only.
+Temporary bank seeds and section anchors also leave long separated straights with
+short gathering bends, although the functional fan roots permit continuous sweeps.
 **Task:** record acceptance, then specify inputs and spatial/operating priorities
 for the future map without altering the demonstration.
 
@@ -134,4 +135,29 @@ narrow shared corridor retaining fast alignment and Cross independence; appropri
 map-scale junction offsets rather than copying fixture lengths; straight platform
 leads and coordinated fan/crossover speed progression; smooth slow sweeps adjacent
 to flyovers; ordinary open-line signals without disrupting platform decision points.
+Compare corridor width at several station-distance slices and curvature across the
+full approach. Recognise early separation and long wide banks; construction anchors
+must not dictate the final curves. Preserve functional fans and pointwork while
+considering removal of incidental staging straights.
+When transferring Challenge04 shape, identify its outstanding long/fast fans,
+short/slow crossovers and unwanted interpair gap. Do not copy those dimensions;
+coordinate compact fans, gentler crossovers and packed roads with fast alignment
+priority, and verify all platform paths after any balancing of the slow subtrees.
 User approximate distances/speeds retain their provenance and are not engine limits.
+
+## R8 — A nearby native fit is good enough
+
+**Situation:** a compact fan has correct route roles and reserved space. Its nominal
+turnout proposal fails. The native tool accepts a nearby point and a short parallel
+continuation into the curved lead, with a smooth route and unchanged neighbours.
+The implementation has been retrying fixed fractions and exact section lengths.
+**Task:** decide what should happen automatically, what must remain fixed, and
+what evidence would justify revisiting the design.
+
+**Review criteria:** accept the suitable nearby result without reconstructing the
+nominal curve; automate bounded nearby proposal fitting; preserve exact track
+identity and route/crossing order while allowing position to vary. Do not confuse
+finite sampled outcomes with a complete feasibility boundary. Avoid backtracking,
+extra wiggles and consuming another route's space; intentional broad S-curves
+remain permitted. Stop on unknown mutation effects. Material route/space changes
+require design review, but ordinary positional adjustments do not.

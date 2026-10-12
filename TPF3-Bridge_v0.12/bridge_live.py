@@ -21,6 +21,8 @@ OPERATIONS = {'scissors_candidate', 'degree_four_candidate', 'inspect_degree_fou
 OPERATIONS.add(STATION_OPERATION)
 OPERATIONS.add('repair_crossover')
 OPERATIONS.add('structured_chain')
+OPERATIONS.add('track_catalogue')
+OPERATIONS.add('terrain_samples')
 OPERATIONS.add('operator_gui')
 OPERATIONS.update({'operating_inspect', 'operating_control'})
 
@@ -2047,7 +2049,7 @@ def connect_throat(client,brief,*,execute=False,reconciled_crossover=None):
     finally:atomic_json(path,record)
 
 
-def reconcile_rejected_fixture(client, discovery):
+def reconcile_rejected_fixture(client, discovery=None):
     """Close a reported failed fixture using bounded current-state evidence, never replay."""
     state=json.loads(client.journal.read_text());pending=state.get('pending')
     if not pending or pending['operation']!='test_approach':
@@ -2058,39 +2060,76 @@ def reconcile_rejected_fixture(client, discovery):
             or response.get('status')!='mutation_unverified'
             or not response.get('result',{}).get('error','').endswith('native_test_approach_rejected')):
         raise LiveError('reconciliation_required','no explicit native fixture rejection evidence',rid)
-    if (not isinstance(discovery,dict) or discovery.get('operation')!='discover'
+    p=pending['params']
+    resource_seed='fixture' in p and 'template_edge' not in p['fixture']
+    if resource_seed:
+        request_path=client.evidence/(rid+'.request.json')
+        original={k:pending.get(k) for k in ('version','session','sequence','request_id','operation','params')}
+        if (state.get('session')!=client.session or pending.get('session')!=client.session
+                or response.get('operation')!='test_approach' or response.get('result',{}).get('retry') is not False
+                or response.get('result',{}).get('game_constructed')!='unknown'
+                or not request_path.exists() or json.loads(request_path.read_text())!=original):
+            raise LiveError('reconciliation_required','resource fixture request/session evidence mismatch',rid)
+        q=p['fixture']
+        if (set(p)!={'authorised','length','fixture'} or p.get('authorised') is not True
+                or set(q)!={'position','travel_direction','grade','region','template','style'}
+                or any(not isinstance(q.get(k),str) or not q[k] or len(q[k])>512 for k in ('template','style'))
+                or type(p['length']) not in (int,float) or not math.isfinite(p['length']) or not 5<=p['length']<=60
+                or type(q['grade']) not in (int,float) or not math.isfinite(q['grade']) or abs(q['grade'])>.04):
+            raise ValueError('recorded resource fixture constraints malformed')
+        if (not isinstance(q['position'],list) or len(q['position'])!=3
+                or any(type(x) not in (int,float) or not math.isfinite(x) for x in q['position'])):
+            raise ValueError('recorded resource fixture position malformed')
+        validate_brief({'anchor_edge':1,'anchor_node':2,'end_xy':q['position'][:2],
+                        'end_direction':q['travel_direction'],'radius':1,'region':q['region']})
+        if any(q['region']['max'][i]-q['region']['min'][i]>100 for i in range(3)):
+            raise ValueError('recorded resource fixture region exceeds native bound')
+    elif (not isinstance(discovery,dict) or discovery.get('operation')!='discover'
             or discovery.get('session')!=client.session or discovery.get('status')!='ok'):
         raise ValueError('reconciliation requires original current-session discovery')
-    p=pending['params']
     if 'fixture' in p:
         q=p['fixture'];pos=q['position'];direction=q['travel_direction']
         if (len(pos)!=3 or len(direction)!=2 or any(type(x) not in (int,float) or not math.isfinite(x) for x in pos+direction)
                 or math.hypot(*direction)==0):raise ValueError('recorded native fixture seed is malformed')
-        b={'anchor_edge':q['template_edge'],'end_xy':pos[:2],'end_direction':direction,'region':q['region']}
-        matches=[c for c in discovery['result']['candidates'] if c['edge_id']==b['anchor_edge']]
+        b={'end_xy':pos[:2],'end_direction':direction,'region':q['region']}
+        if not resource_seed:b['anchor_edge']=q['template_edge']
+        matches=[] if resource_seed else [c for c in discovery['result']['candidates'] if c['edge_id']==b['anchor_edge']]
         if matches and all(c['edge_snapshot']==matches[0]['edge_snapshot'] for c in matches):matches=matches[:1]
     else:
         b=p['brief'];validate_brief(b)
         matches=[c for c in discovery['result']['candidates'] if c['edge_id']==b['anchor_edge'] and c['node_id']==b['anchor_node']]
-    if len(matches)!=1:raise ValueError('original fixture anchor snapshot missing')
-    current=client.request('inspect',{'edge_ids':[b['anchor_edge']]})
-    if current['status']!='ok' or current['result']['edges']!=[matches[0]['edge_snapshot']]:
-        raise LiveError('reconciliation_required','fixture anchor changed; outcome remains uncertain',rid)
+    observations=[]
+    if not resource_seed:
+        if len(matches)!=1:raise ValueError('original fixture anchor snapshot missing')
+        current=client.request('inspect',{'edge_ids':[b['anchor_edge']]})
+        if current['status']!='ok' or current['result']['edges']!=[matches[0]['edge_snapshot']]:
+            raise LiveError('reconciliation_required','fixture anchor changed; outcome remains uncertain',rid)
+        observations.append(current['request_id'])
     direction=b['end_direction'];norm=math.hypot(*direction)
     end=[b['end_xy'][i]+p['length']*direction[i]/norm for i in range(2)]
     # Existing fixture fitter checks finish XY within0.001, heading within0.1degree,
     # and both proposed endpoints inside its XYZ region;2units covers those errors.
     region={'min':[min(b['end_xy'][i],end[i])-2 for i in range(2)]+[b['region']['min'][2]],
             'max':[max(b['end_xy'][i],end[i])+2 for i in range(2)]+[b['region']['max'][2]]}
+    if resource_seed:
+        finish=end+[pos[2]+q['grade']*p['length']]
+        if any(not q['region']['min'][i]<=point[i]<=q['region']['max'][i] for point in (pos,finish) for i in range(3)):
+            raise ValueError('recorded resource fixture endpoints outside authorised region')
+        region=q['region']
     observed=discover(client,{'region':region,'max_edges':16});result=observed.get('result',{})
     if observed['status']!='ok' or result.get('complete') is not True or result.get('edge_count')!=0:
         raise LiveError('reconciliation_required','fixture footprint is incomplete or contains TRACK; retain pending outcome',rid)
+    if resource_seed and (observed.get('session')!=client.session or observed.get('operation')!='discover'
+                          or result.get('truncated') is not False or result.get('candidates') not in ([],{})):
+        raise LiveError('reconciliation_required','resource fixture footprint identity/absence unproven',rid)
+    observations.append(observed['request_id'])
     latest=json.loads(client.journal.read_text())
     if latest.get('pending')!=pending:raise LiveError('reconciliation_required','pending operation changed during observation',rid)
     record={'status':'reconciled_failed_fixture','original_pending':pending,'original_response':str(response_path.resolve()),
-        'observations':[current['request_id'],observed['request_id']],'region':region,
+        'observations':observations,'region':region,
         'intended_fixture_constructed':False,'other_effects':'unknown','effects_history_complete':False,
         'automatic_replay':False,'game_constructed':False}
+    if resource_seed:record.update(resource_seeded=True,native_mutation_guard='unchanged; normal save/load required before further mutation')
     path=client.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
     latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
     latest.pop('pending');atomic_json(client.journal,latest)
@@ -2158,6 +2197,64 @@ def reconcile_rejected_extension(client, discovery):
     latest.setdefault('reconciled_rejections',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
     latest.pop('pending');atomic_json(client.journal,latest)
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
+def reconcile_rejected_signal(client, request_id, prior_observation):
+    """Read-only proof of absent rejected addition; never replay the original command.
+
+    Supports the older client that omitted its pending record for this explicit
+    rejection. Never replays, changes the original receipt, or proves other effects.
+    """
+    state=json.loads(client.journal.read_text());pending=state.get('pending')
+    def evidence(rid,suffix):return json.loads((client.evidence/(rid+suffix)).read_text())
+    request=evidence(request_id,'.request.json');response=evidence(request_id,'.response.json')
+    p=request.get('params',{});value=response.get('result',{})
+    if (state.get('session')!=client.session or request.get('session')!=client.session
+            or request.get('request_id')!=request_id or request.get('operation')!='operating_control'
+            or p.get('action')!='signal_place' or p.get('execute') is not True or 'replace_signal_id' in p
+            or response.get('session')!=client.session or response.get('request_id')!=request_id
+            or response.get('operation')!='operating_control' or response.get('status')!='error'
+            or value.get('error')!='native_operating_command_rejected'
+            or value.get('native_command_success') is not False or value.get('operating_effects')!='unknown'
+            or pending and any(pending.get(k)!=request.get(k) for k in ('request_id','session','operation','params'))):
+        raise LiveError('reconciliation_required','exact explicitly rejected signal addition required',request_id)
+    previous_request=evidence(prior_observation,'.request.json');previous=evidence(prior_observation,'.response.json')
+    if (previous_request.get('session')!=client.session or previous_request.get('request_id')!=prior_observation
+            or previous_request.get('operation')!='operating_inspect'
+            or previous_request.get('params')!={'track_ids':[p['edge_id']]}
+            or previous_request.get('sequence')!=request.get('sequence',0)-2):
+        raise LiveError('reconciliation_required','exact immediately preceding target read required',request_id)
+    def track(r):
+        value=r.get('result',{}).get('tracks',{});rows=value.get('records',[])
+        if (r.get('session')!=client.session or r.get('operation')!='operating_inspect' or r.get('status')!='ok'
+                or value.get('truncated') is not False or value.get('count')!=1 or len(rows)!=1
+                or rows[0].get('id')!=p['edge_id']):
+            raise LiveError('reconciliation_required','complete exact target read required',request_id)
+        row=dict(rows[0]);objects=row.get('objects');objects=[] if objects=={} else objects
+        if not isinstance(objects,list) or len(objects)>16 or not all(k in row for k in ('node0','node1','revision')):
+            raise LiveError('reconciliation_required','complete bounded target objects/nodes/revision required',request_id)
+        row['objects']=objects;return row
+    if previous.get('request_id')!=prior_observation:
+        raise LiveError('reconciliation_required','original target read identity mismatch',request_id)
+    before=track(previous)
+    if before['revision']!=p.get('revision'):
+        raise LiveError('reconciliation_required','original target revision not established',request_id)
+    observed=client.request('operating_inspect',{'track_ids':[p['edge_id']],'limit':1});after=track(observed)
+    if after!=before:
+        raise LiveError('reconciliation_required','signal target changed; effects uncertain',request_id)
+    latest=json.loads(client.journal.read_text())
+    if latest.get('session')!=client.session or latest.get('pending')!=pending:
+        raise LiveError('reconciliation_required','pending changed during observation',request_id)
+    record={'status':'reconciled_rejected_signal','original_request':request,'original_pending':pending,
+            'prior_observation':prior_observation,'observation':observed['request_id'],'current_target':after,
+            'target_revision_nodes_objects_unchanged':True,'requested_signal_addition_absent':True,
+            'other_effects':'unknown','effects_history_complete':False,'automatic_replay':False,
+            'native_guard_reload_required':False}
+    path=client.evidence/(request_id+'.reconciliation.json');atomic_json(path,record)
+    latest.setdefault('reconciled_rejections',{})[request_id]={'evidence':str(path.resolve()),'automatic_replay':False}
+    if pending:latest.pop('pending')
+    atomic_json(client.journal,latest)
+    return {'status':'ok','result':record,'evidence':str(path.resolve())}
+
 
 def reconcile_rejected_vehicle_assignment(client):
     """Reconcile an explicitly rejected assignment only while the train remains in depot.
@@ -2586,7 +2683,7 @@ def reconcile_constructed_structured_junction(client):
     return {'status':'ok','result':record,'evidence':str(path.resolve())}
 
 
-def reconcile_constructed_interior(client, original_client=None):
+def reconcile_constructed_interior(client, original_client=None, *, acceptance_revision=None):
     """Read back exact reported split/branch identities, even after a normal load.
 
     An old client is only an evidence/journal reference; all native reads use the
@@ -2596,15 +2693,48 @@ def reconcile_constructed_interior(client, original_client=None):
     state=json.loads(old.journal.read_text());pending=state.get('pending')
     if not pending or pending['operation']!='interior_junction' or pending['params'].get('execute') is not True:
         raise LiveError('reconciliation_required','no pending constructed interior junction')
-    rid=pending['request_id'];original=json.loads((old.evidence/(rid+'.response.json')).read_text());v=original.get('result',{})
-    ids=v.get('returned_edges');fit=v.get('fit',{});params=pending['params']
+    rid=pending['request_id'];original_path=old.evidence/(rid+'.response.json');original=json.loads(original_path.read_text());v=original.get('result',{})
+    ids=v.get('returned_edges');fit=v.get('fit',{});params=pending['params'];files=[original_path]
+    pid=params.get('prepared_request')
+    if pid is not None:
+        if not isinstance(pid,str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,80}',pid):
+            raise LiveError('reconciliation_required','exact interior preparation unavailable',rid)
+        execution_path=old.evidence/(rid+'.request.json');prepared_path=old.evidence/(pid+'.request.json');ready_path=old.evidence/(pid+'.response.json')
+        execution=json.loads(execution_path.read_text());prepared=json.loads(prepared_path.read_text());ready=json.loads(ready_path.read_text())
+        ready_result=ready.get('result',{})
+        if (execution.get('params')!=pending['params'] or execution.get('session')!=old.session or execution.get('request_id')!=rid or execution.get('operation')!='interior_junction'
+                or prepared.get('session')!=old.session or prepared.get('request_id')!=pid or prepared.get('operation')!='interior_junction'
+                or ready.get('session')!=old.session or ready.get('request_id')!=pid or ready.get('operation')!='interior_junction' or ready.get('status')!='ok'
+                or ready_result.get('prepared_request')!=pid or ready_result.get('game_constructed') is not False
+                or ready_result.get('native_proposal_evaluated') is not True or ready_result.get('native_proposal_critical') is not False
+                or ready_result.get('fit',{}).get('controls')!=fit.get('controls') or ready_result.get('fit',{}).get('pieces')!=fit.get('pieces')):
+            raise LiveError('reconciliation_required','exact prepared interior evidence changed',rid)
+        params=prepared['params'];files.extend([execution_path,prepared_path,ready_path])
     if (original.get('session')!=old.session or original.get('request_id')!=rid or original.get('operation')!='interior_junction'
             or original.get('status')!='mutation_unverified' or v.get('game_constructed') is not True
             or not isinstance(ids,list) or len(ids)!=fit.get('pieces',-2)+2 or len(set(ids))!=len(ids)
             or any(type(i) is not int or i<=0 for i in ids) or not isinstance(fit.get('controls'),list)):
         raise LiveError('reconciliation_required','no exact reported split construction',rid)
-    observed=client.request('verify_interior',params|{'execute':False,'fit':fit,'edge_ids':ids,
-        'parameter':params['source']['parameter'],'through_before':None})
+    revision=None
+    if acceptance_revision is not None:
+        q=acceptance_revision;previous=params.get('max_route_length')
+        if state.get('session')!=old.session:
+            raise LiveError('reconciliation_required','original pending journal session changed',rid)
+        if (not isinstance(q,dict) or set(q)!={'original_request','max_route_length','reason','authority'} or q['original_request']!=rid
+                or type(previous) not in (int,float) or not math.isfinite(previous) or previous<=0
+                or type(q['max_route_length']) not in (int,float) or not math.isfinite(q['max_route_length']) or not previous<=q['max_route_length']<=8000
+                or any(not isinstance(q[k],str) or not q[k].strip() or len(q[k])>500 for k in ('reason','authority'))):
+            raise ValueError('explicit bounded interior route-readback acceptance revision required')
+        if pid is None:
+            execution_path=old.evidence/(rid+'.request.json');execution=json.loads(execution_path.read_text())
+            if execution.get('params')!=pending['params'] or execution.get('session')!=old.session or execution.get('request_id')!=rid or execution.get('operation')!='interior_junction':
+                raise LiveError('reconciliation_required','original interior execution evidence changed',rid)
+            files.append(execution_path)
+        revision=q.copy()|{'original_criteria':{'max_route_length':previous},'revised_criteria':{'max_route_length':q['max_route_length']}}
+    query=params|{'execute':False,'fit':fit,'edge_ids':ids,'parameter':params['source']['parameter'],'through_before':None}
+    if revision:query['max_route_length']=revision['max_route_length']
+    session=client.session
+    observed=client.request('verify_interior',query)
     result=observed.get('result',{})
     rb=result.get('readback',{});placement=result.get('placement',{});j=result.get('junction',{})
     if (observed['status']!='ok' or result.get('reconciled_current_state') is not True
@@ -2615,6 +2745,8 @@ def reconcile_constructed_interior(client, original_client=None):
             or result.get('through_after',{}).get('requested_route_verified') is not True
             or result.get('branch_after',{}).get('requested_route_verified') is not True):
         raise LiveError('reconciliation_required',result.get('error','realised junction not verified'),rid)
+    if revision and (observed.get('session')!=session or observed.get('operation')!='verify_interior' or client.session!=session):
+        raise LiveError('reconciliation_required','revised readback lacks current native verification',rid)
     if params.get('target') is None:
         free=result.get('free_end',{})
         if (not rb.get('ordered_nodes') or free.get('exact_native_identity') is not True
@@ -2627,6 +2759,10 @@ def reconcile_constructed_interior(client, original_client=None):
     record={'status':'reconciled_verified_interior','original_pending':pending,'original_response':str((old.evidence/(rid+'.response.json')).resolve()),
             'observation':observed['request_id'],'current_session':client.session,'verified':result,
             'native_effect_history_complete':False,'automatic_replay':False,'train_traversal':'unprobed'}
+    if revision:
+        record.update(acceptance_revision=revision,verification_params=query,
+                      source_files_sha256={str(p.resolve()):hashlib.sha256(p.read_bytes()).hexdigest() for p in files},
+                      native_guard_cleared=False,next_mutation_requires_normal_save_load=True)
     path=old.evidence/(rid+'.reconciliation.json');atomic_json(path,record)
     latest.setdefault('reconciled_constructions',{})[rid]={'evidence':str(path.resolve()),'automatic_replay':False}
     latest.pop('pending');atomic_json(old.journal,latest)
@@ -2821,6 +2957,25 @@ def reconcile_constructed_connection(client, discoveries, edge_ids):
     latest.pop('pending');atomic_json(client.journal,latest)
     return {'status':'ok','result':record,'evidence':str(evidence.resolve())}
 
+def signal_offset_parameters(edge, parameter, forward, offsets):
+    """Bounded metre offsets on the same BASE_EDGE cubic, in travel direction."""
+    def point(u):
+        b=(2*u**3-3*u*u+1,u**3-2*u*u+u,-2*u**3+3*u*u,u**3-u*u)
+        return [sum(b[j]*edge[k][i] for j,k in enumerate(('p0','t0','p1','t1'))) for i in range(3)]
+    points=[point(i/512) for i in range(513)];lengths=[0.]
+    for a,b in zip(points,points[1:]):lengths.append(lengths[-1]+math.dist(a,b))
+    index=min(511,int(parameter*512));nominal=lengths[index]+(parameter*512-index)*(lengths[index+1]-lengths[index])
+    out=[]
+    for offset in offsets:
+        target=nominal+offset*(1 if forward else -1)
+        if not 0<target<lengths[-1]:continue
+        for i in range(512):
+            if lengths[i]<=target<=lengths[i+1] and lengths[i+1]>lengths[i]:
+                u=(i+(target-lengths[i])/(lengths[i+1]-lengths[i]))/512
+                out.append((offset,u));break
+    return out
+
+
 def place_signal(client, brief, *, execute=False):
     """Place a signal for node0->node1 travel when forward=True.
 
@@ -2830,12 +2985,19 @@ def place_signal(client, brief, *, execute=False):
     Fresh native template discovery and explicit placement; no replay on failure.
     """
     keys = {'edge_id', 'parameter', 'forward', 'one_way'}
-    if type(brief) is not dict or set(brief)-{'replace_signal_id'} != keys or type(execute) is not bool:
+    if type(brief) is not dict or set(brief)-{'replace_signal_id','seed_id','fit_offsets_m'} != keys or type(execute) is not bool:
         raise ValueError('signal requires edge_id, parameter, forward, one_way and boolean execute')
+    offsets=brief.get('fit_offsets_m')
+    if offsets is not None and (not isinstance(offsets,list) or not 1<=len(offsets)<=8 or
+            any(type(x) not in (int,float) or not math.isfinite(x) or not 0<abs(x)<=20 for x in offsets) or
+            len(set(offsets))!=len(offsets) or 'replace_signal_id' in brief):
+        raise ValueError('signal fitting needs1..8 distinct finite nonzero offsets within20m; replacement attachment remains exact')
     if type(brief['edge_id']) is not int or brief['edge_id'] <= 0:
         raise ValueError('signal edge_id must be an exact positive native ID')
     if 'replace_signal_id' in brief and (type(brief['replace_signal_id']) is not int or brief['replace_signal_id']<=0):
         raise ValueError('replacement requires exact positive signal ID')
+    if 'seed_id' in brief and (type(brief['seed_id']) is not int or brief['seed_id']<=0):
+        raise ValueError('seed_id requires an exact positive native signal ID')
     if (type(brief['parameter']) not in (int, float) or not math.isfinite(brief['parameter'])
             or not 0 < brief['parameter'] < 1
             or any(type(brief[k]) is not bool for k in ('forward', 'one_way'))):
@@ -2846,7 +3008,7 @@ def place_signal(client, brief, *, execute=False):
     rows = observed.get('result', {}).get('tracks', {}).get('records', [])
     if len(rows) != 1 or rows[0]['id'] != brief['edge_id']:
         raise LiveError('reconciliation_required', 'exact signal target observation unavailable')
-    params = dict(brief, revision=rows[0]['revision'])
+    params = dict(brief, revision=rows[0]['revision']);params.pop('fit_offsets_m',None)
     if 'replace_signal_id' in brief:
         ident=brief['replace_signal_id']
         matching=[x for x in rows[0]['objects'] if x['id']==ident and isinstance(x.get('signal'),dict)
@@ -2854,11 +3016,42 @@ def place_signal(client, brief, *, execute=False):
         if len(matching)!=1:raise LiveError('reconciliation_required','replacement signal not at exact requested attachment')
         params['replace_signal_revision']=matching[0]['revision']
     prepared = client.request('operating_inspect', {'signal_placement': params})
-    if prepared['status'] != 'ok' or not execute:
+    if prepared['status'] != 'ok':
         return prepared
+    placement=prepared.get('result',{}).get('signal_placement',{})
+    attempts=[]
+    if offsets is not None:
+        if placement.get('native_proposal_evaluated') is not True:
+            raise LiveError('signal_preflight_unavailable','bounded signal fitting requires native proposal evaluation')
+        attempts.append({'offset_m':0,'parameter':params['parameter'],'accepted':placement.get('accepted') is True,'request_id':prepared['request_id']})
+        if placement.get('accepted') is not True:
+            geometry=client.request('inspect',{'edge_ids':[brief['edge_id']]})
+            edges=geometry.get('result',{}).get('edges',[])
+            if geometry['status']!='ok' or len(edges)!=1 or edges[0]['id']!=brief['edge_id'] or any(edges[0][k]!=rows[0][k] for k in ('node0','node1')):
+                raise LiveError('reconciliation_required','exact same-edge geometry unavailable for signal fitting')
+            for offset,u in signal_offset_parameters(edges[0],brief['parameter'],brief['forward'],offsets):
+                params['parameter']=u
+                prepared=client.request('operating_inspect',{'signal_placement':params})
+                if prepared['status']!='ok':return prepared
+                placement=prepared.get('result',{}).get('signal_placement',{})
+                if placement.get('native_proposal_evaluated') is not True:
+                    raise LiveError('signal_preflight_unavailable','signal candidate lacks native proposal evaluation')
+                attempts.append({'offset_m':offset,'parameter':u,'accepted':placement.get('accepted') is True,'request_id':prepared['request_id']})
+                if placement.get('accepted') is True:break
+        report={'attempts':attempts,'selected_offset_m':attempts[-1]['offset_m'] if placement.get('accepted') is True else None,
+                'selected_parameter':params['parameter'] if placement.get('accepted') is True else None,
+                'same_edge_only':True,'sampled_arc_length':True,'global_boundary_proven':False}
+        prepared=prepared|{'result':prepared['result']|{'signal_fit':report}}
+    if not execute:return prepared
+    if placement.get('native_proposal_evaluated') is True and placement.get('accepted') is not True:
+        return prepared|{'status':'error','result':prepared['result']|{
+            'error':'native_signal_proposal_rejected','game_constructed':False,'native_operating_state_changed':False}}
     seed = prepared['result']['signal_placement']['seed']
+    if 'seed_id' in brief and seed['id'] != brief['seed_id']:
+        raise LiveError('reconciliation_required', 'prepared signal template differs from explicit seed')
     params = dict(params, seed_id=seed['id'], seed_revision=seed['revision'], action='signal_place', execute=True)
-    return client.request('operating_control', params)
+    response=client.request('operating_control', params)
+    return response|{'result':response.get('result',{})|{'signal_fit':report}} if offsets is not None else response
 
 
 def place_depot(client, brief, *, execute=False):
@@ -3249,7 +3442,8 @@ class LiveClient:
                             state['pending'] = unresolved
                         elif response['status'] == 'mutation_unverified' or (
                                 is_mutation(operation, params)
-                                and response.get('result', {}).get('game_constructed') == 'unknown'):
+                                and (response.get('result', {}).get('game_constructed') == 'unknown'
+                                     or response.get('result', {}).get('operating_effects') == 'unknown')):
                             state['pending']['outcome'] = 'mutation_unverified'
                         else:
                             state.pop('pending')
@@ -3417,7 +3611,8 @@ class LiveClient:
                 atomic_json(self.evidence / (pending['request_id'] + '.response.json'), response)
                 uncertain = response['status'] == 'mutation_unverified' or (
                     is_mutation(pending['operation'], pending['params'])
-                    and response.get('result', {}).get('game_constructed') == 'unknown')
+                    and (response.get('result', {}).get('game_constructed') == 'unknown'
+                         or response.get('result', {}).get('operating_effects') == 'unknown'))
                 if not uncertain:
                     previous=pending.get('unresolved_mutation') or pending.get('unresolved_read')
                     if previous:state['pending']=previous
@@ -3637,8 +3832,8 @@ def main(argv=None):
             if not args.discovery:raise ValueError('connect-selected requires --discovery')
             response = connect_selected(client,json.loads(args.discovery.read_text(encoding='utf-8-sig')),params)
         elif args.operation == 'reconcile-fixture':
-            if params!={} or not args.discovery:raise ValueError('reconcile-fixture needs empty params and --discovery')
-            response=reconcile_rejected_fixture(client,json.loads(args.discovery.read_text(encoding='utf-8-sig')))
+            if params!={}:raise ValueError('reconcile-fixture needs empty params')
+            response=reconcile_rejected_fixture(client,json.loads(args.discovery.read_text(encoding='utf-8-sig')) if args.discovery else None)
         else:
             response = client.request(args.operation, params)
     except (OSError, ValueError, LiveError, KeyError, TypeError) as exc:

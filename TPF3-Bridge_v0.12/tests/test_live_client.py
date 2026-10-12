@@ -136,6 +136,43 @@ class DepotPlacementTests(unittest.TestCase):
             self.assertEqual(client.request.call_count,1)
 
 class SignalPlacementTests(unittest.TestCase):
+    def test_native_proposal_rejection_never_submits_operating_command(self):
+        from bridge_live import place_signal
+        from unittest.mock import Mock
+        brief={'edge_id':42,'parameter':.015,'forward':False,'one_way':True}
+        observed={'status':'ok','result':{'tracks':{'records':[{'id':42,'revision':[1,2,3]}]}}}
+        prepared={'status':'ok','request_id':'preview','result':{'signal_placement':{
+            'native_proposal_evaluated':True,'accepted':False,'evaluation':{'messages':['Collision']}}}}
+        client=Mock();client.request.side_effect=[observed,prepared]
+        result=place_signal(client,brief,execute=True)
+        self.assertEqual(result['status'],'error');self.assertEqual(result['result']['error'],'native_signal_proposal_rejected')
+        self.assertFalse(result['result']['game_constructed']);self.assertEqual(client.request.call_count,2)
+        self.assertEqual(prepared['status'],'ok')
+
+    def test_explicit_seed_is_prepared_directly_and_preserved_for_build(self):
+        from bridge_live import place_signal
+        from unittest.mock import Mock
+        brief={'edge_id':42,'parameter':.4,'forward':False,'one_way':True,'seed_id':99}
+        read={'status':'ok','result':{'tracks':{'records':[{'id':42,'revision':[1,2,3]}]}}}
+        prepared={'status':'ok','result':{'signal_placement':{'seed':{'id':99,'revision':[6,7,8]}}}}
+        client=Mock();client.request.side_effect=[read,prepared,{'status':'ok'}]
+        self.assertEqual(place_signal(client,brief,execute=True)['status'],'ok')
+        self.assertEqual(client.request.call_args_list[1].args[1]['signal_placement']['seed_id'],99)
+        self.assertEqual(client.request.call_args_list[2].args[1]['seed_revision'],[6,7,8])
+        prepared['result']['signal_placement']['seed']['id']=100
+        client=Mock();client.request.side_effect=[read,prepared]
+        with self.assertRaisesRegex(LiveError,'differs from explicit seed'):place_signal(client,brief,execute=True)
+        self.assertEqual(client.request.call_count,2)
+
+    def test_invalid_explicit_seed_never_queries(self):
+        from bridge_live import place_signal
+        from unittest.mock import Mock
+        for seed in (True,0,-1,'99'):
+            client=Mock()
+            with self.subTest(seed=seed),self.assertRaises(ValueError):
+                place_signal(client,{'edge_id':42,'parameter':.4,'forward':True,'one_way':True,'seed_id':seed},execute=True)
+            client.request.assert_not_called()
+
     def test_public_travel_direction_survives_unrelated_seed_orientation(self):
         from bridge_live import place_signal
         from unittest.mock import Mock
@@ -586,6 +623,28 @@ class LiveClientTests(unittest.TestCase):
     def engineering_readback(self,radius=100):
         return {'engineering_checks_verified':True,'requested_min_radius':radius,'min_sampled_radius':radius+1,'max_sampled_grade':0}
 
+    def test_movement_speed_inspection_preserves_native_identity_and_unknown_units(self):
+        speeds={'units':'unknown_native_units','available':True,'complete':True,'truncated':False,
+                'rows':[{'network_entity':10,'movement_index':2,'entity_kind':'node',
+                         'speedLimit':30,'curveSpeedLimit':12}]}
+        result={'edges':[],'entities':[{'entity':10,'movement_speeds':speeds}],'game_constructed':False}
+        errors=[]
+        def worker():
+            try:
+                slot=self.client.mod/'content/scripts/pif_live/test_session/000001.lua'
+                deadline=time.monotonic()+1
+                while not slot.exists() and time.monotonic()<deadline:time.sleep(.005)
+                self.assertIn('movement_speeds',slot.read_text())
+                with self.log.open('a') as stream:
+                    stream.write(MARKER+json.dumps(self.response('speeds','inspect',result=result))+'\n')
+            except Exception as exc:errors.append(exc)
+        thread=threading.Thread(target=worker);thread.start()
+        observed=self.client.request('inspect',{'edge_ids':[],'entity_ids':[10],'movement_speeds':True},request_id='speeds')
+        thread.join()
+        self.assertEqual(errors,[])
+        self.assertEqual(observed['result'],result)
+        self.assertIsNone(json.loads(self.client.journal.read_text()).get('pending'))
+
     def test_data_literals_cannot_escape_strings(self):
         data = lua_literal({'x': '";os.execute("evil")--\n£', 'a': [True, 3.5]})
         self.assertIn('\\034;os.execute(\\034evil\\034)', data)
@@ -705,6 +764,18 @@ class LiveClientTests(unittest.TestCase):
             self.client.request('connection', {'execute': True, 'brief': {}}, request_id='again')
         self.assertEqual(ctx.exception.status, 'reconciliation_required')
         self.assertEqual(len(list(self.client.mod.rglob('*.lua'))), 1)
+
+    def test_late_explicit_operating_rejection_retains_unknown_effects(self):
+        self.client.timeout=.02
+        params={'action':'signal_place','execute':True}
+        with self.assertRaises(LiveError):self.client.request('operating_control',params,request_id='late_signal')
+        response=self.response('late_signal','operating_control',result={
+            'game_constructed':False,'native_command_success':False,'operating_effects':'unknown'})
+        response['status']='error'
+        with self.log.open('a') as stream:stream.write(MARKER+json.dumps(response)+'\n')
+        self.client.reconcile_pending()
+        self.assertEqual(json.loads(self.client.journal.read_text())['pending']['request_id'],'late_signal')
+        with self.assertRaises(LiveError):self.client.request('operating_control',params,request_id='replay')
 
     def test_finite_timeout_and_single_worker(self):
         with self.assertRaises(ValueError):
@@ -1639,6 +1710,70 @@ class LiveClientTests(unittest.TestCase):
                 else:
                     with self.assertRaises(LiveError):reconcile_rejected_fixture(self.client,record)
                     self.assertEqual(json.loads(self.client.journal.read_text())['pending'],pending)
+
+    def resource_fixture_pending(self):
+        pending=self.fixture_pending()
+        pending.update(version=1,session='test_session',sequence=1)
+        pending['params']={'authorised':True,'length':30,'fixture':{
+            'position':[100,100,2.35],'travel_direction':[1,0],'grade':0,
+            'region':{'min':[97,97,-.65],'max':[133,103,5.35]},
+            'template':'::/track.template','style':'::/track.style'}}
+        self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending}))
+        (self.client.evidence/'failed_fixture.request.json').write_text(json.dumps(pending))
+        path=self.client.evidence/'failed_fixture.response.json';response=json.loads(path.read_text())
+        response['result']['retry']=False;path.write_text(json.dumps(response))
+        return pending
+
+    def test_resource_fixture_reconciliation_needs_exact_request_and_finite_native_seed(self):
+        for defect in ('request','session','resource','length','position','grade','region','finish'):
+            pending=self.resource_fixture_pending();p=pending['params'];q=p['fixture']
+            if defect=='session':pending['session']='old'
+            elif defect=='resource':q['template']=''
+            elif defect=='length':p['length']=61
+            elif defect=='position':q['position'][2]=float('nan')
+            elif defect=='grade':q['grade']=.05
+            elif defect=='region':q['region']['max'][1]=300
+            elif defect=='finish':q['region']['max'][0]=120
+            else:p['length']=20
+            self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending}))
+            if defect!='request':(self.client.evidence/'failed_fixture.request.json').write_text(json.dumps(pending))
+            before=self.client.journal.read_bytes()
+            with patch.object(self.client,'request') as calls:
+                with self.assertRaises((ValueError,LiveError)):reconcile_rejected_fixture(self.client)
+                calls.assert_not_called()
+            self.assertEqual(self.client.journal.read_bytes(),before)
+
+    def test_resource_fixture_reconciliation_reads_only_complete_empty_footprint(self):
+        for defect in ('none','truncated','track','session','candidates','pending_changed'):
+            pending=self.resource_fixture_pending()
+            def query(op,params):
+                self.assertEqual(op,'discover');self.assertEqual(params['region'],pending['params']['fixture']['region'])
+                if defect=='pending_changed':self.client.journal.write_text(json.dumps({'session':'test_session','pending':pending|{'request_id':'other'}}))
+                response=self.response('footprint',op,result={'complete':True,'truncated':defect=='truncated',
+                    'edge_count':1 if defect=='track' else 0,'candidates':[{'edge_id':3}] if defect=='candidates' else []})
+                if defect=='session':response['session']='old'
+                return response
+            with patch.object(self.client,'request',side_effect=query) as calls:
+                if defect=='none':
+                    record=reconcile_rejected_fixture(self.client)['result']
+                    self.assertEqual(record['other_effects'],'unknown');self.assertIs(record['automatic_replay'],False)
+                    self.assertIs(record['resource_seeded'],True);self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+                    with self.assertRaises(LiveError):reconcile_rejected_fixture(self.client)
+                else:
+                    with self.assertRaises(LiveError):reconcile_rejected_fixture(self.client)
+                    self.assertIn('pending',json.loads(self.client.journal.read_text()))
+                self.assertEqual(calls.call_count,1)
+
+    def test_resource_fixture_reconciliation_preserves_pending_on_wrong_error_evidence(self):
+        for key,value in [('operation','connection'),('session','old'),('error','other rejection'),('retry',True)]:
+            self.resource_fixture_pending();path=self.client.evidence/'failed_fixture.response.json';response=json.loads(path.read_text())
+            if key in ('error','retry'):response['result'][key]=value
+            else:response[key]=value
+            path.write_text(json.dumps(response));before=self.client.journal.read_bytes()
+            with patch.object(self.client,'request') as calls:
+                with self.assertRaises(LiveError):reconcile_rejected_fixture(self.client)
+                calls.assert_not_called()
+            self.assertEqual(self.client.journal.read_bytes(),before)
 
     def rejected_connection_pending(self):
         pending={'request_id':'rejected_connection','operation':'connection',
@@ -6007,6 +6142,62 @@ class StationRejectionReconciliationTests(unittest.TestCase):
             with self.subTest(defect=defect),patch.object(self.client,'request',return_value=observed),self.assertRaises((LiveError,ValueError)):
                 reconcile_rejected_connection(self.client,d)
             self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.pending)
+
+
+class RejectedSignalReconciliationTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        self.client=LiveClient(Path(self.tmp.name)/'mod',Path(self.tmp.name)/'stdout',Path(self.tmp.name)/'evidence','current')
+        self.client.evidence.mkdir(parents=True,exist_ok=True)
+        self.request={'request_id':'failed','session':'current','sequence':3,'operation':'operating_control',
+                      'params':{'action':'signal_place','execute':True,'edge_id':7,'revision':[1,2,3]}}
+        self.response={'session':'current','operation':'operating_control','request_id':'failed','status':'error',
+                       'result':{'error':'native_operating_command_rejected','native_command_success':False,'operating_effects':'unknown'}}
+        self.previous_request={'request_id':'prior','session':'current','sequence':1,'operation':'operating_inspect','params':{'track_ids':[7]}}
+        self.observed={'status':'ok','session':'current','operation':'operating_inspect','request_id':'read',
+                       'result':{'tracks':{'count':1,'truncated':False,'records':[{'id':7,'node0':8,'node1':9,'revision':[1,2,3],'objects':{}}]}}}
+        self.persist()
+
+    def persist(self,pending=True):
+        self.client.journal.write_text(json.dumps({'session':'current',**({'pending':self.request} if pending else {})}))
+        for rid,request,response in [('failed',self.request,self.response),('prior',self.previous_request,self.observed|{'request_id':'prior'})]:
+            (self.client.evidence/(rid+'.request.json')).write_text(json.dumps(request))
+            (self.client.evidence/(rid+'.response.json')).write_text(json.dumps(response))
+
+    def test_exact_unchanged_target_records_absence_without_replay(self):
+        from bridge_live import reconcile_rejected_signal
+        for pending in (True,False):
+            self.persist(pending);before=(self.client.evidence/'failed.response.json').read_bytes()
+            with patch.object(self.client,'request',return_value=self.observed) as native:
+                result=reconcile_rejected_signal(self.client,'failed','prior')['result']
+            native.assert_called_once_with('operating_inspect',{'track_ids':[7],'limit':1})
+            self.assertTrue(result['requested_signal_addition_absent']);self.assertFalse(result['native_guard_reload_required'])
+            self.assertFalse(result['automatic_replay']);self.assertEqual(result['other_effects'],'unknown')
+            self.assertEqual(before,(self.client.evidence/'failed.response.json').read_bytes())
+            self.assertNotIn('pending',json.loads(self.client.journal.read_text()))
+
+    def test_changed_nodes_revision_objects_session_or_incomplete_read_never_clears(self):
+        from bridge_live import reconcile_rejected_signal
+        for defect in ('node0','revision','objects','session','truncated'):
+            self.persist();observed=copy.deepcopy(self.observed);row=observed['result']['tracks']['records'][0]
+            if defect=='session':observed['session']='old'
+            elif defect=='truncated':observed['result']['tracks']['truncated']=True
+            else:row[defect]={'node0':99,'revision':[1,2,4],'objects':[{'id':10}]}[defect]
+            with self.subTest(defect=defect),patch.object(self.client,'request',return_value=observed),self.assertRaises(LiveError):
+                reconcile_rejected_signal(self.client,'failed','prior')
+            self.assertEqual(json.loads(self.client.journal.read_text())['pending'],self.request)
+
+    def test_unconfirmed_failure_or_wrong_prior_never_reads(self):
+        from bridge_live import reconcile_rejected_signal
+        for defect in ('success','prior'):
+            self.response['result']['native_command_success']=False
+            self.previous_request['sequence']=1
+            if defect=='success':self.response['result']['native_command_success']=True
+            else:self.previous_request['sequence']=2
+            self.persist()
+            with patch.object(self.client,'request') as native,self.assertRaises(LiveError):
+                reconcile_rejected_signal(self.client,'failed','prior')
+            native.assert_not_called()
 
 
 class RejectedAssignmentReconciliationTests(unittest.TestCase):

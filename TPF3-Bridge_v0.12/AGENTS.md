@@ -13,8 +13,8 @@ otherwise. Human standing authority covers in-scope work, disposable game maps/s
 normal construction/demolition/terrain/simulation/save/load and coordinator communication.
 Routine steps need no repeated project approval. External tool rules remain binding;
 report denials without bypassing them. Local milestone commits follow standing user
-authority; remote publication requires explicit user authority. This cleanup requires no
-native actions or automatic continuation.
+authority; remote publication requires explicit user authority. Native work follows the current user brief; cleanup alone does not authorise
+new construction or automatic continuation.
 
 ## Design and runtime
 For railway planning or material layout changes, read railway-design/SKILL.md and

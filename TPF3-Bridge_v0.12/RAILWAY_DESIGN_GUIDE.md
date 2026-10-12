@@ -23,7 +23,36 @@ movement need not have a separate physical arm. Small fitting adjustments can pr
 the plan. Changed crossing order, extra levels, outward loops or displaced neighbours
 require whole-layout reconsideration before dependent construction.
 
+## Terrain-led corridor alignment
+
+For the target-map rehearsal, station/city sites belong on suitable flat land.
+Treat the high-level atlas as a service/topology brief, not fixed geography or a
+universal elevation datum. Use user-placed guide tracks to identify natural passes
+and useful levels. Compare modest horizontal deviations and selective cuttings with
+repeated climbs or long structures; keep a coherent gentle mainline profile rather
+than following every terrain undulation. Short terrain tunnels and deliberate
+local earthworks are legitimate options. Do not assume an available numeric terrain API.
+
+A longer shared approach can preserve more useful city land. At Mid-West, carry the
+independent Cross pair beside the main throat through the cutting, then diverge
+roughly 1 km away towards the short terrain tunnel. This is a site-specific user
+alignment; crossing, ramp and regional-junction positions must be planned around the
+whole family and actual terrain without compromising required service separation.
+
 ## Connection-led geometry
+
+Aim for a satisfactory native realisation of the design, not exact reproduction.
+Keep track roles, route order and intended corridor fixed; allow ordinary fitting
+to slide junctions and adjust curve transitions within the available space.
+Automate nearby proposal trials and accept the first coherent fit. Do not spend
+model turns reconstructing equivalent geometry, discovering an exact optimum or
+removing harmless native deviations. A rejected coordinate is not a failed design.
+For a constrained turnout, a useful first search moves back along the approach
+from the preferred point until the native proposal is acceptable. Express that
+direction in the route's travel frame, then map it to the chain's orientation.
+The manual tool may highlight an entire conflicting section; this does not locate
+the precise collision or prove the whole section unusable. Local proposal trials
+can find a usable point without diagnosing the engine's exact collision boundary.
 
 Specify attachment points/regions, directions, corridors and neighbouring sweeps.
 Treat radius and gradient as feedback/preferences unless explicitly required or
@@ -39,6 +68,44 @@ where useful, then diverge where space opens. Claim constant spacing only when t
 actual geometry supports it; whole-route parallelism is not compulsory.
 
 ## Fans and crossovers
+
+With staggered platform mouths, check the projecting neighbouring platform footprint,
+not just exposed rail ends. Complete a fast road's lateral shift before entering
+that footprint; the justified final straight may extend beyond its 30 m platform lead.
+Coordinate neighbouring fans from a packed throat so an intermediate curve does not
+cross another family's platform, lead or controlling parent.
+Avoid long straight bank extensions and short gathering bends merely to create
+construction anchors. Use continuous whole-family sweeps and keep the shared
+corridor narrow until divergence towards the station is functionally needed.
+Temporary construction stubs and straight anchors are staging devices, not final
+design constraints. Review curvature across the whole approach; avoid concentrating
+turning at artificial section boundaries. Retain a staging straight only where it
+serves the final arrangement. Check signed curvature and heading within each realised cubic,
+not just at its endpoints: matching guide headings can conceal interior reversals
+and sign-changing curvature jumps. Derive guide positions and tangents together
+from the intended whole sweep; review residual joins after native cubic conversion.
+Approximately 5 m-spaced centreline geometry does not prove native parallel-strip
+membership. Inspect shared range coverage when a joined ballast/terrain strip matters.
+Building a straight tail separately with native `adjacent` offset can establish that
+membership while preserving its existing branch curve and platform lead.
+A short parallel continuation into the curved fan is also acceptable when the
+native tool fits it smoothly. Do not force divergence at the straight/curve boundary;
+fit the remaining turnout to the realised paired lead and check the complete route.
+Manual preview reach is evidence of a candidate, not committed geometry or proof
+that the remaining junction will fit.
+Check fast, slow and independent pairs as one arrangement, including their root
+stubs and receiving space; an accepted first family does not qualify its neighbours.
+
+Beside a height-changing neighbour, use fewer envelope controls and delay rejoining
+until clear of its ramp. A few extra metres locally can resolve observed terrain
+clipping; derive the margin from the actual site, not a universal track-gap rule.
+An accepted native proposal can still leave a lower track visually clipping the
+terrain of a neighbouring incline. Allow a few additional game units of lateral
+clearance where needed, and inspect the rendered ramp together with the lower
+route. This is a visual quality check, not evidence of failed connectivity.
+For a flying branch junction, assess the approach, flat crossing deck and exit as
+one continuous alignment: a shallow deck angle alone does not qualify a tight
+turn into the deck or an abrupt curve-to-straight transition.
 
 Build controlling, constrained routes first, often outer fan boundaries. Platform
 numbering is not build order. At the end of the straight approach, establish bounding
@@ -58,6 +125,13 @@ as a group. Compatible neighbouring-strip crossovers may overlap longitudinally;
 turnouts sharing a rail require coordinated placement. Follow each required route in
 travel order to avoid unintended reversal. Omit pointwork without a required purpose.
 No universal minimum split angle, radius or turnout gap has been established.
+
+Challenge04 supplies useful continuous parent/branch shapes, but its long fast fans,
+short slow crossovers and extra fast-to-slow throat gap remain unresolved. Transfer
+the topology, then tighten fan extent, lengthen crossover sweeps and pack the roads
+around the fast alignment. A balanced three-bay slow fan on each road can reduce
+spread if coordinated crossovers retain every required arrival/departure route.
+Reference acceptance does not establish the desired speed balance or dimensions.
 
 ## Grade separation and construction order
 
@@ -107,7 +181,16 @@ normal guideline, adjusted around pointwork and native eligibility. Short waits 
 queues are normal; they do not alone justify a bridge investigation or capacity study.
 
 Native signal placement needs an existing signal as a technical template. Discover
-one instead of assuming an unsupported creation representation. Inspect passenger
+one instead of assuming an unsupported creation representation. Use native proposal
+preflight and finite nearby offsets on the same eligible edge when a nominal
+attachment is rejected; keep the signal before its intended decision/merge and
+submit only the first accepted candidate. A known unsubmitted preview needs no
+mutation reconciliation. Retain accepted prefixes and ordinary block phase.
+Signals can split a physical track into native transport submovements. Directed
+route queries must select the unique movement at the physical endpoint and check
+the complete path. Native IDs can be recycled: follow replacement lineage using
+ID plus endpoint identities, then refresh the current binding.
+Inspect passenger
 loading configuration and native service warnings; movement alone does not prove a
 useful passenger service. Alternative-platform reachability and observed choice
 under contention are separate claims.
@@ -126,9 +209,17 @@ The demonstration is accepted; apply refinements to future builds.
   bowing and curve/straight/return sequences from separately fitted pieces.
 - Retain approximately 30 m of straight parallel platform lead before the fans.
   Slow fans may be shorter/tighter. Aim for throat crossovers no slower than the
-  slowest relevant fan, using native speed feedback. The user's 35–40 versus
-  75–80 mph impressions were estimates. Comparing 120 m fans with a 120 m throat
-  is a useful experiment, not a fixed recipe.
+  slowest relevant fan, using native speed feedback. The latest user review finds
+  the current fans' roughly55–60mph appropriate and prefers roughly80m crossovers
+  targeting75–80mph over Challenge04's roughly40m/35–40mph examples. These are
+  user-reported observations/targets, not bridge-measured speeds or a linear
+  length-to-speed rule. The120m crossover revision overcompensated.
+  Balance speed against the distance from the final platform-decision signal and
+  clearance time for departures. Keep the crossover group close to the fan where
+  native turnout geometry permits. MW's successful80m fan-to-crossover gap was
+  one accepted fit, not an established minimum; try a closer whole-group layout
+  before carrying that gap into another hub. Preserve opposite turnout separation
+  and required arrival/departure choices while finding this balance.
 - Include ordinary open-line blocks as well as station decision signals. A few
   demonstration trains do not establish adequate real-network capacity.
 

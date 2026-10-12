@@ -8,7 +8,7 @@ from unittest.mock import patch
 from bridge_live import LiveError
 from bridge_interfaces import InterfaceRegistry, diagnose
 from bridge_operator_tasks import perform, references
-from bridge_operator import Operator, validate_plan, cubic, native_failure, inspect_edges, fresh_binding, discover_region, chain_point, crossing_observations, render_profile, replacement_boundary, check_plain_coalescing
+from bridge_operator import Operator, validate_plan, cubic, native_failure, inspect_edges, fresh_binding, discover_region, chain_point, crossing_observations, render_profile, replacement_boundary, check_plain_coalescing, signal_chain_locations
 from tools.operator_mcp_client import semantic_result, compact_stdout
 
 
@@ -31,6 +31,19 @@ class FakeClient:
 
 
 class OperatorTest(unittest.TestCase):
+    def test_local_guide_limit_rejected_before_native_discovery(self):
+        for kind in ('branch','crossover'):
+            with self.subTest(kind=kind),tempfile.TemporaryDirectory() as td:
+                p=fixture();p['ports']['b']={'position':[60,5,0],'direction':[-1,0]}
+                guides=[{'position':[x,0,0],'travel_direction':[1,0],'grade':0} for x in (20,30,40)]
+                p['steps']=[{'name':'junction','kind':kind,'source':'a','target':'b','guides':guides}]
+                client=FakeClient();operator=Operator(runs=td,client=client)
+                with self.assertRaisesRegex(ValueError,'at most two local shape guides'):
+                    operator.plan(p)
+                self.assertEqual(client.calls,[])
+                p['steps'][0]['guides']=guides[:2]
+                validate_plan(p)
+
     def station_exit_fixture(self):
         v,c,roles,request=self.role_fixture()
         v['ports']={}
@@ -392,6 +405,126 @@ class OperatorTest(unittest.TestCase):
             state=json.loads((o.path(run)/'state.json').read_text());self.assertEqual(state['steps']['one']['edges'][0]['id'],2)
             self.assertEqual(state['lineage'][0]['original_edge'],1);self.assertEqual(state['lineage'][0]['replacement_edges'],[2])
 
+    def test_signal_chain_curved_distance_and_reverse_direction(self):
+        import math
+        edge=self.native_edge();edge.update(p1=[300,300,2],t0=[600,0,0],t1=[0,600,0])
+        locations,length=signal_chain_locations([edge],True,100,50,50,8)
+        dense=[cubic(edge,j/10000)[0] for j in range(10001)]
+        measured=sum(math.dist(a,b) for a,b in zip(dense,dense[1:]))
+        self.assertAlmostEqual(length,measured,delta=.02)
+        self.assertEqual(len(locations),4)
+        for location in locations:
+            n=2000;u=location['parameter'];points=[cubic(edge,u*j/n)[0] for j in range(n+1)]
+            self.assertAlmostEqual(sum(math.dist(a,b) for a,b in zip(points,points[1:])),location['distance'],delta=.03)
+        reverse,_=signal_chain_locations([edge],False,100,50,50,8)
+        self.assertFalse(reverse[0]['forward']);self.assertAlmostEqual(reverse[0]['parameter'],1-locations[0]['parameter'])
+
+    def test_signal_chain_mixed_native_orientation_and_bounded_count(self):
+        a=self.native_edge(1,0,200);b=self.native_edge(2,500,200);b['node1']=a['node1']
+        locations,_=signal_chain_locations([a,b],True,300,50,50,4)
+        self.assertEqual([(v['edge_index'],v['forward']) for v in locations],[(0,True),(1,False)])
+        self.assertAlmostEqual(locations[1]['parameter'],.5)
+        reverse,_=signal_chain_locations([a,b],False,300,50,50,4)
+        self.assertEqual([(v['edge_index'],v['forward']) for v in reverse],[(1,True),(0,False)])
+        with self.assertRaisesRegex(ValueError,'max_count'):signal_chain_locations([a,b],True,50,25,25,2)
+        with self.assertRaisesRegex(ValueError,'native node'):signal_chain_locations([a,b],True,300,200,50,4)
+        b['node1']=99
+        with self.assertRaisesRegex(ValueError,'simple ordered'):signal_chain_locations([a,b],True,300,50,50,4)
+
+    def signal_chain_plan(self):
+        p=self.grade_plan();edge=self.native_edge(1,0,700)
+        p['region']['max'][0]=800;p['bindings']={'road':{'edges':[edge]}}
+        p['steps']=[{'name':'blocks','kind':'signal_chain','chains':['road'],'forward':True,
+                     'spacing':300,'start_offset':50,'end_clearance':50,'max_count':4}]
+        return p,edge
+
+    def test_signal_chain_follows_replacements_before_next_signal(self):
+        with tempfile.TemporaryDirectory() as td:
+            p,edge=self.signal_chain_plan();c=FakeClient();o=Operator(runs=td,client=c);calls=[]
+            p['steps'][0]['seed_id']=99
+            def request(operation,q,**kwargs):
+                calls.append((operation,q));return {'status':'ok','request_id':str(len(calls)),
+                    'result':{'edges':[edge]}}
+            def place(client,brief,execute):
+                self.assertTrue(execute);self.assertEqual(brief['edge_id'],edge['id']);self.assertTrue(brief['one_way'])
+                self.assertEqual(brief['seed_id'],99)
+                previous=edge['id'];edge['id']+=1
+                return client.request('operating_control',{'execute':True})|{'result':{'game_constructed':True,'replaced_edge':previous,'replacement_edge':edge['id'],'signal':{'id':20+edge['id']}}}
+            with patch.object(c,'request',side_effect=request),patch('bridge_operator.live.place_signal',side_effect=place):
+                run=o.plan(p)['run'];self.assertEqual(o.execute(run)['status'],'built')
+                with self.assertRaisesRegex(ValueError,'already attempted'):o.execute(run)
+            state=json.loads((o.path(run)/'state.json').read_text())
+            self.assertEqual(state['bindings']['road']['edges'][0]['id'],4)
+            self.assertEqual([v['replaced_edge'] for v in state['signal_chains']['blocks']['placements']],[1,2,3])
+            self.assertEqual(len(state['lineage']),3)
+
+    def test_signal_chain_invalid_seed_rejected_offline(self):
+        for seed in (True,0,-1,'99'):
+            p,_=self.signal_chain_plan();p['steps'][0]['seed_id']=seed
+            with self.subTest(seed=seed),self.assertRaisesRegex(ValueError,'seed_id'):validate_plan(p)
+
+    def test_signal_chain_partial_prefix_cannot_be_replayed_after_rejection(self):
+        with tempfile.TemporaryDirectory() as td:
+            p,edge=self.signal_chain_plan();c=FakeClient();o=Operator(runs=td,client=c);attempts=[]
+            def request(operation,q,**kwargs):
+                return {'status':'ok','request_id':'r','result':{'edges':[edge]}}
+            def place(client,brief,execute):
+                attempts.append(brief)
+                if len(attempts)>1:
+                    client.request('operating_control',{'execute':True})
+                    raise LiveError('error','signal preparation failed')
+                edge['id']=2
+                return client.request('operating_control',{'execute':True})|{'result':{'game_constructed':True,'replaced_edge':1,'replacement_edge':2}}
+            with patch.object(c,'request',side_effect=request),patch('bridge_operator.live.place_signal',side_effect=place):
+                run=o.plan(p)['run'];self.assertEqual(o.execute(run)['status'],'needs_attention')
+            state_path=o.path(run)/'state.json';state=json.loads(state_path.read_text())
+            self.assertEqual(len(state['signal_chains']['blocks']['placements']),1)
+            # Even a later known harmless rejection must not hide the successful prefix.
+            state['step_mutation']={'game_constructed':False};state_path.write_text(json.dumps(state))
+            with patch.object(c,'request',side_effect=request):
+                with self.assertRaisesRegex(ValueError,'partial effects'):o.continue_plan(run,'R2')
+                with self.assertRaisesRegex(ValueError,'already attempted'):o.execute(run)
+            self.assertEqual(len(attempts),2)
+
+    def test_signal_chain_missing_native_template_never_submits_mutation(self):
+        with tempfile.TemporaryDirectory() as td:
+            p,edge=self.signal_chain_plan();c=FakeClient();o=Operator(runs=td,client=c);calls=[]
+            def request(operation,q,**kwargs):
+                calls.append((operation,q))
+                if operation=='inspect':result={'edges':[edge]}
+                elif 'signal_placement' in q:
+                    return {'status':'error','request_id':'missing','result':{'error':'signal_template_unavailable','game_constructed':False}}
+                else:result={'tracks':{'records':[{'id':1,'revision':'fresh','objects':[]}]}}
+                return {'status':'ok','request_id':'read','result':result}
+            with patch.object(c,'request',side_effect=request):
+                run=o.plan(p)['run'];out=o.execute(run)
+            self.assertEqual(out['status'],'needs_attention')
+            self.assertIn('signal_template_unavailable',out['error'])
+            self.assertFalse(any(op=='operating_control' for op,_ in calls))
+
+    def test_signal_chain_returned_failure_keeps_native_error(self):
+        with tempfile.TemporaryDirectory() as td:
+            p,edge=self.signal_chain_plan();c=FakeClient();o=Operator(runs=td,client=c)
+            response={'status':'error','request_id':'signal','result':{'error':'signal_template_unavailable','game_constructed':False}}
+            with patch.object(c,'request',return_value={'status':'ok','request_id':'read','result':{'edges':[edge]}}),patch('bridge_operator.live.place_signal',return_value=response):
+                run=o.plan(p)['run'];result=o.execute(run)
+            self.assertEqual(result['status'],'needs_attention');self.assertIn('signal_template_unavailable',result['error'])
+            self.assertNotIn('replacement_edge',result['error'])
+
+    def test_signal_chain_failed_readback_retains_successful_effect(self):
+        with tempfile.TemporaryDirectory() as td:
+            p,edge=self.signal_chain_plan();c=FakeClient();o=Operator(runs=td,client=c)
+            replies=[{'status':'ok','request_id':'read','result':{'edges':[edge]}},
+                     {'status':'ok','request_id':'read_chain','result':{'edges':[edge]}},
+                     {'status':'ok','request_id':'signal','result':{'game_constructed':True,'replaced_edge':1,'replacement_edge':2}},
+                     {'status':'error','request_id':'read_failed','result':{'error':'readback_unavailable'}}]
+            with patch.object(c,'request',side_effect=replies),patch('bridge_operator.live.place_signal',side_effect=lambda client,*args,**kwargs:client.request('operating_control',{'execute':True})):
+                run=o.plan(p)['run'];self.assertEqual(o.execute(run)['status'],'needs_attention')
+            state=json.loads((o.path(run)/'state.json').read_text())
+            self.assertEqual(state['signal_chains']['blocks']['placements'][0]['replacement_edge'],2)
+            self.assertEqual(state['step_mutation']['game_constructed'],True)
+            with self.assertRaisesRegex(ValueError,'partial effects'):o.continue_plan(run,'R2')
+
     def seed_plan(self):
         p=self.grade_plan();p['ports']['a']['grade']=0;p['ports']['a']['direction']=[-1,0]
         p['ports']['b']['direction']=[1,0]
@@ -464,6 +597,18 @@ class OperatorTest(unittest.TestCase):
         validate_plan(p)
         p['steps'][0]['groups'][0]['source_interior']=True
         with self.assertRaises(ValueError):validate_plan(p)
+
+    def test_extend_radius_fails_offline_before_any_native_calls(self):
+        with tempfile.TemporaryDirectory() as td:
+            client=FakeClient();o=Operator(runs=td,client=client)
+            p=self.grade_plan();p['steps']=[{'name':'lead','kind':'extend','source':'a','target':'b'}]
+            validate_plan(p)
+            p['steps'][0]['radius']=1;validate_plan(p)
+            for radius in (0,-1,float('nan'),float('inf'),True,'1'):
+                with self.subTest(radius=radius):
+                    p['steps'][0]['radius']=radius
+                    with self.assertRaisesRegex(ValueError,'extend radius'):o.plan(p)
+            self.assertFalse(client.calls)
 
     def test_graded_stub_and_extension_keep_absolute_height_and_signed_grade(self):
         with tempfile.TemporaryDirectory() as td:
@@ -704,11 +849,11 @@ class OperatorTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan()
             p['steps']=[{'name':'floor','kind':'terrain_check','absolute_floor':1.2,'positions':[[0,0],[10,0]]}]
-            response={'status':'ok','request_id':'terrain','result':{'game_constructed':False,'site':{'terrain':[{'xy':[0,0],'height':1.5,'valid':True},{'xy':[10,0],'height':1.1,'valid':True}]}}}
+            response={'status':'ok','request_id':'terrain','result':{'game_constructed':False,'terrain':[{'xy':[0,0],'height':1.5,'valid':True},{'xy':[10,0],'height':1.1,'valid':True}]}}
             with patch.object(c,'request',return_value=response) as request:
                 run=o.plan(p)['run'];result=o.execute(run)
             self.assertEqual(result['status'],'needs_attention');self.assertIn('below explicit absolute floor',result['error'])
-            self.assertEqual(request.call_args.args[0],'inspect');self.assertTrue(json.loads((o.path(run)/'state.json').read_text())['terrain']['floor']['sampled_only'])
+            self.assertEqual(request.call_args.args[0],'terrain_samples');self.assertTrue(json.loads((o.path(run)/'state.json').read_text())['terrain']['floor']['sampled_only'])
 
     def test_profile_and_crossing_readback_separate_identity_from_clearance(self):
         upper=self.native_edge(1,0,100,18.5);upper['structure']={'classification':'BRIDGE','resource_name':'observed.bridge'}

@@ -35,6 +35,11 @@ async def survey_site(region: dict, terrain_points: list[list[float]] | None = N
     return await invoke(op.survey,region,terrain_points)
 
 @server.tool(annotations=read)
+async def track_catalogue(max_examined_edges: int = 65536,max_tracks: int = 512,summary_limit: int = 32) -> dict:
+    """Bounded disconnected external-track catalogue; compact components, full current geometry local."""
+    return await invoke(op.track_catalogue,max_examined_edges,max_tracks,summary_limit)
+
+@server.tool(annotations=read)
 async def survey_station(brief: dict) -> dict:
     """Bounded exact station/terminal/lead survey; full geometry stays local."""
     return await invoke(op.survey_station,brief)
@@ -80,6 +85,26 @@ async def continue_layout(run: str, revision: str, steps: list[dict] | None = No
 async def build_layout(run: str) -> dict:
     """Execute an unattempted plan, retaining native receipts; stop on a concrete failure."""
     return await invoke(op.execute,run)
+
+@server.tool(annotations=ToolAnnotations(readOnlyHint=False,destructiveHint=False))
+async def plan_corridor(brief: dict) -> dict:
+    """Compile authored waypoint stubs and bounded2/4-track sections; no native calls."""
+    return await invoke(op.plan_corridor,brief)
+
+@server.tool(annotations=write)
+async def build_corridor(run: str) -> dict:
+    """Execute authored sections locally, carrying exact waypoint receipts; stop on failure."""
+    return await invoke(op.build_corridor,run)
+
+@server.tool(annotations=read)
+async def corridor_status(run: str) -> dict:
+    """Compact current corridor state; no native reads."""
+    return await invoke(op.corridor_status,run)
+
+@server.tool(annotations=write)
+async def continue_corridor(run: str,section_run: str | None = None) -> dict:
+    """Continue after inspection; attempted sections require an existing native-plan continuation."""
+    return await invoke(op.continue_corridor,run,section_run)
 
 @server.tool(annotations=read)
 async def run_status(run: str) -> dict:
