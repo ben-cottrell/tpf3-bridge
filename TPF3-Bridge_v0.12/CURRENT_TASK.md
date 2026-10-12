@@ -6,9 +6,12 @@ stopping line233671. All58 directed station/junction checks and24 corridor/hando
 checks passed. Line configuration is verified; train traversal and alternative
 selection under contention are not demonstrated. No current layout repair is requested.
 
-Current work is preparation only: preserve reusable lessons/source/tests, remove
-completed temporary histories, check retained changes and publish the authorised
-checkpoint to the configured branch. Keep the original user whole-map handoff,
-live configuration and any unresolved operation state. No replacement cleanup logs,
-archives or manifests. The next efficiency implementation waits for the coordinator's
-reviewed architecture; do not start it automatically. Coordinator owns native/save cleanup.
+Preparation is paused after retaining and checking reusable source/tests/lessons.
+Temporary-data deletion and remote publication are blocked by external approval;
+neither action occurred. Do not retry or bypass either denial. Publication target is
+ben-cottrell/tpf3-bridge, branch codex/initial-implementation; exact payload/destination
+approval remains required. Cleanup needs approval of the irreversible run-tree scope.
+Keep the original user whole-map handoff, live configuration and unresolved operation
+state. No replacement cleanup logs, archives or manifests. Efficiency implementation
+waits for the coordinator's reviewed architecture; do not start it automatically.
+Coordinator owns native/save cleanup.

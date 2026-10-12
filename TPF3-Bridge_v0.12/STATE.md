@@ -52,10 +52,12 @@ Future design guidance includes urban space reservations, coherent compact appro
 speed/curve progression and sensible lead/signal placement. Handbook/procedure dimensions
 are contextual guidance, not new universal engineering gates; speed estimates are unmeasured.
 
-Only checkpoint preparation/cleanup/publication is active. No efficiency implementation,
-new batch or automation starts before reviewed coordinator architecture. Coordinator owns
-native/save operations; workers remain within assignment. This checkpoint's push is
-user-authorised to the current upstream, subject to external approval.
+Retained changes are locally committed and574 affected Python checks passed. Temporary
+run-tree deletion and remote publication remain externally blocked; no deletion or push
+occurred. Exact irreversible cleanup scope and destination/payload approval are needed;
+do not retry or bypass. No efficiency implementation, new batch or automation starts
+before reviewed coordinator architecture. Coordinator owns native/save operations;
+workers remain within assignment.
 
 Keep only current context and state needed to reconcile uncertain live mutations. Temporary
 diagnostics are removed after use; no permanent journals, audits, handoff archives or
