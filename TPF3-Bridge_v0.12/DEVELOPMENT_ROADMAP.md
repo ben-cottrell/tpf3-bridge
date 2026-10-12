@@ -35,18 +35,20 @@ reconstruct an exact sketch. Assess a flyover's whole approach/deck/exit curve a
 terrain clearance. Roughly80m compact crossovers and55–60mph fans are contextual user
 preferences/observations, not universal limits or an inferred length-to-speed formula.
 
-## Active authorised efficiency work
-Remaining priorities are reusable station-approach/junction jobs, proven fan/crossover/
-flying-junction recipes, and affected-only route/geometry checks. Coordinator owns
-design/native/UI/staging; worker currently inventories exact existing primitives and
-awaits the Astra contract before implementation. This is not another worker batch.
+## Completed approach milestone
+The approved thin approach composition layer reuses existing Operator/corridor children:
+at most8 ordered families, station exits/leads before ordinary interfaces, exact receipts,
+bounded local fitting and affected-only named checks. The seven-family station/fan/
+crossover/flyover example passed13 native check records,12 positive platform movements
+and3 wrong-way probes on build40420. No traversal or speed claim follows.
 
-Reuse Operator named plans, bounded fit_variation, exact role/receipt bindings,
-checked continuation, scoped station-route review, structured connections/groups
-and existing native recipe helpers. Extend only demonstrated composition gaps;
-do not duplicate geometry engines or introduce a new executor/service. General
-construction limits, explicit hard requirements and uncertain-mutation guards stay
-binding. Local outcome packets should name only affected checks and honest unknowns.
+Route caches fingerprint all exported rail bindings in declared check families and actual
+endpoints. Stale dependencies stop for reconciliation; unchanged review makes no route
+calls. Native IDs can recycle, so chronological replacement generations and qualified
+handles are required. Complete exact-node incidence may be witnessed by a sibling edge;
+coordinate resemblance is not identity. Remaining dependency observation cost is measured
+in STATE.md; a bounded Lua batch observation would be future work, not implemented.
+No new worker task or native operation is implied by milestone completion.
 
 ## Boundaries for any future brief
 Choose a concrete authorised construction/operation outcome before adding capabilities.

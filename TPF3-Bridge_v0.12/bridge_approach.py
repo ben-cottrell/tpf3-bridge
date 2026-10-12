@@ -522,6 +522,10 @@ def review(operator,run,checks=None):
         return out
     def ids_for(c):
         ids={e['id'] for ref in c['bindings'].values() for e in s['bindings'][ref]['edges']}
+        if c['kind'] in ('route','station_routes'):
+            # Explicit family scope includes shared fan/path interiors and
+            # authored alternatives for negative checks, without graph discovery.
+            ids.update(e['id'] for ref,value in s['bindings'].items() if ref.split('.')[0] in c['families'] for e in value.get('edges',[]))
         ids.update(int(i) for i in s['checks'].get(c['name'],{}).get('dependencies',{}).get('geometry',{}))
         return sorted(ids)
     with locked(folder):

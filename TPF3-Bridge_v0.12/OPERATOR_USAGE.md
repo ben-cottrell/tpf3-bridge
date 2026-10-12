@@ -940,6 +940,9 @@ checks. Every new review refreshes cached proof dependencies through one bounded
 observation cache, including exact geometry/structures and, for routes, track revisions,
 objects/signals and complete exact endpoint incidence. Station checks also compare
 scoped station/terminal identity and retain their actual endpoint dependencies.
+Route/station-route fingerprints include every exported rail binding in their explicitly
+declared families, covering shared path interiors and authored negative alternatives,
+even when those bindings are not named route aliases. They do not discover a world graph.
 Unchanged proofs need no route calls; changed/unavailable dependencies return
 needs_attention before route checks, requiring current-state/binding reconciliation.
 The cache is bounded to256 exact edges,16 objects/incidences per native record and
@@ -1017,3 +1020,22 @@ Individual `signal_chain` accepts optional boolean `one_way` (default true).
 Use false for departure signals on bidirectional platform leads, with an authored
 start offset and imported exact lead chain. Batch mode supports true only and rejects
 false before native dispatch. Travel orientation remains the separate `forward` field.
+
+`railway-design/examples/station-approach-acceptance.json` is the authored design
+specification; `station-approach-brief.json` is its seven-family current-session
+executable adaptation. These are reference examples, not safe blind-replay inputs.
+They contain actual session, station/terminal mappings and attachment identities.
+For a different world/site, qualify a station, prepare observed lead roles/datum,
+author appropriate envelopes/ports/resources and publish a new same-session brief.
+Do not rerun an already built example or substitute proximity for its exact identities.
+The executable adaptation's additional boundary/order/selected grade context is recorded
+in the authored specification; it makes no speed or universal railway-grade guarantee.
+
+The seven-family example is qualified on build40420:13 check records passed, covering
+12 positive platform movements,3 wrong-way probes and sampled geometry. After expanding
+fingerprints,6 stale route checks invalidated; explicit continuation performed no build,
+and affected review passed them. Unchanged review made0 route calls but still used52
+bounded dependency requests/26.5s wait. Native Lua batch observation is not implemented.
+Native IDs may recycle: use chronological receipt generations and qualified handles.
+Complete exact-node incidence may be witnessed by another native edge at that node;
+proximity is never correspondence. No train traversal/speed/continuous proof is claimed.

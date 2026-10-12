@@ -1,0 +1,2669 @@
+{
+  "version": 1,
+  "revision": "approach_acceptance_A1",
+  "session": "pif_1791837108_17074876",
+  "station": {
+    "name": "Approach Acceptance",
+    "construction": {
+      "resource": "::/stations/rail/modular_station/modular_station.con",
+      "position": [
+        -200,
+        -4700,
+        2.5999999046325684
+      ]
+    }
+  },
+  "interfaces": {
+    "station": {
+      "name": "approach_station",
+      "revision": "A1",
+      "roles": {
+        "P1": {
+          "station": {
+            "name": "Approach Acceptance",
+            "construction": {
+              "resource": "::/stations/rail/modular_station/modular_station.con",
+              "position": [
+                -200,
+                -4700,
+                2.5999999046325684
+              ]
+            },
+            "terminal_index": 4
+          },
+          "mode": "station_exit",
+          "grade": 0,
+          "intent": {
+            "region": {
+              "min": [
+                -141,
+                -4726,
+                1.5999999046325684
+              ],
+              "max": [
+                -139,
+                -4724,
+                3.5999999046325684
+              ]
+            },
+            "max_edges": 16,
+            "guide_xyz": [
+              -140,
+              -4725,
+              2.5999999046325684
+            ],
+            "travel_direction": [
+              1,
+              6.123234262925839e-17
+            ]
+          }
+        },
+        "P2": {
+          "station": {
+            "name": "Approach Acceptance",
+            "construction": {
+              "resource": "::/stations/rail/modular_station/modular_station.con",
+              "position": [
+                -200,
+                -4700,
+                2.5999999046325684
+              ]
+            },
+            "terminal_index": 3
+          },
+          "mode": "station_exit",
+          "grade": 0,
+          "intent": {
+            "region": {
+              "min": [
+                -141,
+                -4721,
+                1.5999999046325684
+              ],
+              "max": [
+                -139,
+                -4719,
+                3.5999999046325684
+              ]
+            },
+            "max_edges": 16,
+            "guide_xyz": [
+              -140,
+              -4720,
+              2.5999999046325684
+            ],
+            "travel_direction": [
+              1,
+              6.123234262925839e-17
+            ]
+          }
+        },
+        "P3": {
+          "station": {
+            "name": "Approach Acceptance",
+            "construction": {
+              "resource": "::/stations/rail/modular_station/modular_station.con",
+              "position": [
+                -200,
+                -4700,
+                2.5999999046325684
+              ]
+            },
+            "terminal_index": 2
+          },
+          "mode": "station_exit",
+          "grade": 0,
+          "intent": {
+            "region": {
+              "min": [
+                -141,
+                -4711,
+                1.5999999046325684
+              ],
+              "max": [
+                -139,
+                -4709,
+                3.5999999046325684
+              ]
+            },
+            "max_edges": 16,
+            "guide_xyz": [
+              -140,
+              -4710,
+              2.5999999046325684
+            ],
+            "travel_direction": [
+              1,
+              6.123234262925839e-17
+            ]
+          }
+        },
+        "P4": {
+          "station": {
+            "name": "Approach Acceptance",
+            "construction": {
+              "resource": "::/stations/rail/modular_station/modular_station.con",
+              "position": [
+                -200,
+                -4700,
+                2.5999999046325684
+              ]
+            },
+            "terminal_index": 1
+          },
+          "mode": "station_exit",
+          "grade": 0,
+          "intent": {
+            "region": {
+              "min": [
+                -141,
+                -4706,
+                1.5999999046325684
+              ],
+              "max": [
+                -139,
+                -4704,
+                3.5999999046325684
+              ]
+            },
+            "max_edges": 16,
+            "guide_xyz": [
+              -140,
+              -4705,
+              2.5999999046325684
+            ],
+            "travel_direction": [
+              1,
+              6.123234262925839e-17
+            ]
+          }
+        }
+      }
+    },
+    "ordinary": {
+      "name": "approach_ordinary",
+      "revision": "A1",
+      "roles": {
+        "P1_end": {
+          "station": {
+            "name": "Approach Acceptance",
+            "construction": {
+              "resource": "::/stations/rail/modular_station/modular_station.con",
+              "position": [
+                -200,
+                -4700,
+                2.5999999046325684
+              ]
+            },
+            "terminal_index": 4
+          },
+          "mode": "free",
+          "grade": 0,
+          "intent": {
+            "region": {
+              "min": [
+                -111,
+                -4726,
+                1.5999999046325684
+              ],
+              "max": [
+                -109,
+                -4724,
+                3.5999999046325684
+              ]
+            },
+            "guide_xyz": [
+              -110,
+              -4725,
+              2.5999999046325684
+            ],
+            "travel_direction": [
+              1,
+              0
+            ],
+            "max_edges": 16
+          }
+        },
+        "P2_end": {
+          "station": {
+            "name": "Approach Acceptance",
+            "construction": {
+              "resource": "::/stations/rail/modular_station/modular_station.con",
+              "position": [
+                -200,
+                -4700,
+                2.5999999046325684
+              ]
+            },
+            "terminal_index": 3
+          },
+          "mode": "free",
+          "grade": 0,
+          "intent": {
+            "region": {
+              "min": [
+                -111,
+                -4721,
+                1.5999999046325684
+              ],
+              "max": [
+                -109,
+                -4719,
+                3.5999999046325684
+              ]
+            },
+            "guide_xyz": [
+              -110,
+              -4720,
+              2.5999999046325684
+            ],
+            "travel_direction": [
+              1,
+              0
+            ],
+            "max_edges": 16
+          }
+        },
+        "P3_end": {
+          "station": {
+            "name": "Approach Acceptance",
+            "construction": {
+              "resource": "::/stations/rail/modular_station/modular_station.con",
+              "position": [
+                -200,
+                -4700,
+                2.5999999046325684
+              ]
+            },
+            "terminal_index": 2
+          },
+          "mode": "free",
+          "grade": 0,
+          "intent": {
+            "region": {
+              "min": [
+                -111,
+                -4711,
+                1.5999999046325684
+              ],
+              "max": [
+                -109,
+                -4709,
+                3.5999999046325684
+              ]
+            },
+            "guide_xyz": [
+              -110,
+              -4710,
+              2.5999999046325684
+            ],
+            "travel_direction": [
+              1,
+              0
+            ],
+            "max_edges": 16
+          }
+        },
+        "P4_end": {
+          "station": {
+            "name": "Approach Acceptance",
+            "construction": {
+              "resource": "::/stations/rail/modular_station/modular_station.con",
+              "position": [
+                -200,
+                -4700,
+                2.5999999046325684
+              ]
+            },
+            "terminal_index": 1
+          },
+          "mode": "free",
+          "grade": 0,
+          "intent": {
+            "region": {
+              "min": [
+                -111,
+                -4706,
+                1.5999999046325684
+              ],
+              "max": [
+                -109,
+                -4704,
+                3.5999999046325684
+              ]
+            },
+            "guide_xyz": [
+              -110,
+              -4705,
+              2.5999999046325684
+            ],
+            "travel_direction": [
+              1,
+              0
+            ],
+            "max_edges": 16
+          }
+        }
+      }
+    }
+  },
+  "families": [
+    {
+      "name": "leads",
+      "kind": "operator",
+      "phase": "leads",
+      "envelopes": [
+        {
+          "min": [
+            -160,
+            -4740,
+            -10
+          ],
+          "max": [
+            -80,
+            -4690,
+            30
+          ]
+        }
+      ],
+      "payload": {
+        "version": 2,
+        "revision": "A1",
+        "origin": [
+          -140,
+          -4715,
+          2.5999999046325684
+        ],
+        "region": {
+          "min": [
+            -160,
+            -4740,
+            -10
+          ],
+          "max": [
+            -80,
+            -4690,
+            30
+          ]
+        },
+        "ports": {
+          "P1_end": {
+            "position": [
+              30,
+              -10,
+              0
+            ],
+            "direction": [
+              1,
+              6.123234262925839e-17
+            ],
+            "grade": 0
+          },
+          "P2_end": {
+            "position": [
+              30,
+              -5,
+              0
+            ],
+            "direction": [
+              1,
+              6.123234262925839e-17
+            ],
+            "grade": 0
+          },
+          "P3_end": {
+            "position": [
+              30,
+              5,
+              0
+            ],
+            "direction": [
+              1,
+              6.123234262925839e-17
+            ],
+            "grade": 0
+          },
+          "P4_end": {
+            "position": [
+              30,
+              10,
+              0
+            ],
+            "direction": [
+              1,
+              6.123234262925839e-17
+            ],
+            "grade": 0
+          }
+        },
+        "track": {
+          "template": "::/infrastructure/track/standard/standard.street_template",
+          "style": "::/infrastructure/track/standard/standard.street"
+        },
+        "max_grade": 0.2,
+        "steps": [
+          {
+            "name": "P1_lead",
+            "kind": "extend",
+            "source": "P1_exit",
+            "target": "P1_end"
+          },
+          {
+            "name": "P2_lead",
+            "kind": "extend",
+            "source": "P2_exit",
+            "target": "P2_end"
+          },
+          {
+            "name": "P3_lead",
+            "kind": "extend",
+            "source": "P3_exit",
+            "target": "P3_end"
+          },
+          {
+            "name": "P4_lead",
+            "kind": "extend",
+            "source": "P4_exit",
+            "target": "P4_end"
+          }
+        ],
+        "routes": [],
+        "curves": {},
+        "interface_registry": "approach_station",
+        "interface_revision": "A1",
+        "role_refs": {
+          "P1_exit": "P1",
+          "P2_exit": "P2",
+          "P3_exit": "P3",
+          "P4_exit": "P4"
+        }
+      },
+      "imports": {},
+      "exports": {
+        "P1_lead": "P1_lead",
+        "P2_lead": "P2_lead",
+        "P3_lead": "P3_lead",
+        "P4_lead": "P4_lead"
+      },
+      "shared_effects": [
+        "approach_topology"
+      ]
+    },
+    {
+      "name": "parallel",
+      "kind": "corridor",
+      "phase": "ordinary",
+      "envelopes": [
+        {
+          "min": [
+            85,
+            -4760,
+            -9.400000095367432
+          ],
+          "max": [
+            525,
+            -4670,
+            37.59999990463257
+          ]
+        },
+        {
+          "min": [
+            495,
+            -4760,
+            -9.400000095367432
+          ],
+          "max": [
+            775,
+            -4670,
+            37.59999990463257
+          ]
+        },
+        {
+          "min": [
+            745,
+            -4760,
+            -9.400000095367432
+          ],
+          "max": [
+            1385,
+            -4670,
+            37.59999990463257
+          ]
+        }
+      ],
+      "payload": {
+        "version": 1,
+        "revision": "A1_parallel",
+        "session": "pif_1791837108_17074876",
+        "track": {
+          "template": "::/infrastructure/track/standard/standard.street_template",
+          "style": "::/infrastructure/track/standard/standard.street"
+        },
+        "max_grade": 0.2,
+        "stub_length": 10,
+        "waypoints": {
+          "w0": {
+            "main_out": {
+              "position": [
+                100,
+                -4717.5,
+                2.5999999046325684
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "grade": 0
+            },
+            "main_in": {
+              "position": [
+                100,
+                -4712.5,
+                2.5999999046325684
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "grade": 0
+            }
+          },
+          "w1": {
+            "main_out": {
+              "position": [
+                510,
+                -4717.5,
+                2.5999999046325684
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "grade": 0
+            },
+            "main_in": {
+              "position": [
+                510,
+                -4712.5,
+                2.5999999046325684
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "grade": 0
+            }
+          },
+          "w2": {
+            "main_out": {
+              "position": [
+                760,
+                -4717.5,
+                2.5999999046325684
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "grade": 0
+            },
+            "main_in": {
+              "position": [
+                760,
+                -4712.5,
+                2.5999999046325684
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "grade": 0
+            }
+          },
+          "w3": {
+            "main_out": {
+              "position": [
+                1370,
+                -4717.5,
+                2.5999999046325684
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "grade": 0
+            },
+            "main_in": {
+              "position": [
+                1370,
+                -4712.5,
+                2.5999999046325684
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "grade": 0
+            }
+          }
+        },
+        "sections": [
+          {
+            "name": "throat",
+            "source": "w0",
+            "target": "w1",
+            "region": {
+              "min": [
+                85,
+                -4760,
+                -9.400000095367432
+              ],
+              "max": [
+                525,
+                -4670,
+                37.59999990463257
+              ]
+            },
+            "members": [
+              {
+                "track": "main_out",
+                "representation": "native_parts",
+                "structures": [
+                  {
+                    "classification": "NORMAL"
+                  }
+                ],
+                "radius": 0,
+                "fit_radius": 100
+              },
+              {
+                "track": "main_in",
+                "normal_offset_from": {
+                  "group_index": 1,
+                  "spacing": 5,
+                  "reverse": false
+                }
+              }
+            ]
+          },
+          {
+            "name": "middle",
+            "source": "w1",
+            "target": "w2",
+            "region": {
+              "min": [
+                495,
+                -4760,
+                -9.400000095367432
+              ],
+              "max": [
+                775,
+                -4670,
+                37.59999990463257
+              ]
+            },
+            "members": [
+              {
+                "track": "main_out",
+                "representation": "native_parts",
+                "structures": [
+                  {
+                    "classification": "NORMAL"
+                  }
+                ],
+                "radius": 0,
+                "fit_radius": 100
+              },
+              {
+                "track": "main_in",
+                "normal_offset_from": {
+                  "group_index": 1,
+                  "spacing": 5,
+                  "reverse": false
+                }
+              }
+            ]
+          },
+          {
+            "name": "outer",
+            "source": "w2",
+            "target": "w3",
+            "region": {
+              "min": [
+                745,
+                -4760,
+                -9.400000095367432
+              ],
+              "max": [
+                1385,
+                -4670,
+                37.59999990463257
+              ]
+            },
+            "members": [
+              {
+                "track": "main_out",
+                "representation": "native_parts",
+                "structures": [
+                  {
+                    "classification": "NORMAL"
+                  }
+                ],
+                "radius": 0,
+                "fit_radius": 100
+              },
+              {
+                "track": "main_in",
+                "normal_offset_from": {
+                  "group_index": 1,
+                  "spacing": 5,
+                  "reverse": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "imports": {},
+      "exports": {
+        "main_out_start": "corr_seed_0_main_out",
+        "main_out_mid": "corr_seed_1_main_out",
+        "main_out_far": "corr_seed_3_main_out",
+        "main_out_throat": {
+          "road": {
+            "track": "main_out",
+            "sections": [
+              "throat"
+            ]
+          }
+        },
+        "main_out_outer": {
+          "road": {
+            "track": "main_out",
+            "sections": [
+              "middle",
+              "outer"
+            ]
+          }
+        },
+        "main_out_crossing": {
+          "road": {
+            "track": "main_out",
+            "sections": [
+              "outer"
+            ]
+          }
+        },
+        "main_in_start": "corr_seed_0_main_in",
+        "main_in_mid": "corr_seed_1_main_in",
+        "main_in_far": "corr_seed_3_main_in",
+        "main_in_throat": {
+          "road": {
+            "track": "main_in",
+            "sections": [
+              "throat"
+            ]
+          }
+        },
+        "main_in_outer": {
+          "road": {
+            "track": "main_in",
+            "sections": [
+              "middle",
+              "outer"
+            ]
+          }
+        },
+        "main_in_crossing": {
+          "road": {
+            "track": "main_in",
+            "sections": [
+              "outer"
+            ]
+          }
+        }
+      },
+      "shared_effects": [
+        "approach_topology"
+      ]
+    },
+    {
+      "name": "fans",
+      "kind": "operator",
+      "phase": "ordinary",
+      "envelopes": [
+        {
+          "min": [
+            -120,
+            -4745,
+            -9.400000095367432
+          ],
+          "max": [
+            115,
+            -4685,
+            37.59999990463257
+          ]
+        }
+      ],
+      "payload": {
+        "version": 2,
+        "revision": "A1_fans",
+        "origin": [
+          -140,
+          -4715,
+          2.5999999046325684
+        ],
+        "region": {
+          "min": [
+            -120,
+            -4745,
+            -9.400000095367432
+          ],
+          "max": [
+            115,
+            -4685,
+            37.59999990463257
+          ]
+        },
+        "ports": {
+          "lower": {
+            "position": [
+              235,
+              -2.5,
+              0
+            ],
+            "direction": [
+              -1,
+              0
+            ],
+            "grade": 0
+          },
+          "upper": {
+            "position": [
+              235,
+              2.5,
+              0
+            ],
+            "direction": [
+              -1,
+              0
+            ],
+            "grade": 0
+          }
+        },
+        "track": {
+          "template": "::/infrastructure/track/standard/standard.street_template",
+          "style": "::/infrastructure/track/standard/standard.street"
+        },
+        "max_grade": 0.2,
+        "max_route_length": 3000,
+        "steps": [
+          {
+            "name": "lower_outer",
+            "kind": "connect",
+            "source": "lower",
+            "target": "P1_end",
+            "structures": [
+              {
+                "classification": "NORMAL"
+              }
+            ],
+            "representation": "endpoint_cubic",
+            "radius": 0
+          },
+          {
+            "name": "lower_inner",
+            "kind": "branch",
+            "source": {
+              "curve": "lower_outer",
+              "u": 0.5
+            },
+            "target": "P2_end",
+            "radius": 0,
+            "max_route_length": 800,
+            "candidates": [
+              {
+                "branch": "endpoint_cubic_graded",
+                "through": "subdivide"
+              }
+            ],
+            "fit_variation": {
+              "source": {
+                "max_shift": 25,
+                "step": 5,
+                "direction": "both"
+              },
+              "max_attempts": 12,
+              "max_requests": 100,
+              "intent": {
+                "longitudinal_axis": [
+                  -1,
+                  0
+                ],
+                "max_extra_inflections": 0
+              }
+            }
+          },
+          {
+            "name": "upper_outer",
+            "kind": "connect",
+            "source": "upper",
+            "target": "P4_end",
+            "structures": [
+              {
+                "classification": "NORMAL"
+              }
+            ],
+            "representation": "endpoint_cubic",
+            "radius": 0
+          },
+          {
+            "name": "upper_inner",
+            "kind": "branch",
+            "source": {
+              "curve": "upper_outer",
+              "u": 0.5
+            },
+            "target": "P3_end",
+            "radius": 0,
+            "max_route_length": 800,
+            "candidates": [
+              {
+                "branch": "endpoint_cubic_graded",
+                "through": "subdivide"
+              }
+            ],
+            "fit_variation": {
+              "source": {
+                "max_shift": 25,
+                "step": 5,
+                "direction": "both"
+              },
+              "max_attempts": 12,
+              "max_requests": 100,
+              "intent": {
+                "longitudinal_axis": [
+                  -1,
+                  0
+                ],
+                "max_extra_inflections": 0
+              }
+            }
+          }
+        ],
+        "routes": [],
+        "curves": {},
+        "interface_registry": "approach_ordinary",
+        "interface_revision": "A1",
+        "role_refs": {
+          "P1_end": "P1_end",
+          "P2_end": "P2_end",
+          "P3_end": "P3_end",
+          "P4_end": "P4_end"
+        },
+        "port_refs": {
+          "lower": {
+            "chain": "lower_seed",
+            "end": "node0"
+          },
+          "upper": {
+            "chain": "upper_seed",
+            "end": "node0"
+          }
+        }
+      },
+      "imports": {
+        "lower_seed": "parallel.main_out_start",
+        "upper_seed": "parallel.main_in_start"
+      },
+      "exports": {
+        "lower_outer": "lower_outer",
+        "lower_inner": "lower_inner",
+        "upper_outer": "upper_outer",
+        "upper_inner": "upper_inner"
+      },
+      "shared_effects": [
+        "approach_topology"
+      ]
+    },
+    {
+      "name": "flyover",
+      "kind": "operator",
+      "phase": "ordinary",
+      "envelopes": [
+        {
+          "min": [
+            550,
+            -4815,
+            -9.400000095367432
+          ],
+          "max": [
+            1450,
+            -4650,
+            42.59999990463257
+          ]
+        }
+      ],
+      "payload": {
+        "version": 2,
+        "revision": "A1_flyover",
+        "origin": [
+          -140,
+          -4715,
+          2.5999999046325684
+        ],
+        "region": {
+          "min": [
+            550,
+            -4815,
+            -9.400000095367432
+          ],
+          "max": [
+            1450,
+            -4650,
+            42.59999990463257
+          ]
+        },
+        "ports": {
+          "landing": {
+            "position": [
+              720,
+              25,
+              0
+            ],
+            "direction": [
+              -1,
+              0
+            ],
+            "grade": 0
+          },
+          "landing_inner": {
+            "position": [
+              730,
+              25,
+              0
+            ],
+            "direction": [
+              1,
+              0
+            ],
+            "grade": 0
+          },
+          "deck_near_seed": {
+            "position": [
+              1180,
+              15,
+              15
+            ],
+            "direction": [
+              -0.9778024140774095,
+              0.20952908873087348
+            ],
+            "grade": 0
+          },
+          "deck_far_seed": {
+            "position": [
+              1320,
+              -15,
+              15
+            ],
+            "direction": [
+              0.9778024140774095,
+              -0.20952908873087348
+            ],
+            "grade": 0
+          },
+          "far": {
+            "position": [
+              1560,
+              -70,
+              10.250000095367431
+            ],
+            "direction": [
+              -1,
+              0
+            ],
+            "grade": 0
+          },
+          "deck_near": {
+            "position": [
+              1180,
+              15,
+              15
+            ],
+            "direction": [
+              -0.9778024140774095,
+              0.20952908873087348
+            ],
+            "grade": 0
+          },
+          "deck_far": {
+            "position": [
+              1320,
+              -15,
+              15
+            ],
+            "direction": [
+              0.9778024140774095,
+              -0.20952908873087348
+            ],
+            "grade": 0
+          },
+          "far_origin": {
+            "position": [
+              1560,
+              -70,
+              10.250000095367431
+            ],
+            "direction": [
+              -1,
+              0
+            ],
+            "grade": 0
+          }
+        },
+        "track": {
+          "template": "::/infrastructure/track/standard/standard.street_template",
+          "style": "::/infrastructure/track/standard/standard.street"
+        },
+        "max_grade": 0.2,
+        "max_route_length": 3000,
+        "steps": [
+          {
+            "name": "landing_seed",
+            "kind": "stub",
+            "port": "landing",
+            "direction": [
+              1,
+              0
+            ],
+            "grade": 0,
+            "length": 10
+          },
+          {
+            "name": "deck",
+            "kind": "structure_seed",
+            "source": "deck_near_seed",
+            "target": "deck_far_seed",
+            "structure": {
+              "classification": "BRIDGE",
+              "resource_name": "::/infrastructure/bridge/steel.bridge"
+            },
+            "radius": 0,
+            "handle_scale": 1
+          },
+          {
+            "name": "far_seed",
+            "kind": "stub",
+            "port": "far_origin",
+            "direction": [
+              1,
+              0
+            ],
+            "grade": 0,
+            "length": 10
+          },
+          {
+            "name": "inner_ramp",
+            "kind": "connect",
+            "source": "landing_inner",
+            "target": "deck_near",
+            "structures": [
+              {
+                "classification": "NORMAL"
+              }
+            ],
+            "representation": "endpoint_cubic",
+            "radius": 0
+          },
+          {
+            "name": "outer_ramp",
+            "kind": "connect",
+            "source": "deck_far",
+            "target": "far",
+            "structures": [
+              {
+                "classification": "NORMAL"
+              }
+            ],
+            "representation": "endpoint_cubic",
+            "radius": 0
+          }
+        ],
+        "routes": [],
+        "curves": {},
+        "port_refs": {
+          "landing_inner": {
+            "chain": "landing_seed",
+            "end": "node1"
+          },
+          "deck_near": {
+            "chain": "deck",
+            "end": "node0"
+          },
+          "deck_far": {
+            "chain": "deck",
+            "end": "node1"
+          },
+          "far": {
+            "chain": "far_seed",
+            "end": "node0"
+          }
+        }
+      },
+      "imports": {},
+      "exports": {
+        "landing_seed": "landing_seed",
+        "deck": "deck",
+        "far_seed": "far_seed",
+        "inner_ramp": "inner_ramp",
+        "outer_ramp": "outer_ramp"
+      },
+      "shared_effects": [
+        "approach_topology"
+      ]
+    },
+    {
+      "name": "pointwork",
+      "kind": "operator",
+      "phase": "ordinary",
+      "envelopes": [
+        {
+          "min": [
+            85,
+            -4745,
+            -9.400000095367432
+          ],
+          "max": [
+            600,
+            -4660,
+            37.59999990463257
+          ]
+        }
+      ],
+      "payload": {
+        "version": 2,
+        "revision": "A1_pointwork",
+        "origin": [
+          -140,
+          -4715,
+          2.5999999046325684
+        ],
+        "region": {
+          "min": [
+            85,
+            -4745,
+            -9.400000095367432
+          ],
+          "max": [
+            600,
+            -4660,
+            37.59999990463257
+          ]
+        },
+        "ports": {
+          "landing": {
+            "position": [
+              720,
+              25,
+              0
+            ],
+            "direction": [
+              -1,
+              0
+            ],
+            "grade": 0
+          }
+        },
+        "track": {
+          "template": "::/infrastructure/track/standard/standard.street_template",
+          "style": "::/infrastructure/track/standard/standard.street"
+        },
+        "max_grade": 0.2,
+        "max_route_length": 3000,
+        "steps": [
+          {
+            "name": "departure_crossover",
+            "kind": "crossover",
+            "source": {
+              "curve": "main_in",
+              "u": 0.08333333333333333
+            },
+            "target": {
+              "curve": "main_out",
+              "u": 0.27380952380952384
+            },
+            "radius": 0,
+            "max_route_length": 800,
+            "candidates": [
+              {
+                "branch": "endpoint_cubic_graded",
+                "through": "subdivide"
+              }
+            ],
+            "fit_variation": {
+              "source": {
+                "max_shift": 15,
+                "step": 5,
+                "direction": "both"
+              },
+              "target": {
+                "max_shift": 15,
+                "step": 5,
+                "direction": "both"
+              },
+              "max_attempts": 24,
+              "max_requests": 160,
+              "intent": {
+                "longitudinal_axis": [
+                  1,
+                  0
+                ],
+                "max_extra_inflections": 0
+              }
+            }
+          },
+          {
+            "name": "arrival_crossover",
+            "kind": "crossover",
+            "source": {
+              "curve": "main_out",
+              "u": 0.32142857142857145
+            },
+            "target": {
+              "curve": "main_in",
+              "u": 0.5119047619047619
+            },
+            "radius": 0,
+            "max_route_length": 800,
+            "candidates": [
+              {
+                "branch": "endpoint_cubic_graded",
+                "through": "subdivide"
+              }
+            ],
+            "fit_variation": {
+              "source": {
+                "max_shift": 15,
+                "step": 5,
+                "direction": "both"
+              },
+              "target": {
+                "max_shift": 15,
+                "step": 5,
+                "direction": "both"
+              },
+              "max_attempts": 24,
+              "max_requests": 160,
+              "intent": {
+                "longitudinal_axis": [
+                  1,
+                  0
+                ],
+                "max_extra_inflections": 0
+              }
+            }
+          },
+          {
+            "name": "branch_merge",
+            "kind": "branch",
+            "source": {
+              "curve": "main_in",
+              "u": 0.7976190476190477
+            },
+            "target": "landing",
+            "radius": 0,
+            "max_route_length": 800,
+            "candidates": [
+              {
+                "branch": "endpoint_cubic_graded",
+                "through": "subdivide"
+              }
+            ],
+            "fit_variation": {
+              "source": {
+                "max_shift": 25,
+                "step": 5,
+                "direction": "both"
+              },
+              "max_attempts": 12,
+              "max_requests": 100,
+              "intent": {
+                "longitudinal_axis": [
+                  1,
+                  0
+                ],
+                "max_extra_inflections": 0
+              }
+            }
+          }
+        ],
+        "routes": [],
+        "curves": {},
+        "port_refs": {
+          "landing": {
+            "chain": "landing_seed",
+            "end": "node0"
+          }
+        }
+      },
+      "imports": {
+        "main_in": "parallel.main_in_throat",
+        "main_out": "parallel.main_out_throat",
+        "landing_seed": "flyover.landing_seed"
+      },
+      "exports": {
+        "departure_crossover": "departure_crossover",
+        "arrival_crossover": "arrival_crossover",
+        "branch_merge": "branch_merge"
+      },
+      "shared_effects": [
+        "approach_topology"
+      ]
+    },
+    {
+      "name": "signals_inner",
+      "kind": "operator",
+      "phase": "ordinary",
+      "envelopes": [
+        {
+          "min": [
+            -140,
+            -4745,
+            -9.400000095367432
+          ],
+          "max": [
+            535,
+            -4675,
+            37.59999990463257
+          ]
+        }
+      ],
+      "payload": {
+        "version": 2,
+        "revision": "A1_signals_inner",
+        "origin": [
+          -140,
+          -4715,
+          2.5999999046325684
+        ],
+        "region": {
+          "min": [
+            -140,
+            -4745,
+            -9.400000095367432
+          ],
+          "max": [
+            535,
+            -4675,
+            37.59999990463257
+          ]
+        },
+        "ports": {
+          "context": {
+            "position": [
+              500,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0
+            ],
+            "grade": 0
+          }
+        },
+        "track": {
+          "template": "::/infrastructure/track/standard/standard.street_template",
+          "style": "::/infrastructure/track/standard/standard.street"
+        },
+        "max_grade": 0.2,
+        "max_route_length": 3000,
+        "steps": [
+          {
+            "name": "inbound_decision",
+            "kind": "signal_chain",
+            "chains": [
+              "main_in"
+            ],
+            "forward": false,
+            "spacing": 300,
+            "start_offset": 155,
+            "end_clearance": 200,
+            "max_count": 1,
+            "seed_id": 60370,
+            "placement_mode": "individual",
+            "one_way": true
+          },
+          {
+            "name": "outbound_first_block",
+            "kind": "signal_chain",
+            "chains": [
+              "main_out"
+            ],
+            "forward": true,
+            "spacing": 300,
+            "start_offset": 265,
+            "end_clearance": 0,
+            "max_count": 1,
+            "seed_id": 60370,
+            "placement_mode": "individual",
+            "one_way": true
+          },
+          {
+            "name": "P1_departure",
+            "kind": "signal_chain",
+            "chains": [
+              "P1_lead"
+            ],
+            "forward": true,
+            "spacing": 300,
+            "start_offset": 17,
+            "end_clearance": 0,
+            "max_count": 1,
+            "seed_id": 60370,
+            "placement_mode": "individual",
+            "one_way": false
+          },
+          {
+            "name": "P2_departure",
+            "kind": "signal_chain",
+            "chains": [
+              "P2_lead"
+            ],
+            "forward": true,
+            "spacing": 300,
+            "start_offset": 17,
+            "end_clearance": 0,
+            "max_count": 1,
+            "seed_id": 60370,
+            "placement_mode": "individual",
+            "one_way": false
+          },
+          {
+            "name": "P3_departure",
+            "kind": "signal_chain",
+            "chains": [
+              "P3_lead"
+            ],
+            "forward": true,
+            "spacing": 300,
+            "start_offset": 17,
+            "end_clearance": 0,
+            "max_count": 1,
+            "seed_id": 60370,
+            "placement_mode": "individual",
+            "one_way": false
+          },
+          {
+            "name": "P4_departure",
+            "kind": "signal_chain",
+            "chains": [
+              "P4_lead"
+            ],
+            "forward": true,
+            "spacing": 300,
+            "start_offset": 17,
+            "end_clearance": 0,
+            "max_count": 1,
+            "seed_id": 60370,
+            "placement_mode": "individual",
+            "one_way": false
+          }
+        ],
+        "routes": [],
+        "curves": {}
+      },
+      "imports": {
+        "main_in": "parallel.main_in_throat",
+        "main_out": "parallel.main_out_throat",
+        "P1_lead": "leads.P1_lead",
+        "P2_lead": "leads.P2_lead",
+        "P3_lead": "leads.P3_lead",
+        "P4_lead": "leads.P4_lead"
+      },
+      "exports": {},
+      "shared_effects": [
+        "approach_topology"
+      ]
+    },
+    {
+      "name": "signals_outer",
+      "kind": "operator",
+      "phase": "ordinary",
+      "envelopes": [
+        {
+          "min": [
+            490,
+            -4825,
+            -9.400000095367432
+          ],
+          "max": [
+            1450,
+            -4650,
+            42.59999990463257
+          ]
+        }
+      ],
+      "payload": {
+        "version": 2,
+        "revision": "A1_signals_outer",
+        "origin": [
+          -140,
+          -4715,
+          2.5999999046325684
+        ],
+        "region": {
+          "min": [
+            490,
+            -4825,
+            -9.400000095367432
+          ],
+          "max": [
+            1450,
+            -4650,
+            42.59999990463257
+          ]
+        },
+        "ports": {
+          "context": {
+            "position": [
+              900,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0
+            ],
+            "grade": 0
+          }
+        },
+        "track": {
+          "template": "::/infrastructure/track/standard/standard.street_template",
+          "style": "::/infrastructure/track/standard/standard.street"
+        },
+        "max_grade": 0.2,
+        "max_route_length": 3000,
+        "steps": [
+          {
+            "name": "outbound_blocks",
+            "kind": "signal_chain",
+            "chains": [
+              "main_out"
+            ],
+            "forward": true,
+            "spacing": 300,
+            "start_offset": 155,
+            "end_clearance": 0,
+            "max_count": 4,
+            "seed_id": 60370,
+            "placement_mode": "batch",
+            "one_way": true
+          },
+          {
+            "name": "inbound_blocks",
+            "kind": "signal_chain",
+            "chains": [
+              "main_in"
+            ],
+            "forward": false,
+            "spacing": 300,
+            "start_offset": 115,
+            "end_clearance": 0,
+            "max_count": 4,
+            "seed_id": 60370,
+            "placement_mode": "batch",
+            "one_way": true
+          },
+          {
+            "name": "flyover_blocks",
+            "kind": "signal_chain",
+            "chains": [
+              "landing",
+              "inner",
+              "deck",
+              "outer",
+              "far"
+            ],
+            "forward": false,
+            "spacing": 300,
+            "start_offset": 150,
+            "end_clearance": 60,
+            "max_count": 4,
+            "seed_id": 60370,
+            "placement_mode": "batch",
+            "one_way": true
+          }
+        ],
+        "routes": [],
+        "curves": {}
+      },
+      "imports": {
+        "main_out": "parallel.main_out_outer",
+        "main_in": "parallel.main_in_outer",
+        "landing": "flyover.landing_seed",
+        "inner": "flyover.inner_ramp",
+        "deck": "flyover.deck",
+        "outer": "flyover.outer_ramp",
+        "far": "flyover.far_seed"
+      },
+      "exports": {},
+      "shared_effects": [
+        "approach_topology"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "main_arrivals",
+      "kind": "station_routes",
+      "families": [
+        "leads",
+        "parallel",
+        "fans",
+        "flyover",
+        "pointwork",
+        "signals_inner",
+        "signals_outer"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "main": "parallel.main_in_outer",
+        "cross": "pointwork.arrival_crossover",
+        "P1": "leads.P1_lead",
+        "P2": "leads.P2_lead",
+        "P3": "leads.P3_lead",
+        "P4": "leads.P4_lead"
+      },
+      "payload": {
+        "name": "approach_station",
+        "revision": "A1",
+        "routes": [
+          {
+            "name": "main_arrivals_P1",
+            "purpose": "arrival",
+            "source": {
+              "guide_xyz": [
+                1375,
+                -4712.5,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "role": "P1",
+              "guide_xyz": [
+                -260,
+                -4725,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P1",
+              "main",
+              "cross"
+            ]
+          },
+          {
+            "name": "main_arrivals_P2",
+            "purpose": "arrival",
+            "source": {
+              "guide_xyz": [
+                1375,
+                -4712.5,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "role": "P2",
+              "guide_xyz": [
+                -260,
+                -4720,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P2",
+              "main",
+              "cross"
+            ]
+          },
+          {
+            "name": "main_arrivals_P3",
+            "purpose": "arrival",
+            "source": {
+              "guide_xyz": [
+                1375,
+                -4712.5,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "role": "P3",
+              "guide_xyz": [
+                -260,
+                -4710,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P3",
+              "main"
+            ]
+          },
+          {
+            "name": "main_arrivals_P4",
+            "purpose": "arrival",
+            "source": {
+              "guide_xyz": [
+                1375,
+                -4712.5,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "role": "P4",
+              "guide_xyz": [
+                -260,
+                -4705,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P4",
+              "main"
+            ]
+          }
+        ],
+        "max_path_entries": 256
+      }
+    },
+    {
+      "name": "flyover_arrivals",
+      "kind": "station_routes",
+      "families": [
+        "leads",
+        "parallel",
+        "fans",
+        "flyover",
+        "pointwork",
+        "signals_inner",
+        "signals_outer"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "cross": "pointwork.arrival_crossover",
+        "P1": "leads.P1_lead",
+        "P2": "leads.P2_lead",
+        "P3": "leads.P3_lead",
+        "P4": "leads.P4_lead",
+        "deck": "flyover.deck",
+        "merge": "pointwork.branch_merge"
+      },
+      "payload": {
+        "name": "approach_station",
+        "revision": "A1",
+        "routes": [
+          {
+            "name": "flyover_arrivals_P1",
+            "purpose": "arrival",
+            "source": {
+              "guide_xyz": [
+                1430,
+                -4785,
+                12.85
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "role": "P1",
+              "guide_xyz": [
+                -260,
+                -4725,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P1",
+              "deck",
+              "merge",
+              "cross"
+            ]
+          },
+          {
+            "name": "flyover_arrivals_P2",
+            "purpose": "arrival",
+            "source": {
+              "guide_xyz": [
+                1430,
+                -4785,
+                12.85
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "role": "P2",
+              "guide_xyz": [
+                -260,
+                -4720,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P2",
+              "deck",
+              "merge",
+              "cross"
+            ]
+          },
+          {
+            "name": "flyover_arrivals_P3",
+            "purpose": "arrival",
+            "source": {
+              "guide_xyz": [
+                1430,
+                -4785,
+                12.85
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "role": "P3",
+              "guide_xyz": [
+                -260,
+                -4710,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P3",
+              "deck",
+              "merge"
+            ]
+          },
+          {
+            "name": "flyover_arrivals_P4",
+            "purpose": "arrival",
+            "source": {
+              "guide_xyz": [
+                1430,
+                -4785,
+                12.85
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "role": "P4",
+              "guide_xyz": [
+                -260,
+                -4705,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                -1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P4",
+              "deck",
+              "merge"
+            ]
+          }
+        ],
+        "max_path_entries": 256
+      }
+    },
+    {
+      "name": "departures",
+      "kind": "station_routes",
+      "families": [
+        "leads",
+        "parallel",
+        "fans",
+        "flyover",
+        "pointwork",
+        "signals_inner",
+        "signals_outer"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "main": "parallel.main_out_outer",
+        "cross": "pointwork.departure_crossover",
+        "P1": "leads.P1_lead",
+        "P2": "leads.P2_lead",
+        "P3": "leads.P3_lead",
+        "P4": "leads.P4_lead"
+      },
+      "payload": {
+        "name": "approach_station",
+        "revision": "A1",
+        "routes": [
+          {
+            "name": "departures_P1",
+            "purpose": "departure",
+            "source": {
+              "role": "P1",
+              "guide_xyz": [
+                -260,
+                -4725,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "guide_xyz": [
+                1375,
+                -4717.5,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P1",
+              "main"
+            ]
+          },
+          {
+            "name": "departures_P2",
+            "purpose": "departure",
+            "source": {
+              "role": "P2",
+              "guide_xyz": [
+                -260,
+                -4720,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "guide_xyz": [
+                1375,
+                -4717.5,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P2",
+              "main"
+            ]
+          },
+          {
+            "name": "departures_P3",
+            "purpose": "departure",
+            "source": {
+              "role": "P3",
+              "guide_xyz": [
+                -260,
+                -4710,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "guide_xyz": [
+                1375,
+                -4717.5,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P3",
+              "main",
+              "cross"
+            ]
+          },
+          {
+            "name": "departures_P4",
+            "purpose": "departure",
+            "source": {
+              "role": "P4",
+              "guide_xyz": [
+                -260,
+                -4705,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "target": {
+              "guide_xyz": [
+                1375,
+                -4717.5,
+                2.5999999046325684
+              ],
+              "travel_direction": [
+                1,
+                0
+              ],
+              "placement_tolerance": 0.15,
+              "heading_tolerance_deg": 2
+            },
+            "max_length": 3500,
+            "required_bindings": [
+              "P4",
+              "main",
+              "cross"
+            ]
+          }
+        ],
+        "max_path_entries": 256
+      }
+    },
+    {
+      "name": "main_out_wrong_way",
+      "kind": "route",
+      "families": [
+        "leads",
+        "parallel",
+        "fans",
+        "flyover",
+        "pointwork",
+        "signals_inner",
+        "signals_outer"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "near": "parallel.main_out_mid",
+        "far": "parallel.main_out_far",
+        "road": "parallel.main_out_outer"
+      },
+      "payload": {
+        "source": {
+          "binding": "far",
+          "end": "node1"
+        },
+        "target": {
+          "binding": "near",
+          "end": "node0"
+        },
+        "required_bindings": [
+          "road"
+        ],
+        "mode": "TRAIN",
+        "max_length": 3500,
+        "max_path_entries": 256,
+        "expected": false
+      }
+    },
+    {
+      "name": "main_in_wrong_way",
+      "kind": "route",
+      "families": [
+        "leads",
+        "parallel",
+        "fans",
+        "flyover",
+        "pointwork",
+        "signals_inner",
+        "signals_outer"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "near": "parallel.main_in_mid",
+        "far": "parallel.main_in_far",
+        "road": "parallel.main_in_outer"
+      },
+      "payload": {
+        "source": {
+          "binding": "near",
+          "end": "node0"
+        },
+        "target": {
+          "binding": "far",
+          "end": "node1"
+        },
+        "required_bindings": [
+          "road"
+        ],
+        "mode": "TRAIN",
+        "max_length": 3500,
+        "max_path_entries": 256,
+        "expected": false
+      }
+    },
+    {
+      "name": "flyover_wrong_way",
+      "kind": "route",
+      "families": [
+        "leads",
+        "parallel",
+        "fans",
+        "flyover",
+        "pointwork",
+        "signals_inner",
+        "signals_outer"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "near": "flyover.landing_seed",
+        "far": "flyover.far_seed",
+        "deck": "flyover.deck"
+      },
+      "payload": {
+        "source": {
+          "binding": "near",
+          "end": "node0"
+        },
+        "target": {
+          "binding": "far",
+          "end": "node1"
+        },
+        "required_bindings": [
+          "deck"
+        ],
+        "mode": "TRAIN",
+        "max_length": 3500,
+        "max_path_entries": 256,
+        "expected": false
+      }
+    },
+    {
+      "name": "leads_geometry",
+      "kind": "geometry",
+      "families": [
+        "leads"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "P1": "leads.P1_lead",
+        "P2": "leads.P2_lead",
+        "P3": "leads.P3_lead",
+        "P4": "leads.P4_lead"
+      },
+      "payload": {
+        "region": {
+          "min": [
+            -160,
+            -4740,
+            -10
+          ],
+          "max": [
+            -80,
+            -4690,
+            30
+          ]
+        },
+        "max_grade": 0.2,
+        "classifications": [
+          "NORMAL"
+        ]
+      }
+    },
+    {
+      "name": "fans_geometry",
+      "kind": "geometry",
+      "families": [
+        "fans"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "lower_outer": "fans.lower_outer",
+        "lower_inner": "fans.lower_inner",
+        "upper_outer": "fans.upper_outer",
+        "upper_inner": "fans.upper_inner"
+      },
+      "payload": {
+        "region": {
+          "min": [
+            -120,
+            -4745,
+            -9.400000095367432
+          ],
+          "max": [
+            115,
+            -4685,
+            37.59999990463257
+          ]
+        },
+        "max_grade": 0.2,
+        "classifications": [
+          "NORMAL"
+        ]
+      }
+    },
+    {
+      "name": "pointwork_geometry",
+      "kind": "geometry",
+      "families": [
+        "pointwork"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "departure_crossover": "pointwork.departure_crossover",
+        "arrival_crossover": "pointwork.arrival_crossover",
+        "branch_merge": "pointwork.branch_merge"
+      },
+      "payload": {
+        "region": {
+          "min": [
+            85,
+            -4745,
+            -9.400000095367432
+          ],
+          "max": [
+            600,
+            -4660,
+            37.59999990463257
+          ]
+        },
+        "max_grade": 0.2,
+        "classifications": [
+          "NORMAL"
+        ]
+      }
+    },
+    {
+      "name": "ramps_geometry",
+      "kind": "geometry",
+      "families": [
+        "flyover"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "inner": "flyover.inner_ramp",
+        "outer": "flyover.outer_ramp"
+      },
+      "payload": {
+        "region": {
+          "min": [
+            550,
+            -4815,
+            -9.400000095367432
+          ],
+          "max": [
+            1450,
+            -4650,
+            42.59999990463257
+          ]
+        },
+        "max_grade": 0.2,
+        "classifications": [
+          "NORMAL"
+        ]
+      }
+    },
+    {
+      "name": "deck_geometry",
+      "kind": "geometry",
+      "families": [
+        "flyover"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "deck": "flyover.deck"
+      },
+      "payload": {
+        "region": {
+          "min": [
+            550,
+            -4815,
+            -9.400000095367432
+          ],
+          "max": [
+            1450,
+            -4650,
+            42.59999990463257
+          ]
+        },
+        "max_grade": 0.2,
+        "classifications": [
+          "BRIDGE"
+        ]
+      }
+    },
+    {
+      "name": "main_pair_geometry",
+      "kind": "geometry",
+      "families": [
+        "parallel"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "in_throat": "parallel.main_in_throat",
+        "out_throat": "parallel.main_out_throat",
+        "in_outer": "parallel.main_in_outer",
+        "out_outer": "parallel.main_out_outer"
+      },
+      "payload": {
+        "region": {
+          "min": [
+            85,
+            -4760,
+            -9.400000095367432
+          ],
+          "max": [
+            1385,
+            -4670,
+            37.59999990463257
+          ]
+        },
+        "max_grade": 0.2,
+        "classifications": [
+          "NORMAL"
+        ]
+      }
+    },
+    {
+      "name": "shallow_flyover_crossing",
+      "kind": "crossing",
+      "families": [
+        "parallel",
+        "flyover"
+      ],
+      "shared_effects": [
+        "approach_topology"
+      ],
+      "bindings": {
+        "deck": "flyover.deck",
+        "lower_in": "parallel.main_in_crossing",
+        "lower_out": "parallel.main_out_crossing"
+      },
+      "payload": {
+        "origin": [
+          -140,
+          -4715,
+          2.5999999046325684
+        ],
+        "region": {
+          "min": [
+            550,
+            -4815,
+            -9.400000095367432
+          ],
+          "max": [
+            1450,
+            -4650,
+            42.59999990463257
+          ]
+        },
+        "crossings": [
+          {
+            "name": "main_pair_under_flyover",
+            "position": [
+              1250,
+              0
+            ],
+            "upper_route": "deck",
+            "lower_routes": [
+              "lower_in",
+              "lower_out"
+            ],
+            "required_structure": "BRIDGE",
+            "window": {
+              "min": [
+                1080,
+                -4727,
+                -0.40000009536743164
+              ],
+              "max": [
+                1140,
+                -4703,
+                24.59999990463257
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

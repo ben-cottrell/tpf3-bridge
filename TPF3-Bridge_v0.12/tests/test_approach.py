@@ -361,6 +361,24 @@ class ApproachTests(unittest.TestCase):
                 state=approach.load(o.path(run)/'state.json');self.assertFalse(state['checks']['forward']['valid'])
                 self.assertEqual(state['checks']['alignment']['valid'],change!='geometry')
 
+    def test_unaliased_exported_family_rail_changes_invalidate_positive_and_negative_proofs(self):
+        for change in ('signal','revision','incidence'):
+            for negative in (False,True):
+                with self.subTest(change=change,negative=negative),tempfile.TemporaryDirectory() as td:
+                    c=World(td);o=Operator(runs=td,client=c);b=brief();f=b['families'][0]
+                    f['payload']['ports']['b']={'position':[20,0,0],'direction':[1,0]}
+                    f['payload']['steps'].append({'name':'shared_fan','kind':'stub','port':'b','length':20});f['exports']['shared_fan']='shared_fan'
+                    check=self.route_check();check['payload']['expected']=not negative;b['checks']=[check]
+                    run=o.plan_approach(b)['run'];o.build_approach(run)
+                    value={'status':'ok','result':{'requested_route_verified':False,'native_path_found':False,'reason':'no_native_path_returned'}} if negative else {'status':'ok','result':{'requested_route_verified':True,'path_count':1,'truncated':False}}
+                    with patch('bridge_approach.live.route',return_value=value) as route:
+                        self.assertEqual(o.review_approach(run)['status'],'reviewed');self.assertEqual(o.review_approach(run)['checks_run'],0)
+                        proof=approach.load(o.path(run)/'state.json')['checks']['forward'];self.assertIn('2',proof['dependencies']['geometry'])
+                        if change=='signal':c.objects[2]=[{'id':80,'signal':{'one_way':True,'forward':False}}]
+                        elif change=='revision':c.revisions[2]=[2,0,0]
+                        else:c.extra_incidence[c.edges[2]['node1']]=[99]
+                        out=o.review_approach(run);self.assertEqual(out['status'],'needs_attention');self.assertEqual(out['checks_run'],0);self.assertEqual(route.call_count,1)
+
     def test_cached_station_identity_change_invalidates_station_route_proof(self):
         with tempfile.TemporaryDirectory() as td:
             c=World(td);o=Operator(runs=td,client=c);b=brief();selector=b['station']

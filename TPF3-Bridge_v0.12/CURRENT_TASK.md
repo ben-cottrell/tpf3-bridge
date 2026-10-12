@@ -1,25 +1,18 @@
 # Current task
 
-Active authorised priorities3/4/5: reusable station-approach/junction jobs with local
-fitting/current identity/verification/compact outcomes; proven fan/crossover/flying-
-junction recipes; affected-only route/geometry checks. Coordinator owns layout/native/
-UI/staging. Astra contract is approved: implement a thin bounded approach composition
-layer over existing Operator/corridor children and affected-only named checks.
-Maximum8 ordered families, backward exact receipt references, station exits/leads
-before ordinary interfaces. No new executor or scheduler. Native qualification remains
-coordinator-owned; this worker performs code/tests/docs and a local checkpoint only.
-Offline composition/check implementation is complete and tested; coordinator native
-qualification is next. No additional worker feature or native operation is authorised
-by this completion note.
+Station-approach composition and affected-check milestone complete. The existing
+Operator/CLI approach-plan/build/continue/review layer is qualified on build40420
+for the seven-family authored example: all13 check records passed, including12
+positive platform movements and3 wrong-way probes. Expanded family-wide dependency
+fingerprints reject stale cached proofs; unchanged review makes no route calls.
 
-Start with bridge_operator.py plan/fit_variation/_execute/continue_plan/review,
-bridge_live.py existing junction/switching recipes and bridge_station_routes.py review;
-use relevant handbook guidance and current reusable tests. Preserve exact identities,
-effect envelopes, hard constraints, finite local search and unresolved-mutation guards.
-No broad audit, challenge-specific helper proliferation, new runner/service/dependency,
-native/UI/staging work, handoff history or remote push by the worker.
+Coordinator owns railway design/native/UI/staging. Worker source/tests/docs and the
+local qualification checkpoint are complete; no new feature, construction, worker
+batch or remote push is authorised by this completion. Retain current native receipts
+needed for review/reconciliation, not completed diagnostic histories.
 
-Efficiency slices1–3 are already qualified: plain curved/graded parallel2/4-road
-families and20 signals/4 batches/8 directed checks. Reuse unchanged evidence.
-Standalone Lua fixtures, parallel-family native bridges/tunnels and train traversal
-remain unclaimed. No unsolicited task follows this implementation.
+See STATE.md for actual qualification scope, measured request costs and test evidence;
+OPERATOR_USAGE.md for contracts and session-specific examples. Lua batch dependency
+observation remains a possible future optimisation, not implemented. No traversal,
+speed, continuous clearance, universal grade or general-version guarantee. Detailed
+station internals/train physics and host recovery remain excluded. Stop at this milestone.

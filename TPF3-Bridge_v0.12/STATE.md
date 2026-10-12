@@ -111,35 +111,47 @@ See OPERATOR_USAGE.md for family/completion contracts and existing benchmark com
 Detailed station internals and train physics remain deferred.
 
 ## Approach composition
-Offline implementation complete; coordinator owns native qualification. Operator/CLI
-approach-plan/build/continue/review compose at most8 ordered existing operator/corridor
-families, station-exit leads before ordinary interfaces, exact exported receipt bindings,
-replacement propagation, pending/session guards and affected-only named acceptance.
-Read-only station_leads prepares observed lateral terminal roles/graded lead targets;
-same-session exit evidence may be reused. Required interior bindings constrain station
-routes. Partial lead continuation prunes consumed roles; completed receipts remain
-exportable without replay. Signal-only exact geometry mappings preserve geometry proof
-while invalidating direction checks. No native qualification, traversal or continuous
-clearance claim. Saved-file integrity remains separate.
-Quiet checks:605 combined tests passed across test_approach.py, test_operator.py,
-test_operator_fit_variation.py, test_corridor_operator.py, test_corridor_completion.py,
-test_signal_batch.py, test_signal_benchmark.py, test_parallel_family.py, test_live_client.py.
-Current focused31 approach tests pass; cached proofs now refresh bounded exact geometry,
-route object/revision/incidence and scoped station dependencies once per review, with
-no route rerun when unchanged. Changes stop for reconciliation; explicit native absence
-is required for negative routes. Individual signal chains allow one_way:false; batch
-mode remains true-only. Chronological per-command replacement generations handle native
-ID recycling; qualified endpoint aliases and applied-prefix cursors prevent cross-road
-mapping and duplicate receipt consumption. Offline copies of the stopped native pointwork
-receipts match both current child road bindings exactly; no native calls/state rewrites.
-Incidence uses exact-node native segment witnesses, including another locally returned
-edge; no requirement that octree returns the inspected edge itself, no proximity proof.
-Latest approach/operator/corridor_operator/signal_batch focused135 passed.
-The605 combined check predates these narrow fixes; valid unchanged-suite evidence is reused.
-Subsequent focused checks cover changes. Command `.local_tools/operator312/Scripts/python.exe -`
-with unittest discovery for the named patterns and TextTestRunner(stream=io.StringIO(),verbosity=0).
-AST and git diff --check pass. No permanent reports or native calls from this worker.
-Current CLI/schema/limits are in OPERATOR_USAGE.md; native qualification remains pending.
+Qualified on build40420 in session pif_1791837108_17074876, approach run
+7c35e56939694be7. Operator/CLI approach-plan/build/continue/review compose at most8
+ordered existing operator/corridor families with station exits/leads before ordinary
+interfaces, exact exported receipt bindings, bounded local fitting, replacement
+propagation, pending/session guards and affected-only named acceptance.
+The seven-family station/fan/crossover/flyover example passed all13 check records,
+including12 positive platform movements,3 wrong-way probes and sampled geometry.
+All geometry used the first native fit; selected fan displacement was approximately
+-0.1002 native units. Visual inspection found a coherent compact flyover/ramps; no
+train traversal, speed, continuous clearance or general-version guarantee follows.
+
+Cached proofs cover every exported rail binding in explicitly declared check families,
+actual route endpoints and scoped station identity. Old narrow proofs correctly
+invalidated6 route checks while retaining7 geometry checks. Explicit continuation
+performed no construction; fresh affected review passed6 checks with15 route requests.
+It used116 requests,59.656s request wait/59.891s elapsed. Unchanged cached review ran0
+checks/route requests:52 dependency requests (3 inspect,3 operating_inspect,45 discover,
+1 station_lookup),26.5s wait/26.546s elapsed. Bounded Lua batch observation is a possible
+future optimisation, not implemented or authorised by this completion.
+Construction children used169 requests/84.842s wait; station bootstrap separately
+used2/1.141s. Parent registry/refresh costs are excluded; these are not total build time.
+No save was created. Current native receipts remain functional review/reconciliation state.
+
+Read-only station_leads reuses observed terminal ordering/grades and same-session exit
+evidence. Required interior bindings constrain station routes; negative checks require
+explicit native path absence. Partial continuation prunes consumed roles without replay.
+Native IDs are recyclable: chronological per-command generations, qualified endpoint
+aliases and receipt cursors preserve correspondence. Complete native incidence at an
+exact node may be witnessed by a sibling edge; proximity never proves attachment.
+Individual signal chains allow one_way:false; batch mode remains true-only.
+
+Quiet affected validation:138 tests passed,0 failures/errors across test_approach.py,
+test_operator.py, test_corridor_operator.py and test_signal_batch.py;33 approach tests.
+Command: `.local_tools/operator312/Scripts/python.exe -`, unittest discovery for those
+patterns with TextTestRunner(stream=io.StringIO(),verbosity=0). Both example JSONs parse;
+the executable compiles to7 families/13 checks. AST and git diff --check passed.
+Reuse valid unchanged-suite evidence from the605 combined check. No permanent reports.
+Current contracts/examples are in OPERATOR_USAGE.md and railway-design/examples/.
+This local qualification checkpoint follows2544725; upstream remains7530353, no push.
+Milestone complete; no follow-on task is implied. Saved-file integrity is separate from
+native acceptance. Detailed station internals and train physics remain deferred.
 
 Keep only current context and state needed to reconcile uncertain live mutations. Temporary
 diagnostics are removed after use; no permanent journals, audits, handoff archives or
