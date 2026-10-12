@@ -3,8 +3,14 @@
 Active authorised priorities3/4/5: reusable station-approach/junction jobs with local
 fitting/current identity/verification/compact outcomes; proven fan/crossover/flying-
 junction recipes; affected-only route/geometry checks. Coordinator owns layout/native/
-UI/staging. First worker step is offline exact-pointer reuse/gap preparation only.
-Do not implement new architecture until coordinator supplies the Astra contract.
+UI/staging. Astra contract is approved: implement a thin bounded approach composition
+layer over existing Operator/corridor children and affected-only named checks.
+Maximum8 ordered families, backward exact receipt references, station exits/leads
+before ordinary interfaces. No new executor or scheduler. Native qualification remains
+coordinator-owned; this worker performs code/tests/docs and a local checkpoint only.
+Offline composition/check implementation is complete and tested; coordinator native
+qualification is next. No additional worker feature or native operation is authorised
+by this completion note.
 
 Start with bridge_operator.py plan/fit_variation/_execute/continue_plan/review,
 bridge_live.py existing junction/switching recipes and bridge_station_routes.py review;
@@ -16,4 +22,4 @@ native/UI/staging work, handoff history or remote push by the worker.
 Efficiency slices1–3 are already qualified: plain curved/graded parallel2/4-road
 families and20 signals/4 batches/8 directed checks. Reuse unchanged evidence.
 Standalone Lua fixtures, parallel-family native bridges/tunnels and train traversal
-remain unclaimed. No unsolicited task follows this preparation.
+remain unclaimed. No unsolicited task follows this implementation.

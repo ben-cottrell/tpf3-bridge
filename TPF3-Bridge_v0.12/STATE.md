@@ -110,6 +110,26 @@ diagnostic cleanup.
 See OPERATOR_USAGE.md for family/completion contracts and existing benchmark commands.
 Detailed station internals and train physics remain deferred.
 
+## Approach composition
+Offline implementation complete; coordinator owns native qualification. Operator/CLI
+approach-plan/build/continue/review compose at most8 ordered existing operator/corridor
+families, station-exit leads before ordinary interfaces, exact exported receipt bindings,
+replacement propagation, pending/session guards and affected-only named acceptance.
+Read-only station_leads prepares observed lateral terminal roles/graded lead targets;
+same-session exit evidence may be reused. Required interior bindings constrain station
+routes. Partial lead continuation prunes consumed roles; completed receipts remain
+exportable without replay. Signal-only exact geometry mappings preserve geometry proof
+while invalidating direction checks. No native qualification, traversal or continuous
+clearance claim. Saved-file integrity remains separate.
+Quiet checks:605 combined tests passed across test_approach.py, test_operator.py,
+test_operator_fit_variation.py, test_corridor_operator.py, test_corridor_completion.py,
+test_signal_batch.py, test_signal_benchmark.py, test_parallel_family.py, test_live_client.py.
+Final focused21 approach tests pass, including three additions after that combined run;
+unchanged remaining-suite evidence reused. Command `.local_tools/operator312/Scripts/python.exe -`
+with unittest discovery for the named patterns and TextTestRunner(stream=io.StringIO(),verbosity=0).
+AST and git diff --check pass. No permanent reports or native calls from this worker.
+Current CLI/schema/limits are in OPERATOR_USAGE.md; native qualification remains pending.
+
 Keep only current context and state needed to reconcile uncertain live mutations. Temporary
 diagnostics are removed after use; no permanent journals, audits, handoff archives or
 completed-run logs. Do not erase pending operations to enable duplicate execution.

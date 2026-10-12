@@ -5,10 +5,14 @@ import bridge_live as live
 import bridge_station as station
 
 def review(client,registry,brief):
-    if set(brief)-{'max_path_entries'}!={'name','revision','routes'} or not isinstance(brief['routes'],list) or not 1<=len(brief['routes'])<=8:
+    if set(brief)-{'max_path_entries','bindings'}!={'name','revision','routes'} or not isinstance(brief['routes'],list) or not 1<=len(brief['routes'])<=8:
         raise ValueError('registry name/revision and1..8 directed station routes required')
     path_limit=brief.get('max_path_entries',256)
     if type(path_limit) is not int or not 1<=path_limit<=512:raise ValueError('explicit route path observation bound1..512 required')
+    bindings=brief.get('bindings',{});required_cache={}
+    for route in brief['routes']:
+        required=route.get('required_bindings',[])
+        if not isinstance(required,list) or len(required)>16 or len(set(required))!=len(required) or any(n not in bindings for n in required):raise ValueError('exact named required route bindings unavailable')
     records={}
     def registered_record(name,revision):
         if name not in records:records[name]=registry.load(name)
@@ -66,18 +70,22 @@ def review(client,registry,brief):
         if len(matches)!=1:raise live.LiveError('ambiguous_station_route' if matches else 'station_route_endpoint_unavailable','qualified terminal endpoint/direction is not unique')
         return matches[0]
     for route in brief['routes']:
-        if set(route)!={'name','purpose','source','target','max_length'} or route['purpose'] not in ('arrival','departure') or not isinstance(route['name'],str) or not 1<=len(route['name'])<=80 or route['name'] in names:raise ValueError('unique bounded named arrival/departure route required')
+        if set(route)-{'required_bindings'}!={'name','purpose','source','target','max_length'} or route['purpose'] not in ('arrival','departure') or not isinstance(route['name'],str) or not 1<=len(route['name'])<=80 or route['name'] in names:raise ValueError('unique bounded named arrival/departure route required')
         names.add(route['name'])
         required='target' if route['purpose']=='arrival' else 'source'
         if 'role' not in route[required]:raise ValueError('arrival targets/departure starts at a registered terminal')
         a=endpoint(route['source'],True);b=endpoint(route['target'],False)
+        from bridge_operator import fresh_binding
+        for name in route.get('required_bindings',[]):
+            if name not in required_cache:required_cache[name]=fresh_binding(client,bindings[name])
+        required_edges=list(dict.fromkeys([a['edge'],b['edge']]+[e['id'] for n in route.get('required_bindings',[]) for e in required_cache[n]]))
         response=live.route(client,{'source_edge':a['edge'],'source_node':a['node'],'target_edge':b['edge'],'target_node':b['node'],
-                                    'mode':'TRAIN','max_length':route['max_length'],'max_path_entries':path_limit,'required_edges':list(dict.fromkeys([a['edge'],b['edge']]))})
+                                    'mode':'TRAIN','max_length':route['max_length'],'max_path_entries':path_limit,'required_edges':required_edges})
         observations.append(response);value=response.get('result',{})
         count=value.get('path_count');complete=value.get('truncated') is False and type(count) is int and 0<count<=path_limit
         rows.append({'name':route['name'],'purpose':route['purpose'],'verified':response['status']=='ok' and value.get('requested_route_verified') is True and complete,
                      'source':a,'target':b,'status':response['status'],'reason':value.get('reason'),'length':value.get('total_path_length'),'request_id':response.get('request_id')})
-        rows[-1].update(path_count=count,max_path_entries=path_limit,truncated=value.get('truncated','unknown'))
+        rows[-1].update(path_count=count,max_path_entries=path_limit,truncated=value.get('truncated','unknown'),required_binding_count=len(route.get('required_bindings',[])))
     for name,v in surveys.items():
         final=client.request('station_lookup',station.parameters({'name':name,'lookup_scope':'identity_frozen'}));observations.append(final)
         if final['status']!='ok' or station.normalized_station(final['result'])!=v or client.session!=session:raise live.LiveError('stale_station','station route review crossed changed state/session')

@@ -770,6 +770,22 @@ class Operator:
         from bridge_corridor import complete_corridor
         return complete_corridor(self,run,phase=phase,continuing=continuing,road=road)
 
+    def plan_approach(self,brief):
+        from bridge_approach import plan
+        return plan(self,brief)
+
+    def build_approach(self,run):
+        from bridge_approach import build
+        return build(self,run)
+
+    def continue_approach(self,run,family_run=None):
+        from bridge_approach import build
+        return build(self,run,continuing=True,family_run=family_run)
+
+    def review_approach(self,run,checks=None):
+        from bridge_approach import review
+        return review(self,run,checks)
+
     def continue_plan(self,run,revision,steps=None,updates=None,bindings=None,reconciled_step=None):
         """Fresh, auditable remaining work; never replay successful native steps."""
         folder=self.path(run);parent=json.loads((folder/'state.json').read_text());old=json.loads((folder/'plan.json').read_text())
@@ -790,11 +806,24 @@ class Operator:
             elif not harmless:raise ValueError('uncertain/partial effects must be reconciled before remaining-work plan')
         remaining=steps if steps is not None else [s for s in old['steps'] if s['name'] not in carried]
         if not remaining or any(s['name'] in carried for s in remaining):raise ValueError('remaining work cannot replay successful steps')
+        def strings(value):
+            if isinstance(value,str):return {value}
+            if isinstance(value,list):return set().union(*(strings(v) for v in value))
+            if isinstance(value,dict):return set().union(*(strings(v) for v in value.values()))
+            return set()
+        references=strings(remaining)
         selected={**old.get('bindings',{}),**parent.get('bindings',{}),**{name:value for name,value in carried.items() if value.get('edges')}}
         selected={name:value for name,value in selected.items() if name not in parent.get('invalidated_bindings',[])}
         selected.update(bindings or {})
+        needed=(set(selected)&references)|{v['chain'] for k,v in old.get('port_refs',{}).items() if k in references}
+        selected={name:value for name,value in selected.items() if name in needed}
         observed={name:{'edges':fresh_binding(c,value)} for name,value in selected.items()}
         p=copy.deepcopy(old)
+        p['port_refs']={name:value for name,value in p.get('port_refs',{}).items() if name in references}
+        p['role_refs']={name:value for name,value in p.get('role_refs',{}).items() if name in references}
+        needed_roles=set(p['role_refs'].values())|tasks.role_names(remaining)
+        p['interface_bindings']={name:value for name,value in p.get('interface_bindings',{}).items() if name in p['role_refs']}
+        p['role_bindings']={name:value for name,value in p.get('role_bindings',{}).items() if name in needed_roles}
         if updates:
             allowed={'ports','curves','region','profile_axis','profile_exaggeration','crossings','max_grade','max_route_length'}
             if set(updates)-allowed:raise ValueError('unsupported continuation update')
@@ -1302,7 +1331,7 @@ def render_profile(plan,edges,path):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['status','survey','track-catalogue','station-survey','station-exits','station-routes','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','corridor-plan','corridor-build','corridor-status','corridor-continue','corridor-attach-completion','corridor-complete','camera','capture','save'])
+    parser.add_argument('action',choices=['status','survey','track-catalogue','station-survey','station-exits','station-routes','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','corridor-plan','corridor-build','corridor-status','corridor-continue','corridor-attach-completion','corridor-complete','approach-plan','approach-build','approach-continue','approach-review','camera','capture','save'])
     parser.add_argument('--input',type=Path);parser.add_argument('--run');parser.add_argument('--context',type=Path,default=CONTEXT)
     a=parser.parse_args()
     try:
@@ -1320,6 +1349,10 @@ def main():
         elif a.action=='corridor-continue':r=op.continue_corridor(a.run,**data)
         elif a.action=='corridor-attach-completion':r=op.attach_corridor_completion(a.run,**data)
         elif a.action=='corridor-complete':r=op.complete_corridor(a.run,**data)
+        elif a.action=='approach-plan':r=op.plan_approach(data)
+        elif a.action=='approach-build':r=op.build_approach(a.run)
+        elif a.action=='approach-continue':r=op.continue_approach(a.run,**data)
+        elif a.action=='approach-review':r=op.review_approach(a.run,**data)
         elif a.action=='station-survey':r=op.survey_station(data)
         elif a.action=='station-exits':r=op.survey_station_exits(data)
         elif a.action=='station-routes':r=op.review_station_routes(data)

@@ -671,7 +671,7 @@ class OperatorTest(unittest.TestCase):
         with patch.object(c,'request',return_value={'status':'ok','request_id':'read','result':{'edges':changed}}):
             with self.assertRaisesRegex(ValueError,'binding changed'):fresh_binding(c,{'edges':rows})
 
-    def test_continuation_generates_remaining_only_and_rechecks_parent_bindings(self):
+    def test_continuation_generates_remaining_only_without_refreshing_unrelated_prefix(self):
         with tempfile.TemporaryDirectory() as td:
             c=FakeClient();o=Operator(runs=td,client=c);p=self.grade_plan();p['steps'].append({**p['steps'][0],'name':'two'})
             edge=self.native_edge()
@@ -680,12 +680,14 @@ class OperatorTest(unittest.TestCase):
             with patch.object(c,'request',side_effect=responses):
                 original=o.plan(p)['run'];self.assertEqual(o.execute(original)['status'],'needs_attention')
             read={'status':'ok','request_id':'read','result':{'game_constructed':False,'edges':[edge]}}
-            with patch.object(c,'request',return_value=read):next_run=o.continue_plan(original,'R2')['run']
+            with patch.object(c,'request',return_value=read) as read_prefix:
+                next_run=o.continue_plan(original,'R2')['run'];read_prefix.assert_not_called()
             new=json.loads((o.path(next_run)/'plan.json').read_text());self.assertEqual([s['name'] for s in new['steps']],['two'])
             self.assertEqual(new['continuation']['skipped_steps'],['one'])
-            with patch.object(c,'request',side_effect=[read,{'status':'ok','request_id':'remaining','result':{'game_constructed':True,'edges':[]}}]) as request:
+            self.assertEqual(new['bindings'],{})
+            with patch.object(c,'request',return_value={'status':'ok','request_id':'remaining','result':{'game_constructed':True,'edges':[]}}) as request:
                 self.assertEqual(o.execute(next_run)['status'],'built')
-            self.assertEqual([call.args[0] for call in request.call_args_list],['inspect','test_approach'])
+            self.assertEqual([call.args[0] for call in request.call_args_list],['test_approach'])
             with self.assertRaises(ValueError):o.execute(original)
 
     def test_uncertain_effect_not_erased_by_later_read_failure(self):

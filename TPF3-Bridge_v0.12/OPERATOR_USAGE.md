@@ -925,3 +925,73 @@ dependency, physics, server, watchdog or environment recovery is introduced.
 
 Completed working records and diagnostics are disposable. Keep only current functional
 state; remove completed logs and superseded plans after use.
+
+## Authored approach families
+
+`Operator.plan_approach(brief)`, `build_approach(run)`,
+`continue_approach(run, family_run=None)` and `review_approach(run, checks=None)`
+compose existing operator/corridor children, with no new native executor.
+CLI: `python bridge_operator.py approach-plan --input approach.json`, then
+`approach-build --run <id>`, `approach-review --run <id>`; stopped work uses
+`approach-continue --run <id> --input continuation.json`.
+Continuation input is `{}` or `{"family_run":"<existing reconciled continuation id>"}`.
+Review input may select `{"checks":["arrival_P1"]}`; default runs only invalidated
+checks. No command retries an unknown mutation or replays completed children.
+
+The version1 brief contains `revision`, exact `session`, `station` selector
+`{name,construction:{resource,position}}`, `interfaces`, `families`, and `checks`.
+At most8 ordered families have `{name,kind,phase,envelopes,payload,imports,exports,
+shared_effects}`. `kind` is `operator` or `corridor`; `payload` is its existing plan
+or brief. Phases are optional station creation, station `leads`, then `ordinary`.
+Each child operation region must fit one authored envelope; corridor windows retain
+their existing limits. Envelopes do not grant protection to incidental map content.
+Station families create only the selected station; lead families extend only.
+
+`interfaces.station` and optional `interfaces.ordinary` contain existing
+`{name,revision,roles}` registry definitions. Station-exit roles qualify before
+leads; ordinary interfaces qualify after all leads. Registries must match the
+authored revision, roles and session. Consumed free/station exits are not globally
+resolved again. Remaining-plan continuation resolves only its required roles and
+bindings; mutation-time native checks still run.
+
+For a newly created station, build it once with the existing station operator,
+then use `bridge_approach.station_leads(operator, selector, outward_direction=...,
+ordered_roles=["P1","P2","P3","P4"], lead_length=30, registry_name=...,
+revision=..., track=..., max_grade=..., region=...)`. This read-only helper uses
+`inspect_exits`, exact construction/terminal association and selected-side lateral
+ordering. It returns `mouth_datum`, `station_interfaces`, existing extend `payload`
+and `exports`. It preserves observed tangent/grade; length5..60 is the existing
+native lead limit, not a new layout rule. No guessed terminal order or IDs.
+An optional `exit_evidence=<existing station-exits JSON path>` reuses a same-session
+survey for preparation; registry/build still perform fresh native qualification.
+Author later world ports from that observed datum; no general frame/recipe compiler.
+
+Imports map local chain names to earlier `family.export` names. Operator exports
+map public names to child step/binding names; station operating results are not rail
+chains. Corridor exports may select exact waypoint bindings or
+`{"road":{"track":"up","sections":["leg0","leg1"]}}`, recovering ordered receipt
+topology. Imported `port_refs` materialise current endpoint geometry; explicit
+edge/node refs follow exact replacement lineage with a unique retained endpoint.
+No proximity correspondence. Existing `fit_variation` performs local chain sliding.
+
+Checks have `{name,kind,families,shared_effects,bindings,payload}`; binding aliases
+reference exported chains. Dependency/effect set intersection invalidates proofs.
+Kinds: `station_routes` (existing brief), `route`, `geometry`, `crossing`.
+Station route entries may require `required_bindings:["arrival_crossover"]`;
+all their exact edges are required by the native route check, not just endpoints.
+Ordinary route payload has exact `source`/`target` selectors
+`{binding,end:"node0"|"node1"}` for single edges, or `{binding,edge_id,node_id}`;
+`required_bindings`, `mode:"TRAIN"`, `max_length`, optional `max_path_entries`
+(1..512) and `expected` (default true). Native required-edge bound32 remains.
+Geometry payload selects only `region`, `max_grade`, `classifications`; it samples
+current native cubics and does not certify continuous clearance or impose universal
+radius/sketch equality. Crossing payload uses existing explicit crossing observations
+with binding aliases as upper/lower route names; shared crossings invalidate together.
+
+Verified one-to-one signal replacement can retain geometry proof, but invalidates
+direction/route checks. Partial effects remain in child receipts; pending journal,
+changed session, ambiguous mapping or changed brief blocks advancement. Use existing
+child reconciliation, then pass its continuation id. Proofs are recorded same-session
+checks under declared effects, not atomic world observations or train traversal.
+Summaries truncate family/check/fit detail; full current state stays in the run record.
+This composition is offline-tested; native qualification is coordinator-owned.
