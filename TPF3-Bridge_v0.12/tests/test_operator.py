@@ -463,6 +463,23 @@ class OperatorTest(unittest.TestCase):
             p,_=self.signal_chain_plan();p['steps'][0]['seed_id']=seed
             with self.subTest(seed=seed),self.assertRaisesRegex(ValueError,'seed_id'):validate_plan(p)
 
+    def test_signal_chain_individual_bidirectional_option_reaches_native_parameters(self):
+        with tempfile.TemporaryDirectory() as td:
+            p,edge=self.signal_chain_plan();p['steps'][0]['one_way']=False;c=FakeClient();o=Operator(runs=td,client=c);seen=[]
+            def request(op,q,**kw):return {'status':'ok','request_id':'read','result':{'edges':[edge]}}
+            def place(client,brief,execute):
+                seen.append(brief.copy());old=edge['id'];edge['id']+=1
+                return {'status':'ok','request_id':'signal','result':{'game_constructed':True,'replaced_edge':old,'replacement_edge':edge['id']}}
+            with patch.object(c,'request',side_effect=request),patch('bridge_operator.live.place_signal',side_effect=place):
+                run=o.plan(p)['run'];self.assertEqual(o.execute(run)['status'],'built')
+            self.assertEqual(len(seen),3);self.assertTrue(all(b['one_way'] is False for b in seen))
+            state=json.loads((o.path(run)/'state.json').read_text());self.assertTrue(all(v['one_way'] is False for v in state['signal_chains']['blocks']['placements']))
+
+    def test_signal_chain_rejects_nonboolean_or_bidirectional_batch_before_native_calls(self):
+        for one_way,mode in ((False,'batch'),(0,'individual'),('false','individual')):
+            p,_=self.signal_chain_plan();p['steps'][0].update(one_way=one_way,placement_mode=mode,seed_id=99)
+            with self.subTest(one_way=one_way,mode=mode),self.assertRaisesRegex(ValueError,'one_way'):validate_plan(p)
+
     def test_signal_chain_partial_prefix_cannot_be_replayed_after_rejection(self):
         with tempfile.TemporaryDirectory() as td:
             p,edge=self.signal_chain_plan();c=FakeClient();o=Operator(runs=td,client=c);attempts=[]

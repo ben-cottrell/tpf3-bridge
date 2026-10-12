@@ -545,8 +545,10 @@ def validate_plan(p):
             if not 5<=s['length']<=60:raise ValueError('native fixture length5..60 required')
             if type(s.get('grade',0)) not in (int,float) or not math.isfinite(s.get('grade',0)) or abs(s.get('grade',0))>min(p['max_grade'],.04):raise ValueError('stub grade within native .04 and selected bound required')
         elif kind=='signal_chain':
-            if set(s)-{'seed_id','placement_mode','excluded_intervals'}!={'name','kind','chains','forward','spacing','start_offset','end_clearance','max_count'}:raise ValueError('explicit signal_chain fields required')
+            if set(s)-{'seed_id','placement_mode','excluded_intervals','one_way'}!={'name','kind','chains','forward','spacing','start_offset','end_clearance','max_count'}:raise ValueError('explicit signal_chain fields required')
             if s.get('placement_mode','individual') not in ('individual','batch'):raise ValueError('signal_chain placement_mode must be individual or batch')
+            if type(s.get('one_way',True)) is not bool:raise ValueError('signal_chain one_way must be boolean')
+            if s.get('placement_mode')=='batch' and not s.get('one_way',True):raise ValueError('batch signal_chain supports one_way:true only')
             if s.get('placement_mode')=='batch' and 'seed_id' not in s:raise ValueError('signal batch requires explicit seed_id')
             excluded=s.get('excluded_intervals',[])
             if not isinstance(excluded,list) or len(excluded)>64 or any(not isinstance(v,list) or len(v)!=2 or any(type(x) not in (int,float) or not math.isfinite(x) for x in v) or not 0<=v[0]<=v[1] for v in excluded) or any(a[1]>=b[0] for a,b in zip(excluded,excluded[1:])):raise ValueError('signal_chain requires ordered disjoint exclusion intervals')
@@ -1090,14 +1092,14 @@ class Operator:
                     for location in locations:
                         if any(a<=location['distance']<=b for a,b in s.get('excluded_intervals',[])):continue
                         index=location['edge_index'];original=rows[index]['id']
-                        brief={'edge_id':original,'parameter':location['parameter'],'forward':location['forward'],'one_way':True}
+                        brief={'edge_id':original,'parameter':location['parameter'],'forward':location['forward'],'one_way':s.get('one_way',True)}
                         if 'seed_id' in s:brief['seed_id']=s['seed_id']
                         r=live.place_signal(rc,brief,execute=True)
                         if r['status']!='ok':raise live.LiveError(r['status'],native_failure(r),r.get('request_id'))
                         value=r['result']
                         replacement=value['replacement_edge']
                         # Persist the successful effect before any fallible readback.
-                        progress['placements'].append(location|{'request_id':r['request_id'],'replaced_edge':original,'replacement_edge':replacement,'signal':value.get('signal')});persist()
+                        progress['placements'].append(location|{'one_way':brief['one_way'],'request_id':r['request_id'],'replaced_edge':original,'replacement_edge':replacement,'signal':value.get('signal')});persist()
                         if value['replaced_edge']!=original:raise ValueError('signal receipt replaced a different edge; inspect partial effects')
                         changed=inspect_edges(rc,[replacement])
                         if any(changed[0][k]!=rows[index][k] for k in ('node0','node1')) or any(abs(a-b)>.001 for k in ('p0','p1','t0','t1') for a,b in zip(changed[0][k],rows[index][k])):raise ValueError('signal replacement changed chain geometry; inspect partial effects')

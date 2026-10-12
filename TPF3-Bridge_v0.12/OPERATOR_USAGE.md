@@ -995,3 +995,7 @@ child reconciliation, then pass its continuation id. Proofs are recorded same-se
 checks under declared effects, not atomic world observations or train traversal.
 Summaries truncate family/check/fit detail; full current state stays in the run record.
 This composition is offline-tested; native qualification is coordinator-owned.
+Individual `signal_chain` accepts optional boolean `one_way` (default true).
+Use false for departure signals on bidirectional platform leads, with an authored
+start offset and imported exact lead chain. Batch mode supports true only and rejects
+false before native dispatch. Travel orientation remains the separate `forward` field.
