@@ -7,7 +7,8 @@ requested. Giganto1's final save includes254 signals and line233671, with58 stat
 junction and24 corridor/handoff directed checks passed; configuration is not traversal.
 Current acceptance/limits are in STATE.md. The baseline is published. The reviewed
 efficiency slice1 adds bounded prepared bulk signals; native qualification remains
-with the coordinator. Parallel-track slice2 is not implemented by this assignment.
+with the coordinator. The reusable benchmark uses current corridor/operator code
+and retains bounded plans/phase counters. Parallel-track slice2 is not implemented.
 
 ## Reusable capabilities
 Native-first connections, graded junctions and structures, basic passenger stations,

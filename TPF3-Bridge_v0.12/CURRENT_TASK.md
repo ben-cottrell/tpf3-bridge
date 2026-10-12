@@ -13,5 +13,8 @@ Run focused fake-adapter regressions quietly, review the diff and locally checkp
 Coordinator owns staging and native qualification on independently built equivalent
 individual/bulk fixtures with route checks and measured phase counters. No native/UI
 work by this worker. Standalone Lua verification is unavailable; native success and
-speed improvement remain unclaimed. Benchmark support follows core handoff; slice2
-parallel offsets are deferred. No new service, runner redesign or remote push.
+speed improvement remain unclaimed. Reusable benchmark source now exposes offline
+plan/inspect and guarded build/signal/qualify phases over existing corridor/operator
+primitives. It keeps the1000-unit plan bound and exact receipt topology. Native
+qualification remains with the coordinator; slice2 parallel offsets are deferred.
+No new service, runner redesign or remote push.

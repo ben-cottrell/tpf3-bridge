@@ -591,6 +591,45 @@ individual/batch fixtures; compare phase call counts/native seconds and verify
 intended and reverse-blocked routes separately. Offline checks do not establish
 native success or a speed improvement.
 
+`bridge_signal_benchmark.py` provides a reusable qualification workflow using the
+same corridor/operator code. Supply a JSON input with `version:1`, surveyed
+`session`, two authorised `origins` (XYZ), selected native `track` (`template`,
+`style`), actual `track_distance`, exact `seed_id`, and optional
+`rotation_degrees`. Origins must have separate effect envelopes. There are no
+hardcoded game identities, site choices or ground-height assumptions. Preflight
+rechecks the seed's native track resource/spacing against the selected brief.
+
+```text
+python bridge_signal_benchmark.py dry-run --input <benchmark.json>
+python bridge_signal_benchmark.py plan --input <benchmark.json>
+python bridge_signal_benchmark.py inspect --run <returned-run>
+python bridge_signal_benchmark.py build --run <returned-run>
+python bridge_signal_benchmark.py signal --run <returned-run>
+python bridge_signal_benchmark.py qualify --run <returned-run>
+```
+
+`dry-run` performs no game calls or writes; `plan` publishes local data only.
+`execute --run <returned-run>` combines the remaining phases explicitly.
+The fixture has A[0,0,h], B[600,0,h], C[1197,52,h] and
+D[1787.885,156.189,h+6], headings0/0/10/10 degrees, level waypoint ends,
+10-unit stubs and max gradient.025. Two ordinary roads cover A–D; two fast roads
+start at B. Lateral guide offsets use the selected native spacing; these are
+engineering anchors, not a claim of continuously exact normal spacing.
+No exact radius, intermediate guide or artificial structure is imposed.
+
+Exact receipt edges/waypoint-node identities recover each independent road from
+flattened group results. Signal windows retain the1000-unit operator bound and
+global sampled300-unit spacing with150-unit start/end clearance. Every mode
+uses fresh equivalent fixtures; realisation differences remain observable.
+Qualification checks four intended directions plus four reverse-blocked directions
+per fixture. Only native `no_native_path_returned` proves the latter. Compact stdout
+reports requests, mutations and native request seconds separately for construction,
+signals and route checks. These are measured operation counters, not credits.
+Current run state/receipts use the existing temporary operator area. Completed or
+interrupted phases are never automatically replayed; unknown effects stop for
+existing reconciliation. No saves, loads, UI calls, service or new dependencies
+are required by the runner. The coordinator performs native execution.
+
 For an explicitly rejected signal addition, `bridge_live.reconcile_rejected_signal(
 client, request_id, prior_observation)` performs one exact target/object read.
 It requires the original pre-placement receipt and unchanged target revision,

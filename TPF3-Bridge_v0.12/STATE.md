@@ -61,10 +61,15 @@ reconciliation with no replay or individual fallback. Compatibility mode is expl
 individual placement; new plans opt into batch mode. Coordinator owns native qualification
 and benchmark execution; Lua syntax/runtime and native bulk behaviour remain unverified.
 Detailed station internals, train physics and parallel-track slice2 remain deferred.
-Affected Python checks:586 distinct tests passed (quiet in-memory suites554 and43,
-then final12 bulk tests), covering the existing574 affected cases plus12 bulk cases. Python AST
-and diff whitespace checks passed. Runnable focused check:
+The reusable bridge_signal_benchmark.py now exposes offline dry-run/plan/inspect
+and one-attempt build/signal/qualify phases. It uses exact receipt topology,
+independent equivalent sites, bounded1000-unit signal windows, sampled300-unit
+phase and measured per-phase counters. Native execution remains unperformed.
+Affected Python checks:595 distinct tests passed across the relevant quiet suites
+(existing574 plus14 bulk and7 benchmark cases; latest33 included12 corridor cases).
+Python AST and diff whitespace checks passed. Runnable focused checks:
 `.local_tools/operator312/Scripts/python.exe -m unittest discover -s tests -p test_signal_batch.py -q`.
+`.local_tools/operator312/Scripts/python.exe -m unittest discover -s tests -p test_signal_benchmark.py -q`.
 Native fake-runtime fixture is prepared at tests/native/test_signal_batch.lua but not
 executed; no standalone Lua checker is installed. See OPERATOR_USAGE.md for the
 coordinator's existing plan/execute qualification commands and prerequisites.

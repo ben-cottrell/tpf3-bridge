@@ -30,19 +30,24 @@ class Fake:
         if operation=='inspect':result={'edges':[copy.deepcopy(self.rows[i]) for i in p['edge_ids']]}
         elif 'signal_chain_check' in p:result={'signal_chain_check':{'checked':True}}
         elif 'signal_batch' in p:
+            for row in p['signal_batch']['edges']:assert row['id'] in self.rows
+            for key in ('before_edge','after_edge'):
+                if key in p['signal_batch']:assert p['signal_batch'][key] in self.rows
             self.prepared=p['signal_batch'];self.handle=rid
             result={'signal_batch':{'accepted':self.accepted,'native_proposal_evaluated':True,
                 'input_hash':self.prepared['input_hash'],'prepared_handle':rid,'seed':{'id':99}}}
         elif operation=='operating_control':
             assert p['prepared_handle']==self.handle and p['input_hash']==self.prepared['input_hash']
             if self.outcome!='ok':return {'status':self.outcome,'request_id':rid,'result':{'game_constructed':'unknown','operating_effects':'unknown','retry':False}}
-            self.changed=True;old=self.prepared['edges'][0]['id'];new=copy.deepcopy(self.rows.pop(old));new['id']=old+100
-            new['revision']=[1,2,3];self.rows[new['id']]=new
+            self.changed=True;mapping=[];changed={}
+            for old in dict.fromkeys(q['edge_id'] for q in self.prepared['placements']):
+                new=copy.deepcopy(self.rows.pop(old));new['id']=old+100;new['revision']=[1,2,3];self.rows[new['id']]=new;changed[old]=new
+                mapping.append({'replaced_edge':old,'replacement_edge':new['id'],'snapshot':new})
             result={'input_hash':self.prepared['input_hash'],'prepared_handle':self.handle,
                 'game_constructed':True,'track_geometry_verified':self.proof,'existing_objects_retained':True,
-                'functional_signals_verified':True,'mapping':[{'replaced_edge':old,'replacement_edge':new['id'],'snapshot':new}],
-                'placements':[{'replaced_edge':q['edge_id'],'replacement_edge':new['id'],'travel_forward':q['forward'],
-                               'signal':{'id':1000+i,'param':q['parameter']}} for i,q in enumerate(self.prepared['placements'])]}
+                'functional_signals_verified':True,'mapping':mapping,
+                'placements':[{'replaced_edge':q['edge_id'],'replacement_edge':changed[q['edge_id']]['id'],'travel_forward':q['forward'],
+                               'signal':{'id':1000*len(self.calls)+i,'param':q['parameter']}} for i,q in enumerate(self.prepared['placements'])]}
         else:raise AssertionError((operation,p))
         return {'status':'ok','request_id':rid,'result':result}
 
@@ -155,6 +160,34 @@ class BatchTests(unittest.TestCase):
                 if not unknown:self.assertEqual(len(state['signal_chains']['blocks']['batches']),1)
                 with self.assertRaisesRegex(ValueError,'partial effects'):o.continue_plan(run,'retry')
                 self.assertEqual(sum(op=='operating_control' for op,p in c.calls),1)
+
+    def test_operator_more_than16_edges_updates_boundary_ids_between_batches(self):
+        with tempfile.TemporaryDirectory() as td:
+            rows=[]
+            for i in range(33):
+                r=edge(i+1,20);r.update(node0=i+1,node1=i+2,p0=[20*i,0,2],p1=[20*(i+1),0,2]);rows.append(r)
+            p=plan();p['bindings']={name:{'edges':copy.deepcopy(rows)} for name in ('road','alias')}
+            p['steps'][0].update(spacing=20,start_offset=10,end_clearance=10,max_count=64)
+            c=Fake();c.rows={r['id']:copy.deepcopy(r) for r in rows};o=Operator(runs=td,client=c);run=o.plan(p)['run']
+            result=o.execute(run);self.assertEqual(result['status'],'built',result)
+            batches=[q['signal_batch'] for op,q in c.calls if 'signal_batch' in q]
+            self.assertEqual([len(q['edges']) for q in batches],[16,16,1])
+            self.assertEqual(batches[0]['after_edge'],17);self.assertEqual(batches[1]['before_edge'],116)
+            self.assertEqual(batches[1]['after_edge'],33);self.assertEqual(batches[2]['before_edge'],132)
+            state=json.loads((o.path(run)/'state.json').read_text())
+            self.assertEqual([r['id'] for r in state['bindings']['alias']['edges']],list(range(101,134)))
+            self.assertEqual(len(state['signal_chains']['blocks']['placements']),33)
+
+    def test_exclusion_split_replaces_same_edge_again_using_fresh_receipt(self):
+        with tempfile.TemporaryDirectory() as td:
+            p=plan();p['steps'][0]['excluded_intervals']=[[200,500]]
+            c=Fake();o=Operator(runs=td,client=c);run=o.plan(p)['run'];result=o.execute(run)
+            self.assertEqual(result['status'],'built',result)
+            batches=[q['signal_batch'] for op,q in c.calls if 'signal_batch' in q]
+            self.assertEqual([q['edges'][0]['id'] for q in batches],[1,101])
+            state=json.loads((o.path(run)/'state.json').read_text())
+            self.assertEqual(state['bindings']['road']['edges'][0]['id'],201)
+            self.assertEqual([q['distance'] for q in state['signal_chains']['blocks']['placements']],[50,650])
 
     def test_batch_requires_seed_and_disjoint_exclusions(self):
         for change in (lambda p:p['steps'][0].pop('seed_id'),lambda p:p['steps'][0].update(excluded_intervals=[[100,200],[150,250]])):

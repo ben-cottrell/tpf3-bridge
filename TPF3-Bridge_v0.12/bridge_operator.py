@@ -1001,7 +1001,7 @@ class Operator:
                             selected=rows[first:first+16];q={'edges':selected,'start_node':current}
                             if first:q['before_edge']=rows[first-1]['id']
                             if first+16<len(rows):q['after_edge']=rows[first+16]['id']
-                            checked=rc.request('operating_inspect',{'signal_chain_check':q})
+                            checked=rc.request('operating_inspect',{'signal_chain_check':live._signal_batch_input(q)})
                             if checked['status']!='ok' or checked.get('result',{}).get('signal_chain_check',{}).get('checked') is not True:
                                 raise live.LiveError('signal_chain_not_ordinary',native_failure(checked),checked.get('request_id'))
                             for row in selected:current=row['node1'] if current==row['node0'] else row['node0']
