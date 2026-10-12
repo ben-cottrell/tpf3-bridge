@@ -1,14 +1,19 @@
 # Current task
 
-Efficiency slices1–3 complete: bounded bulk signals, one-reference native parallel
-families and optional authored named-road completion over existing corridor runs.
-Coordinator qualified plain curved/graded2/4-road families,20 signals in4 batches
-and8/8 directed/reverse-blocked routes. Python continuation fixes are checked.
+Active authorised priorities3/4/5: reusable station-approach/junction jobs with local
+fitting/current identity/verification/compact outcomes; proven fan/crossover/flying-
+junction recipes; affected-only route/geometry checks. Coordinator owns layout/native/
+UI/staging. First worker step is offline exact-pointer reuse/gap preparation only.
+Do not implement new architecture until coordinator supplies the Astra contract.
 
-Retain exact identities, original effect envelopes, native batch bounds, one-use
-preparation and pending-journal/reconciliation guards. Preserve compatibility defaults.
-Measured improvement applies only to the demonstrated signal phase, not whole-map
-performance. Standalone Lua fixtures remain unexecuted; native bridge/tunnel family
-qualification and train traversal are unclaimed. Coordinator owns final save/current
-state and completed diagnostic cleanup. No worker native/UI/staging or further slice.
-Stop at this milestone; no new batch/service/dependencies or remote push.
+Start with bridge_operator.py plan/fit_variation/_execute/continue_plan/review,
+bridge_live.py existing junction/switching recipes and bridge_station_routes.py review;
+use relevant handbook guidance and current reusable tests. Preserve exact identities,
+effect envelopes, hard constraints, finite local search and unresolved-mutation guards.
+No broad audit, challenge-specific helper proliferation, new runner/service/dependency,
+native/UI/staging work, handoff history or remote push by the worker.
+
+Efficiency slices1–3 are already qualified: plain curved/graded parallel2/4-road
+families and20 signals/4 batches/8 directed checks. Reuse unchanged evidence.
+Standalone Lua fixtures, parallel-family native bridges/tunnels and train traversal
+remain unclaimed. No unsolicited task follows this preparation.
