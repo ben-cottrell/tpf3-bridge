@@ -29,7 +29,8 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
 
 def no_step_effects(state):
-    if state.get('signal_chains',{}).get(state.get('current_step'),{}).get('placements'):return False
+    signal=state.get('signal_chains',{}).get(state.get('current_step'),{})
+    if signal.get('placements') or signal.get('batches'):return False
     mutation=state.get('step_mutation')
     if 'step_mutation' in state and mutation is None:return True
     return bool(mutation and mutation.get('game_constructed') is False and not mutation.get('native_operating_state_changed') and mutation.get('operating_effects')!='unknown')
@@ -317,6 +318,39 @@ def signal_chain_locations(rows,forward,spacing,start_offset,end_clearance,max_c
     return placements,total
 
 
+def signal_batch_chunks(rows,locations,seed_id,excluded_intervals=()):
+    """Keep sampled global phase; split exclusions and bound each contiguous chunk."""
+    nodes=[]
+    start=rows[0]['node0']
+    if len(rows)>1:
+        shared={rows[0]['node0'],rows[0]['node1']} & {rows[1]['node0'],rows[1]['node1']}
+        if len(shared)!=1:raise ValueError('signal batch simple ordered chain required')
+        start=next(n for n in (rows[0]['node0'],rows[0]['node1']) if n not in shared)
+    nodes.append(start)
+    for row in rows:
+        if nodes[-1] not in (row['node0'],row['node1']):raise ValueError('signal batch disconnected chain')
+        nodes.append(row['node1'] if nodes[-1]==row['node0'] else row['node0'])
+    runs={}
+    for q in locations:
+        if any(a<=q['distance']<=b for a,b in excluded_intervals):continue
+        interval=sum(q['distance']>b for a,b in excluded_intervals)
+        runs.setdefault(interval,[]).append(q)
+    chunks=[]
+    for interval,locations_in_run in runs.items():
+        remaining=sorted(locations_in_run,key=lambda q:q['edge_index'])
+        while remaining:
+            first=remaining[0]['edge_index'];selected=[q for q in remaining if q['edge_index']<first+16][:64]
+            last=max(q['edge_index'] for q in selected)
+            brief={'edges':rows[first:last+1],'placements':[{'edge_id':rows[q['edge_index']]['id'],
+                'parameter':q['parameter'],'forward':q['forward'],'one_way':True,'distance':q['distance']} for q in selected],
+                'seed_id':seed_id,'start_node':nodes[first],'excluded_intervals':[list(v) for v in excluded_intervals]}
+            # Budget-only boundaries remain ordinary through nodes. Exclusion boundaries
+            # are deliberate breaks, not an assertion of through-chain connectivity.
+            chunks.append({'brief':brief,'locations':selected,'first':first,'last':last,'interval':interval})
+            remaining=remaining[len(selected):]
+    return chunks
+
+
 def catalogue_components(edges):
     """Summarise the returned native graph only; incidence identifies actual free ends."""
     by_id={e['id']:e for e in edges}
@@ -488,7 +522,11 @@ def validate_plan(p):
             if not 5<=s['length']<=60:raise ValueError('native fixture length5..60 required')
             if type(s.get('grade',0)) not in (int,float) or not math.isfinite(s.get('grade',0)) or abs(s.get('grade',0))>min(p['max_grade'],.04):raise ValueError('stub grade within native .04 and selected bound required')
         elif kind=='signal_chain':
-            if set(s)-{'seed_id'}!={'name','kind','chains','forward','spacing','start_offset','end_clearance','max_count'}:raise ValueError('explicit signal_chain fields required')
+            if set(s)-{'seed_id','placement_mode','excluded_intervals'}!={'name','kind','chains','forward','spacing','start_offset','end_clearance','max_count'}:raise ValueError('explicit signal_chain fields required')
+            if s.get('placement_mode','individual') not in ('individual','batch'):raise ValueError('signal_chain placement_mode must be individual or batch')
+            if s.get('placement_mode')=='batch' and 'seed_id' not in s:raise ValueError('signal batch requires explicit seed_id')
+            excluded=s.get('excluded_intervals',[])
+            if not isinstance(excluded,list) or len(excluded)>64 or any(not isinstance(v,list) or len(v)!=2 or any(type(x) not in (int,float) or not math.isfinite(x) for x in v) or not 0<=v[0]<=v[1] for v in excluded) or any(a[1]>=b[0] for a,b in zip(excluded,excluded[1:])):raise ValueError('signal_chain requires ordered disjoint exclusion intervals')
             if 'seed_id' in s and (type(s['seed_id']) is not int or s['seed_id']<=0):raise ValueError('signal_chain seed_id requires an exact positive native signal ID')
             if not isinstance(s['chains'],list) or not 1<=len(s['chains'])<=32 or any(not isinstance(n,str) or n not in names for n in s['chains']):raise ValueError('signal_chain requires earlier named chains')
             if type(s['forward']) is not bool:raise ValueError('signal_chain requires explicit forward direction')
@@ -816,6 +854,15 @@ class Operator:
                     binding['edges']=[new for e in old for new in (changed if e['id']==original else [e])]
             state.setdefault('lineage',[]).append({'request_id':request_id,'original_edge':original,'replacement_edges':replacement})
             if prior:state['bindings']=prior
+        def follow_batch(changed,request_id):
+            for binding in list(state['steps'].values())+list(prior.values()):
+                old=binding.get('edges',[])
+                if any(e['id'] in changed for e in old):
+                    binding.setdefault('original_edges',copy.deepcopy(old))
+                    binding['edges']=[changed.get(e['id'],e) for e in old]
+            state.setdefault('lineage',[]).extend({'request_id':request_id,'original_edge':old,
+                'replacement_edges':[new['id']]} for old,new in changed.items())
+            if prior:state['bindings']=prior
         def structure_query(spec):
             replacement=chain(spec['replace_chain']) if spec.get('replacement_boundaries') else None
             if replacement is not None:
@@ -942,7 +989,41 @@ class Operator:
                     locations,total=signal_chain_locations(rows,s['forward'],s['spacing'],s['start_offset'],s['end_clearance'],s['max_count'])
                     progress={'placements':[],'sampled_length':total,'sampled_only':True}
                     state.setdefault('signal_chains',{})[s['name']]=progress;persist()
+                    if s.get('placement_mode')=='batch':
+                        chunks=signal_batch_chunks(rows,locations,s['seed_id'],s.get('excluded_intervals',[]))
+                        # Qualify every ordinary through node before the first mutation,
+                        # including unsignalled edges between budget chunks.
+                        current=chunks[0]['brief']['start_node'] if chunks and chunks[0]['first']==0 else rows[0]['node0']
+                        if len(rows)>1:
+                            shared={rows[0]['node0'],rows[0]['node1']} & {rows[1]['node0'],rows[1]['node1']}
+                            current=next(n for n in (rows[0]['node0'],rows[0]['node1']) if n not in shared)
+                        for first in range(0,len(rows),16):
+                            selected=rows[first:first+16];q={'edges':selected,'start_node':current}
+                            if first:q['before_edge']=rows[first-1]['id']
+                            if first+16<len(rows):q['after_edge']=rows[first+16]['id']
+                            checked=rc.request('operating_inspect',{'signal_chain_check':q})
+                            if checked['status']!='ok' or checked.get('result',{}).get('signal_chain_check',{}).get('checked') is not True:
+                                raise live.LiveError('signal_chain_not_ordinary',native_failure(checked),checked.get('request_id'))
+                            for row in selected:current=row['node1'] if current==row['node0'] else row['node0']
+                        for chunk in chunks:
+                            brief=chunk['brief']|{'edges':rows[chunk['first']:chunk['last']+1]}
+                            # Earlier native replacement receipts change identities, not phase.
+                            brief['placements']=[q|{'edge_id':rows[loc['edge_index']]['id']} for q,loc in zip(brief['placements'],chunk['locations'])]
+                            if chunk['first']:brief['before_edge']=rows[chunk['first']-1]['id']
+                            if chunk['last']+1<len(rows):brief['after_edge']=rows[chunk['last']+1]['id']
+                            r=live.place_signal_batch(rc,brief,execute=True)
+                            if r['status']!='ok':raise live.LiveError(r['status'],native_failure(r),r.get('request_id'))
+                            value=r['result']
+                            progress.setdefault('batches',[]).append({'request_id':r['request_id'],'receipt':value});persist()
+                            # Preserve exact receipt before any qualification can fail.
+                            changed=live.signal_batch_replacements(brief,value)
+                            progress['placements'].extend(loc|q|{'request_id':r['request_id']} for loc,q in zip(chunk['locations'],value['placements']))
+                            follow_batch(changed,r['request_id'])
+                            rows=[changed.get(row['id'],row) for row in rows];persist()
+                        state['steps'][s['name']]={'status':'built','edges':[],'result':progress};persist()
+                        continue
                     for location in locations:
+                        if any(a<=location['distance']<=b for a,b in s.get('excluded_intervals',[])):continue
                         index=location['edge_index'];original=rows[index]['id']
                         brief={'edge_id':original,'parameter':location['parameter'],'forward':location['forward'],'one_way':True}
                         if 'seed_id' in s:brief['seed_id']=s['seed_id']

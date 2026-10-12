@@ -3054,6 +3054,87 @@ def place_signal(client, brief, *, execute=False):
     return response|{'result':response.get('result',{})|{'signal_fit':report}} if offsets is not None else response
 
 
+def _signal_batch_input(brief):
+    params=json.loads(json.dumps(brief,allow_nan=False))
+    fields={'id','node0','node1','p0','p1','t0','t1','template','style','revision','native_type','native_type_index'}
+    params['edges']=[{k:v for k,v in row.items() if k in fields} for row in params['edges']]
+    return params
+
+
+def place_signal_batch(client, brief, *, execute=False):
+    """Prepare once, execute its session-bound handle once; never place individually."""
+    required={'edges','placements','seed_id','start_node'}
+    if not isinstance(brief,dict) or not required<=brief.keys() or brief.keys()-required-{'before_edge','after_edge','excluded_intervals'} or type(execute) is not bool:
+        raise ValueError('explicit signal batch fields required')
+    edges=brief['edges'];placements=brief['placements']
+    if not isinstance(edges,list) or not 1<=len(edges)<=16 or len({e['id'] for e in edges})!=len(edges):
+        raise ValueError('signal batch needs1..16 distinct ordered exact edge snapshots')
+    if not isinstance(placements,list) or not 1<=len(placements)<=64:
+        raise ValueError('signal batch needs1..64 placements')
+    for key in ('seed_id','start_node','before_edge','after_edge'):
+        if key in brief and (type(brief[key]) is not int or brief[key]<=0):raise ValueError('signal batch requires positive exact identities')
+    ids={e['id'] for e in edges};seen={}
+    for row in edges:
+        if type(row['id']) is not int or row['id']<=0 or any(type(row[k]) is not int or row[k]<=0 for k in ('node0','node1')):
+            raise ValueError('signal batch exact edge/node identities required')
+        for key in ('p0','p1','t0','t1'):
+            if not isinstance(row.get(key),list) or len(row[key])!=3 or any(type(x) not in (int,float) or not math.isfinite(x) for x in row[key]):
+                raise ValueError('signal batch finite geometry required')
+    exclusions=brief.get('excluded_intervals',[])
+    if not isinstance(exclusions,list) or len(exclusions)>64 or any(not isinstance(v,list) or len(v)!=2 or any(type(x) not in (int,float) or not math.isfinite(x) for x in v) or not 0<=v[0]<=v[1] for v in exclusions):
+        raise ValueError('signal batch needs bounded ordered exclusion intervals')
+    for q in placements:
+        if not isinstance(q,dict) or set(q)-{'distance'}!={'edge_id','parameter','forward','one_way'} or q['edge_id'] not in ids:
+            raise ValueError('signal batch placement needs exact included edge')
+        if type(q['parameter']) not in (int,float) or not math.isfinite(q['parameter']) or not 0<q['parameter']<1 or any(type(q[k]) is not bool for k in ('forward','one_way')):
+            raise ValueError('signal batch interior parameter and explicit directions required')
+        if any(abs(q['parameter']-v)<=.0001 for v in seen.setdefault(q['edge_id'],[])):
+            raise ValueError('signal batch duplicate parameter')
+        seen[q['edge_id']].append(q['parameter'])
+        if exclusions and (type(q.get('distance')) not in (int,float) or not math.isfinite(q['distance']) or any(a<=q['distance']<=b for a,b in exclusions)):
+            raise ValueError('signal batch placement in excluded interval or missing distance')
+    params=_signal_batch_input(brief)
+    params['input_hash']=hashlib.sha256(json.dumps(params,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+    prepared=client.request('operating_inspect',{'signal_batch':params})
+    if prepared['status']!='ok' or not execute:return prepared
+    value=prepared.get('result',{}).get('signal_batch',{})
+    if value.get('native_proposal_evaluated') is not True or value.get('accepted') is not True:
+        return prepared|{'status':'error','result':{'error':'native_signal_batch_proposal_rejected','game_constructed':False}}
+    if value.get('input_hash')!=params['input_hash'] or value.get('prepared_handle')!=prepared['request_id'] or value.get('seed',{}).get('id')!=brief['seed_id']:
+        raise LiveError('reconciliation_required','signal batch prepared identity differs')
+    return client.request('operating_control',{'action':'signal_batch','execute':True,
+        'prepared_handle':value['prepared_handle'],'input_hash':params['input_hash']})
+
+
+def signal_batch_replacements(brief,value):
+    """Qualify complete native proof before removing redundant Python inspections."""
+    expected=hashlib.sha256(json.dumps(_signal_batch_input(brief),sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+    if value.get('input_hash')!=expected or any(value.get(k) is not True for k in ('track_geometry_verified','existing_objects_retained','functional_signals_verified','game_constructed')):
+        raise LiveError('reconciliation_required','signal batch native proof incomplete')
+    affected={q['edge_id'] for q in brief['placements']};mapping=value.get('mapping',[])
+    if len(mapping)!=len(affected) or {r['replaced_edge'] for r in mapping}!=affected or len({r['replacement_edge'] for r in mapping})!=len(mapping):
+        raise LiveError('reconciliation_required','signal batch replacement mapping incomplete')
+    original={r['id']:r for r in brief['edges']};changed={}
+    for r in mapping:
+        old=original[r['replaced_edge']];new=r['snapshot']
+        if (type(r['replacement_edge']) is not int or r['replacement_edge']<=0 or new['id']!=r['replacement_edge']
+                or any(new[k]!=old[k] for k in ('node0','node1','template','style'))
+                or not isinstance(new.get('revision'),list) or len(new['revision'])!=3 or any(type(x) is not int for x in new['revision'])
+                or any(not isinstance(new.get(k),list) or len(new[k])!=3 or any(type(x) not in (int,float) or not math.isfinite(x) for x in new[k]) for k in ('p0','p1','t0','t1'))
+                or any(abs(a-b)>.001 for k in ('p0','p1','t0','t1') for a,b in zip(new[k],old[k]))):
+            raise LiveError('reconciliation_required','signal batch replacement changed geometry/identity')
+        changed[old['id']]=new
+    placed=value.get('placements',[])
+    if len(placed)!=len(brief['placements']) or len({r['signal']['id'] for r in placed})!=len(placed):
+        raise LiveError('reconciliation_required','signal batch signal identities incomplete')
+    for q,r in zip(brief['placements'],placed):
+        if (r['replaced_edge']!=q['edge_id'] or r['replacement_edge']!=changed[q['edge_id']]['id']
+                or type(r['signal']['id']) is not int or r['signal']['id']<=0 or r.get('travel_forward') is not q['forward']
+                or type(r['signal']['param']) not in (int,float) or not math.isfinite(r['signal']['param']) or abs(r['signal']['param']-q['parameter'])>.0001):
+            raise LiveError('reconciliation_required','signal batch signal attachment differs')
+    return changed
+
+
 def place_depot(client, brief, *, execute=False):
     """Prepare from native construction parameters; submit once only on explicit execution.
 

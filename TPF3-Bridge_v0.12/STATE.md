@@ -52,12 +52,22 @@ Future design guidance includes urban space reservations, coherent compact appro
 speed/curve progression and sensible lead/signal placement. Handbook/procedure dimensions
 are contextual guidance, not new universal engineering gates; speed estimates are unmeasured.
 
-Retained changes are locally committed and574 affected Python checks passed. Temporary
-run-tree deletion and remote publication remain externally blocked; no deletion or push
-occurred. Exact irreversible cleanup scope and destination/payload approval are needed;
-do not retry or bypass. No efficiency implementation, new batch or automation starts
-before reviewed coordinator architecture. Coordinator owns native/save operations;
-workers remain within assignment.
+The baseline is published at7530353; approved completed-run cleanup is resolved.
+Slice1 adds prepared bulk signal proposals over the existing adapter: exact seed,
+session/input-bound one-use handle,16 edges/64 placements,16 objects per resulting
+edge, full native functional/retention proof and one named-binding update per batch.
+Sampled spacing phase survives chunks/exclusions; uncertain effects require existing
+reconciliation with no replay or individual fallback. Compatibility mode is explicit
+individual placement; new plans opt into batch mode. Coordinator owns native qualification
+and benchmark execution; Lua syntax/runtime and native bulk behaviour remain unverified.
+Detailed station internals, train physics and parallel-track slice2 remain deferred.
+Affected Python checks:586 distinct tests passed (quiet in-memory suites554 and43,
+then final12 bulk tests), covering the existing574 affected cases plus12 bulk cases. Python AST
+and diff whitespace checks passed. Runnable focused check:
+`.local_tools/operator312/Scripts/python.exe -m unittest discover -s tests -p test_signal_batch.py -q`.
+Native fake-runtime fixture is prepared at tests/native/test_signal_batch.lua but not
+executed; no standalone Lua checker is installed. See OPERATOR_USAGE.md for the
+coordinator's existing plan/execute qualification commands and prerequisites.
 
 Keep only current context and state needed to reconcile uncertain live mutations. Temporary
 diagnostics are removed after use; no permanent journals, audits, handoff archives or

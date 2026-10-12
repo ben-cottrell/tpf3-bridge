@@ -559,6 +559,38 @@ global entity enumeration; invalid or stale seeds fail before submission. The ID
 above is an example and must be observed in the current map. Without `seed_id`,
 the existing bounded global fallback remains and may report search exhaustion.
 
+Use `"placement_mode":"batch"` with an explicit current `seed_id` for bulk
+blocks. The compatibility default remains `individual`; a failed batch never
+falls back to individual placement. Optional `excluded_intervals:[[a,b],...]`
+are ordered disjoint distances along the selected travel direction. Exclusions
+skip positions without restarting the sampled spacing phase. Author ordinary
+chains separately from junction/station decision areas: batch preparation rejects
+construction-owned tracks, loops, and intermediate nodes with other incidence.
+Excluding a signal interval does not authorise crossing an unqualified junction.
+
+Bulk preparation uses `operating_inspect.signal_batch`: ordered exact edge
+snapshots, explicit seed, placements, start node and exclusions return a native
+preview plus one session/input-bound handle. `operating_control` action
+`signal_batch` consumes that handle once. Each proposal affects at most16 edges
+and64 placements, retains at most16 objects per resulting edge, and replaces
+each affected edge once. Longer ordinary chains are chunked with the original
+distance phase. Native readback verifies geometry, existing objects and every
+signal's resource/attachment/direction, returning fresh snapshots and an exact
+replacement mapping. Python updates all named bindings together; no redundant
+per-signal inspect follows a complete native proof. This is not a directed-route
+or train-traversal guarantee. Unknown/partial effects stop for reconciliation;
+neither an attempted run nor a consumed handle is automatically replayed.
+
+For native qualification, publish a version2 plan using fresh named bindings and
+the batch step above, then use the existing commands:
+`python bridge_operator.py plan --input <plan.json>` and
+`python bridge_operator.py execute --run <returned-run>`. The coordinator must
+stage/load the matching prepared mod, survey a healthy current session and exact
+signal seed, and select the authorised site. Use independently built equivalent
+individual/batch fixtures; compare phase call counts/native seconds and verify
+intended and reverse-blocked routes separately. Offline checks do not establish
+native success or a speed improvement.
+
 For an explicitly rejected signal addition, `bridge_live.reconcile_rejected_signal(
 client, request_id, prior_observation)` performs one exact target/object read.
 It requires the original pre-placement receipt and unchanged target revision,

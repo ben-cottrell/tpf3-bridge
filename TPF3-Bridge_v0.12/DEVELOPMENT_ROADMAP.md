@@ -5,8 +5,9 @@ The offline application, native bridge and integrated operator are implemented.
 Challenge04 and the Giganto1 corridor rehearsal are user-accepted; no layout repair is
 requested. Giganto1's final save includes254 signals and line233671, with58 station/
 junction and24 corridor/handoff directed checks passed; configuration is not traversal.
-Current acceptance/limits are in STATE.md. The authorised next efficiency workload waits
-for reviewed coordinator architecture after checkpoint preparation and publication.
+Current acceptance/limits are in STATE.md. The baseline is published. The reviewed
+efficiency slice1 adds bounded prepared bulk signals; native qualification remains
+with the coordinator. Parallel-track slice2 is not implemented by this assignment.
 
 ## Reusable capabilities
 Native-first connections, graded junctions and structures, basic passenger stations,

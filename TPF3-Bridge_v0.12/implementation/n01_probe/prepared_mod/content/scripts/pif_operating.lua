@@ -183,6 +183,11 @@ local function signal_command(p,preview)
    game_constructed=true,physical_operation="requires_separate_observation"}
  end
 end
+local function batches()
+ return ug_require('tpf3_bridge_n01_c04_20261001::/scripts/pif_signal_batch.lua').new(comp,rev,fresh,xyz,signals,qualified_signal_seed,function(x)
+  return ug_require('tpf3_bridge_n01_c04_20261001::/scripts/pif_native.lua').inspect({edge_ids={x},structures=true}).edges[1]
+ end)
+end
 local function bounded(ids,limit,read)
  local out={count=#ids,records={},truncated=#ids>limit}
  for i=1,math.min(#ids,limit) do out.records[i]=read(ids[i]) end
@@ -352,7 +357,7 @@ local function depot_readback(x,p)
   native_depot_identity_verified=true,game_constructed=true,world_mutated_by_readback=false,
   attachment="requires_exact_native_node_and_route_readback",dispatch="not_demonstrated"}
 end
-function M.inspect(p)
+function M.inspect(p,s,state,request_id)
  local limit=p.limit or 16;assert(type(limit)=="number" and limit%1==0 and limit>=1 and limit<=32,"operating_read_bound")
  local out={game_constructed=false,player=api.engine.util.getPlayer(),save_identity="unknown",load_epoch="adapter_session_only"}
  if p.station_catalogue then return stations.catalogue() end
@@ -360,6 +365,8 @@ function M.inspect(p)
  if p.station_readback then local q=p.station_readback;out.station_readback=stations.readback(id(q.construction_id),q);return out end
  if p.signal_seed then out.signal_seed=signal_seed(type(p.signal_seed)=="table" and p.signal_seed or nil);return out end
  if p.signal_placement then out.signal_placement=signal_command(p.signal_placement,true);return out end
+ if p.signal_batch then out.signal_batch=batches().prepare(p.signal_batch,s,state,request_id);return out end
+ if p.signal_chain_check then out.signal_chain_check=batches().check(p.signal_chain_check);return out end
  if p.vehicle_asset_resources then
   assert(#p.vehicle_asset_resources>=1 and #p.vehicle_asset_resources<=8,"selected_vehicle_asset_bound")
   local function entries(values)
@@ -596,6 +603,8 @@ function M.control(p,s,state,request_id,respond)
   cmd,read=stations.command(p)
  elseif p.action=="signal_place" then
   cmd,read=signal_command(p)
+ elseif p.action=="signal_batch" then
+  cmd,read=batches().command(p,s,state)
  elseif p.action=="depot_build" then
   cmd,read=depot_command(p)
  elseif p.action=="vehicle_buy" then
