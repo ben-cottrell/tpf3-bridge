@@ -981,6 +981,12 @@ chains. Corridor exports may select exact waypoint bindings or
 topology. Imported `port_refs` materialise current endpoint geometry; explicit
 edge/node refs follow exact replacement lineage with a unique retained endpoint.
 No proximity correspondence. Existing `fit_variation` performs local chain sliding.
+Replacement receipts compose chronologically, grouping one native command atomically.
+Native numeric IDs may be recycled; they are not a timeless transitive graph.
+Imported endpoints follow binding-qualified input generations/retained exact nodes.
+Per-child receipt-prefix cursors prevent a completed receipt being applied twice;
+conflicting/incomplete generations stop without partially updating bindings. Existing
+legacy flat ID maps are not used to invent correspondence.
 
 Checks have `{name,kind,families,shared_effects,bindings,payload}`; binding aliases
 reference exported chains. Dependency/effect set intersection invalidates proofs.

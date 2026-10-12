@@ -153,7 +153,34 @@ class ApproachTests(unittest.TestCase):
         child={'bindings':{'parent':{'edges':[left,right]}},'lineage':[{'original_edge':1,'replacement_edges':[5]}, {'original_edge':5,'replacement_edges':[8,9]}]}
         approach.propagate(brief(),s,child,False)
         self.assertEqual([e['id'] for e in s['bindings']['seed.road']['edges']],[8,9])
-        self.assertEqual(s['replacement_ids']['1'],[5])
+        self.assertEqual(approach.imported_endpoint(s,'seed.road',{'edge_id':1,'node_id':2},s['bindings']['seed.road']['edges'])['id'],8)
+
+    def test_chronological_recycled_ids_do_not_cross_bindings_or_replay_receipts(self):
+        a={'id':1,'node0':10,'node1':20};z={'id':2,'node0':30,'node1':40}
+        s={'bindings':{'seed.in':{'edges':[a]},'seed.out':{'edges':[z]}},'checks':{}}
+        rows=[{'id':3,'node0':10,'node1':11},{'id':2,'node0':11,'node1':12},{'id':9,'node0':12,'node1':13},{'id':10,'node0':13,'node1':20},
+              {'id':5,'node0':30,'node1':31},{'id':7,'node0':31,'node1':32},{'id':1,'node0':32,'node1':40}]
+        child={'bindings':{'current':{'edges':rows}},'steps':{'new_branch':{'edges':[{'id':6,'node0':13,'node1':99}]}},'lineage':[
+            {'request_id':'first','original_edge':1,'replacement_edges':[3,4]}, {'request_id':'first','original_edge':2,'replacement_edges':[5,6]},
+            {'request_id':'second','original_edge':6,'replacement_edges':[7,1]}, {'request_id':'second','original_edge':4,'replacement_edges':[2,8]},
+            {'request_id':'third','original_edge':8,'replacement_edges':[9,10]}]}
+        approach.propagate(brief(),s,child,False,receipt='native_child')
+        self.assertEqual([e['id'] for e in s['bindings']['seed.in']['edges']],[3,2,9,10])
+        self.assertEqual([e['id'] for e in s['bindings']['seed.out']['edges']],[5,7,1])
+        self.assertEqual(approach.imported_endpoint(s,'seed.out',{'edge_id':2,'node_id':40},s['bindings']['seed.out']['edges'])['id'],1)
+        before=copy.deepcopy(s);approach.propagate(brief(),s,child,False,receipt='native_child');self.assertEqual(s,before)
+
+    def test_atomic_command_recycling_is_not_a_transitive_id_graph(self):
+        s={'bindings':{'seed.a':{'edges':[{'id':1,'node0':10,'node1':20}]},'seed.b':{'edges':[{'id':2,'node0':30,'node1':40}]}},'checks':{}}
+        child={'bindings':{'current':{'edges':[{'id':2,'node0':10,'node1':20},{'id':3,'node0':30,'node1':40}]}},'lineage':[
+            {'request_id':'atomic','original_edge':1,'replacement_edges':[2]},{'request_id':'atomic','original_edge':2,'replacement_edges':[3]}]}
+        approach.propagate(brief(),s,child,False)
+        self.assertEqual([e['id'] for e in s['bindings']['seed.a']['edges']],[2]);self.assertEqual([e['id'] for e in s['bindings']['seed.b']['edges']],[3])
+
+    def test_failed_generation_mapping_does_not_leave_partial_binding_or_cursor(self):
+        s={'bindings':{'seed.a':{'edges':[{'id':1,'node0':10,'node1':20}]}},'checks':{}};before=copy.deepcopy(s)
+        with self.assertRaisesRegex(ValueError,'incomplete'):approach.propagate(brief(),s,{'lineage':[{'original_edge':1,'replacement_edges':[9]}]},False,receipt='bad')
+        self.assertEqual(s,before)
 
     def test_imported_port_uses_current_receipt_geometry_not_preliminary_coordinates(self):
         with tempfile.TemporaryDirectory() as td:

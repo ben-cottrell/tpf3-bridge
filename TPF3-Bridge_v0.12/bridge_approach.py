@@ -239,47 +239,85 @@ def invalidate(b,s,families,effects,*,geometry_preserved=False):
     return affected
 
 
-def propagate(b,s,child,signal_only):
-    """Use exact receipt mappings; never infer replacements from coordinates."""
-    affected=set();preserved=True
-    snapshots={e['id']:e for binding in list(child.get('bindings',{}).values())+list(child.get('steps',{}).values()) for e in binding.get('edges',[])}
-    lineage=child.get('lineage',[]);links={}
-    for mapping in lineage:
-        old=mapping['original_edge']
-        if old in links and links[old]!=mapping['replacement_edges']:raise ValueError('ambiguous exact family replacement mapping')
-        links[old]=mapping['replacement_edges']
-    recorded=s.setdefault('replacement_ids',{})
-    for old,ids in links.items():
-        if str(old) in recorded and recorded[str(old)]!=ids:raise ValueError('conflicting cross-family replacement identity')
-        recorded[str(old)]=ids
-    def terminal_ids(ids,seen):
-        out=[]
-        for ident in ids:
-            if ident in seen:raise ValueError('cyclic exact family replacement mapping')
-            out.extend(terminal_ids(links[ident],seen|{ident}) if ident in links else [ident])
-        return out
-    for mapping in lineage:
-        old=mapping['original_edge'];ids=mapping['replacement_edges']
-        needed=any(any(e['id']==old for e in v.get('edges',[])) for v in s['bindings'].values())
-        if not needed:continue
-        ids=terminal_ids(ids,{old})
-        if not ids or len(set(ids))!=len(ids) or any(i not in snapshots for i in ids):raise ValueError('ambiguous/incomplete exact family replacement mapping')
-        changed=[snapshots[i] for i in ids]
-        for name,v in s['bindings'].items():
-            original=[e for e in v.get('edges',[]) if e['id']==old]
-            if not original:continue
-            preserved &= len(changed)==1 and all(original[0].get(k)==changed[0].get(k) for k in GEOMETRY_KEYS if k!='id' and k in original[0])
-            v['edges']=[n for e in v['edges'] for n in (changed if e['id']==old else [e])];affected.add(name.split('.')[0])
-        if signal_only and preserved:
-            for check in b['checks']:
-                if check['kind']!='geometry':continue
-                dep=s['checks'].get(check['name'],{}).get('dependencies',{}).get('geometry',{})
-                if str(old) in dep:
-                    previous=dep.pop(str(old));new=geometry_dependency(changed[0])
-                    # Keep only fields already evidenced; a later review observes
-                    # any newly available fields rather than guessing equality.
-                    dep[str(changed[0]['id'])]={k:new[k] for k in previous if k in new}
-    invalidate(b,s,affected,[],geometry_preserved=signal_only and preserved)
+def propagate(b,s,child,signal_only,receipt=None):
+    """Apply chronological native generations, not a graph of recyclable IDs."""
+    from bridge_operator import digest
+    lineage=child.get('lineage',[]);key=receipt or digest(lineage)
+    progress=s.get('propagated_receipts',{}).get(key,{'count':0,'prefix_hash':digest([])})
+    count=progress['count']
+    if count>len(lineage) or digest(lineage[:count])!=progress['prefix_hash']:raise ValueError('applied replacement receipt prefix changed')
+    if count==len(lineage):return
+    if count and lineage[count].get('request_id') and lineage[count].get('request_id')==lineage[count-1].get('request_id'):raise ValueError('partial atomic replacement receipt requires reconciliation')
+    snapshots={}
+    for binding in list(child.get('bindings',{}).values())+list(child.get('steps',{}).values()):
+        for e in binding.get('edges',[]):
+            if e['id'] in snapshots and geometry_dependency(snapshots[e['id']])!=geometry_dependency(e):raise ValueError('conflicting final native generation snapshots')
+            snapshots[e['id']]=e
+    # Each root is an exact input generation. Replacements from one native
+    # command are simultaneous; later commands can legitimately recycle IDs.
+    inputs={}
+    for v in s['bindings'].values():
+        for e in v.get('edges',[]):
+            if e['id'] in inputs and geometry_dependency(inputs[e['id']])!=geometry_dependency(e):raise ValueError('mixed input native generations require reconciliation')
+            inputs[e['id']]=e
+    roots={i:[i] for i in inputs};touched=set();groups=[]
+    for i,mapping in enumerate(lineage[count:],count):
+        event=mapping.get('request_id') or ('entry',i)
+        if not groups or groups[-1][0]!=event:groups.append((event,{}))
+        links=groups[-1][1];old=mapping['original_edge'];ids=mapping['replacement_edges']
+        if old in links or not ids or len(set(ids))!=len(ids):raise ValueError('ambiguous exact replacement command receipt')
+        links[old]=ids
+    for _,links in groups:
+        for root,ids in roots.items():
+            if any(i in links for i in ids):touched.add(root)
+            roots[root]=[new for i in ids for new in links.get(i,[i])]
+    if any(len(ids)!=len(set(ids)) or any(i not in snapshots for i in ids) for root,ids in roots.items() if root in touched):raise ValueError('ambiguous/incomplete final native generation mapping')
+    pending=copy.deepcopy(s);affected=set();preserved=True;changes={}
+    for name,v in pending['bindings'].items():
+        rows=v.get('edges',[]);changed_roots={e['id'] for e in rows}&touched
+        # Refresh auxiliary observations on unchanged exact geometry from the
+        # current child (e.g. native parallel-strip IDs), without inferring effects.
+        current=lambda e:copy.deepcopy(snapshots[e['id']]) if e['id'] in snapshots and geometry_dependency(e)==geometry_dependency(snapshots[e['id']]) else e
+        if rows:v['edges']=[current(e) for e in rows]
+        if not changed_roots:continue
+        aliases=pending.setdefault('attachment_aliases',{}).setdefault(name,[])
+        for alias in aliases:
+            old=alias.get('current_edge')
+            if old not in changed_roots:continue
+            matches=[snapshots[i] for i in roots[old] if alias['node_id'] in (snapshots[i]['node0'],snapshots[i]['node1'])]
+            alias['current_edge']=matches[0]['id'] if len(matches)==1 else None
+        for e in rows:
+            if e['id'] not in changed_roots:continue
+            changed=[snapshots[i] for i in roots[e['id']]];changes[e['id']]=changed
+            preserved &= len(changed)==1 and all(e.get(k)==changed[0].get(k) for k in GEOMETRY_KEYS if k!='id' and k in e)
+            generation=digest(geometry_dependency(e))
+            for node in (e['node0'],e['node1']):
+                matches=[r for r in changed if node in (r['node0'],r['node1'])]
+                alias={'edge_id':e['id'],'node_id':node,'generation':generation,'current_edge':matches[0]['id'] if len(matches)==1 else None}
+                if not any(a['edge_id']==alias['edge_id'] and a['node_id']==node and a['generation']==generation for a in aliases):aliases.append(alias)
+        v['edges']=[new for e in rows for new in ([snapshots[i] for i in roots[e['id']]] if e['id'] in changed_roots else [current(e)])]
+        affected.add(name.split('.')[0])
+    if signal_only and preserved:
+        for check in b['checks']:
+            if check['kind']!='geometry':continue
+            dep=pending['checks'].get(check['name'],{}).get('dependencies',{}).get('geometry',{})
+            before=copy.deepcopy(dep)
+            for old in changes:dep.pop(str(old),None)
+            for old,changed in changes.items():
+                if str(old) in before:
+                    new=geometry_dependency(changed[0]);dep[str(changed[0]['id'])]={k:new[k] for k in before[str(old)] if k in new}
+    invalidate(b,pending,affected,[],geometry_preserved=signal_only and preserved)
+    pending.setdefault('propagated_receipts',{})[key]={'count':len(lineage),'prefix_hash':digest(lineage)}
+    s.clear();s.update(pending) # No partial alias/binding update on validation failure.
+
+
+def imported_endpoint(s,ref,spec,rows):
+    aliases=[a for a in s.get('attachment_aliases',{}).get(ref,[]) if (a['edge_id'],a['node_id'])==(spec['edge_id'],spec['node_id'])]
+    ids={a['current_edge'] for a in aliases} if aliases else {spec['edge_id']}
+    if None in ids:raise ValueError('authored endpoint generation no longer survives')
+    selected=[e for e in rows if e['id'] in ids and spec['node_id'] in (e['node0'],e['node1'])]
+    if len(selected)!=1:raise ValueError('imported qualified endpoint generation unavailable/ambiguous')
+    return selected[0]
 
 
 def qualify_station(operator,b,s):
@@ -407,16 +445,7 @@ def build(operator,run,*,continuing=False,family_run=None):
                                 if len(rows)!=1:raise ValueError('single-edge imported endpoint required')
                                 row=rows[0];at0=spec['end']=='node0'
                             else:
-                                selected=[e for e in rows if e['id']==spec['edge_id'] and spec['node_id'] in (e['node0'],e['node1'])]
-                                if not selected and str(spec['edge_id']) in s.get('replacement_ids',{}):
-                                    def descendants(ident,seen):
-                                        if ident in seen:raise ValueError('cyclic imported replacement identity')
-                                        ids=s['replacement_ids'].get(str(ident))
-                                        return [ident] if ids is None else [n for i in ids for n in descendants(i,seen|{ident})]
-                                    ids=set(descendants(spec['edge_id'],set()))
-                                    selected=[e for e in rows if e['id'] in ids and spec['node_id'] in (e['node0'],e['node1'])]
-                                if len(selected)!=1:raise ValueError('imported exact endpoint unavailable after replacement')
-                                row=selected[0];at0=spec['node_id']==row['node0']
+                                row=imported_endpoint(s,f['imports'][spec['chain']],spec,rows);at0=spec['node_id']==row['node0']
                                 spec['edge_id']=row['id']
                             pos=row['p0' if at0 else 'p1'];t=row['t0' if at0 else 't1'];sign=-1 if at0 else 1;length=math.hypot(*t[:2])
                             if not length:raise ValueError('imported endpoint tangent unavailable')
@@ -432,13 +461,13 @@ def build(operator,run,*,continuing=False,family_run=None):
                     guard(operator,s)
                     operator.continue_corridor(child);child_state=load(operator.path(child)/'state.json')
                 guard(operator,s)
-                children=[child_state]
+                children=[child_state];child_runs=[child]
                 if f['kind']=='corridor':
                     child_runs=[r['run'] for r in child_state['section_runs']]
                     if child_state.get('current_run') and child_state['current_run'] not in child_runs:child_runs.append(child_state['current_run'])
                     children=[load(operator.path(r)/'state.json') for r in child_runs]
                 signal_only=f['kind']=='operator' and all(step['kind'] in ('signal','signal_chain') for step in f['payload']['steps'])
-                for cs in children:propagate(b,s,cs,signal_only)
+                for child_id,cs in zip(child_runs,children):propagate(b,s,cs,signal_only,receipt=child_id)
                 invalidate(b,s,[name],f['shared_effects'],geometry_preserved=signal_only)
                 persist() # Keep partial identity changes visible before stopping.
                 if child_state['status']!='built':raise ValueError('family requires existing child reconciliation/continuation: '+child_state.get('error',child_state['status']))
