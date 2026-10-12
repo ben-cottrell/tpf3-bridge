@@ -124,7 +124,7 @@ clearance claim. Saved-file integrity remains separate.
 Quiet checks:605 combined tests passed across test_approach.py, test_operator.py,
 test_operator_fit_variation.py, test_corridor_operator.py, test_corridor_completion.py,
 test_signal_batch.py, test_signal_benchmark.py, test_parallel_family.py, test_live_client.py.
-Current focused30 approach tests pass; cached proofs now refresh bounded exact geometry,
+Current focused31 approach tests pass; cached proofs now refresh bounded exact geometry,
 route object/revision/incidence and scoped station dependencies once per review, with
 no route rerun when unchanged. Changes stop for reconciliation; explicit native absence
 is required for negative routes. Individual signal chains allow one_way:false; batch
@@ -132,6 +132,8 @@ mode remains true-only. Chronological per-command replacement generations handle
 ID recycling; qualified endpoint aliases and applied-prefix cursors prevent cross-road
 mapping and duplicate receipt consumption. Offline copies of the stopped native pointwork
 receipts match both current child road bindings exactly; no native calls/state rewrites.
+Incidence uses exact-node native segment witnesses, including another locally returned
+edge; no requirement that octree returns the inspected edge itself, no proximity proof.
 Latest approach/operator/corridor_operator/signal_batch focused135 passed.
 The605 combined check predates these narrow fixes; valid unchanged-suite evidence is reused.
 Subsequent focused checks cover changes. Command `.local_tools/operator312/Scripts/python.exe -`

@@ -201,11 +201,18 @@ class Dependencies:
                 if node in self.nodes:continue
                 pos=e.get('node_positions',[e['p0'],e['p1']])[end]
                 r=self.client.request('discover',{'region':{'min':[x-.5 for x in pos],'max':[x+.5 for x in pos]},'max_edges':16});value=r.get('result',{})
-                witnesses=[c for c in value.get('candidates',[]) if c.get('node_id')==node and c.get('edge_id')==ident]
-                if r['status']!='ok' or value.get('complete') is not True or len(witnesses)!=1:raise ValueError('exact review endpoint incidence unavailable')
-                c=witnesses[0];incident=c.get('incident_edges',[])
-                if c.get('incidence_complete') is not True or c.get('incident_output_truncated') is not False or c.get('incident_count')!=len(incident) or len(set(incident))!=len(incident) or ident not in incident or len(incident)>16:raise ValueError('bounded complete endpoint incidence unavailable')
-                self.nodes[node]={'incident_edges':sorted(incident),'construction_owner':c.get('construction_owner','unknown')}
+                # The octree locates a witness. Exact native node identity and
+                # getNodeSegments incidence establish attachment, not the edge
+                # whose bounding volume happened to be returned by the octree.
+                witnesses=[c for c in value.get('candidates',[]) if c.get('node_id')==node and ident in c.get('incident_edges',[])]
+                if r['status']!='ok' or value.get('complete') is not True or not witnesses:raise ValueError(f'exact review endpoint incidence unavailable (edge {ident}, node {node})')
+                observations=[]
+                for c in witnesses:
+                    incident=c.get('incident_edges',[])
+                    if c.get('incidence_complete') is not True or c.get('incident_output_truncated') is not False or c.get('incident_count')!=len(incident) or len(set(incident))!=len(incident) or len(incident)>16:raise ValueError('bounded complete endpoint incidence unavailable')
+                    observations.append({'incident_edges':sorted(incident),'construction_owner':c.get('construction_owner','unknown')})
+                if any(v!=observations[0] for v in observations):raise ValueError('conflicting exact-node incidence witnesses')
+                self.nodes[node]=observations[0]
 
     def station_identity(self,selector):
         import bridge_station as station

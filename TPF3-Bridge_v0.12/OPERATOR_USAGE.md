@@ -945,6 +945,10 @@ needs_attention before route checks, requiring current-state/binding reconciliat
 The cache is bounded to256 exact edges,16 objects/incidences per native record and
 8 scoped stations; it is not a world graph or atomic snapshot. Geometry-only proofs
 do not depend on signals. No command retries an unknown mutation or replays children.
+Endpoint incidence may be witnessed by another returned edge at the same exact native
+node: the complete native node-segment list must contain the requested TRACK edge.
+The octree only locates witnesses; proximity and free-port eligibility do not prove
+attachment. Incomplete, wrong-node or conflicting witnesses stop review.
 
 The version1 brief contains `revision`, exact `session`, `station` selector
 `{name,construction:{resource,position}}`, `interfaces`, `families`, and `checks`.

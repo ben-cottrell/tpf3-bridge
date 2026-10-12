@@ -313,6 +313,27 @@ class ApproachTests(unittest.TestCase):
             observed=[op for op,_ in c.calls[calls:]]
             self.assertEqual(observed.count('inspect'),1);self.assertEqual(observed.count('operating_inspect'),1);self.assertEqual(observed.count('discover'),2)
 
+    def test_incidence_witness_can_be_another_edge_at_the_same_exact_native_node(self):
+        for problem in (None,'different_node','missing_edge','truncated','conflicting'):
+            with self.subTest(problem=problem),tempfile.TemporaryDirectory() as td:
+                c=World(td);row=c.make_edge([0,0,2],[20,0,2],[20,0,0],[20,0,0]);original=c.request
+                def request(op,q,**kw):
+                    r=original(op,q,**kw)
+                    if op=='discover':
+                        witness=r['result']['candidates'][0];witness['edge_id']=99;witness['eligible']=False
+                        witness['incident_edges']=[row['id'],99];witness['incident_count']=2
+                        if problem=='different_node':witness['node_id']=500
+                        elif problem=='missing_edge':witness.update(incident_edges=[99],incident_count=1)
+                        elif problem=='truncated':witness['incident_output_truncated']=True
+                        elif problem=='conflicting':r['result']['candidates'].append(witness|{'incident_edges':[row['id'],100]})
+                    return r
+                deps=approach.Dependencies(c)
+                with patch.object(c,'request',side_effect=request):
+                    if problem:
+                        with self.assertRaises(ValueError):deps.observe_semantics([row['id']])
+                    else:
+                        deps.observe_semantics([row['id']]);self.assertEqual(deps.nodes[row['node1']]['incident_edges'],[row['id'],99])
+
     def test_changed_cached_geometry_signal_revision_or_incidence_requires_reconciliation(self):
         for change in ('geometry','signal','revision','incidence'):
             with self.subTest(change=change),tempfile.TemporaryDirectory() as td:
