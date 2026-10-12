@@ -12,7 +12,7 @@ import time
 import uuid
 
 import bridge_live as live
-from bridge_corridor import compile_corridor
+from bridge_corridor import compile_corridor, ordered_path, recover_road
 from bridge_operator import CONTEXT, Operator, box, digest, signal_chain_locations, vector
 
 
@@ -21,9 +21,10 @@ ROADS=('up','down','fast_up','fast_down')
 
 def fixtures(config):
     required={'version','session','origins','track','track_distance','seed_id'}
-    if not isinstance(config,dict) or set(config)-{'rotation_degrees','parallel_family'}!=required or config['version']!=1:
+    if not isinstance(config,dict) or set(config)-{'rotation_degrees','parallel_family','production_completion'}!=required or config['version']!=1:
         raise ValueError('explicit benchmark version1 fields required')
     if type(config.get('parallel_family',False)) is not bool:raise ValueError('parallel_family must be boolean')
+    if type(config.get('production_completion',False)) is not bool:raise ValueError('production_completion must be boolean')
     if not isinstance(config['session'],str) or not config['session'] or type(config['seed_id']) is not int or config['seed_id']<=0:
         raise ValueError('surveyed session and exact seed required')
     d=config['track_distance']
@@ -69,37 +70,20 @@ def fixtures(config):
     return output
 
 
-def ordered_path(rows,start,end):
-    """Recover one group from flattened exact receipt edges; no coordinate pairing."""
-    bynode={};seen=set();out=[];current=start
-    for row in rows:
-        for node in (row['node0'],row['node1']):bynode.setdefault(node,[]).append(row)
-    while current!=end:
-        choices=[r for r in bynode.get(current,[]) if r['id'] not in seen]
-        if len(choices)!=1:raise ValueError('exact receipt chain is disconnected or ambiguous')
-        row=choices[0];seen.add(row['id']);out.append(row)
-        current=row['node1'] if current==row['node0'] else row['node0']
-        if len(out)>64:raise ValueError('receipt chain bound exceeded')
-    if not out:raise ValueError('empty receipt chain')
-    return out
+def completion_roads(brief,seed_id):
+    return [{'name':name,'track':name,'sections':[s['name'] for s in brief['sections'] if name in [m['track'] for m in s['members']]],
+             'forward':name in ('up','fast_up'),'spacing':300,'start_offset':150,'end_clearance':150,
+             'max_count':64,'seed_id':seed_id,'max_route_length':3000,'checks':['forward','reverse_blocked']} for name in ROADS]
 
 
 def recover_roads(operator,corridor_run):
     state=json.loads((operator.path(corridor_run)/'state.json').read_text())
     if state['status']!='built':raise ValueError('completed corridor required')
-    sections={r['name']:json.loads((operator.path(r['run'])/'state.json').read_text())['steps']['section_connect']['edges']
-              for r in state['section_runs']}
+    compiled=json.loads((operator.path(corridor_run)/'corridor.json').read_text())
     roads={}
     for road in ROADS:
-        first=1 if road.startswith('fast') else 0;rows=[]
-        def stub(index):
-            found=state['bindings'][f'corr_seed_{index}_{road}']['edges']
-            if len(found)!=1:raise ValueError('exact single waypoint receipt required')
-            return found[0]
-        rows.append(stub(first))
-        for i in range(first,3):
-            a,b=stub(i),stub(i+1)
-            rows.extend(ordered_path(sections['ABCD'[i:i+2]],a['node1'],b['node0']));rows.append(b)
+        spec=next(r for r in completion_roads(compiled['brief'],1) if r['name']==road)
+        rows,_=recover_road(operator,compiled,state,spec)
         # This existing sampler independently checks ordering/loops and count.
         forward=road in ('up','fast_up')
         targets,length=signal_chain_locations(rows,forward,300,150,150,64)
@@ -189,6 +173,12 @@ def execute(operator,run,phase='all'):
                     if result['status']!='built':raise ValueError('fixture build stopped: '+result.get('error',result['status']))
                     recover_roads(worker,corridor);record['status']='built';persist();continue
                 record=state['fixtures'][index]
+                if mode=='batch' and config.get('production_completion',False):
+                    counted.phase=mode+('_signals' if active=='signal' else '_routes')
+                    if active=='signal':worker.attach_corridor_completion(record['corridor_run'],completion_roads(brief,config['seed_id']))
+                    result=worker.complete_corridor(record['corridor_run'],phase='signal' if active=='signal' else 'qualify')
+                    if result['status']!='built' or result['completion']['status']=='needs_attention':raise ValueError('production completion stopped: '+str(result['completion']))
+                    record.update(status='signalled' if active=='signal' else 'verified',signals=result['completion']['signals'],route_checks=result['completion']['checks']);persist();continue
                 if active=='signal':
                     roads=recover_roads(worker,record['corridor_run'])
                     record['targets']={name:{k:v for k,v in road.items() if k!='edges'} for name,road in roads.items()};persist()

@@ -1,14 +1,14 @@
 # Current task
 
-Efficiency slice2: offline parallel-family derivation over existing structured_chain
-groups and corridor/operator primitives. Fit one reference; derive later2/4-road
-members using native CubicOffsetSpline and native trackDistance. Preserve exact
-attachments, endpoint/grade/region constraints, inherited structures, whole-family
-preview,20 total segments, one-use preparation and committed group readback.
+Efficiency slice3: optional authored named-road completion within existing corridor
+runs: exact receipt recovery → one fresh road binding → bounded bulk signals →
+explicit directed qualification. Whole-road placement uses the original section
+envelope union; general1000-unit construction limits remain unchanged.
 
-Expose optional parallel_family:true in the existing signal benchmark; default
-independent fitting remains unchanged. Review affected code and run quiet fake-adapter
-regressions, then locally checkpoint. Coordinator owns staging, load and native
-qualification; no native/UI/staging by this worker. Prepared Lua fixture is not
-runtime-tested. Slice1 native qualification is complete; do not rerun it routinely.
-No slice3, new service, runner redesign or remote push.
+Persist current road/chunk/child and successful receipt before mapping/advance.
+Interrupted/unknown chunks stop for reconciliation; completed children are consumed
+without replay. Preserve default corridor/benchmark behaviour; production_completion
+is opt-in. Coordinator owns native qualification/staging/UI; worker is offline only.
+Review affected code, quiet regressions, living docs and local checkpoint. Slice1
+qualification is established; slice2 native qualification remains with coordinator.
+No follow-on slice, new runner/service, dependencies or remote push.

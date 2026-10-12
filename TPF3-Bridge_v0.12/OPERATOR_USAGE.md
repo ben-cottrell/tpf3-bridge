@@ -661,6 +661,53 @@ the mutation unverified. Generated shared structures still need native strip/vis
 assessment. Initial native qualification covers plain curves/grades only; structure
 inheritance fixtures are preparation evidence, not native structure qualification.
 
+Corridor briefs may optionally declare `roads` to complete construction with bulk
+signals and directed checks. A declaration uses:
+
+```json
+{"name":"up","track":"up","sections":["AB","BC","CD"],"forward":true,
+ "spacing":300,"start_offset":150,"end_clearance":150,"max_count":64,
+ "seed_id":123,"max_route_length":3000,"checks":["forward","reverse_blocked"]}
+```
+
+Names, sections and seed are illustrative: author exact current values. At most4
+distinct physical roads, contiguous ordered sections,64 edges/placements per road
+and8000 route-length bound. `corridor-build` automatically performs declared
+completion; omitted roads retain construction-only behaviour. To complete an
+already-built corridor without rebuilding, use the existing operator:
+
+```text
+python bridge_operator.py corridor-attach-completion --run <corridor-run> --input <roads.json>
+python bridge_operator.py corridor-complete --run <corridor-run>
+python bridge_operator.py corridor-status --run <corridor-run>
+```
+
+`roads.json` contains `{"roads":[<declarations>]}`. Attachment is immutable;
+changed completion criteria require separate authority, not a silent rewrite.
+Callable equivalents are `Operator.attach_corridor_completion` and
+`Operator.complete_corridor`. Completion input optionally selects
+`{"phase":"signal"}`, `{"phase":"qualify","road":"up"}` or explicit
+`{"continuing":true}`. Qualification checks only declared/selected roads; native
+`no_native_path_returned` is required for reverse-blocked acceptance. Saved-file
+integrity, physical train operation and visual quality remain separate.
+
+Exact group/stub receipts recover each road; phase entry refreshes it once using
+existing16-edge inspect requests. Ordinary-chain checks cover all its through
+nodes. Batch chunking uses native16-edge/64-placement/16-object limits rather than
+construction windows. Signal locations must remain in the original section-envelope
+union; no enlarged construction permission or general1000-unit bound is introduced.
+Geometry/spacing checks are sampled, with native replacement proof still required.
+Local corridor state tracks road/chunk/current child and replacement identities.
+An attempted/unknown child never replays; explicit continuation consumes a completed
+child receipt before advancing. Failure blocks that road's dependent checks.
+
+Benchmark `production_completion:true` opts the batch fixture into this path,
+keeping individual/default modes unchanged. It may also be attached directly to
+an existing fresh built fixture through the API above. Fake acceptance retains20
+signals/eight route outcomes in4 batches:16 signal requests plus8 route checks.
+These are offline expected counts, not measured native performance; coordinator
+performs native qualification and phase timing.
+
 For an explicitly rejected signal addition, `bridge_live.reconcile_rejected_signal(
 client, request_id, prior_observation)` performs one exact target/object read.
 It requires the original pre-placement receipt and unchanged target revision,

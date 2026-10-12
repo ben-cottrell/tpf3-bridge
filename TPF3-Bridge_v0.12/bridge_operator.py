@@ -762,6 +762,14 @@ class Operator:
         from bridge_corridor import build_corridor
         return build_corridor(self,run,continuing=True,section_run=section_run)
 
+    def attach_corridor_completion(self,run,roads):
+        from bridge_corridor import attach_completion
+        return attach_completion(self,run,roads)
+
+    def complete_corridor(self,run,*,phase='all',continuing=False,road=None):
+        from bridge_corridor import complete_corridor
+        return complete_corridor(self,run,phase=phase,continuing=continuing,road=road)
+
     def continue_plan(self,run,revision,steps=None,updates=None,bindings=None,reconciled_step=None):
         """Fresh, auditable remaining work; never replay successful native steps."""
         folder=self.path(run);parent=json.loads((folder/'state.json').read_text());old=json.loads((folder/'plan.json').read_text())
@@ -1294,7 +1302,7 @@ def render_profile(plan,edges,path):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['status','survey','track-catalogue','station-survey','station-exits','station-routes','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','corridor-plan','corridor-build','corridor-status','corridor-continue','camera','capture','save'])
+    parser.add_argument('action',choices=['status','survey','track-catalogue','station-survey','station-exits','station-routes','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','corridor-plan','corridor-build','corridor-status','corridor-continue','corridor-attach-completion','corridor-complete','camera','capture','save'])
     parser.add_argument('--input',type=Path);parser.add_argument('--run');parser.add_argument('--context',type=Path,default=CONTEXT)
     a=parser.parse_args()
     try:
@@ -1310,6 +1318,8 @@ def main():
         elif a.action=='corridor-build':r=op.build_corridor(a.run)
         elif a.action=='corridor-status':r=op.corridor_status(a.run)
         elif a.action=='corridor-continue':r=op.continue_corridor(a.run,**data)
+        elif a.action=='corridor-attach-completion':r=op.attach_corridor_completion(a.run,**data)
+        elif a.action=='corridor-complete':r=op.complete_corridor(a.run,**data)
         elif a.action=='station-survey':r=op.survey_station(data)
         elif a.action=='station-exits':r=op.survey_station_exits(data)
         elif a.action=='station-routes':r=op.review_station_routes(data)

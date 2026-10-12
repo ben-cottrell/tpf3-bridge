@@ -83,14 +83,23 @@ post-prepare geometry/incidence/spacing with zero submission and mixed
 NORMAL/BRIDGE/NORMAL inheritance. Grouped committed readback now compares
 classification/resource per exact intended segment. Native structure qualification
 is unclaimed; coordinator's initial slice2 runtime scope is plain curves/grades.
-Affected quiet Python validation:563 tests passed,0 failures/errors across
-test_parallel_family.py, test_corridor_operator.py, test_operator.py,
+Slice3 adds optional immutable named-road completion to existing corridor runs.
+Exact receipts recover roads; one phase-entry refresh and bounded chain checks
+precede bulk signals. Original section envelope union remains binding; no general
+construction-region increase. Chunk receipts and exact replacement bindings persist
+before advance; completed child continuation does not replay unknown mutations.
+Only authored affected-road directed checks run. Existing benchmark optional
+production_completion:true retains defaults; fake fixture20 signals/eight outcomes
+uses4 batches/16 signal requests plus8 route checks. Native performance is unmeasured.
+Affected quiet Python validation:573 tests passed,0 failures/errors across
+test_corridor_completion.py, test_parallel_family.py, test_corridor_operator.py, test_operator.py,
 test_signal_batch.py, test_signal_benchmark.py and test_live_client.py.
 Command: `.local_tools/operator312/Scripts/python.exe -` with unittest discovery
-for those six patterns and TextTestRunner(stream=io.StringIO(),verbosity=0).
-Python AST checks and git diff --check passed. Slice2 local milestone is the
-current source checkpoint; baseline upstream remains7530353, with no new push.
-See OPERATOR_USAGE.md for family contract and existing benchmark phase commands.
+for those seven patterns and TextTestRunner(stream=io.StringIO(),verbosity=0).
+Python AST checks and git diff --check passed. Slice2 checkpoint72fe7c6 is ready
+for coordinator native qualification; slice3 is offline-prepared at the current
+source checkpoint. Baseline upstream remains7530353, with no new push.
+See OPERATOR_USAGE.md for family/completion contracts and existing benchmark commands.
 Detailed station internals and train physics remain deferred.
 
 Keep only current context and state needed to reconcile uncertain live mutations. Temporary
