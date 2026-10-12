@@ -595,7 +595,8 @@ native success or a speed improvement.
 same corridor/operator code. Supply a JSON input with `version:1`, surveyed
 `session`, two authorised `origins` (XYZ), selected native `track` (`template`,
 `style`), actual `track_distance`, exact `seed_id`, and optional
-`rotation_degrees` and boolean `parallel_family` (default false). Origins must have separate effect envelopes. There are no
+`rotation_degrees`, boolean `parallel_family` and `production_completion` (both
+default false). Origins must have separate effect envelopes. There are no
 hardcoded game identities, site choices or ground-height assumptions. Preflight
 rechecks the seed's native track resource/spacing against the selected brief.
 
@@ -653,8 +654,9 @@ with sampled XY conversion error <=0.1; at most16 derived segments and20 segment
 in the complete family. Height follows the reference parameter; this does not
 prove continuous 3D separation. Endpoint/gradient/region/radius checks remain
 binding. Whole-family native preview, one-use preparation and exact committed
-group readback remain required. Unknown effects stop without replay. Standalone
-Lua/native qualification of this new branch remains with the coordinator. Grouped
+group readback remain required. Unknown effects stop without replay. Plain native
+curved/graded2/4-road families, including signed offsets, are qualified. Standalone
+Lua fake fixtures remain unexecuted. Grouped
 committed readback compares each exact recovered segment's structure classification
 and resource name with its intended segment; missing/mismatched structure leaves
 the mutation unverified. Generated shared structures still need native strip/visual
@@ -709,8 +711,13 @@ Benchmark `production_completion:true` opts the batch fixture into this path,
 keeping individual/default modes unchanged. It may also be attached directly to
 an existing fresh built fixture through the API above. Fake acceptance retains20
 signals/eight route outcomes in4 batches:16 signal requests plus8 route checks.
-These are offline expected counts, not measured native performance; coordinator
-performs native qualification and phase timing.
+The coordinator demonstrated those counts natively:16 requests/4 mutations and
+8.282s request wait for20 signals;8/8 directed/reverse-blocked checks took3.875s.
+Equivalent phase baselines were individual100 requests/20 mutations/50.767s and
+window bulk50/10/25.609s. This is roughly6x signal-phase improvement over individual,
+not a whole-map runtime or GPT-credit claim. Both native curved/graded parallel
+fixtures built first try with49 requests/17 mutations each in24.452s/24.611s.
+Bridge/tunnel family qualification and train traversal are not established.
 
 For an explicitly rejected signal addition, `bridge_live.reconcile_rejected_signal(
 client, request_id, prior_observation)` performs one exact target/object read.
