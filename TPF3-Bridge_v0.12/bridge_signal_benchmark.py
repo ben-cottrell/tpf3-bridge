@@ -21,8 +21,9 @@ ROADS=('up','down','fast_up','fast_down')
 
 def fixtures(config):
     required={'version','session','origins','track','track_distance','seed_id'}
-    if not isinstance(config,dict) or set(config)-{'rotation_degrees'}!=required or config['version']!=1:
+    if not isinstance(config,dict) or set(config)-{'rotation_degrees','parallel_family'}!=required or config['version']!=1:
         raise ValueError('explicit benchmark version1 fields required')
+    if type(config.get('parallel_family',False)) is not bool:raise ValueError('parallel_family must be boolean')
     if not isinstance(config['session'],str) or not config['session'] or type(config['seed_id']) is not int or config['seed_id']<=0:
         raise ValueError('surveyed session and exact seed required')
     d=config['track_distance']
@@ -50,8 +51,14 @@ def fixtures(config):
         for i in range(3):
             source,target='ABCD'[i:i+2];members=ROADS[:2] if i==0 else ROADS
             points=[p['position'] for name in (source,target) for p in waypoints[name].values()]
-            sections.append({'name':source+target,'source':source,'target':target,'region':box(points,30),
-                             'members':[{'track':r} for r in members]})
+            group=[{'track':r} for r in members]
+            if config.get('parallel_family',False):
+                group[0]['representation']='native_parts'
+                multipliers=dict(zip(ROADS,(-.5,.5,-1.5,1.5)))
+                for member in group[1:]:
+                    member['normal_offset_from']={'group_index':1,
+                        'spacing':d*(multipliers[member['track']]-multipliers[group[0]['track']]),'reverse':False}
+            sections.append({'name':source+target,'source':source,'target':target,'region':box(points,30),'members':group})
         brief={'version':1,'revision':'signal_benchmark_'+mode,'session':config['session'],'track':copy.deepcopy(config['track']),
                'max_grade':.025,'stub_length':10,'waypoints':waypoints,'sections':sections}
         compile_corridor(brief);output.append((mode,brief))

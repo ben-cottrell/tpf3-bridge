@@ -451,6 +451,29 @@ def discover_region(client,region,max_queries=64):
         todo.extend([right,left])
     return list(edges.values()),calls
 
+def validate_group_offsets(groups):
+    """One fitted reference plus ordered local derivatives; native spacing is queried."""
+    family=any('normal_offset_from' in g for g in groups)
+    if not family:return
+    offsets=[0];reversed_flags=[False]
+    for index,group in enumerate(groups):
+        if index==0:
+            if 'normal_offset_from' in group:raise ValueError('family first member must fit the reference')
+            continue
+        selector=group.get('normal_offset_from')
+        if not isinstance(selector,dict) or set(selector)!={'group_index','spacing','reverse'}:
+            raise ValueError('family derivative needs group_index, spacing, reverse')
+        ref=selector['group_index'];spacing=selector['spacing']
+        if type(ref) is not int or not 1<=ref<=index:raise ValueError('family reference must be an earlier member (1-based)')
+        if type(spacing) not in (int,float) or not math.isfinite(spacing) or not 0<abs(spacing)<=60 or type(selector['reverse']) is not bool:
+            raise ValueError('finite nonzero bounded family spacing and explicit reverse required')
+        if group.get('guides') or any(k in group for k in ('structures','leg_representations','representation','handle_scale','fit_radius')):
+            raise ValueError('derived family geometry and structures are inherited; specify on reference')
+        total=offsets[ref-1]+(-spacing if reversed_flags[ref-1] else spacing)
+        if any(abs(total-old)<=.001 for old in offsets):raise ValueError('family offset repeats an existing member')
+        offsets.append(total);reversed_flags.append(reversed_flags[ref-1]!=selector['reverse'])
+
+
 def validate_structures(step):
     guides=step.get('guides',[])
     if len(guides)>6:raise ValueError('at most6 native structure guides')
@@ -551,6 +574,7 @@ def validate_plan(p):
                 if type(value) not in (int,float) or not math.isfinite(value) or value<lower or value>upper or (key=='handle_scale' and value==0):raise ValueError('invalid structure seed '+key)
         elif kind=='group':
             if len(s.get('groups',[])) not in (2,4):raise ValueError('native group requires2 or4 members')
+            validate_group_offsets(s['groups'])
             for group in s['groups']:
                 ref(group['source']);ref(group['target']);validate_structures(group)
                 if group.get('source_interior') or group.get('target_interior') or group.get('replace_chain'):raise ValueError('group requires free distinct attachments')
@@ -878,6 +902,10 @@ class Operator:
                'structures':spec.get('structures',[{'classification':'NORMAL'}]*(len(spec.get('guides',[]))+1)),
                'representation':spec.get('representation','endpoint_cubic'),'radius':spec.get('radius',0),
                'fit_radius':spec.get('fit_radius',100),'handle_scale':spec.get('handle_scale',1)}
+            if 'normal_offset_from' in spec:
+                q['normal_offset_from']=copy.deepcopy(spec['normal_offset_from'])
+                if 'group_index' in spec['normal_offset_from']:
+                    for key in ('structures','representation','fit_radius','handle_scale'):q.pop(key,None)
             if 'leg_representations' in spec:q['leg_representations']=spec['leg_representations']
             if spec.get('source_interior') or spec.get('target_interior'):
                 q.update(junctions=True,max_route_length=spec.get('max_route_length',p.get('max_route_length',800)))

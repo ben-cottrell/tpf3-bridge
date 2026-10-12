@@ -1283,6 +1283,10 @@ local function build_proposal(f)
   e.comp.position0=v(c.p0);e.comp.position1=v(c.p1);e.comp.tangent0=v(c.t0);e.comp.tangent1=v(c.t1)
   e.comp.type=E.BaseEdgeType.NORMAL;e.comp.typeIndex=1;e.comp.laneConfigs=resource.laneConfigs
   e.comp.roadTemplate=f.anchor.template;e.comp.roadStyle=f.anchor.style;e.comp.roadType=E.RoadType.TRACK
+  if f.shared_track_distance then
+   assert(finite(resource.trackDistance) and math.abs(resource.trackDistance-f.shared_track_distance)<=.001,"stale_family_track_distance")
+   e.comp.distance=resource.trackDistance
+  end
   segments[i]=e
  end
  proposal.streetProposal.nodesToAdd=newnodes;proposal.streetProposal.edgesToAdd=segments
@@ -2703,7 +2707,36 @@ local function replacement_chain(p)
  end
  return {originals=originals,internal_nodes=internal,params=p,boundaries=boundaries}
 end
-local function prepare_new_structure(p,s,request_id)
+local function derive_normal_segments(reference,q)
+ local derived={};local maximum=0
+ for _,segment in ipairs(reference.segments) do
+  local original=segment.controls;local g=offset_geometry(original,q.spacing);local height=cubic(original);local selected
+  for _,count in ipairs({1,2,4}) do
+   local trial={};local error=0
+   for j=1,count do
+    local u0,u1=(j-1)/count,j/count;local p0,t0=sample(g,u0);local p1,t1=sample(g,u1)
+    local h0,d0=sample(height,u0);local h1,d1=sample(height,u1);p0[3]=h0[3];p1[3]=h1[3]
+    for axis=1,2 do t0[axis]=t0[axis]/count;t1[axis]=t1[axis]/count end
+    t0[3]=d0[3]/count;t1[3]=d1[3]/count
+    local ctrl={p0=p0,p1=p1,t0=t0,t1=t1,length=distance(p0,p1)};local converted=cubic(ctrl)
+    for k=0,16 do local u=k/16;local expected=sample(g,u0+u*(u1-u0));local actual=sample(converted,u)
+     error=math.max(error,math.sqrt((expected[1]-actual[1])^2+(expected[2]-actual[2])^2)) end
+    trial[#trial+1]={controls=ctrl,structure=segment.structure}
+   end
+   if error<=.1 then selected=trial;maximum=math.max(maximum,error);break end
+  end
+  assert(selected,"native_offset_structure_conversion_failed")
+  for _,item in ipairs(selected) do derived[#derived+1]=item end
+  assert(#derived<=16,"offset_structure_segment_bound")
+ end
+ if q.reverse then
+  local reversed={};for i=#derived,1,-1 do local segment=derived[i];local c=segment.controls
+   reversed[#reversed+1]={controls={p0=c.p1,p1=c.p0,t0={-c.t1[1],-c.t1[2],-c.t1[3]},t1={-c.t0[1],-c.t0[2],-c.t0[3]},length=c.length},structure=segment.structure}
+  end;derived=reversed
+ end
+ return derived,maximum
+end
+local function prepare_new_structure(p,s,request_id,group_reference)
  if p.coalesce_plain~=nil or p.replacement_boundaries~=nil then assert(p.coalesce_plain==true and p.replace_chain and p.replacement_boundaries and not p.junctions,"explicit_plain_replacement_required") end
  if p.junctions then assert(finite(p.max_route_length) and p.max_route_length>0 and p.max_route_length<=8000,"invalid_route_length_bound") end
  local replacement=p.replace_chain and replacement_chain(p) or nil
@@ -2825,40 +2858,22 @@ local function prepare_new_structure(p,s,request_id)
  end
  if p.normal_offset_from then
   local q=p.normal_offset_from
-  assert(mixed and #p.guides==0 and type(q)=="table" and type(q.reverse)=="boolean","offset_structure_contract")
-  for k in pairs(q) do assert(k=="prepared_request" or k=="spacing" or k=="reverse","offset_structure_input") end
-  local reference=s.prepared_structures and s.prepared_structures[q.prepared_request]
+  assert((mixed or group_reference) and #p.guides==0 and type(q)=="table" and type(q.reverse)=="boolean","offset_structure_contract")
+  for k in pairs(q) do assert(k==(group_reference and "group_index" or "prepared_request") or k=="spacing" or k=="reverse","offset_structure_input") end
+  local reference=group_reference or (s.prepared_structures and s.prepared_structures[q.prepared_request])
   assert(reference and reference.new_alignment and not reference.used,"offset_reference_preparation_unavailable")
   local template=api.res.streetTemplateRep.findAndGet(a.template)
-  assert(finite(q.spacing) and math.abs(math.abs(q.spacing)-template.trackDistance)<=.001,"offset_native_spacing_required")
-  local derived={};local maximum=0
-  for _,segment in ipairs(reference.segments) do
-   local original=segment.controls;local g=offset_geometry(original,q.spacing);local height=cubic(original);local selected
-   for _,count in ipairs({1,2,4}) do
-    local trial={};local error=0
-    for j=1,count do
-     local u0,u1=(j-1)/count,j/count;local p0,t0=sample(g,u0);local p1,t1=sample(g,u1)
-     local h0,d0=sample(height,u0);local h1,d1=sample(height,u1);p0[3]=h0[3];p1[3]=h1[3]
-     for axis=1,2 do t0[axis]=t0[axis]/count;t1[axis]=t1[axis]/count end
-     t0[3]=d0[3]/count;t1[3]=d1[3]/count
-     local ctrl={p0=p0,p1=p1,t0=t0,t1=t1,length=distance(p0,p1)};local converted=cubic(ctrl)
-     for k=0,16 do local u=k/16;local expected=sample(g,u0+u*(u1-u0));local actual=sample(converted,u)
-      error=math.max(error,math.sqrt((expected[1]-actual[1])^2+(expected[2]-actual[2])^2)) end
-     trial[#trial+1]={controls=ctrl,structure=segment.structure}
-    end
-    if error<=.1 then selected=trial;maximum=math.max(maximum,error);break end
-   end
-   assert(selected,"native_offset_structure_conversion_failed")
-   for _,segment in ipairs(selected) do derived[#derived+1]=segment end
-   assert(#derived<=16,"offset_structure_segment_bound")
-  end
-  if q.reverse then
-   local reversed={};for i=#derived,1,-1 do local segment=derived[i];local c=segment.controls
-    reversed[#reversed+1]={controls={p0=c.p1,p1=c.p0,t0={-c.t1[1],-c.t1[2],-c.t1[3]},t1={-c.t0[1],-c.t0[2],-c.t0[3]},length=c.length},structure=segment.structure}
-   end;derived=reversed
-  end
+  assert(template and finite(template.trackDistance) and template.trackDistance>0 and finite(q.spacing),"offset_native_spacing_required")
+  if group_reference then
+   assert(not mixed and not p.junctions and reference.fitted.anchor.template==a.template and reference.fitted.anchor.style==a.style,"group_offset_reference_resource_mismatch")
+   local multiple=math.floor(math.abs(q.spacing)/template.trackDistance+.5)
+   assert(template.trackDistance<=20 and multiple>=1 and multiple<=3 and math.abs(math.abs(q.spacing)-multiple*template.trackDistance)<=.001,"offset_native_spacing_required")
+   record.shared_track_distance=template.trackDistance;fitted.shared_track_distance=template.trackDistance
+  else assert(math.abs(math.abs(q.spacing)-template.trackDistance)<=.001,"offset_native_spacing_required") end
+  local derived,maximum=derive_normal_segments(reference,q)
   -- Locate only on the already named interior edge. The original bounded guide
   -- remains a constraint; offset geometry cannot select another native track.
+  if mixed then
   local j=record.mixed;local attachment=j.interior_source and p.source or p.target
   local boundary=j.interior_source and derived[1].controls.p0 or derived[#derived].controls.p1
   assert(distance(boundary,attachment.location.guide_xyz)<=attachment.location.placement_tolerance,"offset_interior_guide_outside_tolerance")
@@ -2867,6 +2882,7 @@ local function prepare_new_structure(p,s,request_id)
   j.splits=interior_splits(j.interior,located.parameter,p.region,p.radius or 0,p.vertical.max_grade)
   if j.interior_source then pos,direction,grade=located.pos,located.outward_direction,located.grade
   else target.pos,target.direction,target.grade=located.pos,located.outward_direction,located.grade end
+  end
   local first,last=derived[1].controls,derived[#derived].controls
   assert(near(first.p0,pos,.001) and near(last.p1,target.pos,.001),"offset_structure_boundary_position_incompatible")
   assert(angle(first.t0,direction)<=.1 and angle(last.t1,target.direction)<=.1,"offset_structure_boundary_direction_incompatible")
@@ -2875,7 +2891,7 @@ local function prepare_new_structure(p,s,request_id)
   for i,segment in ipairs(derived) do
    geometry_bounds(cubic(segment.controls),p.region,p.radius or 0,p.vertical.max_grade,64)
    segment.leg=i;record.segments[i]=segment;fitted.controls[i]=segment.controls
-   record.fit_legs[i]={controls={segment.controls},pieces=1,representation="native_normal_offset",reference_prepared=q.prepared_request,
+   record.fit_legs[i]={controls={segment.controls},pieces=1,representation="native_normal_offset",reference_prepared=q.prepared_request,reference_group=q.group_index,
     spacing=q.spacing,reference_reversed=q.reverse,sampled_conversion_XY_error=maximum,height_transfer="shared_reference_parameter",
     structure_inherited_from_reference=true,sampled_only=true}
   end
@@ -3008,12 +3024,39 @@ function M.structured_chain(p,s,state,request_id,respond)
   if p.groups then
    for k in pairs(p) do assert(k=="groups" or k=="prepare","unsupported_grouped_structure_input") end
    assert(type(p.groups)=="table" and (#p.groups==2 or #p.groups==4),"two_or_four_structure_groups_required")
-   record={groups={},segments={},handle=request_id};local ports,seen={},{}
+   record={groups={},segments={},handle=request_id};local ports,offsets={},{};local family=false
+   for _,q in ipairs(p.groups) do if q.normal_offset_from then family=true end end
+   local shared_distance
    for i,q in ipairs(p.groups) do
-    assert(type(q)=="table" and q.new_alignment==true and not q.junctions and not q.replace_chain and not q.normal_offset_from,"group_requires_cleared_free_attachments")
-    for k in pairs(q) do assert(k=="new_alignment" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical" or k=="representation" or k=="leg_representations" or k=="handle_scale","unsupported_group_member_input") end
+    assert(type(q)=="table" and q.new_alignment==true and not q.junctions and not q.replace_chain,"group_requires_cleared_free_attachments")
+    for k in pairs(q) do assert(k=="normal_offset_from" or k=="new_alignment" or k=="source" or k=="target" or k=="guides" or k=="structures" or k=="region" or k=="radius" or k=="fit_radius" or k=="vertical" or k=="representation" or k=="leg_representations" or k=="handle_scale","unsupported_group_member_input") end
     for _,port in ipairs({q.source,q.target}) do assert(not ports[port.node_id],"group_attachment_reused");ports[port.node_id]=true end
-    local group=prepare_new_structure(q,s,request_id.."_group_"..i);record.groups[i]=group
+    local reference,working=nil,q
+    if family then
+     if i==1 then assert(not q.normal_offset_from,"group_family_first_member_must_fit")
+     else
+      local selector=q.normal_offset_from
+      assert(type(selector)=="table" and type(selector.group_index)=="number" and selector.group_index%1==0 and selector.group_index>=1 and selector.group_index<i,"group_offset_requires_earlier_member")
+      reference=record.groups[selector.group_index];assert(reference,"group_offset_requires_earlier_member")
+      assert(q.structures==nil and type(q.guides)=="table" and #q.guides==0 and not q.leg_representations and not q.representation and not q.fit_radius and not q.handle_scale,"group_derived_geometry_and_structures_inherited")
+      working={};for k,value in pairs(q) do working[k]=value end;working.structures={{classification="NORMAL"}}
+     end
+    end
+    local group=prepare_new_structure(working,s,request_id.."_group_"..i,reference);record.groups[i]=group
+    if family then
+     if i==1 then
+      local resource=api.res.streetTemplateRep.findAndGet(group.fitted.anchor.template)
+      shared_distance=resource and resource.trackDistance
+      assert(finite(shared_distance) and shared_distance>0 and shared_distance<=20,"group_native_spacing_unavailable")
+      group.family_offset=0;group.family_reversed=false
+     else
+      group.family_offset=reference.family_offset+(reference.family_reversed and -q.normal_offset_from.spacing or q.normal_offset_from.spacing)
+      group.family_reversed=reference.family_reversed~=q.normal_offset_from.reverse
+      assert(math.abs(group.family_offset)<=3*shared_distance+.001,"group_family_offset_bound")
+     end
+     for _,value in ipairs(offsets) do assert(math.abs(value-group.family_offset)>.001,"group_family_offset_reused") end
+     offsets[#offsets+1]=group.family_offset;group.fitted.shared_track_distance=shared_distance;group.shared_track_distance=shared_distance
+    end
     for _,segment in ipairs(group.segments) do record.segments[#record.segments+1]=segment end
     -- Four tracks with two separated crossings and an ordinary turnout window:
     -- NORMAL / BRIDGE / NORMAL / BRIDGE / NORMAL, at most twenty segments.
@@ -3099,7 +3142,18 @@ function M.structured_chain(p,s,state,request_id,respond)
  if not p.prepared_request then
   local count=0;for _ in pairs(s.prepared_structures) do count=count+1 end;assert(count<8,"prepared_structure_capacity")
   s.prepared_structures[request_id]=record;local root=state:get() or {};root.pifLive=s;state:set(root)
-  respond(request_id,"ok",{game_constructed=false,prepared_request=request_id,segments=record.segments,boundary_nodes=record.boundary_nodes,fit_legs=record.fit_legs,new_alignment=record.new_alignment==true,evaluation=evaluation,native_proposal_evaluated=true,native_proposal_critical=false,prepared_lifetime="current_adapter_session_only",geometry_refitted=false});return
+  local groups
+  if record.groups then
+   groups={};for i,g in ipairs(record.groups) do
+    local fits={};for j,leg in ipairs(g.fit_legs) do fits[j]={pieces=leg.pieces,representation=leg.representation,
+     reference_group=leg.reference_group,reference_prepared=leg.reference_prepared,spacing=leg.spacing,
+     reference_reversed=leg.reference_reversed,sampled_conversion_XY_error=leg.sampled_conversion_XY_error,
+     height_transfer=leg.height_transfer,structure_inherited_from_reference=leg.structure_inherited_from_reference,
+     sampled_only=leg.sampled_only,native_dubins_fit_invoked=leg.native_dubins_fit_invoked} end
+    groups[i]={fit_legs=fits,family_offset=g.family_offset,shared_track_distance=g.shared_track_distance}
+   end
+  end
+  respond(request_id,"ok",{game_constructed=false,prepared_request=request_id,segments=record.segments,groups=groups,boundary_nodes=record.boundary_nodes,fit_legs=record.fit_legs,new_alignment=record.new_alignment==true,evaluation=evaluation,native_proposal_evaluated=true,native_proposal_critical=false,prepared_lifetime="current_adapter_session_only",geometry_refitted=false});return
  end
  record.used=true;s.prepared_structures[p.prepared_request]=nil;s.mutationPending=request_id
  local root=state:get() or {};root.pifLive=s;state:set(root)

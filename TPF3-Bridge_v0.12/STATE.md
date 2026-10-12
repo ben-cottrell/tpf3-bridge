@@ -58,21 +58,35 @@ session/input-bound one-use handle,16 edges/64 placements,16 objects per resulti
 edge, full native functional/retention proof and one named-binding update per batch.
 Sampled spacing phase survives chunks/exclusions; uncertain effects require existing
 reconciliation with no replay or individual fallback. Compatibility mode is explicit
-individual placement; new plans opt into batch mode. Coordinator owns native qualification
-and benchmark execution; Lua syntax/runtime and native bulk behaviour remain unverified.
-Detailed station internals, train physics and parallel-track slice2 remain deferred.
+individual placement; new plans opt into batch mode. Coordinator qualified equivalent
+~1.8km fixtures in session pif_1791830254_10220813, benchmark run3b326e3fa125460e:
+20 functional signals each and16/16 intended/reverse-blocked route checks passed.
+Individual signal phase:100 requests/20 mutations/50.767s request wait; bulk:
+50 requests/10 mutations/25.609s. This is ~2x signal-phase improvement only, not
+whole-map performance. Construction each49 requests/17 mutations/~25s.
 The reusable bridge_signal_benchmark.py now exposes offline dry-run/plan/inspect
 and one-attempt build/signal/qualify phases. It uses exact receipt topology,
 independent equivalent sites, bounded1000-unit signal windows, sampled300-unit
-phase and measured per-phase counters. Native execution remains unperformed.
-Affected Python checks:595 distinct tests passed across the relevant quiet suites
-(existing574 plus14 bulk and7 benchmark cases; latest33 included12 corridor cases).
-Python AST and diff whitespace checks passed. Runnable focused checks:
-`.local_tools/operator312/Scripts/python.exe -m unittest discover -s tests -p test_signal_batch.py -q`.
-`.local_tools/operator312/Scripts/python.exe -m unittest discover -s tests -p test_signal_benchmark.py -q`.
-Native fake-runtime fixture is prepared at tests/native/test_signal_batch.lua but not
-executed; no standalone Lua checker is installed. See OPERATOR_USAGE.md for the
-coordinator's existing plan/execute qualification commands and prerequisites.
+phase and measured per-phase counters. Optional parallel_family:true fits one
+reference per section and derives siblings at surveyed native spacing; default unchanged.
+
+Slice2 offline source prepares ordered local normal_offset_from.group_index
+derivatives for2/4-member families, preserves the external prepared_request contract,
+inherits structures/shared vertical parameter, and uses native shared trackDistance.
+Strict exact/free endpoints, spacing multiples, bounds and20 total segments remain.
+Conversion is sampled XY, not continuous3D clearance proof. Native qualification of
+this new branch is pending with coordinator; no standalone Lua checker is installed.
+Reusable fake Lua fixtures tests/native/test_signal_batch.lua and
+tests/native/test_parallel_family.lua remain prepared, unexecuted.
+Affected quiet Python validation:563 tests passed,0 failures/errors across
+test_parallel_family.py, test_corridor_operator.py, test_operator.py,
+test_signal_batch.py, test_signal_benchmark.py and test_live_client.py.
+Command: `.local_tools/operator312/Scripts/python.exe -` with unittest discovery
+for those six patterns and TextTestRunner(stream=io.StringIO(),verbosity=0).
+Python AST checks and git diff --check passed. Slice2 local milestone is the
+current source checkpoint; baseline upstream remains7530353, with no new push.
+See OPERATOR_USAGE.md for family contract and existing benchmark phase commands.
+Detailed station internals and train physics remain deferred.
 
 Keep only current context and state needed to reconcile uncertain live mutations. Temporary
 diagnostics are removed after use; no permanent journals, audits, handoff archives or

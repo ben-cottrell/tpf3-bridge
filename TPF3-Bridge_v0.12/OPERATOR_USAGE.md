@@ -595,7 +595,7 @@ native success or a speed improvement.
 same corridor/operator code. Supply a JSON input with `version:1`, surveyed
 `session`, two authorised `origins` (XYZ), selected native `track` (`template`,
 `style`), actual `track_distance`, exact `seed_id`, and optional
-`rotation_degrees`. Origins must have separate effect envelopes. There are no
+`rotation_degrees` and boolean `parallel_family` (default false). Origins must have separate effect envelopes. There are no
 hardcoded game identities, site choices or ground-height assumptions. Preflight
 rechecks the seed's native track resource/spacing against the selected brief.
 
@@ -629,6 +629,32 @@ Current run state/receipts use the existing temporary operator area. Completed o
 interrupted phases are never automatically replayed; unknown effects stop for
 existing reconciliation. No saves, loads, UI calls, service or new dependencies
 are required by the runner. The coordinator performs native execution.
+
+For native parallel-family qualification set `parallel_family:true` in a fresh
+benchmark input. Each section fits its first road using `native_parts`; later
+roads derive native normal offsets of +d (two roads), or +d/-d/+2d (four roads),
+where d is the surveyed native `trackDistance`. Existing benchmark phases/modes
+and their default independent fitting remain unchanged.
+
+An operator `group` or corridor section member can select an earlier member in
+the same preparation: `"normal_offset_from":{"group_index":1,"spacing":5,"reverse":false}`.
+The index is 1-based within that group/section, and 5 is illustrative: use the
+actual native spacing. First member fits; every later member derives, with signed
+offsets of one to three native spacings and no repeated cumulative offset.
+Exact distinct free attachment identities and compatible boundary positions,
+directions and grades are required. Specify guides/structures/fitting controls on
+the reference only; siblings inherit its structures and vertical profile. Earlier
+derived members may also be references; signed spacing follows their direction.
+The external `normal_offset_from.prepared_request` mixed-attachment contract is
+unchanged. No nearest-node snapping or independent sibling fitting is added.
+
+The existing native CubicOffsetSpline conversion tries only 1/2/4 subdivisions,
+with sampled XY conversion error <=0.1; at most16 derived segments and20 segments
+in the complete family. Height follows the reference parameter; this does not
+prove continuous 3D separation. Endpoint/gradient/region/radius checks remain
+binding. Whole-family native preview, one-use preparation and exact committed
+group readback remain required. Unknown effects stop without replay. Standalone
+Lua/native qualification of this new branch remains with the coordinator.
 
 For an explicitly rejected signal addition, `bridge_live.reconcile_rejected_signal(
 client, request_id, prior_observation)` performs one exact target/object read.

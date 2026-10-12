@@ -77,7 +77,7 @@ def compile_corridor(brief):
                 p['port_refs'][port]=copy.deepcopy(ref);needed.add(ref['chain'])
             return port
         for member in members:
-            allowed={'track','guides','structures','representation','leg_representations','radius','fit_radius','handle_scale'}
+            allowed={'track','guides','structures','representation','leg_representations','radius','fit_radius','handle_scale','normal_offset_from'}
             if set(member)-allowed:raise ValueError('corridor member supports existing free structured-connect settings only')
             a=endpoint(source,member['track'],'front');b=endpoint(target,member['track'],'back')
             for guide in member.get('guides',[]):
@@ -89,10 +89,13 @@ def compile_corridor(brief):
         shape=copy.deepcopy(p);shape['bindings']={name:bindings.get(name,{'edges':[{'unresolved_receipt':True}]}) for name in needed}
         validate_plan(shape)
         minimum_segments=0
+        member_minimum=[]
         for group in groups:
             points=[p['ports'][group['source']]['position']]+[g['position'] for g in group.get('guides',[])]+[p['ports'][group['target']]['position']]
             if any(not 0<math.dist(a,b)<=800 for a,b in zip(points,points[1:])):raise ValueError('authored corridor leg must be nonzero and within native800 bound')
-            minimum_segments+=sum(len(s.get('spans',[s])) for s in group.get('structures',[{}]*(len(points)-1)))
+            count=(member_minimum[group['normal_offset_from']['group_index']-1] if 'normal_offset_from' in group
+                   else sum(len(s.get('spans',[s])) for s in group.get('structures',[{}]*(len(points)-1))))
+            member_minimum.append(count);minimum_segments+=count
         if minimum_segments>20:raise ValueError('authored corridor requires more than native20 grouped segments')
         templates.append({'name':section['name'],'plan':p,'required_bindings':sorted(needed),'created_bindings':created})
     return {'brief':copy.deepcopy(brief),'sections':templates,'initial_bindings':bindings}

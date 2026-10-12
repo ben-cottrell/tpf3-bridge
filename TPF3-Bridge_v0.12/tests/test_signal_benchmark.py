@@ -51,6 +51,21 @@ class World(Native):
 
 
 class BenchmarkTests(unittest.TestCase):
+    def test_parallel_family_opt_in_preserves_default_and_forwards_native_spacing(self):
+        original=benchmark.fixtures(config())
+        self.assertTrue(all('normal_offset_from' not in member for _,b in original for section in b['sections'] for member in section['members']))
+        c=config();c['parallel_family']=True
+        for _,b in benchmark.fixtures(c):
+            compiled=benchmark.compile_corridor(b)
+            for index,section in enumerate(compiled['sections']):
+                groups=section['plan']['steps'][-1]['groups']
+                self.assertEqual(groups[0]['representation'],'native_parts')
+                self.assertEqual([g['normal_offset_from']['spacing'] for g in groups[1:]],[5] if index==0 else [5,-5,10])
+                self.assertTrue(all(g['normal_offset_from']['group_index']==1 and g['normal_offset_from']['reverse'] is False for g in groups[1:]))
+                self.assertTrue(all('representation' not in g and 'structures' not in g for g in groups[1:]))
+        c['parallel_family']='true'
+        with self.assertRaisesRegex(ValueError,'boolean'):benchmark.fixtures(c)
+
     def test_fixture_scope_and_local_equivalence(self):
         rows=benchmark.fixtures(config());self.assertEqual([m for m,b in rows],['individual','batch'])
         for mode,b in rows:
