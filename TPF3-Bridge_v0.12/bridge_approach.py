@@ -167,6 +167,69 @@ def summary(run,b,s):
         'failure':s.get('error'),'current_family':s.get('current_family')}
 
 
+GEOMETRY_KEYS=('id','node0','node1','p0','p1','t0','t1','template','style','road_type','structure','node_positions')
+
+
+def geometry_dependency(row):return {k:copy.deepcopy(row[k]) for k in GEOMETRY_KEYS if k in row}
+
+
+class Dependencies:
+    """One bounded observation cache per review; no graph reconstruction."""
+    def __init__(self,client):self.client=client;self.edges={};self.tracks={};self.nodes={};self.stations={}
+
+    def observe_edges(self,ids):
+        missing=sorted(set(ids)-self.edges.keys())
+        if len(set(ids)|self.edges.keys())>256:raise ValueError('review dependency bound256 exact edges exceeded')
+        for i in range(0,len(missing),16):
+            selected=missing[i:i+16];r=self.client.request('inspect',{'edge_ids':selected,'structures':True});rows=r.get('result',{}).get('edges',[])
+            if r['status']!='ok' or len(rows)!=len(selected) or {e['id'] for e in rows}!=set(selected) or any(e.get('road_type')!='TRACK' for e in rows):raise ValueError('exact review dependency geometry unavailable')
+            self.edges.update({e['id']:e for e in rows})
+
+    def observe_semantics(self,ids):
+        self.observe_edges(ids);missing=sorted(set(ids)-self.tracks.keys())
+        for i in range(0,len(missing),16):
+            selected=missing[i:i+16];r=self.client.request('operating_inspect',{'track_ids':selected,'limit':16});value=r.get('result',{}).get('tracks',{});rows=value.get('records',[])
+            if r['status']!='ok' or value.get('truncated') is not False or len(rows)!=len(selected) or {e['id'] for e in rows}!=set(selected):raise ValueError('exact review track-object dependencies incomplete')
+            for row in rows:
+                objects=row.get('objects');objects=[] if objects=={} else objects
+                if not isinstance(objects,list) or len(objects)>16 or not isinstance(row.get('revision'),list) or len(row['revision'])!=3 or any(row.get(k)!=self.edges[row['id']][k] for k in ('node0','node1')):raise ValueError('bounded track revision/object identity unavailable')
+                self.tracks[row['id']]={'revision':row['revision'],'objects':sorted(objects,key=lambda o:o['id'])}
+        for ident in sorted(set(ids)):
+            e=self.edges[ident]
+            for end in (0,1):
+                node=e['node'+str(end)]
+                if node in self.nodes:continue
+                pos=e.get('node_positions',[e['p0'],e['p1']])[end]
+                r=self.client.request('discover',{'region':{'min':[x-.5 for x in pos],'max':[x+.5 for x in pos]},'max_edges':16});value=r.get('result',{})
+                witnesses=[c for c in value.get('candidates',[]) if c.get('node_id')==node and c.get('edge_id')==ident]
+                if r['status']!='ok' or value.get('complete') is not True or len(witnesses)!=1:raise ValueError('exact review endpoint incidence unavailable')
+                c=witnesses[0];incident=c.get('incident_edges',[])
+                if c.get('incidence_complete') is not True or c.get('incident_output_truncated') is not False or c.get('incident_count')!=len(incident) or len(set(incident))!=len(incident) or ident not in incident or len(incident)>16:raise ValueError('bounded complete endpoint incidence unavailable')
+                self.nodes[node]={'incident_edges':sorted(incident),'construction_owner':c.get('construction_owner','unknown')}
+
+    def station_identity(self,selector):
+        import bridge_station as station
+        name=selector['name']
+        if name not in self.stations:
+            if len(self.stations)>=8:raise ValueError('review station dependency bound8 exceeded')
+            r=self.client.request('station_lookup',station.parameters({'name':name,'lookup_scope':'identity_frozen'}));v=station.normalized_station(r.get('result',{}))
+            if r['status']!='ok' or v.get('identity_complete') is not True or v.get('frozen_complete') is not True:raise ValueError('complete scoped station dependency unavailable')
+            self.stations[name]=v
+        v=self.stations[name];cs=[x for x in v.get('constructions',[]) if x.get('resource')==selector['construction']['resource'] and x.get('position')==selector['construction']['position']]
+        if len(cs)!=1:raise ValueError('exact selected station dependency changed/unavailable')
+        return copy.deepcopy(v)
+
+    def fingerprint(self,check,ids,selectors):
+        self.observe_edges(ids)
+        value={'geometry':{str(i):geometry_dependency(self.edges[i]) for i in sorted(set(ids))}}
+        if check['kind'] in ('route','station_routes'):
+            self.observe_semantics(ids)
+            value['objects']={str(i):copy.deepcopy(self.tracks[i]) for i in sorted(set(ids))}
+            value['incidence']={str(n):copy.deepcopy(self.nodes[n]) for i in ids for n in (self.edges[i]['node0'],self.edges[i]['node1'])}
+        if check['kind']=='station_routes':value['stations']={s['name']:self.station_identity(s) for s in selectors}
+        return value
+
+
 def invalidate(b,s,families,effects,*,geometry_preserved=False):
     affected=[]
     for c in b['checks']:
@@ -205,8 +268,17 @@ def propagate(b,s,child,signal_only):
         for name,v in s['bindings'].items():
             original=[e for e in v.get('edges',[]) if e['id']==old]
             if not original:continue
-            preserved &= len(changed)==1 and all(original[0].get(k)==changed[0].get(k) for k in ('node0','node1','p0','p1','t0','t1','template','style','road_type','structure'))
+            preserved &= len(changed)==1 and all(original[0].get(k)==changed[0].get(k) for k in GEOMETRY_KEYS if k!='id' and k in original[0])
             v['edges']=[n for e in v['edges'] for n in (changed if e['id']==old else [e])];affected.add(name.split('.')[0])
+        if signal_only and preserved:
+            for check in b['checks']:
+                if check['kind']!='geometry':continue
+                dep=s['checks'].get(check['name'],{}).get('dependencies',{}).get('geometry',{})
+                if str(old) in dep:
+                    previous=dep.pop(str(old));new=geometry_dependency(changed[0])
+                    # Keep only fields already evidenced; a later review observes
+                    # any newly available fields rather than guessing equality.
+                    dep[str(changed[0]['id'])]={k:new[k] for k in previous if k in new}
     invalidate(b,s,affected,[],geometry_preserved=signal_only and preserved)
 
 
@@ -397,8 +469,47 @@ def review(operator,run,checks=None):
     if checks is not None and (not isinstance(checks,list) or len(checks)>32 or len(set(checks))!=len(checks)):raise ValueError('bounded distinct explicit check names required')
     selected={c['name'] for c in b['checks'] if not s['checks'].get(c['name'],{}).get('valid')} if checks is None else set(checks)
     if selected-{c['name'] for c in b['checks']}:raise ValueError('unknown approach checks')
-    cache={};results=[]
+    cache={};results=[];dependencies=Dependencies(client)
+    def selectors(c):
+        out=[b['station']]
+        if c['kind']=='station_routes':
+            q=c['payload']
+            for route in q['routes']:
+                for endpoint in (route['source'],route['target']):
+                    if 'role' not in endpoint:continue
+                    registry=operator.interfaces().load(endpoint.get('registry_name',q['name']))
+                    if registry['revision']!=endpoint.get('registry_revision',q['revision']):raise ValueError('station dependency registry revision changed')
+                    out.append(registry['roles'][endpoint['role']]['station'])
+        return out
+    def ids_for(c):
+        ids={e['id'] for ref in c['bindings'].values() for e in s['bindings'][ref]['edges']}
+        ids.update(int(i) for i in s['checks'].get(c['name'],{}).get('dependencies',{}).get('geometry',{}))
+        return sorted(ids)
     with locked(folder):
+        candidates=[c for c in b['checks'] if c['name'] in selected or s['checks'].get(c['name'],{}).get('valid')]
+        changed=[];fingerprints={}
+        try:
+            dependencies.observe_edges([i for c in candidates for i in ids_for(c)])
+            semantic_ids=[i for c in candidates if c['kind'] in ('route','station_routes') for i in ids_for(c)]
+            if semantic_ids:dependencies.observe_semantics(semantic_ids)
+            for c in candidates:
+                rows={}
+                for local,ref in c['bindings'].items():
+                    expected=s['bindings'][ref]['edges'];current=[dependencies.edges[e['id']] for e in expected]
+                    if any(any(e.get(k)!=r.get(k) for k in GEOMETRY_KEYS if k in e) for e,r in zip(expected,current)):
+                        changed.append(c['name'])
+                    rows[local]=current;cache[ref]=current
+                fingerprints[c['name']]=dependencies.fingerprint(c,ids_for(c),selectors(c))
+                proof=s['checks'].get(c['name'],{})
+                if proof.get('valid') and (proof.get('criteria_hash')!=digest(c) or proof.get('session')!=s['session'] or proof.get('dependencies')!=fingerprints[c['name']]):changed.append(c['name'])
+            guard(operator,s)
+        except Exception as exc:
+            changed=[c['name'] for c in candidates];s['error']='review dependencies unavailable: '+str(exc)[:250]
+        if changed:
+            for name in changed:s['checks'].setdefault(name,{})['valid']=False
+            s['status']='needs_attention';s.setdefault('error','review dependencies changed; reconcile exact bindings/current state before fresh checks')
+            live.atomic_json(folder/'state.json',s)
+            return summary(run,b,s)|{'checks_run':0,'changed_dependencies':list(dict.fromkeys(changed))[:8]}
         for c in b['checks']:
             if c['name'] not in selected:continue
             guard(operator,s)
@@ -441,7 +552,12 @@ def review(operator,run,checks=None):
                 result=crossing_observations(q,[e for r in rows.values() for e in r],paths)
                 passed=bool(result) and all(v['separate_endpoint_identities_observed'] and v['required_structure_observed'] for v in result)
             guard(operator,s)
-            s['checks'][c['name']]={'valid':passed,'passed':passed,'criteria_hash':digest(c),'session':s['session'],'result':result}
+            ids=ids_for(c)
+            if kind=='station_routes':
+                complete=load(Path(result['evidence']))['routes'] if result.get('evidence') else result.get('routes',[])
+                ids=sorted(set(ids)|{v[k]['edge'] for v in complete for k in ('source','target')})
+            proof_dependencies=dependencies.fingerprint(c,ids,selectors(c))
+            s['checks'][c['name']]={'valid':passed,'passed':passed,'criteria_hash':digest(c),'session':s['session'],'dependencies':proof_dependencies,'result':result}
             results.append({'name':c['name'],'passed':passed});live.atomic_json(folder/'state.json',s)
         s['status']='reviewed' if all(s['checks'].get(c['name'],{}).get('valid') for c in b['checks']) else 'built'
         live.atomic_json(folder/'state.json',s)

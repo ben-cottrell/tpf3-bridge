@@ -124,8 +124,13 @@ clearance claim. Saved-file integrity remains separate.
 Quiet checks:605 combined tests passed across test_approach.py, test_operator.py,
 test_operator_fit_variation.py, test_corridor_operator.py, test_corridor_completion.py,
 test_signal_batch.py, test_signal_benchmark.py, test_parallel_family.py, test_live_client.py.
-Final focused21 approach tests pass, including three additions after that combined run;
-unchanged remaining-suite evidence reused. Command `.local_tools/operator312/Scripts/python.exe -`
+Current focused27 approach tests pass; cached proofs now refresh bounded exact geometry,
+route object/revision/incidence and scoped station dependencies once per review, with
+no route rerun when unchanged. Changes stop for reconciliation; explicit native absence
+is required for negative routes. Individual signal chains allow one_way:false; batch
+mode remains true-only. Latest operator/signal_batch/approach focused119 passed.
+The605 combined check predates these narrow fixes; valid unchanged-suite evidence is reused.
+Subsequent focused checks cover changes. Command `.local_tools/operator312/Scripts/python.exe -`
 with unittest discovery for the named patterns and TextTestRunner(stream=io.StringIO(),verbosity=0).
 AST and git diff --check pass. No permanent reports or native calls from this worker.
 Current CLI/schema/limits are in OPERATOR_USAGE.md; native qualification remains pending.

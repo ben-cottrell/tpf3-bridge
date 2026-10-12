@@ -2,6 +2,7 @@
 import copy
 import io
 import json
+import math
 from pathlib import Path
 import tempfile
 import unittest
@@ -26,11 +27,26 @@ def brief():
 
 
 class World(Native):
+    def __init__(self,directory):
+        super().__init__(directory);self.objects={};self.revisions={};self.extra_incidence={};self.station_revision=1
     def request(self,op,q,**kwargs):
         if op=='station_lookup':
             self.calls.append((op,copy.deepcopy(q)))
             return {'status':'ok','request_id':'station','result':{'identity_complete':True,'frozen_complete':True,
-                'constructions':[{'construction_id':42,'resource':'station','position':[0,0,2]}]}}
+                'group_revision':self.station_revision,'constructions':[{'construction_id':42,'resource':'station','position':[0,0,2]}]}}
+        if op=='operating_inspect':
+            self.calls.append((op,copy.deepcopy(q)))
+            rows=[{'id':i,'node0':self.edges[i]['node0'],'node1':self.edges[i]['node1'],'revision':self.revisions.get(i,[1,0,0]),'objects':copy.deepcopy(self.objects.get(i,[]))} for i in q['track_ids']]
+            return {'status':'ok','request_id':'objects','result':{'tracks':{'records':rows,'count':len(rows),'truncated':False}}}
+        if op=='discover':
+            self.calls.append((op,copy.deepcopy(q)));candidates=[]
+            for e in self.edges.values():
+                for end in (0,1):
+                    pos=e['p'+str(end)];node=e['node'+str(end)]
+                    if not all(q['region']['min'][i]<=pos[i]<=q['region']['max'][i] for i in range(3)):continue
+                    incident=sorted({row['id'] for row in self.edges.values() if node in (row['node0'],row['node1'])}|set(self.extra_incidence.get(node,[])))
+                    candidates.append({'edge_id':e['id'],'node_id':node,'incident_edges':incident,'incident_count':len(incident),'incidence_complete':True,'incident_output_truncated':False,'construction_owner':'none'})
+            return {'status':'ok','request_id':'incidence','result':{'complete':True,'candidates':candidates}}
         return super().request(op,q,**kwargs)
 
 
@@ -42,7 +58,8 @@ class ApproachTests(unittest.TestCase):
             result=o.build_approach(run);self.assertEqual(result['status'],'built');self.assertEqual(result['completed_families'],1)
             result=o.review_approach(run);self.assertEqual(result['status'],'reviewed');self.assertEqual(result['checks_run'],1)
             self.assertLess(len(json.dumps(result).encode()),4096)
-            calls=len(c.calls);self.assertEqual(o.review_approach(run)['checks_run'],0);self.assertEqual(len(c.calls),calls)
+            calls=len(c.calls);self.assertEqual(o.review_approach(run)['checks_run'],0)
+            self.assertEqual([op for op,_ in c.calls[calls:]],['inspect'])
             with self.assertRaisesRegex(ValueError,'already attempted'):o.build_approach(run)
 
     def test_backwards_only_bounded_and_authorised_windows(self):
@@ -252,6 +269,70 @@ class ApproachTests(unittest.TestCase):
                 run=o.plan_approach(b)['run'];o.build_approach(run)
                 with patch('bridge_approach.live.route',return_value={'status':'ok','result':value}):result=o.review_approach(run)
                 self.assertEqual(result['check_results'],[{'name':'reverse_blocked','passed':expected}])
+
+    def route_check(self,name='forward'):
+        return {'name':name,'kind':'route','families':['seed'],'shared_effects':[], 'bindings':{'road':'seed.road'},
+            'payload':{'source':{'binding':'road','end':'node0'},'target':{'binding':'road','end':'node1'},'required_bindings':['road'],'mode':'TRAIN','max_length':1000}}
+
+    def test_cached_route_dependencies_refresh_once_without_unchanged_route_calls(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=World(td);o=Operator(runs=td,client=c);b=brief();b['checks']=[self.route_check(),self.route_check('second')]
+            run=o.plan_approach(b)['run'];o.build_approach(run)
+            value={'status':'ok','result':{'requested_route_verified':True,'path_count':1,'truncated':False}}
+            with patch('bridge_approach.live.route',return_value=value) as route:
+                self.assertEqual(o.review_approach(run)['status'],'reviewed');self.assertEqual(route.call_count,2)
+                calls=len(c.calls);out=o.review_approach(run)
+                self.assertEqual(out['checks_run'],0);self.assertEqual(route.call_count,2)
+            observed=[op for op,_ in c.calls[calls:]]
+            self.assertEqual(observed.count('inspect'),1);self.assertEqual(observed.count('operating_inspect'),1);self.assertEqual(observed.count('discover'),2)
+
+    def test_changed_cached_geometry_signal_revision_or_incidence_requires_reconciliation(self):
+        for change in ('geometry','signal','revision','incidence'):
+            with self.subTest(change=change),tempfile.TemporaryDirectory() as td:
+                c=World(td);o=Operator(runs=td,client=c);b=brief();b['checks'].append(self.route_check());run=o.plan_approach(b)['run'];o.build_approach(run)
+                value={'status':'ok','result':{'requested_route_verified':True,'path_count':1,'truncated':False}}
+                with patch('bridge_approach.live.route',return_value=value) as route:
+                    self.assertEqual(o.review_approach(run)['status'],'reviewed')
+                    if change=='geometry':c.edges[1]['p1'][2]+=1
+                    elif change=='signal':c.objects[1]=[{'id':80,'signal':{'one_way':True,'forward':False}}]
+                    elif change=='revision':c.revisions[1]=[2,0,0]
+                    else:c.extra_incidence[c.edges[1]['node1']]=[99]
+                    out=o.review_approach(run);self.assertEqual(out['status'],'needs_attention');self.assertEqual(out['checks_run'],0);self.assertEqual(route.call_count,1)
+                state=approach.load(o.path(run)/'state.json');self.assertFalse(state['checks']['forward']['valid'])
+                self.assertEqual(state['checks']['alignment']['valid'],change!='geometry')
+
+    def test_cached_station_identity_change_invalidates_station_route_proof(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=World(td);o=Operator(runs=td,client=c);b=brief();selector=b['station']
+            o.interfaces().path('station_roles').write_text(json.dumps({'revision':'R1','roles':{'P1':{'station':selector}}}))
+            b['checks']=[{'name':'arrival','kind':'station_routes','families':['seed'],'shared_effects':[],'bindings':{'road':'seed.road'},
+                'payload':{'name':'station_roles','revision':'R1','routes':[{'name':'arrival','purpose':'arrival','source':{},'target':{'role':'P1'},'required_bindings':['road'],'max_length':1000}]}}]
+            run=o.plan_approach(b)['run'];o.build_approach(run)
+            with patch.object(o,'review_station_routes',return_value={'status':'ok','routes':[]}) as route:
+                self.assertEqual(o.review_approach(run)['status'],'reviewed');self.assertEqual(o.review_approach(run)['checks_run'],0)
+                c.station_revision=2;out=o.review_approach(run)
+                self.assertEqual(out['status'],'needs_attention');self.assertEqual(route.call_count,1)
+                self.assertEqual(out['changed_dependencies'],['arrival'])
+
+    def test_actual_station_route_endpoint_outside_aliases_is_a_cached_dependency(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=World(td);o=Operator(runs=td,client=c);b=brief();selector=b['station']
+            o.interfaces().path('station_roles').write_text(json.dumps({'revision':'R1','roles':{'P1':{'station':selector}}}))
+            b['checks']=[{'name':'arrival','kind':'station_routes','families':['seed'],'shared_effects':[],'bindings':{'road':'seed.road'},
+                'payload':{'name':'station_roles','revision':'R1','routes':[{'name':'arrival','purpose':'arrival','source':{},'target':{'role':'P1'},'max_length':1000}]}}]
+            run=o.plan_approach(b)['run'];o.build_approach(run);external=c.make_edge([20,0,2],[40,0,2],[20,0,0],[20,0,0])
+            with patch.object(o,'review_station_routes',return_value={'status':'ok','routes':[{'source':{'edge':external['id']},'target':{'edge':1}}]}) as route:
+                self.assertEqual(o.review_approach(run)['status'],'reviewed');self.assertEqual(o.review_approach(run)['checks_run'],0)
+                external['t1'][1]=1
+                self.assertEqual(o.review_approach(run)['status'],'needs_attention');self.assertEqual(route.call_count,1)
+
+    def test_verified_signal_mapping_preserves_cached_geometry_dependency(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=World(td);o=Operator(runs=td,client=c);b=brief();run=o.plan_approach(b)['run'];o.build_approach(run);o.review_approach(run)
+            path=o.path(run)/'state.json';s=approach.load(path);row=copy.deepcopy(c.edges.pop(1));row['id']=9;c.edges[9]=row
+            approach.propagate(b,s,{'bindings':{'road':{'edges':[row]}},'lineage':[{'original_edge':1,'replacement_edges':[9]}]},True);live.atomic_json(path,s)
+            self.assertEqual(o.review_approach(run)['checks_run'],0)
+            self.assertEqual(approach.load(path)['status'],'reviewed')
 
     def test_changed_criteria_cannot_reuse_previous_proof(self):
         with tempfile.TemporaryDirectory() as td:

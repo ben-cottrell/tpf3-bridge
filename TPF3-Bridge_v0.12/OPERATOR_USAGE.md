@@ -936,7 +936,15 @@ CLI: `python bridge_operator.py approach-plan --input approach.json`, then
 `approach-continue --run <id> --input continuation.json`.
 Continuation input is `{}` or `{"family_run":"<existing reconciled continuation id>"}`.
 Review input may select `{"checks":["arrival_P1"]}`; default runs only invalidated
-checks. No command retries an unknown mutation or replays completed children.
+checks. Every new review refreshes cached proof dependencies through one bounded
+observation cache, including exact geometry/structures and, for routes, track revisions,
+objects/signals and complete exact endpoint incidence. Station checks also compare
+scoped station/terminal identity and retain their actual endpoint dependencies.
+Unchanged proofs need no route calls; changed/unavailable dependencies return
+needs_attention before route checks, requiring current-state/binding reconciliation.
+The cache is bounded to256 exact edges,16 objects/incidences per native record and
+8 scoped stations; it is not a world graph or atomic snapshot. Geometry-only proofs
+do not depend on signals. No command retries an unknown mutation or replays children.
 
 The version1 brief contains `revision`, exact `session`, `station` selector
 `{name,construction:{resource,position}}`, `interfaces`, `families`, and `checks`.
