@@ -93,6 +93,18 @@ class ApproachTests(unittest.TestCase):
             result=o.continue_approach(run);self.assertEqual(result['status'],'built')
             self.assertEqual(sum(op=='test_approach' for op,_ in c.calls),1)
 
+    def test_family_completion_and_counters_survive_atomic_propagation_state_replacement(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=World(td);o=Operator(runs=td,client=c);run=o.plan_approach(brief())['run'];original=approach.propagate
+            def propagate(b,s,child,signal_only,receipt=None):
+                original(b,s,child,signal_only,receipt=receipt)
+                new=copy.deepcopy(s);s.clear();s.update(new)
+            with patch('bridge_approach.propagate',side_effect=propagate):result=o.build_approach(run)
+            entry=approach.load(o.path(run)/'state.json')['families']['seed'];child=approach.load(o.path(entry['run'])/'state.json')
+            self.assertEqual(result['status'],'built');self.assertEqual(entry['status'],'built')
+            self.assertEqual(entry['calls'],child['calls']);self.assertEqual(entry['native_seconds'],child['native_seconds'])
+            self.assertGreater(entry['calls'],0)
+
     def test_unknown_mutation_never_replayed_on_continue(self):
         with tempfile.TemporaryDirectory() as td:
             c=World(td);o=Operator(runs=td,client=c);run=o.plan_approach(brief())['run'];original=c.request

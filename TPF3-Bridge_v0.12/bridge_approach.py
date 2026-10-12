@@ -475,6 +475,9 @@ def build(operator,run,*,continuing=False,family_run=None):
                     children=[load(operator.path(r)/'state.json') for r in child_runs]
                 signal_only=f['kind']=='operator' and all(step['kind'] in ('signal','signal_chain') for step in f['payload']['steps'])
                 for child_id,cs in zip(child_runs,children):propagate(b,s,cs,signal_only,receipt=child_id)
+                # Propagation atomically replaces state dictionaries; reacquire
+                # the live family entry before recording completion/counters.
+                entry=s['families'][name]
                 invalidate(b,s,[name],f['shared_effects'],geometry_preserved=signal_only)
                 persist() # Keep partial identity changes visible before stopping.
                 if child_state['status']!='built':raise ValueError('family requires existing child reconciliation/continuation: '+child_state.get('error',child_state['status']))
