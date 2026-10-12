@@ -2,6 +2,7 @@
 import copy
 import io
 import json
+from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -96,6 +97,53 @@ class CompletionTests(unittest.TestCase):
             self.assertEqual(state['chunk_index'],1,result);self.assertGreater(len(state['placements']),0)
             self.assertTrue(any(a['id']!=b['id'] for a,b in zip(rows,state['edges'])))
             before=len(native.calls);op.continue_corridor(run);self.assertEqual(len(native.calls),before)
+
+    def test_pending_journal_blocks_qualification_even_through_benchmark_wrapper(self):
+        with tempfile.TemporaryDirectory() as td:
+            native,op,run,roads=self.built(td);op.attach_corridor_completion(run,roads);op.complete_corridor(run,phase='signal')
+            native.journal=Path(td)/'client_state.json';native.journal.write_text(json.dumps({'pending':{'request_id':'unresolved'}}))
+            wrapped=Operator(runs=td,client=benchmark.Counted(native));before=len(native.calls)
+            result=wrapped.complete_corridor(run,phase='qualify')
+            self.assertEqual(result['completion']['status'],'needs_attention');self.assertIn('requires reconciliation',result['completion']['error'])
+            self.assertEqual(result['completion']['checks'],0);self.assertEqual(len(native.calls),before)
+            self.assertTrue(json.loads(native.journal.read_text())['pending'])
+
+    def test_selected_later_road_interruption_default_continuation_consumes_owner_first(self):
+        with tempfile.TemporaryDirectory() as td:
+            native,op,run,roads=self.built(td);op.attach_corridor_completion(run,roads)
+            original=live.atomic_json;interrupted=False
+            def write(path,value):
+                nonlocal interrupted
+                original(path,value)
+                if value.get('kind')=='corridor_signal_chunk' and value.get('status')=='built' and not interrupted:
+                    interrupted=True;raise OSError('interrupted later road after durable receipt')
+            with patch('bridge_corridor.live.atomic_json',side_effect=write):result=op.complete_corridor(run,phase='signal',road='fast_down')
+            self.assertEqual(result['completion']['status'],'needs_attention');self.assertEqual(sum(o=='operating_control' for o,p in native.calls),1)
+            # Mutable UI/current-road context is not authoritative child ownership.
+            path=op.path(run)/'state.json';state=json.loads(path.read_text());state['completion']['road']='up';original(path,state)
+            result=op.continue_corridor(run)
+            self.assertEqual(result['completion']['status'],'completed',result)
+            self.assertEqual(result['completion']['signals'],20);self.assertEqual(result['completion']['checks'],8)
+            self.assertEqual(sum(o=='operating_control' for o,p in native.calls),4)
+            batch_seeds=[p for o,p in native.calls if o=='operating_inspect' and 'signal_batch' in p];self.assertEqual(len(batch_seeds),4)
+
+    def test_pending_after_receipt_blocks_advance_until_existing_reconciliation(self):
+        with tempfile.TemporaryDirectory() as td:
+            native,op,run,roads=self.built(td);op.attach_corridor_completion(run,roads)
+            native.journal=Path(td)/'client_state.json';native.journal.write_text('{}');original=native.request
+            def request(operation,params,**kwargs):
+                result=original(operation,params,**kwargs)
+                if operation=='operating_control':native.journal.write_text(json.dumps({'pending':{'request_id':result['request_id']}}))
+                return result
+            with patch.object(native,'request',side_effect=request):result=op.complete_corridor(run)
+            self.assertEqual(result['completion']['status'],'needs_attention');self.assertEqual(native.route_count,0)
+            state=json.loads((op.path(run)/'state.json').read_text())['completion']
+            self.assertEqual(state['roads']['up']['chunk_index'],0)
+            self.assertEqual(json.loads((op.path(state['current_child'])/'state.json').read_text())['status'],'built')
+            native.journal.write_text('{}') # fake existing reconciliation; production never clears this
+            result=op.continue_corridor(run)
+            self.assertEqual(result['completion']['status'],'completed',result)
+            self.assertEqual(sum(o=='operating_control' for o,p in native.calls),4)
 
     def test_attached_scope_is_immutable_and_stale_session_has_no_calls(self):
         with tempfile.TemporaryDirectory() as td:

@@ -88,14 +88,18 @@ Exact receipts recover roads; one phase-entry refresh and bounded chain checks
 precede bulk signals. Original section envelope union remains binding; no general
 construction-region increase. Chunk receipts and exact replacement bindings persist
 before advance; completed child continuation does not replay unknown mutations.
+Pending native journal blocks advancement/qualification, including counted clients;
+default continuation consumes the immutable pending-child owner before other roads.
 Only authored affected-road directed checks run. Existing benchmark optional
 production_completion:true retains defaults; fake fixture20 signals/eight outcomes
 uses4 batches/16 signal requests plus8 route checks. Native performance is unmeasured.
-Affected quiet Python validation:573 tests passed,0 failures/errors across
+Affected quiet Python validation:576 distinct tests passed,0 failures/errors across
 test_corridor_completion.py, test_parallel_family.py, test_corridor_operator.py, test_operator.py,
 test_signal_batch.py, test_signal_benchmark.py and test_live_client.py.
 Command: `.local_tools/operator312/Scripts/python.exe -` with unittest discovery
-for those seven patterns and TextTestRunner(stream=io.StringIO(),verbosity=0).
+and TextTestRunner(stream=io.StringIO(),verbosity=0). Latest targeted33 pass:
+test_corridor_completion.py, test_signal_benchmark.py, test_corridor_operator.py;
+unchanged remaining-suite evidence is reused from the573-test combined check.
 Python AST checks and git diff --check passed. Slice2 checkpoint72fe7c6 is ready
 for coordinator native qualification; slice3 is offline-prepared at the current
 source checkpoint. Baseline upstream remains7530353, with no new push.

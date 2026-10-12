@@ -215,9 +215,17 @@ def complete_corridor(operator,run,*,phase='all',continuing=False,road=None):
     def persist():live.atomic_json(folder/'state.json',state)
     try:
         client=operator.client()
+        def require_reconciled():
+            journal=getattr(client,'journal',None)
+            if journal and journal.exists() and json.loads(journal.read_text()).get('pending'):raise ValueError('unresolved native request requires reconciliation')
+        require_reconciled()
         if client.session!=state['session']:raise ValueError('session changed; reacquire exact corridor identities')
         selected=[r for r in plan['roads'] if road is None or r['name']==road]
-        if c.get('current_child') and (phase=='qualify' or c.get('road') not in [r['name'] for r in selected]):raise ValueError('current chunk must be reconciled/consumed before changing completion phase or road')
+        if c.get('current_child'):
+            pending=json.loads((operator.path(c['current_child'])/'state.json').read_text());owner=pending.get('road')
+            if pending.get('parent')!=run or owner not in c['roads'] or pending.get('chunk')!=c['roads'][owner]['chunk_index']:raise ValueError('pending child ownership does not match completion')
+            if phase=='qualify' or owner not in [r['name'] for r in selected]:raise ValueError('current chunk must be reconciled/consumed before changing completion phase or road')
+            selected.sort(key=lambda r:r['name']!=owner)
         c['status']='running';c.pop('error',None);persist()
         for spec in selected:
             name=spec['name'];progress=c['roads'][name];c['road']=name
@@ -264,12 +272,14 @@ def complete_corridor(operator,run,*,phase='all',continuing=False,road=None):
                         record.update(status='built' if r['status']=='ok' else 'needs_attention',response=r);live.atomic_json(child_path,record)
                     if record['status']!='built':raise ValueError('unknown/failed chunk requires reconciliation; never replay')
                     r=record['response'];value=r['result'];changed=live.signal_batch_replacements(record['brief'],value)
+                    require_reconciled()
                     progress['placements'].extend(loc|q|{'request_id':r['request_id']} for loc,q in zip(chunk['locations'],value['placements']))
                     progress['edges']=[changed.get(e['id'],e) for e in rows]
                     for binding in state['bindings'].values():binding['edges']=[changed.get(e['id'],e) for e in binding['edges']]
                     progress['chunk_index']+=1;progress.setdefault('children',[]).append(child);c.pop('current_child',None);persist()
                 progress['status']='signalled';persist()
             if phase in ('all','qualify'):
+                require_reconciled()
                 if progress['status'] not in ('signalled','verified'):raise ValueError('road completion must precede directed qualification')
                 c['phase']='qualify';persist();rows=progress['edges'];first,last=rows[0],rows[-1]
                 start={'edge':first['id'],'node':first['node0']};end={'edge':last['id'],'node':last['node1']}
@@ -280,10 +290,12 @@ def complete_corridor(operator,run,*,phase='all',continuing=False,road=None):
                 if not spec['forward']:start,end=end,start
                 for check in spec['checks']:
                     if check in progress['checks']:continue
+                    require_reconciled()
                     a,b=(end,start) if check=='reverse_blocked' else (start,end)
                     r=client.request('route',{'source_edge':a['edge'],'source_node':a['node'],'target_edge':b['edge'],'target_node':b['node'],'mode':'TRAIN','max_length':spec['max_route_length'],'required_edges':[a['edge'],b['edge']]})
                     value=r.get('result',{});good=(value.get('native_path_found') is False and value.get('reason')=='no_native_path_returned') if check=='reverse_blocked' else value.get('requested_route_verified') is True
                     if r['status']!='ok' or not good:raise ValueError('explicit directed road acceptance failed: '+name+' '+check)
+                    require_reconciled()
                     progress['checks'][check]={'request_id':r.get('request_id'),'verified':True};persist()
                 progress['status']='verified';persist()
         c['status']='completed' if all(v['status']=='verified' for v in c['roads'].values()) else 'ready';persist()

@@ -94,6 +94,7 @@ def recover_roads(operator,corridor_run):
 class Counted:
     def __init__(self,client,counts=None):
         self.client=client;self.session=client.session;self.evidence=client.evidence;self.phase='preflight';self.counts=copy.deepcopy(counts or {})
+        self.journal=getattr(client,'journal',None)
     def request(self,operation,params,**kwargs):
         entry=self.counts.setdefault(self.phase,{'requests':0,'mutations':0,'native_seconds':0})
         entry['requests']+=1;entry['mutations']+=int(live.is_mutation(operation,params));start=time.monotonic()

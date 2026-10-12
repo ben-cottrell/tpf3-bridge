@@ -700,6 +700,10 @@ Geometry/spacing checks are sampled, with native replacement proof still require
 Local corridor state tracks road/chunk/current child and replacement identities.
 An attempted/unknown child never replays; explicit continuation consumes a completed
 child receipt before advancing. Failure blocks that road's dependent checks.
+An unresolved native client journal blocks both advancement and qualification;
+use existing reconciliation. Pending-child ownership comes from its immutable
+road/chunk record, so default continuation consumes an interrupted later road
+first without repeating it or overwriting its ownership.
 
 Benchmark `production_completion:true` opts the batch fixture into this path,
 keeping individual/default modes unchanged. It may also be attached directly to
