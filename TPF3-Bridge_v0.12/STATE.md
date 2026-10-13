@@ -194,8 +194,12 @@ requires a live entity (1686-1690). Fake Lua reads now throw for deleted IDs, co
 recycled IDs and retain observation errors. Python code unchanged:599-test evidence
 reused; current diff check passes, no Lua execution claim.
 Original callback lost its raw native receipt and consumed preparation before failure.
-Exact read-only current-state reconciliation contract is pending coordinator/source
-architect evidence; preserve both guards and original records until required facts pass.
+Recovery decision: coordinator will reload the saved pre-mutation Efficiency1 baseline
+with the fixed module and a fresh runtime/evidence directory, then verify all three
+original signals and topology before a new prepared request. Restoration is not yet
+observed here. Old c3061a pending journal/evidence remain untouched/unresolved; this
+is baseline reset, not old-operation replay or fabricated historical reconciliation.
+No general recovery framework or ownership assumption is added.
 Worker performs no native observations, staging/reload, live state edits or push.
 Worker renderer/procedure scope is offline; native snapshot/design/review/build belong
 to the coordinator. No flyover repair or new-session native qualification is claimed here.

@@ -13,7 +13,12 @@ IDs and unavailable observations. Fixture remains unexecuted (no Lua runtime); r
 
 Read-only reconciliation must establish the exact current replacement and all required
 removal/retention/geometry/structure/ownership facts before clearing either guard.
-Old callback discarded its native receipt and consumed prepared state on failure;
-coordinator/source architect is resolving the first-case proof contract. No fabricated
+Old callback discarded its native receipt and consumed prepared state on failure.
+Coordinator will normally reload the user-saved pre-mutation Efficiency1 baseline,
+activate the fixed module in a fresh runtime/evidence directory and verify all three
+original signals and track topology restored before any new prepared removal.
+This is an observed-baseline reset, not replay/reconciliation of the failed request.
+Old c3061a pending journal/evidence stay untouched and unresolved. No new general
+reconciliation framework is needed for this repair. No fabricated
 receipt, proximity mapping, blanket exception swallowing or unproved journal clearing.
 Worker does not stage, reload, invoke native operations, redesign or push.
