@@ -186,23 +186,43 @@ test_signal_batch.py, test_live_client.py, test_approach_render.py, test_approac
 test_operator.py and test_corridor_operator.py with the same quiet discovery command.
 AST/diff checks pass. Renderer now uses numbered controls, a bounded off-track legend
 and cropped canvases without changing scale. Optional tests/native/test_signal_remove.lua
-is prepared, unexecuted: no installed Lua runtime/checker. Current native attempt in
-session pif_1791870329_5284063 executed first removal but reported mutation_unverified:
-getComponent on deleted edge60645 raised Invalid entity. No replay; second removal
-unattempted. The source fix uses entityExists (installed engine.d.tl1723); getComponent
-requires a live entity (1686-1690). Fake Lua reads now throw for deleted IDs, cover
-recycled IDs and retain observation errors. Python code unchanged:599-test evidence
-reused; current diff check passes, no Lua execution claim.
-Original callback lost its raw native receipt and consumed preparation before failure.
-Recovery decision: coordinator will reload the saved pre-mutation Efficiency1 baseline
-with the fixed module and a fresh runtime/evidence directory, then verify all three
-original signals and topology before a new prepared request. Restoration is not yet
-observed here. Old c3061a pending journal/evidence remain untouched/unresolved; this
-is baseline reset, not old-operation replay or fabricated historical reconciliation.
-No general recovery framework or ownership assumption is added.
-Worker performs no native observations, staging/reload, live state edits or push.
-Worker renderer/procedure scope is offline; native snapshot/design/review/build belong
-to the coordinator. No flyover repair or new-session native qualification is claimed here.
+is prepared, unexecuted: no installed Lua runtime/checker. The documented entityExists
+guard now prevents getComponent reads on deleted IDs while still checking relevant
+components on recycled IDs; genuine observation failures remain failures.
+Native session pif_1791872469_7424591 began after the coordinator observed the saved
+Efficiency1 baseline restored (all3 original signals and deck/main topology). New
+exact removals passed complete native readback:60645 ->60376 removed60642/60643;
+60646 ->60552 removed60644. Selected absence, retained-object, geometry, structure,
+ownership and functional proof flags passed on these two observed tracks. This does
+not qualify arbitrary object mixes, versions or train operation. An additional native
+partial-selection removal retained signal60603 including params/function/ownership;
+subsequent signal restoration and direction correction passed. The earlier failed
+session's c3061a pending journal/evidence remains untouched/unresolved; baseline reset
+is not replay or fabricated historical reconciliation. No recovery framework added.
+
+R2 repair uses the independently reviewed combined authored controls: one continuous
+structured graded inner sweep, no horizontal landing stub. Both fits built first try:
+inner5b3d4213fe764b22 used13 requests/6.296s wait; outere08be1e09b5f4beb used11/5.501s.
+Current functional context: .local_runs/efficiency/r2_current.json, session as above;
+signal-restoration runabc494f0c25e4d7b is built (20 requests/10.701s wait).
+Final current-state qualification passed4/4 main arrivals,4/4 flyover arrivals and
+4/4 departures. All3 wrong-way queries returned statusok/native_path_found:false/
+reason:no_native_path_returned. Independent Astra review of the combined actual
+geometry and unobstructed game visual passed: smooth sweep, previous landing plateau/
+bow removed, outer exit without a hook, no obvious clipping at review scale.
+Current inner edges60650/60552, deck60601, outer60651, far60376 are session-bound
+identities; chronological receipts remain authoritative after replacements.
+
+Retain railway-design/examples/station-approach-r2.json and its canonical controls,
+plus station-approach-r2-view/plan.svg and profile.svg. Diagrams contain37 pre-repair
+committed curves and4 authored R2 curves,5 markers; they are prebuild comparison,
+not fresh final readback. Compact re-render preserved every control/marker exactly,
+shared horizontal scale and XML validity; duplicate flattened/raster files removed
+only in that example folder. Final native context/receipts remain local and untouched.
+R2 is ready for final user review, not a general speed/traversal/continuous clearance
+or version guarantee. Python code unchanged; reuse599 affected quiet Python results.
+Coordinator performed native steps; worker docs/source only, no native/staging/live
+receipt changes or push. No follow-on implementation task is implied.
 
 Keep only current context and state needed to reconcile uncertain live mutations. Temporary
 diagnostics are removed after use; no permanent journals, audits, handoff archives or

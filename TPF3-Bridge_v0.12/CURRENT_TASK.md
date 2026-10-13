@@ -1,24 +1,20 @@
 # Current task
 
-Coordinator owns native observations/design/UI/staging. Healthy current session:
-pif_1791870329_5284063. First exact signal removal executed, then callback verification
-reported mutation_unverified: getComponent on deleted original edge60645 raised
-Invalid entity. Do not replay this removal; second removal has not been attempted.
-Preserve client/native pending state, original prepared input and existing evidence.
+R2 flyover repair and source qualification are complete, ready for final user review.
+Current session: pif_1791872469_7424591. Native checks passed4/4 main arrivals,
+4/4 flyover arrivals and4/4 departures; all3 wrong-way queries explicitly returned
+no_native_path_returned. Independent Astra review of combined actual geometry and
+unobstructed game visual passed: continuous sweep, no previous landing plateau/bow,
+no outer hook or obvious clipping at the review scale. No train traversal claimed.
 
-Worker source fix uses documented entityExists before old-edge/selected-signal
-component absence reads. Lua fixture now throws on deleted IDs and covers recycled
-IDs and unavailable observations. Fixture remains unexecuted (no Lua runtime); reuse
-599 passing unchanged Python checks rather than rerunning them. Diff check passes.
+Corrected exact signal removal and a partial-selection retained-signal case passed
+native absence/retention/function/geometry/structure/ownership checks. Signals were
+restored and directions corrected. Current functional context remains
+.local_runs/efficiency/r2_current.json; old c3061a pending journal/evidence stays
+untouched/unresolved. Observed saved-baseline reset was not historical reconciliation.
 
-Read-only reconciliation must establish the exact current replacement and all required
-removal/retention/geometry/structure/ownership facts before clearing either guard.
-Old callback discarded its native receipt and consumed prepared state on failure.
-Coordinator will normally reload the user-saved pre-mutation Efficiency1 baseline,
-activate the fixed module in a fresh runtime/evidence directory and verify all three
-original signals and track topology restored before any new prepared removal.
-This is an observed-baseline reset, not replay/reconciliation of the failed request.
-Old c3061a pending journal/evidence stay untouched and unresolved. No new general
-reconciliation framework is needed for this repair. No fabricated
-receipt, proximity mapping, blanket exception swallowing or unproved journal clearing.
-Worker does not stage, reload, invoke native operations, redesign or push.
+Worker closes concise documentation and reusable R2 reference/control/diagrams in a
+scoped local commit, then stops. Reuse599 affected Python passes; optional Lua fixture
+unexecuted. No new task, native/UI/staging, live receipt rewrite, general recovery,
+broad cleanup or push. Existing independent material-design review and deterministic
+routine fitting remain binding.

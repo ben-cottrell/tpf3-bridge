@@ -1100,5 +1100,24 @@ components must be absent. Rejection/unknown/partial effects have no automatic r
 when removal, retained-object/function, geometry, structure and ownership proofs all
 pass with matching input hash, selected IDs and original-to-current edge lineage.
 Use that receipt for later exact-chain work; never replay stale edge IDs. This does not
-prove routes/train operation. New Lua source and its optional fake fixture are prepared;
-native removal is not yet demonstrated and no standalone Lua runtime was available.
+prove routes/train operation. Corrected Lua absence checks use documented entityExists
+before getComponent; component reads require a valid live entity. In session
+pif_1791872469_7424591,
+two current-track removals passed full native readback for all three selected signals.
+A further partial-selection test retained signal60603 with its params, function
+and ownership, followed by qualified restoration/direction correction. These are
+observed cases, not a guarantee for arbitrary object mixes or game versions. The
+optional Lua fixture remains unexecuted because
+no standalone runtime is available. Earlier failed-request evidence stays unresolved;
+observed saved-baseline reset followed by new qualified requests is not replay or
+historical reconciliation.
+
+The reusable R2 repair reference is `railway-design/examples/station-approach-r2.json`,
+with canonical `station-approach-r2-controls.json` and compact `station-approach-r2-view/`
+plan.svg/profile.svg. Their37 committed curves are the pre-repair baseline;4 authored
+curves show the selected R2 intent. They are not a fresh final-world snapshot or a
+safe replay package. Requalify session/identities, geometry, site and constraints for
+another use. Current realised context remains `.local_runs/efficiency/r2_current.json`.
+Final native qualification passed12 positive platform movements and3 explicit
+wrong-way absences; independent actual-geometry/game-visual review passed. No train
+traversal, speed or continuous clearance proof follows.

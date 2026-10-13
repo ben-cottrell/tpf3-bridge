@@ -232,6 +232,13 @@ not a universal clearance limit or engine defect. Review merge/ramp/deck togethe
 before build; a staging interface must not force the final shape. Keep selected hard
 constraints without imposing exact sketch equality.
 
+The reusable R2 reference demonstrates the feedback loop: independent prebuild
+combined-control review, native construction, required/forbidden route checks, then
+independent realised-geometry and unobstructed visual review. Its continuous graded
+sweep removed the staging plateau/bow while preserving the required functions.
+Do not turn those example controls into universal dimensions or exact-sketch gates;
+prebuild comparison diagrams are not final readback or train-traversal evidence.
+
 Review after a controlling route or coupled family is built, and after material
 native-driven revisions. Do not review every click. Use a comparable overhead view
 and the relevant profile; overlay actual geometry on the plan where available.

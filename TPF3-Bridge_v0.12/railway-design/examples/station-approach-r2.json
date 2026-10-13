@@ -1,0 +1,1176 @@
+{
+  "kind": "authored_repair_spec",
+  "version": 1,
+  "revision": "station_approach_R2",
+  "status": "native_qualified_reference",
+  "session": "pif_1791865071_25864",
+  "intent": "One coherent merge and graded rising sweep, retained shallow level deck, and straight-plan outer descent. Preserve twelve station movements and three wrong-way exclusions.",
+  "current_evidence": ".local_runs/live_python_interface/p01/pif_1791865071_25864/operator_track_catalogue.json",
+  "controls": "station-approach-r2-controls.json",
+  "requirements": [
+    "Retain station, leads, fans, main pair, crossovers, level deck60601 and their unaffected signals.",
+    "Merge remains beyond inbound decision signal and before platform-choice crossovers in inbound travel order.",
+    "Replace only the affected branch/landing/ramp/far-stub geometry and three flyover signals.",
+    "Fresh native identity and accepted whole proposal govern construction; no old-session job replay."
+  ],
+  "geometry": {
+    "frame": "world",
+    "A": [
+      435,
+      -4712.5,
+      2.5999999046325684
+    ],
+    "J": [
+      630,
+      -4699.350533986802,
+      7.394912880444268
+    ],
+    "joint_direction": [
+      0.9949118269852296,
+      0.10074947406767062
+    ],
+    "joint_grade": 0.03673799073121313,
+    "deck_near": [
+      1040,
+      -4700,
+      17.600000381469727
+    ],
+    "deck_far": [
+      1180,
+      -4730,
+      17.600000381469727
+    ],
+    "deck_direction": [
+      0.9778024140774095,
+      -0.20952908873087348
+    ],
+    "far_stub_near": [
+      1420.221975859226,
+      -4781.47613768412,
+      12.850000381469727
+    ],
+    "far_boundary": [
+      1430,
+      -4783.571428571428,
+      12.850000381469727
+    ],
+    "derivation": "Use native horizontal-chord endpoint-cubic tangents. Joint x630 is the sole interior design guide. Solve J on Q→R with Q=A+[horizontal_length(A,J)/3,0,0], R=D-[horizontal_length(J,D)*deck_direction/3,0]. Joint heading/grade come from Q→R; both adjoining cubics reach zero plan/profile curvature there.",
+    "sampled_observations": {
+      "heading_progression_deg": [
+        0,
+        5.782330148388228,
+        -12.094757077012103
+      ],
+      "north_crest_y": -4683.386318923363,
+      "north_crest_local_v": 31.613681076637,
+      "inner_max_grade": 0.03673799073121313,
+      "outer_max_grade_approx": 0.029,
+      "far_boundary_north_shift": 1.4285714285715585,
+      "deck_join": "Same tangent; negative plan curvature joins zero without sign reversal. Review realised residual join independently."
+    }
+  },
+  "flexibility": "Preferred merge worldx435 on current unsignalled main edge60620 is about5.03m beyond old junction. On native rejection, remain on this same downstream main segment, preserve decision/merge/crossover order and deck, and jointly derive the guide again for materially shifted attachment. The guide/ramp lengths are preferences, not hard radius or sketch-equality gates. Native earthworks may reshape terrain in the explicit envelopes; review main adjacency, supports and actual clipping.",
+  "preconditions": [
+    "Independent review of complete authored plan/profile before native construction.",
+    "Freshly qualify current station/deck/main/affected signal identities and incidence.",
+    "Remove signals60642+60643 from60645 and60644 from60646 using bounded exact signal-removal action. Preserve every other object and follow returned track replacement lineage into the payload bindings before running them.",
+    "Existing native remove/replace rejects object-bearing edges; do not bypass this. Payloads below are schema-valid but must be rebound after signal removal.",
+    "Reconcile uncertain mutations; use existing continuation rather than replay."
+  ],
+  "stages": [
+    {
+      "name": "inner_repair",
+      "payload": {
+        "version": 2,
+        "revision": "R2_inner",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "region": {
+          "min": [
+            420,
+            -4730,
+            -10
+          ],
+          "max": [
+            1060,
+            -4660,
+            35
+          ]
+        },
+        "ports": {
+          "deck_near": {
+            "position": [
+              1040,
+              -4700,
+              17.600000381469727
+            ],
+            "direction": [
+              -0.9778024140774095,
+              0.20952908873087348
+            ],
+            "grade": 0
+          }
+        },
+        "track": {
+          "template": "::/infrastructure/track/standard/standard.street_template",
+          "style": "::/infrastructure/track/standard/standard.street"
+        },
+        "max_grade": 0.2,
+        "max_route_length": 3000,
+        "bindings": {
+          "old_inner": {
+            "edges": [
+              {
+                "construction_owner": "none",
+                "endpoint_incidence": [
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 3,
+                    "node_id": 60619
+                  },
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 60585
+                  }
+                ],
+                "endpoint_node_position_match": true,
+                "id": 60615,
+                "name": "unnamed",
+                "name_truncated": false,
+                "node0": 60619,
+                "node1": 60585,
+                "node_positions": [
+                  [
+                    429.9678955078125,
+                    -4712.5,
+                    2.5999999046325684
+                  ],
+                  [
+                    580,
+                    -4690,
+                    2.5999999046325684
+                  ]
+                ],
+                "objects": [],
+                "p0": [
+                  429.9678955078125,
+                  -4712.5,
+                  2.5999999046325684
+                ],
+                "p1": [
+                  580,
+                  -4690,
+                  2.5999999046325684
+                ],
+                "road_type": "TRACK",
+                "structure": {
+                  "classification": "NORMAL",
+                  "instance_parameters": "not_exposed_by_BaseEdge",
+                  "resource_state": "not_applicable",
+                  "type_index": 1,
+                  "type_value": "0"
+                },
+                "style": "::/infrastructure/track/standard/standard.street",
+                "t0": [
+                  151.70986938476562,
+                  0,
+                  0
+                ],
+                "t1": [
+                  151.70986938476562,
+                  0,
+                  0
+                ],
+                "template": "::/infrastructure/track/standard/standard.street_template"
+              },
+              {
+                "construction_owner": "none",
+                "endpoint_incidence": [
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 60585
+                  },
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 60574
+                  }
+                ],
+                "endpoint_node_position_match": true,
+                "id": 60586,
+                "name": "unnamed",
+                "name_truncated": false,
+                "node0": 60585,
+                "node1": 60574,
+                "node_positions": [
+                  [
+                    580,
+                    -4690,
+                    2.5999999046325684
+                  ],
+                  [
+                    590,
+                    -4690,
+                    2.5999999046325684
+                  ]
+                ],
+                "objects": [],
+                "p0": [
+                  580,
+                  -4690,
+                  2.5999999046325684
+                ],
+                "p1": [
+                  590,
+                  -4690,
+                  2.5999999046325684
+                ],
+                "road_type": "TRACK",
+                "structure": {
+                  "classification": "NORMAL",
+                  "instance_parameters": "not_exposed_by_BaseEdge",
+                  "resource_state": "not_applicable",
+                  "type_index": 1,
+                  "type_value": "0"
+                },
+                "style": "::/infrastructure/track/standard/standard.street",
+                "t0": [
+                  10,
+                  0,
+                  0
+                ],
+                "t1": [
+                  10,
+                  0,
+                  0
+                ],
+                "template": "::/infrastructure/track/standard/standard.street_template"
+              },
+              {
+                "construction_owner": "none",
+                "endpoint_incidence": [
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 60574
+                  },
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 60599
+                  }
+                ],
+                "endpoint_node_position_match": true,
+                "id": 60645,
+                "name": "unnamed",
+                "name_truncated": false,
+                "node0": 60574,
+                "node1": 60599,
+                "node_positions": [
+                  [
+                    590,
+                    -4690,
+                    2.5999999046325684
+                  ],
+                  [
+                    1040,
+                    -4700,
+                    17.600000381469727
+                  ]
+                ],
+                "objects": [
+                  {
+                    "category": "2",
+                    "id": 60642,
+                    "name": "",
+                    "name_truncated": false,
+                    "parameter": 0.8892272114753723,
+                    "params": {
+                      "seed": 0
+                    },
+                    "position": [
+                      991.0294189453125,
+                      -4691.39990234375,
+                      17.61880874633789
+                    ],
+                    "resource": "::/infrastructure/signal/signal_path_c.con",
+                    "revision": [
+                      3,
+                      11,
+                      0
+                    ],
+                    "signal": {
+                      "id": 60642,
+                      "lanes": [
+                        {
+                          "animation_state": 0,
+                          "edge": 60645,
+                          "edge_index": 1,
+                          "index": 0,
+                          "reversed": false,
+                          "type": "1"
+                        }
+                      ],
+                      "param": 0.8892272114753723,
+                      "position": [
+                        991.0294189453125,
+                        -4691.39990234375,
+                        17.61880874633789
+                      ],
+                      "resource": "::/infrastructure/signal/signal_path_c.con",
+                      "revision": [
+                        3,
+                        11,
+                        0
+                      ]
+                    }
+                  },
+                  {
+                    "category": "2",
+                    "id": 60643,
+                    "name": "",
+                    "name_truncated": false,
+                    "parameter": 0.22520402073860168,
+                    "params": {
+                      "seed": 0
+                    },
+                    "position": [
+                      691.7633056640625,
+                      -4687.58642578125,
+                      5.070242881774902
+                    ],
+                    "resource": "::/infrastructure/signal/signal_path_c.con",
+                    "revision": [
+                      3,
+                      11,
+                      0
+                    ],
+                    "signal": {
+                      "id": 60643,
+                      "lanes": [
+                        {
+                          "animation_state": 0,
+                          "edge": 60645,
+                          "edge_index": 0,
+                          "index": 0,
+                          "reversed": false,
+                          "type": "1"
+                        }
+                      ],
+                      "param": 0.22520402073860168,
+                      "position": [
+                        691.7633056640625,
+                        -4687.58642578125,
+                        5.070242881774902
+                      ],
+                      "resource": "::/infrastructure/signal/signal_path_c.con",
+                      "revision": [
+                        3,
+                        11,
+                        0
+                      ]
+                    }
+                  }
+                ],
+                "p0": [
+                  590,
+                  -4690,
+                  2.5999999046325684
+                ],
+                "p1": [
+                  1040,
+                  -4700,
+                  17.600000381469727
+                ],
+                "road_type": "TRACK",
+                "structure": {
+                  "classification": "NORMAL",
+                  "instance_parameters": "not_exposed_by_BaseEdge",
+                  "resource_state": "not_applicable",
+                  "type_index": -1,
+                  "type_value": "0"
+                },
+                "style": "::/infrastructure/track/standard/standard.street",
+                "t0": [
+                  450.111083984375,
+                  0,
+                  0
+                ],
+                "t1": [
+                  440.1197204589844,
+                  -94.31137084960938,
+                  0
+                ],
+                "template": "::/infrastructure/track/standard/standard.street_template"
+              }
+            ]
+          },
+          "main_anchor": {
+            "edges": [
+              {
+                "construction_owner": "none",
+                "endpoint_incidence": [
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 3,
+                    "node_id": 60619
+                  },
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 60547
+                  }
+                ],
+                "endpoint_node_position_match": true,
+                "id": 60620,
+                "name": "unnamed",
+                "name_truncated": false,
+                "node0": 60619,
+                "node1": 60547,
+                "node_positions": [
+                  [
+                    429.9678955078125,
+                    -4712.5,
+                    2.5999999046325684
+                  ],
+                  [
+                    505,
+                    -4712.5,
+                    2.5999999046325684
+                  ]
+                ],
+                "objects": [],
+                "p0": [
+                  429.9678955078125,
+                  -4712.5,
+                  2.5999999046325684
+                ],
+                "p1": [
+                  505,
+                  -4712.5,
+                  2.5999999046325684
+                ],
+                "road_type": "TRACK",
+                "structure": {
+                  "classification": "NORMAL",
+                  "instance_parameters": "not_exposed_by_BaseEdge",
+                  "resource_state": "not_applicable",
+                  "type_index": -1,
+                  "type_value": "0"
+                },
+                "style": "::/infrastructure/track/standard/standard.street",
+                "t0": [
+                  75.03211975097656,
+                  0,
+                  0
+                ],
+                "t1": [
+                  75.03211212158203,
+                  0,
+                  0
+                ],
+                "template": "::/infrastructure/track/standard/standard.street_template"
+              }
+            ]
+          },
+          "deck": {
+            "edges": [
+              {
+                "construction_owner": "none",
+                "endpoint_incidence": [
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 60599
+                  },
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 60600
+                  }
+                ],
+                "endpoint_node_position_match": true,
+                "id": 60601,
+                "name": "unnamed",
+                "name_truncated": false,
+                "node0": 60599,
+                "node1": 60600,
+                "node_positions": [
+                  [
+                    1040,
+                    -4700,
+                    17.600000381469727
+                  ],
+                  [
+                    1180,
+                    -4730,
+                    17.600000381469727
+                  ]
+                ],
+                "objects": [],
+                "p0": [
+                  1040,
+                  -4700,
+                  17.600000381469727
+                ],
+                "p1": [
+                  1180,
+                  -4730,
+                  17.600000381469727
+                ],
+                "road_type": "TRACK",
+                "structure": {
+                  "classification": "BRIDGE",
+                  "instance_parameters": "not_exposed_by_BaseEdge",
+                  "repository": "bridgeTypeRep",
+                  "resource_name": "::/infrastructure/bridge/steel.bridge",
+                  "resource_parameters": {
+                    "abutmentLen": 5,
+                    "abutmentWidth": -1,
+                    "carriers": [
+                      "1",
+                      "0"
+                    ],
+                    "carriers_truncated": false,
+                    "cost": 100,
+                    "height": 0,
+                    "isAutoSelectable": true,
+                    "maintenanceCost": 1,
+                    "padding": 0,
+                    "pillarGroundTextureOffset": 2,
+                    "pillarLen": 5,
+                    "pillarMaxDist": 90,
+                    "pillarMinDist": 70,
+                    "pillarTargetDist": 80,
+                    "pillarWidth": -1,
+                    "sidewalkHeight": -1,
+                    "speedLimit": 38.88888931274414
+                  },
+                  "resource_state": "resolved",
+                  "type_index": 3,
+                  "type_value": "1"
+                },
+                "style": "::/infrastructure/track/standard/standard.street",
+                "t0": [
+                  140,
+                  -30,
+                  0
+                ],
+                "t1": [
+                  140,
+                  -30,
+                  0
+                ],
+                "template": "::/infrastructure/track/standard/standard.street_template"
+              }
+            ]
+          }
+        },
+        "steps": [
+          {
+            "name": "clear_old_inner",
+            "kind": "remove",
+            "chain": "old_inner"
+          },
+          {
+            "name": "inner_sweep",
+            "kind": "connect",
+            "source": {
+              "curve": "main_anchor",
+              "u": 0.06706601828969695
+            },
+            "source_interior": true,
+            "target": "deck_near",
+            "guides": [
+              {
+                "position": [
+                  630,
+                  -4699.350533986802,
+                  7.394912880444268
+                ],
+                "travel_direction": [
+                  0.9949118269852296,
+                  0.10074947406767062
+                ],
+                "grade": 0.03673799073121313
+              }
+            ],
+            "structures": [
+              {
+                "classification": "NORMAL"
+              },
+              {
+                "classification": "NORMAL"
+              }
+            ],
+            "representation": "endpoint_cubic",
+            "radius": 0,
+            "handle_scale": 1
+          }
+        ],
+        "routes": [],
+        "curves": {},
+        "profile_axis": [
+          1,
+          0
+        ],
+        "profile_exaggeration": 4,
+        "port_refs": {
+          "deck_near": {
+            "chain": "deck",
+            "edge_id": 60601,
+            "node_id": 60599
+          }
+        }
+      },
+      "exports": {
+        "inner_sweep": "inner_sweep",
+        "deck": "deck",
+        "main_anchor": "main_anchor"
+      }
+    },
+    {
+      "name": "outer_repair",
+      "payload": {
+        "version": 2,
+        "revision": "R2_outer",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "region": {
+          "min": [
+            1160,
+            -4810,
+            -10
+          ],
+          "max": [
+            1445,
+            -4715,
+            35
+          ]
+        },
+        "ports": {
+          "deck_far": {
+            "position": [
+              1180,
+              -4730,
+              17.600000381469727
+            ],
+            "direction": [
+              0.9778024140774095,
+              -0.20952908873087348
+            ],
+            "grade": 0
+          },
+          "far_seed_origin": {
+            "position": [
+              1420.221975859226,
+              -4781.47613768412,
+              12.850000381469727
+            ],
+            "direction": [
+              -0.9778024140774095,
+              0.20952908873087348
+            ],
+            "grade": 0
+          },
+          "far_near": {
+            "position": [
+              1420.221975859226,
+              -4781.47613768412,
+              12.850000381469727
+            ],
+            "direction": [
+              -0.9778024140774095,
+              0.20952908873087348
+            ],
+            "grade": 0
+          }
+        },
+        "track": {
+          "template": "::/infrastructure/track/standard/standard.street_template",
+          "style": "::/infrastructure/track/standard/standard.street"
+        },
+        "max_grade": 0.2,
+        "max_route_length": 3000,
+        "bindings": {
+          "old_outer": {
+            "edges": [
+              {
+                "construction_owner": "none",
+                "endpoint_incidence": [
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 60600
+                  },
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 42287
+                  }
+                ],
+                "endpoint_node_position_match": true,
+                "id": 60646,
+                "name": "unnamed",
+                "name_truncated": false,
+                "node0": 60600,
+                "node1": 42287,
+                "node_positions": [
+                  [
+                    1180,
+                    -4730,
+                    17.600000381469727
+                  ],
+                  [
+                    1420,
+                    -4785,
+                    12.850000381469727
+                  ]
+                ],
+                "objects": [
+                  {
+                    "category": "2",
+                    "id": 60644,
+                    "name": "",
+                    "name_truncated": false,
+                    "parameter": 0.431450217962265,
+                    "params": {
+                      "seed": 0
+                    },
+                    "position": [
+                      1282.9808349609375,
+                      -4759.0712890625,
+                      16.240774154663086
+                    ],
+                    "resource": "::/infrastructure/signal/signal_path_c.con",
+                    "revision": [
+                      3,
+                      11,
+                      0
+                    ],
+                    "signal": {
+                      "id": 60644,
+                      "lanes": [
+                        {
+                          "animation_state": 0,
+                          "edge": 60646,
+                          "edge_index": 0,
+                          "index": 0,
+                          "reversed": false,
+                          "type": "1"
+                        }
+                      ],
+                      "param": 0.431450217962265,
+                      "position": [
+                        1282.9808349609375,
+                        -4759.0712890625,
+                        16.240774154663086
+                      ],
+                      "resource": "::/infrastructure/signal/signal_path_c.con",
+                      "revision": [
+                        3,
+                        11,
+                        0
+                      ]
+                    }
+                  }
+                ],
+                "p0": [
+                  1180,
+                  -4730,
+                  17.600000381469727
+                ],
+                "p1": [
+                  1420,
+                  -4785,
+                  12.850000381469727
+                ],
+                "road_type": "TRACK",
+                "structure": {
+                  "classification": "NORMAL",
+                  "instance_parameters": "not_exposed_by_BaseEdge",
+                  "resource_state": "not_applicable",
+                  "type_index": -1,
+                  "type_value": "0"
+                },
+                "style": "::/infrastructure/track/standard/standard.street",
+                "t0": [
+                  240.75592041015625,
+                  -51.590553283691406,
+                  0
+                ],
+                "t1": [
+                  246.22145080566406,
+                  0,
+                  0
+                ],
+                "template": "::/infrastructure/track/standard/standard.street_template"
+              },
+              {
+                "construction_owner": "none",
+                "endpoint_incidence": [
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 42287
+                  },
+                  {
+                    "construction_owner": -1,
+                    "free": true,
+                    "incident_count": 1,
+                    "node_id": 60603
+                  }
+                ],
+                "endpoint_node_position_match": true,
+                "id": 60604,
+                "name": "unnamed",
+                "name_truncated": false,
+                "node0": 42287,
+                "node1": 60603,
+                "node_positions": [
+                  [
+                    1420,
+                    -4785,
+                    12.850000381469727
+                  ],
+                  [
+                    1430,
+                    -4785,
+                    12.850000381469727
+                  ]
+                ],
+                "objects": [],
+                "p0": [
+                  1420,
+                  -4785,
+                  12.850000381469727
+                ],
+                "p1": [
+                  1430,
+                  -4785,
+                  12.850000381469727
+                ],
+                "road_type": "TRACK",
+                "structure": {
+                  "classification": "NORMAL",
+                  "instance_parameters": "not_exposed_by_BaseEdge",
+                  "resource_state": "not_applicable",
+                  "type_index": 1,
+                  "type_value": "0"
+                },
+                "style": "::/infrastructure/track/standard/standard.street",
+                "t0": [
+                  10,
+                  0,
+                  0
+                ],
+                "t1": [
+                  10,
+                  0,
+                  0
+                ],
+                "template": "::/infrastructure/track/standard/standard.street_template"
+              }
+            ]
+          },
+          "deck": {
+            "edges": [
+              {
+                "construction_owner": "none",
+                "endpoint_incidence": [
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 60599
+                  },
+                  {
+                    "construction_owner": -1,
+                    "free": false,
+                    "incident_count": 2,
+                    "node_id": 60600
+                  }
+                ],
+                "endpoint_node_position_match": true,
+                "id": 60601,
+                "name": "unnamed",
+                "name_truncated": false,
+                "node0": 60599,
+                "node1": 60600,
+                "node_positions": [
+                  [
+                    1040,
+                    -4700,
+                    17.600000381469727
+                  ],
+                  [
+                    1180,
+                    -4730,
+                    17.600000381469727
+                  ]
+                ],
+                "objects": [],
+                "p0": [
+                  1040,
+                  -4700,
+                  17.600000381469727
+                ],
+                "p1": [
+                  1180,
+                  -4730,
+                  17.600000381469727
+                ],
+                "road_type": "TRACK",
+                "structure": {
+                  "classification": "BRIDGE",
+                  "instance_parameters": "not_exposed_by_BaseEdge",
+                  "repository": "bridgeTypeRep",
+                  "resource_name": "::/infrastructure/bridge/steel.bridge",
+                  "resource_parameters": {
+                    "abutmentLen": 5,
+                    "abutmentWidth": -1,
+                    "carriers": [
+                      "1",
+                      "0"
+                    ],
+                    "carriers_truncated": false,
+                    "cost": 100,
+                    "height": 0,
+                    "isAutoSelectable": true,
+                    "maintenanceCost": 1,
+                    "padding": 0,
+                    "pillarGroundTextureOffset": 2,
+                    "pillarLen": 5,
+                    "pillarMaxDist": 90,
+                    "pillarMinDist": 70,
+                    "pillarTargetDist": 80,
+                    "pillarWidth": -1,
+                    "sidewalkHeight": -1,
+                    "speedLimit": 38.88888931274414
+                  },
+                  "resource_state": "resolved",
+                  "type_index": 3,
+                  "type_value": "1"
+                },
+                "style": "::/infrastructure/track/standard/standard.street",
+                "t0": [
+                  140,
+                  -30,
+                  0
+                ],
+                "t1": [
+                  140,
+                  -30,
+                  0
+                ],
+                "template": "::/infrastructure/track/standard/standard.street_template"
+              }
+            ]
+          }
+        },
+        "steps": [
+          {
+            "name": "clear_old_outer",
+            "kind": "remove",
+            "chain": "old_outer"
+          },
+          {
+            "name": "far_seed",
+            "kind": "stub",
+            "port": "far_seed_origin",
+            "direction": [
+              0.9778024140774095,
+              -0.20952908873087348
+            ],
+            "grade": 0,
+            "length": 10
+          },
+          {
+            "name": "outer_ramp",
+            "kind": "connect",
+            "source": "deck_far",
+            "target": "far_near",
+            "structures": [
+              {
+                "classification": "NORMAL"
+              }
+            ],
+            "representation": "endpoint_cubic",
+            "radius": 0,
+            "handle_scale": 1
+          }
+        ],
+        "routes": [],
+        "curves": {},
+        "profile_axis": [
+          1,
+          0
+        ],
+        "profile_exaggeration": 4,
+        "port_refs": {
+          "deck_far": {
+            "chain": "deck",
+            "edge_id": 60601,
+            "node_id": 60600
+          },
+          "far_near": {
+            "chain": "far_seed",
+            "end": "node0"
+          }
+        }
+      },
+      "exports": {
+        "outer_ramp": "outer_ramp",
+        "far_seed": "far_seed"
+      }
+    },
+    {
+      "name": "restore_signals",
+      "payload": {
+        "version": 2,
+        "revision": "R2_signals",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "region": {
+          "min": [
+            433,
+            -4810,
+            -10
+          ],
+          "max": [
+            1433,
+            -4660,
+            35
+          ]
+        },
+        "ports": {
+          "context": {
+            "position": [
+              1000,
+              -4700,
+              17.6
+            ],
+            "direction": [
+              1,
+              0
+            ],
+            "grade": 0
+          }
+        },
+        "track": {
+          "template": "::/infrastructure/track/standard/standard.street_template",
+          "style": "::/infrastructure/track/standard/standard.street"
+        },
+        "max_grade": 0.2,
+        "max_route_length": 3000,
+        "bindings": {
+          "inner_sweep": {
+            "edges": [
+              {
+                "unresolved_receipt": true
+              }
+            ]
+          },
+          "deck": {
+            "edges": [
+              {
+                "unresolved_receipt": true
+              }
+            ]
+          },
+          "outer_ramp": {
+            "edges": [
+              {
+                "unresolved_receipt": true
+              }
+            ]
+          },
+          "far_seed": {
+            "edges": [
+              {
+                "unresolved_receipt": true
+              }
+            ]
+          }
+        },
+        "steps": [
+          {
+            "name": "flyover_blocks",
+            "kind": "signal_chain",
+            "chains": [
+              "inner_sweep",
+              "deck",
+              "outer_ramp",
+              "far_seed"
+            ],
+            "forward": false,
+            "spacing": 300,
+            "start_offset": 150,
+            "end_clearance": 60,
+            "max_count": 4,
+            "seed_id": 60370,
+            "placement_mode": "individual",
+            "one_way": true
+          }
+        ],
+        "routes": [],
+        "curves": {},
+        "profile_axis": [
+          1,
+          0
+        ],
+        "profile_exaggeration": 4
+      },
+      "imports": {
+        "inner_sweep": "inner_repair.inner_sweep",
+        "deck": "inner_repair.deck",
+        "outer_ramp": "outer_repair.outer_ramp",
+        "far_seed": "outer_repair.far_seed"
+      }
+    }
+  ],
+  "acceptance": {
+    "native": "Current exact identity/lineage; unchanged retained geometry/resources/nodes; accepted proposal and no unresolved effects.",
+    "functional": "Requalify12 positive station routes and3 wrong-way exclusions in the current session. Flyover paths require new inner_sweep+retaineddeck and correct platformlead/crossover. Replace removed old branch/ramp proof aliases via exact receipts. Rebind far route boundary to new far_seed readback and inbound travel opposite its native canonical tangent.",
+    "design": "Independent entire merge→ramp→deck→outer sweep review; one intended left-to-right transition at J, no added reverse bow or compensating outer S, no observed clipping, retained main/station/crossovers.",
+    "limits": "Sampled geometry and exact native path checks; train operation and continuous clearance remain unprobed."
+  },
+  "qualification": {
+    "session": "pif_1791872469_7424591",
+    "positive_movements": {
+      "main_arrivals": 4,
+      "flyover_arrivals": 4,
+      "departures": 4
+    },
+    "wrong_way_native_absences": 3,
+    "independent_realised_review": "pass",
+    "current_context": ".local_runs/efficiency/r2_current.json",
+    "reference_only": true,
+    "train_traversal": "unprobed",
+    "continuous_clearance": "not_proved"
+  }
+}
