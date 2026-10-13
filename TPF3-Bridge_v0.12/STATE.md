@@ -172,8 +172,22 @@ approach/operator/corridor_operator). Command `.local_tools/operator312/Scripts/
 with unittest discovery for test_approach_render.py, test_approach.py, test_operator.py,
 test_corridor_operator.py and TextTestRunner(stream=io.StringIO(),verbosity=0).
 AST and git diff --check pass. No native calls or live state rewrites by worker.
-Current exact-chain removal/replacement reject tracks with objects; coordinator/source
-architect is resolving explicit signal removal before native ramp replacement.
+Exact-chain removal/replacement still reject tracks with objects. Approved narrow
+signal removal now has Python prepare/execute/proof helpers and a prepared Lua
+same-edge replacement with zero object additions, one-track/1..16 exact-signal limit,
+session/hash one-use handle and fresh membership/revisions. Selected components
+must disappear; retained IDs/category/params/resource/function, both nodes, geometry,
+structure and PlayerOwned.player must match. Unknown effects stop without replay.
+Primary installed declarations confirm Engine.Entity removal lists (api/type.d.tl2797)
+and PlayerOwned.player (api/engine.d.tl855); existing signal_command supplies the
+populated same-edge replacement/removal pattern. No speculative native API.
+Final affected quiet checks:599 passed,0 failures/errors across test_signal_remove.py,
+test_signal_batch.py, test_live_client.py, test_approach_render.py, test_approach.py,
+test_operator.py and test_corridor_operator.py with the same quiet discovery command.
+AST/diff checks pass. Renderer now uses numbered controls, a bounded off-track legend
+and cropped canvases without changing scale. Optional tests/native/test_signal_remove.lua
+is prepared, unexecuted: no installed Lua runtime/checker. Native signal removal is
+not demonstrated; coordinator owns staging/reload/qualification and actual repair.
 Worker renderer/procedure scope is offline; native snapshot/design/review/build belong
 to the coordinator. No flyover repair or new-session native qualification is claimed here.
 

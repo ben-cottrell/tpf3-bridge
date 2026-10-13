@@ -40,6 +40,8 @@ class ApproachRenderTests(unittest.TestCase):
             self.assertEqual(r['missing_control_count'],0);self.assertFalse(r['native_fit_verified'])
             a=ET.parse(r['plan']).getroot();p=ET.parse(r['profile']).getroot()
             self.assertEqual(a.attrib['data-horizontal-scale'],p.attrib['data-horizontal-scale'])
+            self.assertLess(int(a.attrib['height']),650);self.assertLess(int(p.attrib['height']),560)
+            self.assertIn('Numbered controls',Path(r['plan']).read_text())
             for filename in ('plan','profile'):
                 s=Path(r[filename]).read_text();self.assertIn('merge/approach [authored; ramp]',s)
                 self.assertIn('flyover/deck [preview; deck]',s);self.assertIn('stroke-dasharray="6 3"',s)

@@ -32,6 +32,7 @@ def render_approach(source,output,*,operator=None,families=None,controls=None,
     if type(profile_exaggeration) not in (int,float) or not math.isfinite(profile_exaggeration) or not .1<=profile_exaggeration<=20:raise ValueError('bounded profile exaggeration required')
     plan={'title':'Combined approach','revision':brief['revision'],'origin':[0,0,0],
           'ports':{},'curves':{},'profile_axis':axis,'profile_exaggeration':profile_exaggeration,
+          'diagram_compact':True,
           'diagram_legend':'orange authored · purple preview · navy recorded committed; thick deck, dashed ramp; shared scale'}
     origins={f['name']:f['payload'].get('origin',[0,0,0]) for f in brief['families']}
     for origin in origins.values():vector(origin,3)
@@ -60,7 +61,7 @@ def render_approach(source,output,*,operator=None,families=None,controls=None,
         if not isinstance(name,str) or not 1<=len(name)<=160:raise ValueError('bounded marker name required')
         key=f'{family}/{kind}/{name}'
         if key in plan['ports']:raise ValueError('duplicate marker name')
-        plan['ports'][key]={'position':position(row['position'],family,row['frame']),'label':True,'diagram_marker':True}
+        plan['ports'][key]={'position':position(row['position'],family,row['frame']),'label':True,'diagram_marker':True,'diagram_kind':kind}
         if len(plan['ports'])>256:raise ValueError('diagram bound256 markers exceeded')
     for f in brief['families']:
         if f['name'] not in selected:continue

@@ -3106,6 +3106,68 @@ def place_signal_batch(client, brief, *, execute=False):
         'prepared_handle':value['prepared_handle'],'input_hash':params['input_hash']})
 
 
+def _signal_removal_input(brief):
+    if not isinstance(brief,dict) or set(brief)!={'session','edge_snapshot','signals'}:
+        raise ValueError('signal removal requires session, one edge_snapshot and exact signals')
+    e=brief['edge_snapshot'];signals=brief['signals']
+    required={'id','revision','node0','node1','p0','p1','t0','t1','template','style','road_type','structure','node_positions'}
+    if not isinstance(e,dict) or not required<=e.keys() or e['road_type']!='TRACK':raise ValueError('qualified TRACK snapshot required')
+    if any(type(e[k]) is not int or e[k]<=0 for k in ('id','node0','node1')):raise ValueError('exact track/node identities required')
+    if not isinstance(e['node_positions'],list) or len(e['node_positions'])!=2:raise ValueError('two exact node positions required')
+    for v in [e[k] for k in ('p0','p1','t0','t1')]+e['node_positions']:
+        if not isinstance(v,list) or len(v)!=3 or any(type(x) not in (int,float) or not math.isfinite(x) for x in v):raise ValueError('finite geometry snapshot required')
+    if not isinstance(e['structure'],dict) or not {'classification','type_index'}<=e['structure'].keys():raise ValueError('exact structure snapshot required')
+    if e['structure']['classification'] not in ('NORMAL','BRIDGE','TUNNEL') or (e['structure']['classification']!='NORMAL' and not isinstance(e['structure'].get('resource_name'),str)):
+        raise ValueError('known structure/resource required')
+    if not isinstance(signals,list) or not 1<=len(signals)<=16:raise ValueError('signal removal bound1..16 required')
+    if any(not isinstance(s,dict) or set(s)!={'id','revision'} or type(s['id']) is not int or s['id']<=0 for s in signals) or len({s['id'] for s in signals})!=len(signals):raise ValueError('distinct exact signals required')
+    for r in [e['revision']]+[s['revision'] for s in signals]:
+        if not isinstance(r,list) or len(r)!=3 or any(type(x) is not int for x in r):raise ValueError('exact native revisions required')
+    if not isinstance(brief['session'],str) or not 1<=len(brief['session'])<=160:raise ValueError('exact session required')
+    return json.loads(json.dumps({'session':brief['session'],'edge_snapshot':{k:e[k] for k in required},'signals':signals},allow_nan=False))
+
+
+def remove_signals(client,brief,*,execute=False):
+    """Prepare bounded exact removal on one track, then submit once; no replay."""
+    if type(execute) is not bool:raise ValueError('boolean execute required')
+    params=_signal_removal_input(brief)
+    if params['session']!=client.session:raise LiveError('reconciliation_required','signal removal session differs')
+    params['input_hash']=hashlib.sha256(json.dumps(params,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+    prepared=client.request('operating_inspect',{'signal_removal':params})
+    if prepared['status']!='ok' or not execute:return prepared
+    value=prepared.get('result',{}).get('signal_removal',{})
+    if value.get('native_proposal_evaluated') is not True or value.get('accepted') is not True:
+        return prepared|{'status':'error','result':{'error':'native_signal_removal_proposal_rejected','game_constructed':False}}
+    if value.get('input_hash')!=params['input_hash'] or value.get('prepared_handle')!=prepared['request_id']:
+        raise LiveError('reconciliation_required','signal removal prepared identity differs')
+    result=client.request('operating_control',{'action':'signal_remove','execute':True,
+                         'prepared_handle':value['prepared_handle'],'input_hash':params['input_hash']})
+    if result['status']=='ok':signal_removal_replacement(brief,result.get('result',{}))
+    return result
+
+
+def signal_removal_replacement(brief,value):
+    """Return qualified exact lineage only after complete removal/retention proof."""
+    if not isinstance(value,dict):raise LiveError('reconciliation_required','signal removal native result malformed')
+    q=_signal_removal_input(brief);old=q['edge_snapshot'];expected=hashlib.sha256(json.dumps(q,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    proof=('selected_signals_absent','existing_objects_retained','functional_signals_verified',
+           'track_geometry_verified','structure_verified','ownership_verified','game_constructed')
+    selected=[s['id'] for s in q['signals']];removed=value.get('removed_signals',[]);new=value.get('snapshot',{})
+    if (not isinstance(new,dict) or value.get('input_hash')!=expected or any(value.get(k) is not True for k in proof)
+            or removed!=selected or value.get('replaced_edge')!=old['id']
+            or type(value.get('replacement_edge')) is not int or value['replacement_edge']<=0
+            or new.get('id')!=value['replacement_edge']):
+        raise LiveError('reconciliation_required','signal removal native proof incomplete')
+    if not isinstance(new.get('revision'),list) or len(new['revision'])!=3 or any(type(x) is not int for x in new['revision']):
+        raise LiveError('reconciliation_required','signal removal realised revision unavailable')
+    if any(new.get(k)!=old[k] for k in ('node0','node1','template','style','structure','node_positions','road_type')):
+        raise LiveError('reconciliation_required','signal removal changed identity/resources')
+    for k in ('p0','p1','t0','t1'):
+        if not isinstance(new.get(k),list) or len(new[k])!=3 or any(type(v) not in (int,float) or not math.isfinite(v) for v in new[k]) or any(abs(a-b)>.001 for a,b in zip(new[k],old[k])):
+            raise LiveError('reconciliation_required','signal removal changed geometry')
+    return new
+
+
 def signal_batch_replacements(brief,value):
     """Qualify complete native proof before removing redundant Python inspections."""
     expected=hashlib.sha256(json.dumps(_signal_batch_input(brief),sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()

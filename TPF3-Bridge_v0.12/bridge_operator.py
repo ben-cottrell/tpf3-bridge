@@ -1284,23 +1284,32 @@ def render(plan,edges,path,*,horizontal_scale=None):
     lo=[min(p[i] for p in points) for i in range(2)];hi=[max(p[i] for p in points) for i in range(2)]
     scale=min(1100/max(hi[0]-lo[0],1),430/max(hi[1]-lo[1],1))
     if horizontal_scale is not None:scale=min(scale,horizontal_scale)
-    def xy(p):return [80+(p[0]-lo[0])*scale,540-(p[1]-lo[1])*scale]
-    svg=[f'<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="650" data-horizontal-scale="{scale}"><rect width="1280" height="650" fill="#f8fafc"/>',
+    compact=plan.get('diagram_compact',False);height=max(320,math.ceil((hi[1]-lo[1])*scale+270)) if compact else 650
+    baseline=height-150 if compact else 540
+    def xy(p):return [80+(p[0]-lo[0])*scale,baseline-(p[1]-lo[1])*scale]
+    svg=[f'<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="{height}" data-horizontal-scale="{scale}"><rect width="1280" height="{height}" fill="#f8fafc"/>',
          f'<text x="50" y="40" font-family="Arial" font-size="25">{html.escape(plan.get("title","Railway plan"))} — {html.escape(plan["revision"])}</text>',
          f'<text x="50" y="72" font-family="Arial" font-size="16">{html.escape(plan.get("diagram_legend","Orange: recorded plan · navy: native geometry · equal scale"))}</text>']
     for group,color,width in ((curves,'#f5a524',5),(actual,'#193950',2.2)):
         for c in group:
             stroke=c.get('diagram_color',color);label=c.get('diagram_label','')
-            line_width=6 if c.get('diagram_role')=='deck' else width
+            line_width=6 if c.get('diagram_role')=='deck' else (2 if compact else width)
             dash=' stroke-dasharray="6 3"' if c.get('diagram_role')=='ramp' else ''
             ps=[c['p0'],[c['p0'][i]+c['t0'][i]/3 for i in range(3)],[c['p1'][i]-c['t1'][i]/3 for i in range(3)],c['p1']]
             a,b,d,e=[xy(v) for v in ps]
             svg.append(f'<path d="M {a[0]} {a[1]} C {b[0]} {b[1]} {d[0]} {d[1]} {e[0]} {e[1]}" fill="none" stroke="{html.escape(stroke)}" stroke-width="{line_width}"{dash}><title>{html.escape(label)}</title></path>')
-    for name,p in plan['ports'].items():
+    for index,(name,p) in enumerate(plan['ports'].items()):
         if not p.get('label'):continue
-        x,y=xy(p['position']);svg.append(f'<text x="{x+6}" y="{y-7}" font-family="Arial" font-size="14">{html.escape(name)}</text>')
-        if p.get('diagram_marker'):svg.append(f'<circle cx="{x}" cy="{y}" r="4" fill="#9d174d"/>')
-    svg.append('<text x="50" y="610" font-family="Arial" font-size="15">Centreline reconstruction; internal native turnout movement geometry and train operation are separate.</text></svg>')
+        x,y=xy(p['position']);label=str(index+1) if compact else name
+        svg.append(f'<text x="{x+6}" y="{y-7}" font-family="Arial" font-size="{10 if compact else 14}">{html.escape(label)}<title>{html.escape(name)}</title></text>')
+        if p.get('diagram_marker'):svg.append(f'<circle cx="{x}" cy="{y}" r="3" fill="#9d174d"><title>{html.escape(name)}</title></circle>')
+    if compact:
+        for index,name in enumerate(list(plan['ports'])[:8]):
+            x=50+600*(index//4);y=height-110+17*(index%4)
+            label=f'{index+1}: {name}';visible=label if len(label)<=75 else label[:72]+'...'
+            svg.append(f'<text x="{x}" y="{y}" font-family="Arial" font-size="11">{html.escape(visible)}<title>{html.escape(label)}</title></text>')
+    note='Numbered controls: hover for family/kind/identity; full labels in controls.json.' if compact else 'Centreline reconstruction; internal native turnout movement geometry and train operation are separate.'
+    svg.append(f'<text x="50" y="{height-30 if compact else 610}" font-family="Arial" font-size="15">{note}</text></svg>')
     Path(path).write_text(''.join(svg),encoding='utf-8')
 
 def render_profile(plan,edges,path,*,horizontal_scale=None):
@@ -1323,8 +1332,10 @@ def render_profile(plan,edges,path,*,horizontal_scale=None):
     plot_height=330-18*len(plan.get('crossings',[]))
     scale=min(1080/max(xmax-xmin,1),plot_height/max((zmax-zmin)*exaggeration,1))
     if horizontal_scale is not None:scale=min(scale,horizontal_scale)
-    def xy(x,z):return 100+(x-xmin)*scale,440-(z-zmin)*scale*exaggeration
-    svg=[f'<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" data-horizontal-scale="{scale}"><rect width="1280" height="560" fill="#f8fafc"/>',
+    compact=plan.get('diagram_compact',False);height=max(300,math.ceil((zmax-zmin)*scale*exaggeration+240)) if compact else 560
+    baseline=height-100 if compact else 440
+    def xy(x,z):return 100+(x-xmin)*scale,baseline-(z-zmin)*scale*exaggeration
+    svg=[f'<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="{height}" data-horizontal-scale="{scale}"><rect width="1280" height="{height}" fill="#f8fafc"/>',
          f'<text x="50" y="35" font-family="Arial" font-size="24">{html.escape(plan.get("title","Railway"))} — elevation profile</text>',
          f'<text x="50" y="65" font-family="Arial" font-size="16">Projected local axis {axis}; vertical exaggeration {exaggeration}×; orange intended, navy native</text>']
     if plan.get('diagram_legend'):
@@ -1336,17 +1347,18 @@ def render_profile(plan,edges,path,*,horizontal_scale=None):
         coords=[xy(x,z) for x,z in ps];d=' '.join(('M' if i==0 else 'L')+f' {x:.3f} {y:.3f}' for i,(x,y) in enumerate(coords))
         width=6 if role=='deck' else 2;dash=' stroke-dasharray="6 3"' if role=='ramp' else ''
         svg.append(f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{width}"{dash}><title>{html.escape(name)}</title></path>')
-    for name,v in plan['ports'].items():
+    for index,(name,v) in enumerate(plan['ports'].items()):
         if not v.get('diagram_marker'):continue
         x,y=xy(sum(v['position'][i]*axis[i] for i in range(2)),v['position'][2]+origin[2])
-        svg.append(f'<circle cx="{x}" cy="{y}" r="4" fill="#9d174d"/><text x="{x+5}" y="{y-5}" font-family="Arial" font-size="11">{html.escape(name)}</text>')
+        label=str(index+1) if compact else name
+        svg.append(f'<circle cx="{x}" cy="{y}" r="4" fill="#9d174d"/><text x="{x+5}" y="{y-5}" font-family="Arial" font-size="11">{html.escape(label)}<title>{html.escape(name)}</title></text>')
     for index,crossing in enumerate(plan.get('crossings',[])):
         distance=sum(crossing['position'][i]*axis[i] for i in range(2))
         x,_=xy(distance,zmin)
         label=f'{crossing["name"]} at projected {distance:.2f}: planned upper z={crossing["upper_height"]+origin[2]:.2f}, lower z={crossing["lower_height"]+origin[2]:.2f}'
         svg.append(f'<path d="M {x} {140+18*index} L {x} 440" stroke="#ad8090" stroke-dasharray="4 4"/><text x="50" y="{92+18*index}" font-family="Arial" font-size="12">{html.escape(label)}</text>')
-    svg.append(f'<text x="90" y="475" font-family="Arial" font-size="14">Projected distance {xmin:.2f}–{xmax:.2f}, native coordinate units; absolute z axis</text>')
-    svg.append('<text x="50" y="520" font-family="Arial" font-size="14">Centreline profiles only; projected height difference is not structure/clearance certification.</text></svg>')
+    svg.append(f'<text x="90" y="{height-65 if compact else 475}" font-family="Arial" font-size="14">Projected distance {xmin:.2f}–{xmax:.2f}, native coordinate units; absolute z axis</text>')
+    svg.append(f'<text x="50" y="{height-25 if compact else 520}" font-family="Arial" font-size="14">Centreline profiles only; projected height difference is not structure/clearance certification.</text></svg>')
     Path(path).write_text(''.join(svg),encoding='utf-8')
 
 

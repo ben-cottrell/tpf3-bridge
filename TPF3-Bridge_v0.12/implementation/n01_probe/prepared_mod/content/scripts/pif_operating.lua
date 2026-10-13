@@ -188,6 +188,17 @@ local function batches()
   return ug_require('tpf3_bridge_n01_c04_20261001::/scripts/pif_native.lua').inspect({edge_ids={x},structures=true}).edges[1]
  end)
 end
+local function removals()
+ return ug_require('tpf3_bridge_n01_c04_20261001::/scripts/pif_signal_remove.lua').new(comp,rev,fresh,xyz,signals,function(x)
+  return ug_require('tpf3_bridge_n01_c04_20261001::/scripts/pif_native.lua').inspect({edge_ids={x},structures=true}).edges[1]
+ end,function(x)
+  -- Installed api/tealdef/api/engine.d.tl PlayerOwned.player contract.
+  local owner=comp(x,C.PLAYER_OWNED)
+  if not owner then return {present=false} end
+  assert(type(owner.player)=='number' and owner.player%1==0,'signal_removal_owner_unavailable')
+  return {present=true,player=owner.player}
+ end)
+end
 local function bounded(ids,limit,read)
  local out={count=#ids,records={},truncated=#ids>limit}
  for i=1,math.min(#ids,limit) do out.records[i]=read(ids[i]) end
@@ -366,6 +377,7 @@ function M.inspect(p,s,state,request_id)
  if p.signal_seed then out.signal_seed=signal_seed(type(p.signal_seed)=="table" and p.signal_seed or nil);return out end
  if p.signal_placement then out.signal_placement=signal_command(p.signal_placement,true);return out end
  if p.signal_batch then out.signal_batch=batches().prepare(p.signal_batch,s,state,request_id);return out end
+ if p.signal_removal then out.signal_removal=removals().prepare(p.signal_removal,s,state,request_id);return out end
  if p.signal_chain_check then out.signal_chain_check=batches().check(p.signal_chain_check);return out end
  if p.vehicle_asset_resources then
   assert(#p.vehicle_asset_resources>=1 and #p.vehicle_asset_resources<=8,"selected_vehicle_asset_bound")
@@ -605,6 +617,8 @@ function M.control(p,s,state,request_id,respond)
   cmd,read=signal_command(p)
  elseif p.action=="signal_batch" then
   cmd,read=batches().command(p,s,state)
+ elseif p.action=="signal_remove" then
+  cmd,read=removals().command(p,s,state)
  elseif p.action=="depot_build" then
   cmd,read=depot_command(p)
  elseif p.action=="vehicle_buy" then

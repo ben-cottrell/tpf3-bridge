@@ -12,9 +12,14 @@ Keep authored/preview/committed evidence distinct; native endpoint-cubic accepta
 does not certify a whole alignment. Preserve hard constraints without new exact gates,
 planner, dependency or model loop.
 
-Offline renderer/procedure implementation complete:132 affected quiet tests passed,
+Offline renderer/procedure checkpoint61720c3 complete. Narrow signal-removal source
+and renderer decluttering complete:599 affected quiet Python tests passed,
 AST/diff checks pass. Local checkpoint authorised. Native design repair remains with
 coordinator; exact-chain removal/replacement currently rejects signals on affected
-ramps, requiring a narrowly source-backed object-removal mechanism before mutation.
+ramps, requiring exact signal removal before mutation. The approved one-track/1..16-signal
+helper and prepared Lua proposal/readback are implemented for coordinator activation
+and native qualification; the worker does not stage or invoke them. Ownership and
+entity-removal shapes are confirmed from current installed declarations. Lua fixture
+is prepared but unexecuted; native removal awaits coordinator staging/reload/test.
 No push,
 native calls, live state edits, new batch or unrelated cleanup.

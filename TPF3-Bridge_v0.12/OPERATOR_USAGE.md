@@ -1069,8 +1069,36 @@ Preview-labelled rows are caller-supplied evidence; the renderer does not verify
 provenance or native feasibility.
 
 plan.svg/profile.svg share horizontal scale; vertical exaggeration is explicit.
-Decks are thick, ramps dashed; evidence colors, tooltips and interface/signal/merge
-markers retain family/role distinctions. controls.json is the current rendering packet.
+Decks are thick, ramps dashed; evidence colors and numbered interface/signal/merge
+markers retain family/role distinctions. Compact tooltips keep full identities, an
+eight-entry off-track legend reduces clutter, and canvas height follows the plotted
+extent without changing horizontal scale. controls.json is the current rendering packet.
 Recorded committed geometry is not fresh native readback, continuous clearance proof,
 topology certification or acceptance. Use combined diagrams for independent prebuild
 material-design review; routine fitting needs no model gate.
+
+### Exact signal removal on one observed track
+
+`bridge_live.remove_signals(client, brief, execute=False)` prepares only; explicit
+`execute=True` submits its session-bound one-use handle once. Brief fields:
+`session`, one `edge_snapshot` and `signals:[{id,revision},...]` (1..16 distinct IDs).
+The snapshot includes current native `id`, `revision`, exact `node0/node1`, full
+`p0/p1/t0/t1`, `node_positions`, `template/style`, `road_type:TRACK` and `structure`.
+NORMAL structure need not have resource_name; bridges/tunnels require their observed
+resource. Obtain geometry/structure from current `inspect(..., structures=True)` and
+revision/object records from `operating_inspect(track_ids=[id], limit=1)`; do not reuse
+another session or invent IDs. This is not region-based or general object demolition.
+
+The prepared mod uses the existing signal replacement mechanism: same edge geometry,
+filter exact selected signal IDs, `edgeObjectsToRemove` those IDs, add zero objects.
+Fresh selected/retained revisions, membership, geometry, node positions, structure and
+PlayerOwned.player are checked before submission. Retained IDs/category/parameters,
+resource and signal lane function must survive. Selected EDGE_OBJECT/SIGNAL_LIST
+components must be absent. Rejection/unknown/partial effects have no automatic replay.
+
+`signal_removal_replacement(brief,result)` returns the exact realised snapshot only
+when removal, retained-object/function, geometry, structure and ownership proofs all
+pass with matching input hash, selected IDs and original-to-current edge lineage.
+Use that receipt for later exact-chain work; never replay stale edge IDs. This does not
+prove routes/train operation. New Lua source and its optional fake fixture are prepared;
+native removal is not yet demonstrated and no standalone Lua runtime was available.
