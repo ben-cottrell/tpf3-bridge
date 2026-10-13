@@ -788,6 +788,10 @@ class Operator:
         from bridge_approach import review
         return review(self,run,checks)
 
+    def render_approach(self,source,output,**options):
+        from bridge_approach_render import render_approach
+        return render_approach(source,output,operator=self,**options)
+
     def continue_plan(self,run,revision,steps=None,updates=None,bindings=None,reconciled_step=None):
         """Fresh, auditable remaining work; never replay successful native steps."""
         folder=self.path(run);parent=json.loads((folder/'state.json').read_text());old=json.loads((folder/'plan.json').read_text())
@@ -1271,29 +1275,35 @@ class Operator:
         return result
 
 
-def render(plan,edges,path):
+def render(plan,edges,path,*,horizontal_scale=None):
     """Equal-scale SVG of designer controls and observed native BaseEdge curves."""
     origin=plan['origin'];curves=list(plan.get('curves',{}).values())
     actual=[{k:[e[k][i]-(origin[i] if k in ('p0','p1') else 0) for i in range(3)] for k in ('p0','p1','t0','t1')} for e in edges]
-    points=[c[k] for c in curves+actual for k in ('p0','p1')]+[v['position'] for v in plan['ports'].values()]
+    points=[p for c in curves+actual for p in (c['p0'],c['p1'],[c['p0'][i]+c['t0'][i]/3 for i in range(3)],[c['p1'][i]-c['t1'][i]/3 for i in range(3)])]+[v['position'] for v in plan['ports'].values()]
+    if not points:points=[[0,0,0],[1,1,0]]
     lo=[min(p[i] for p in points) for i in range(2)];hi=[max(p[i] for p in points) for i in range(2)]
     scale=min(1100/max(hi[0]-lo[0],1),430/max(hi[1]-lo[1],1))
+    if horizontal_scale is not None:scale=min(scale,horizontal_scale)
     def xy(p):return [80+(p[0]-lo[0])*scale,540-(p[1]-lo[1])*scale]
-    svg=['<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="650"><rect width="1280" height="650" fill="#f8fafc"/>',
+    svg=[f'<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="650" data-horizontal-scale="{scale}"><rect width="1280" height="650" fill="#f8fafc"/>',
          f'<text x="50" y="40" font-family="Arial" font-size="25">{html.escape(plan.get("title","Railway plan"))} — {html.escape(plan["revision"])}</text>',
-         '<text x="50" y="72" font-family="Arial" font-size="16">Orange: recorded plan · navy: native geometry · equal scale</text>']
+         f'<text x="50" y="72" font-family="Arial" font-size="16">{html.escape(plan.get("diagram_legend","Orange: recorded plan · navy: native geometry · equal scale"))}</text>']
     for group,color,width in ((curves,'#f5a524',5),(actual,'#193950',2.2)):
         for c in group:
+            stroke=c.get('diagram_color',color);label=c.get('diagram_label','')
+            line_width=6 if c.get('diagram_role')=='deck' else width
+            dash=' stroke-dasharray="6 3"' if c.get('diagram_role')=='ramp' else ''
             ps=[c['p0'],[c['p0'][i]+c['t0'][i]/3 for i in range(3)],[c['p1'][i]-c['t1'][i]/3 for i in range(3)],c['p1']]
             a,b,d,e=[xy(v) for v in ps]
-            svg.append(f'<path d="M {a[0]} {a[1]} C {b[0]} {b[1]} {d[0]} {d[1]} {e[0]} {e[1]}" fill="none" stroke="{color}" stroke-width="{width}"/>')
+            svg.append(f'<path d="M {a[0]} {a[1]} C {b[0]} {b[1]} {d[0]} {d[1]} {e[0]} {e[1]}" fill="none" stroke="{html.escape(stroke)}" stroke-width="{line_width}"{dash}><title>{html.escape(label)}</title></path>')
     for name,p in plan['ports'].items():
         if not p.get('label'):continue
         x,y=xy(p['position']);svg.append(f'<text x="{x+6}" y="{y-7}" font-family="Arial" font-size="14">{html.escape(name)}</text>')
+        if p.get('diagram_marker'):svg.append(f'<circle cx="{x}" cy="{y}" r="4" fill="#9d174d"/>')
     svg.append('<text x="50" y="610" font-family="Arial" font-size="15">Centreline reconstruction; internal native turnout movement geometry and train operation are separate.</text></svg>')
     Path(path).write_text(''.join(svg),encoding='utf-8')
 
-def render_profile(plan,edges,path):
+def render_profile(plan,edges,path,*,horizontal_scale=None):
     """Projected local longitudinal coordinate, with explicitly exaggerated height."""
     axis=unit(plan.get('profile_axis',[1,0]));origin=plan['origin'];exaggeration=plan.get('profile_exaggeration',4)
     curves=list(plan.get('curves',{}).items())
@@ -1305,22 +1315,31 @@ def render_profile(plan,edges,path):
             p=[sum(h[n]*curve[k][i] for n,k in enumerate(('p0','t0','p1','t1'))) for i in range(3)]
             points.append((sum(p[i]*axis[i] for i in range(2)),p[2]+origin[2]))
         return points
-    rows=[(name,sampled(c),color) for group,color in ((curves,'#f5a524'),(actual,'#193950')) for name,c in group]
-    points=[p for _,ps,_ in rows for p in ps]
+    rows=[(c.get('diagram_label',name),sampled(c),c.get('diagram_color',color),c.get('diagram_role')) for group,color in ((curves,'#f5a524'),(actual,'#193950')) for name,c in group]
+    points=[p for _,ps,_,_ in rows for p in ps]
+    points.extend((sum(v['position'][i]*axis[i] for i in range(2)),v['position'][2]+origin[2]) for v in plan['ports'].values())
     if not points:points=[(0,origin[2]),(1,origin[2])]
     xmin,xmax=min(p[0] for p in points),max(p[0] for p in points);zmin,zmax=min(p[1] for p in points),max(p[1] for p in points)
     plot_height=330-18*len(plan.get('crossings',[]))
     scale=min(1080/max(xmax-xmin,1),plot_height/max((zmax-zmin)*exaggeration,1))
+    if horizontal_scale is not None:scale=min(scale,horizontal_scale)
     def xy(x,z):return 100+(x-xmin)*scale,440-(z-zmin)*scale*exaggeration
-    svg=['<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560"><rect width="1280" height="560" fill="#f8fafc"/>',
+    svg=[f'<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" data-horizontal-scale="{scale}"><rect width="1280" height="560" fill="#f8fafc"/>',
          f'<text x="50" y="35" font-family="Arial" font-size="24">{html.escape(plan.get("title","Railway"))} — elevation profile</text>',
          f'<text x="50" y="65" font-family="Arial" font-size="16">Projected local axis {axis}; vertical exaggeration {exaggeration}×; orange intended, navy native</text>']
+    if plan.get('diagram_legend'):
+        svg.append(f'<text x="50" y="88" font-family="Arial" font-size="14">{html.escape(plan["diagram_legend"])}</text>')
     for j in range(5):
         z=zmin+(zmax-zmin)*j/4;x,y=xy(xmin,z)
         svg.append(f'<path d="M 90 {y} L 1190 {y}" stroke="#d3dce4"/><text x="30" y="{y+5}" font-family="Arial" font-size="13">z {z:.2f}</text>')
-    for name,ps,color in rows:
+    for name,ps,color,role in rows:
         coords=[xy(x,z) for x,z in ps];d=' '.join(('M' if i==0 else 'L')+f' {x:.3f} {y:.3f}' for i,(x,y) in enumerate(coords))
-        svg.append(f'<path d="{d}" fill="none" stroke="{color}" stroke-width="2"><title>{html.escape(name)}</title></path>')
+        width=6 if role=='deck' else 2;dash=' stroke-dasharray="6 3"' if role=='ramp' else ''
+        svg.append(f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{width}"{dash}><title>{html.escape(name)}</title></path>')
+    for name,v in plan['ports'].items():
+        if not v.get('diagram_marker'):continue
+        x,y=xy(sum(v['position'][i]*axis[i] for i in range(2)),v['position'][2]+origin[2])
+        svg.append(f'<circle cx="{x}" cy="{y}" r="4" fill="#9d174d"/><text x="{x+5}" y="{y-5}" font-family="Arial" font-size="11">{html.escape(name)}</text>')
     for index,crossing in enumerate(plan.get('crossings',[])):
         distance=sum(crossing['position'][i]*axis[i] for i in range(2))
         x,_=xy(distance,zmin)
@@ -1333,7 +1352,7 @@ def render_profile(plan,edges,path):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['status','survey','track-catalogue','station-survey','station-exits','station-routes','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','corridor-plan','corridor-build','corridor-status','corridor-continue','corridor-attach-completion','corridor-complete','approach-plan','approach-build','approach-continue','approach-review','camera','capture','save'])
+    parser.add_argument('action',choices=['status','survey','track-catalogue','station-survey','station-exits','station-routes','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','corridor-plan','corridor-build','corridor-status','corridor-continue','corridor-attach-completion','corridor-complete','approach-plan','approach-build','approach-continue','approach-review','approach-render','camera','capture','save'])
     parser.add_argument('--input',type=Path);parser.add_argument('--run');parser.add_argument('--context',type=Path,default=CONTEXT)
     a=parser.parse_args()
     try:
@@ -1355,6 +1374,7 @@ def main():
         elif a.action=='approach-build':r=op.build_approach(a.run)
         elif a.action=='approach-continue':r=op.continue_approach(a.run,**data)
         elif a.action=='approach-review':r=op.review_approach(a.run,**data)
+        elif a.action=='approach-render':r=op.render_approach(data.pop('source',a.run),**data)
         elif a.action=='station-survey':r=op.survey_station(data)
         elif a.action=='station-exits':r=op.survey_station_exits(data)
         elif a.action=='station-routes':r=op.review_station_routes(data)

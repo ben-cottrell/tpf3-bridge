@@ -39,6 +39,20 @@ For a complex layout, produce a scaled overhead plan and profiles of the crossin
 that determine feasibility. Show the complete intended arrangement at corridor
 level before detailing individual curves. Label proposed, existing and built items.
 
+Before constructing or materially changing a coupled approach family, render the
+combined plan and profile across payload/section boundaries, at shared horizontal
+scale. Include full authored controls, signal/merge order, deck/ramps and construction
+interfaces. Endpoint-only sketches can conceal an interior bow. Keep authored controls,
+native preview and committed readback distinct; accepted endpoint_cubic geometry is
+not a native whole-alignment fit or design approval.
+
+Use a designer and a different independent reviewer (Astra for material design
+judgements) at material coupled-family changes. Give the reviewer the combined
+controls/diagrams and requirements before construction; feed actual native geometry
+back into that whole-family view. Resolve material design objections before dependent
+construction. Routine bounded fitting, sweeps and normal verification need no extra
+model/approval gate.
+
 The plan must make these decisions visible:
 
 | Decision | What to show |
@@ -210,6 +224,13 @@ Native feedback can be incomplete. Distinguish an unsuitable design, rejected
 proposal, fitter limitation and demonstrated bridge defect.
 
 ## 5. Review at useful construction boundaries
+
+A known failure used a horizontal temporary landing about450 native units before
+the deck, decoupling the branch merge from its ramp. The actual lateral sweep ran
+25 ->32.14 ->15 despite an acceptable shallow deck. This is a whole-alignment bow,
+not a universal clearance limit or engine defect. Review merge/ramp/deck together
+before build; a staging interface must not force the final shape. Keep selected hard
+constraints without imposing exact sketch equality.
 
 Review after a controlling route or coupled family is built, and after material
 native-driven revisions. Do not review every click. Use a comparable overhead view

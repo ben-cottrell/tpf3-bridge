@@ -118,6 +118,15 @@ both routes; consider deck-first construction and earth-supported approaches;
 treat rough lateral margins as guidance. Distinguish native incline rejection from
 adapter eligibility restrictions. Do not equate native acceptance with visual quality.
 
+A second failure has an acceptable shallow deck but a horizontal staging landing
+about450 native units earlier. Its realised lateral coordinates run25 ->32.14 ->15;
+the merge and ramp were designed separately across a family boundary.
+Review full authored endpoint-cubic controls in combined plan/profile before build,
+then compare recorded native geometry. Use a different designer and independent
+reviewer for this material revision; no routine fitting agent gate. Native acceptance
+or a shallow deck does not qualify the whole sweep. No exact-coordinate equality or
+universal spacing rules follow.
+
 ## R7 — A compact railway in a large urban district
 
 **Situation:** an accepted compact hub demonstration will inform a real map with
@@ -144,6 +153,12 @@ short/slow crossovers and unwanted interpair gap. Do not copy those dimensions;
 coordinate compact fans, gentler crossovers and packed roads with fast alignment
 priority, and verify all platform paths after any balancing of the slow subtrees.
 User approximate distances/speeds retain their provenance and are not engine limits.
+
+Include signals, merge order, ramps/deck and temporary interfaces in the combined
+preconstruction view, at equal horizontal scale with separate evidence epochs.
+An independent reviewer must detect artificial landing bows across named families
+before dependent building. Successful functional checks do not answer whole-family
+visual quality; ordinary fitting stays deterministic without another model call.
 
 ## R8 — A nearby native fit is good enough
 

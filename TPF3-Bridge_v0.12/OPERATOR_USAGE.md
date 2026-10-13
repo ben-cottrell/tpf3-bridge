@@ -1039,3 +1039,38 @@ bounded dependency requests/26.5s wait. Native Lua batch observation is not impl
 Native IDs may recycle: use chronological receipt generations and qualified handles.
 Complete exact-node incidence may be witnessed by another native edge at that node;
 proximity is never correspondence. No train traversal/speed/continuous proof is claimed.
+
+### Offline combined approach diagrams
+
+`op.render_approach(source, output, families=None, controls=None,
+profile_axis=[1,0], profile_exaggeration=4)` reads an existing approach file/dict or
+saved job; it never accesses the client, fits, mutates the job or constructs.
+CLI: `python bridge_operator.py approach-render --input diagram-input.json`, whose
+input contains `source` (approach path, or use `--run`), a new `output` directory and
+optional `families`, `controls`, `profile_axis`, `profile_exaggeration`.
+Existing output directories are rejected; old evidence is not overwritten.
+
+Full-controls packet (world/local coordinates explicit):
+```json
+{"version":1,"curves":[{"family":"flyover","name":"ramp",
+ "epoch":"authored","role":"ramp","frame":"world",
+ "p0":[0,25,0],"p1":[450,15,15],"t0":[450,80,0],"t1":[450,0,0]}],
+ "markers":[{"family":"flyover","kind":"merge","name":"join",
+ "frame":"world","position":[0,25,0]}]}
+```
+Curves use existing Hermite endpoint/tangent controls, bounded256 rows. Epochs are
+`authored`, `preview`, `committed`; roles/marker kinds are rail, signal, merge,
+deck, ramp, interface and guide. Markers are bounded256. Local rows use the named
+family's payload origin; corridor waypoint positions are world guide markers.
+Payload curves/ports are automatic; saved job exports supply recorded committed
+curves. Missing controls are reported, never inferred from endpoint hints, normal
+offsets or native tools. Supply actual full controls for the affected sweep.
+Preview-labelled rows are caller-supplied evidence; the renderer does not verify
+provenance or native feasibility.
+
+plan.svg/profile.svg share horizontal scale; vertical exaggeration is explicit.
+Decks are thick, ramps dashed; evidence colors, tooltips and interface/signal/merge
+markers retain family/role distinctions. controls.json is the current rendering packet.
+Recorded committed geometry is not fresh native readback, continuous clearance proof,
+topology certification or acceptance. Use combined diagrams for independent prebuild
+material-design review; routine fitting needs no model gate.

@@ -1,18 +1,20 @@
 # Current task
 
-Station-approach composition and affected-check milestone complete. The existing
-Operator/CLI approach-plan/build/continue/review layer is qualified on build40420
-for the seven-family authored example: all13 check records passed, including12
-positive platform movements and3 wrong-way probes. Expanded family-wide dependency
-fingerprints reject stale cached proofs; unchanged review makes no route calls.
+User resumed after save/reload into session pif_1791865071_25864. Coordinator owns
+flyover design, native execution/UI/staging and current identity reacquisition.
+Worker assignment: offline combined approach plan/profile renderer using existing
+renderers and supplied full controls/recorded receipts, focused checks and current
+procedure/guide/R6/R7 lessons. No flyover redesign by worker.
 
-Coordinator owns railway design/native/UI/staging. Worker source/tests/docs and the
-local qualification checkpoint are complete; no new feature, construction, worker
-batch or remote push is authorised by this completion. Retain current native receipts
-needed for review/reconciliation, not completed diagnostic histories.
+Material coupled-family changes need preconstruction combined diagrams and a reviewer
+independent of the designer. Routine bounded fitting stays autonomous/deterministic.
+Keep authored/preview/committed evidence distinct; native endpoint-cubic acceptance
+does not certify a whole alignment. Preserve hard constraints without new exact gates,
+planner, dependency or model loop.
 
-See STATE.md for actual qualification scope, measured request costs and test evidence;
-OPERATOR_USAGE.md for contracts and session-specific examples. Lua batch dependency
-observation remains a possible future optimisation, not implemented. No traversal,
-speed, continuous clearance, universal grade or general-version guarantee. Detailed
-station internals/train physics and host recovery remain excluded. Stop at this milestone.
+Offline renderer/procedure implementation complete:132 affected quiet tests passed,
+AST/diff checks pass. Local checkpoint authorised. Native design repair remains with
+coordinator; exact-chain removal/replacement currently rejects signals on affected
+ramps, requiring a narrowly source-backed object-removal mechanism before mutation.
+No push,
+native calls, live state edits, new batch or unrelated cleanup.

@@ -107,6 +107,17 @@ For a flying branch junction, assess the approach, flat crossing deck and exit a
 one continuous alignment: a shallow deck angle alone does not qualify a tight
 turn into the deck or an abrupt curve-to-straight transition.
 
+Render the complete coupled merge/ramp/deck and receiving alignment before build,
+including controls across family boundaries, decision signals and staging interfaces.
+Use equal horizontal scale in plan/profile; keep authored, preview and committed
+geometry distinct. Independent designer/reviewer judgement is needed at material
+coupled changes, not each ordinary native fit. Accepted endpoint_cubic geometry is an
+accepted local representation, not a native whole-alignment fitting service.
+A horizontal temporary landing roughly450 native units before a deck produced a
+25 ->32.14 ->15 lateral bow: the shallow deck alone did not establish a coherent
+approach. Review and remove the artificial constraint where the approved design
+requires it; these observations are an example, not fixed design gates.
+
 Build controlling, constrained routes first, often outer fan boundaries. Platform
 numbering is not build order. At the end of the straight approach, establish bounding
 curves and reserve space for intermediates. Join a middle lead to the parent with

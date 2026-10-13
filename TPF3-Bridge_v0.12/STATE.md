@@ -119,7 +119,8 @@ propagation, pending/session guards and affected-only named acceptance.
 The seven-family station/fan/crossover/flyover example passed all13 check records,
 including12 positive platform movements,3 wrong-way probes and sampled geometry.
 All geometry used the first native fit; selected fan displacement was approximately
--0.1002 native units. Visual inspection found a coherent compact flyover/ramps; no
+-0.1002 native units. Later whole-alignment review found an unwanted merge/ramp bow despite the shallow
+deck; functional qualification did not establish whole-family design quality. No
 train traversal, speed, continuous clearance or general-version guarantee follows.
 
 Cached proofs cover every exported rail binding in explicitly declared check families,
@@ -132,7 +133,9 @@ checks/route requests:52 dependency requests (3 inspect,3 operating_inspect,45 d
 future optimisation, not implemented or authorised by this completion.
 Construction children used169 requests/84.842s wait; station bootstrap separately
 used2/1.141s. Parent registry/refresh costs are excluded; these are not total build time.
-No save was created. Current native receipts remain functional review/reconciliation state.
+The coordinator subsequently saved/reloaded; current session is pif_1791865071_25864.
+Prior-session identities require current reacquisition, not blind replay. Current native
+receipts remain functional review/reconciliation state.
 
 Read-only station_leads reuses observed terminal ordering/grades and same-session exit
 evidence. Required interior bindings constrain station routes; negative checks require
@@ -150,8 +153,29 @@ the executable compiles to7 families/13 checks. AST and git diff --check passed.
 Reuse valid unchanged-suite evidence from the605 combined check. No permanent reports.
 Current contracts/examples are in OPERATOR_USAGE.md and railway-design/examples/.
 This local qualification checkpoint follows2544725; upstream remains7530353, no push.
-Milestone complete; no follow-on task is implied. Saved-file integrity is separate from
+Functional composition is qualified; the resumed flyover design revision is coordinator-
+owned. Saved-file integrity is separate from
 native acceptance. Detailed station internals and train physics remain deferred.
+
+## Combined design feedback
+Offline Operator.render_approach / CLI approach-render combines selected named families,
+supplied full controls and recorded exports into plan/profile SVGs with shared horizontal
+scale, explicit evidence epochs, deck/ramp styles and signal/merge/interface markers.
+Missing controls remain unavailable; no native queries, fit prediction or job mutation.
+Procedure/guide/R6/R7 require independent designer/reviewer prebuild assessment at
+material coupled changes; routine fitting remains deterministic without model gates.
+A temporary horizontal landing about450 native units before the deck decoupled the
+merge/ramp, producing a25 ->32.14 ->15 lateral bow. Native endpoint-cubic acceptance
+is not whole-alignment fitting. No new exact geometry requirement follows.
+Quiet affected checks:132 tests passed,0 failures/errors (8 renderer tests plus
+approach/operator/corridor_operator). Command `.local_tools/operator312/Scripts/python.exe -`
+with unittest discovery for test_approach_render.py, test_approach.py, test_operator.py,
+test_corridor_operator.py and TextTestRunner(stream=io.StringIO(),verbosity=0).
+AST and git diff --check pass. No native calls or live state rewrites by worker.
+Current exact-chain removal/replacement reject tracks with objects; coordinator/source
+architect is resolving explicit signal removal before native ramp replacement.
+Worker renderer/procedure scope is offline; native snapshot/design/review/build belong
+to the coordinator. No flyover repair or new-session native qualification is claimed here.
 
 Keep only current context and state needed to reconcile uncertain live mutations. Temporary
 diagnostics are removed after use; no permanent journals, audits, handoff archives or
