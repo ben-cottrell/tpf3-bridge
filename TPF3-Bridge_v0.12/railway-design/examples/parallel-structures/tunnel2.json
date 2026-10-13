@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "revision": "example_tunnel2",
+  "session": "REFRESH_CURRENT_SESSION",
+  "track": {
+    "template": "::/infrastructure/track/standard/standard_catenary.street_template",
+    "style": "::/infrastructure/track/standard/standard.street"
+  },
+  "max_grade": 0.04,
+  "stub_length": 10,
+  "waypoints": {
+    "A": {
+      "up": {
+        "position": [
+          -2580,
+          -3300,
+          27
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      },
+      "down": {
+        "position": [
+          -2580,
+          -3295,
+          27
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      }
+    },
+    "B": {
+      "up": {
+        "position": [
+          -1800,
+          -3240,
+          33
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      },
+      "down": {
+        "position": [
+          -1800,
+          -3235,
+          33
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      }
+    }
+  },
+  "sections": [
+    {
+      "name": "through",
+      "source": "A",
+      "target": "B",
+      "region": {
+        "min": [
+          -2595,
+          -3335,
+          1
+        ],
+        "max": [
+          -1785,
+          -3200,
+          100
+        ]
+      },
+      "members": [
+        {
+          "track": "up",
+          "representation": "native_parts",
+          "guides": [
+            {
+              "position": [
+                -2280,
+                -3276,
+                33
+              ],
+              "travel_direction": [
+                0.9966889551003809,
+                0.08130883581082055
+              ],
+              "grade": 0
+            },
+            {
+              "position": [
+                -1900,
+                -3245,
+                33
+              ],
+              "travel_direction": [
+                0.9966889551003809,
+                0.08130883581082055
+              ],
+              "grade": 0
+            }
+          ],
+          "structures": [
+            {
+              "classification": "NORMAL"
+            },
+            {
+              "classification": "TUNNEL",
+              "resource_name": "::/infrastructure/tunnel/tunnel_a.tunnel"
+            },
+            {
+              "classification": "NORMAL"
+            }
+          ]
+        },
+        {
+          "track": "down",
+          "normal_offset_from": {
+            "group_index": 1,
+            "spacing": 5,
+            "reverse": false
+          }
+        }
+      ]
+    }
+  ]
+}

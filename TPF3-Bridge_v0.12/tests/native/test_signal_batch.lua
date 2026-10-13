@@ -30,7 +30,7 @@ function M.run(source)
  api.type.SimpleProposal={new=function() return {streetProposal={}} end};api.type.Context={new=function() return {} end}
  api.engine.util.proposal={makeProposalData=function() return {errorState={critical=critical,messages=critical and {'rejected'} or {}}} end}
  api.cmd={makeWorldBuildProposalCmd=function(p) return p end}
- local env=setmetatable({api=api},{__index=_G});local batch=assert(load(source,'bulk signalling','t',env))().new(comp,rev,fresh,xyz,signals,seed)
+ local env=setmetatable({api=api},{__index=_G});local module=assert(load(source,'bulk signalling','t',env))();local batch=module.new(comp,rev,fresh,xyz,signals,seed)
  local function snapshot(x) local e=edges[x];return {id=x,node0=e.node0,node1=e.node1,p0=xyz(e.position0),p1=xyz(e.position1),t0=xyz(e.tangent0),t1=xyz(e.tangent1),template='track',style='style'} end
  local input={edges={snapshot(1),snapshot(2)},seed_id=99,start_node=10,input_hash=string.rep('a',64),placements={
   {edge_id=1,parameter=.3,forward=true,one_way=true,distance=120},

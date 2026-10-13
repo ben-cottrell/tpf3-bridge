@@ -42,7 +42,7 @@ bounded local fitting and affected-only named checks. The seven-family station/f
 crossover/flyover example passed13 native check records,12 positive platform movements
 and3 wrong-way probes on build40420. No traversal or speed claim follows.
 
-The corrected R2 flyover is ready for final user review:12 positive platform movements
+The corrected R2 flyover is user-accepted:12 positive platform movements
 and3 explicit wrong-way absences passed; independent combined actual-geometry/game-
 visual review passed the continuous merge/ramp/deck/exit sweep. Prebuild combined
 controls and a different designer/reviewer prevented treating shallow deck acceptance
@@ -50,6 +50,13 @@ as whole-alignment approval. The offline approach renderer and exact one-track s
 removal are reusable; the latter also passed a partial-selection retained-signal case.
 Native component absence uses entityExists before getComponent; recycled IDs still
 require component qualification. No generic recovery system or train-traversal claim.
+
+Current fans and the user-reported approximately80mph crossovers remain unchanged.
+Fan shape alone was insufficient review: the fans are too long/fast, now recorded as
+future-design feedback only. Choose a compact envelope before local fitting, retain
+30m leads and compare length/native speed with the throat crossovers; roughly55mph
+Challenge04/05 is a contextual reference, not a fixed numeric gate. No repair or new
+workload is authorised by this guidance.
 
 Route caches fingerprint all exported rail bindings in declared check families and actual
 endpoints. Stale dependencies stop for reconciliation; unchanged review makes no route

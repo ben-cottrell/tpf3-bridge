@@ -80,8 +80,8 @@ tests/native/test_parallel_family.lua remain prepared, unexecuted.
 Family fixture includes reordered successful receipts/exact recovery, stale
 post-prepare geometry/incidence/spacing with zero submission and mixed
 NORMAL/BRIDGE/NORMAL inheritance. Grouped committed readback now compares
-classification/resource per exact intended segment. Parallel-family bridge/tunnel
-qualification is unclaimed; demonstrated family scope is plain curves/grades.
+classification/resource per exact intended segment. Parallel-family bridge/tunnel qualification is now complete within the bounded
+four-fixture scope recorded below; no arbitrary-site guarantee follows.
 Qualified named-road completion is optional/immutable within existing corridor runs.
 Exact receipts recover roads; one phase-entry refresh and bounded chain checks
 precede bulk signals. Original section envelope union remains binding; no general
@@ -219,10 +219,53 @@ committed curves and4 authored R2 curves,5 markers; they are prebuild comparison
 not fresh final readback. Compact re-render preserved every control/marker exactly,
 shared horizontal scale and XML validity; duplicate flattened/raster files removed
 only in that example folder. Final native context/receipts remain local and untouched.
-R2 is ready for final user review, not a general speed/traversal/continuous clearance
+R2 is user-accepted, not a general speed/traversal/continuous clearance
 or version guarantee. Python code unchanged; reuse599 affected quiet Python results.
 Coordinator performed native steps; worker docs/source only, no native/staging/live
 receipt changes or push. No follow-on implementation task is implied.
+
+## Completed efficiency milestone
+Opt-in inspect.incidence_edge_ids batches complete exact endpoint incidence for
+1..16 selected rails (up to32 nodes/16 incidents each). Default reads/fingerprint
+schema are unchanged; malformed/inconsistent/bounded-out data fail closed, with
+no production fallback. bridge_dependency_benchmark.py compares legacy/enriched
+read-only observations on the same current fixture. SAME41 rails produced equal
+fingerprints:52 requests/26.391s wall/176011 compact JSON bytes versus7/3.437s/
+53542 bytes. Approximately7.68x faster in dependency observation only; no atomic
+snapshot, whole-build speedup or credit-saving claim.
+
+Parallel bridge2/bridge4/tunnel2/tunnel4 native geometry,24 signals and24 directed/
+reverse-blocked checks qualified, including independent actual-geometry/game-visual
+review. Final save Bridge Efficiency Structures Ready.sav reloaded into
+pif_1791903539_38493779: exact external geometry matched,156 tracks/41 signals,
+all24 fresh checks passed. Current functional context:
+.local_runs/efficiency/qualification_current.json (reload_validation).
+Reusable authored briefs: railway-design/examples/parallel-structures/.
+Tunnel2 down uses explicitly authorised remaining-work end-seed signals approximately
+780 native units apart; no300-spacing/capacity claim. Its original prepare-only
+failed parent remains needs_attention, not rewritten as completed.
+
+Server-derived shared-reference-parameter offsets compare corresponding signed
+actual/prepared grade joins within existing1e-6. Ordinary zero-join checks and all
+other profile/geometry/resource/topology/pending guards remain; caller tags reject.
+Original b45b00cfbdfe4310b9ccf650f718afae and c3061a unresolved evidence remain
+untouched; restored baselines/new sessions are not historical reconciliation.
+Individual/batch rejected signal previews now retain native Collision diagnostics,
+bounded16 IDs with honest unavailable/truncation fields. Both deployed preview
+paths returned accepted:false, collision IDs60943/60934,count2 without construction
+in the final reloaded session. Acceptance policy is unchanged.
+
+Validation reused:618 combined affected Python tests passed;8 focused dependency
+checks passed after the between-pass regression;464 verifier-related and473
+signal-diagnostic-related tests passed. Commands: .local_tools/operator312/Scripts/
+python.exe - with unittest discovery for test_dependency_batch.py,test_approach.py,
+test_operator.py,test_corridor_operator.py,test_signal_batch.py,test_signal_benchmark.py,
+test_live_client.py,test_parallel_family.py,test_corridor_completion.py and
+TextTestRunner(stream=io.StringIO(),verbosity=0), printing counts/failures only.
+Python AST/JSON example compilation and git diff --check passed. Optional full-source
+Lua fixtures remain unexecuted (no installed Lua runtime); deployed native modules
+are qualified separately. No train traversal, general-version, continuous-clearance,
+capacity or crash-recovery guarantee. No follow-on task or push authorised here.
 
 Keep only current context and state needed to reconcile uncertain live mutations. Temporary
 diagnostics are removed after use; no permanent journals, audits, handoff archives or

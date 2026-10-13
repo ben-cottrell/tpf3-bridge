@@ -1,0 +1,372 @@
+{
+  "version": 1,
+  "revision": "example_tunnel4",
+  "session": "REFRESH_CURRENT_SESSION",
+  "track": {
+    "template": "::/infrastructure/track/standard/standard_catenary.street_template",
+    "style": "::/infrastructure/track/standard/standard.street"
+  },
+  "max_grade": 0.04,
+  "stub_length": 10,
+  "waypoints": {
+    "A": {
+      "up": {
+        "position": [
+          -2680,
+          -3691,
+          27
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      },
+      "down": {
+        "position": [
+          -2680,
+          -3686,
+          27
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      },
+      "fast_up": {
+        "position": [
+          -2680,
+          -3696,
+          27
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      },
+      "fast_down": {
+        "position": [
+          -2680,
+          -3681,
+          27
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      }
+    },
+    "C": {
+      "up": {
+        "position": [
+          -2480.0,
+          -3676.0,
+          25
+        ],
+        "direction": [
+          0.9966548601194982,
+          0.08172569852979886
+        ],
+        "grade": 0
+      },
+      "down": {
+        "position": [
+          -2480.408628492649,
+          -3671.0167256994023,
+          25
+        ],
+        "direction": [
+          0.9966548601194982,
+          0.08172569852979886
+        ],
+        "grade": 0
+      },
+      "fast_up": {
+        "position": [
+          -2479.591371507351,
+          -3680.9832743005977,
+          25
+        ],
+        "direction": [
+          0.9966548601194982,
+          0.08172569852979886
+        ],
+        "grade": 0
+      },
+      "fast_down": {
+        "position": [
+          -2480.817256985298,
+          -3666.033451398805,
+          25
+        ],
+        "direction": [
+          0.9966548601194982,
+          0.08172569852979886
+        ],
+        "grade": 0
+      }
+    },
+    "D": {
+      "up": {
+        "position": [
+          -1980.0,
+          -3635.0,
+          25
+        ],
+        "direction": [
+          0.9966548601194982,
+          0.08172569852979886
+        ],
+        "grade": 0
+      },
+      "down": {
+        "position": [
+          -1980.408628492649,
+          -3630.0167256994023,
+          25
+        ],
+        "direction": [
+          0.9966548601194982,
+          0.08172569852979886
+        ],
+        "grade": 0
+      },
+      "fast_up": {
+        "position": [
+          -1979.591371507351,
+          -3639.9832743005977,
+          25
+        ],
+        "direction": [
+          0.9966548601194982,
+          0.08172569852979886
+        ],
+        "grade": 0
+      },
+      "fast_down": {
+        "position": [
+          -1980.817256985298,
+          -3625.033451398805,
+          25
+        ],
+        "direction": [
+          0.9966548601194982,
+          0.08172569852979886
+        ],
+        "grade": 0
+      }
+    },
+    "B": {
+      "up": {
+        "position": [
+          -1900,
+          -3631,
+          26.5
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      },
+      "down": {
+        "position": [
+          -1900,
+          -3626,
+          26.5
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      },
+      "fast_up": {
+        "position": [
+          -1900,
+          -3636,
+          26.5
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      },
+      "fast_down": {
+        "position": [
+          -1900,
+          -3621,
+          26.5
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      }
+    }
+  },
+  "sections": [
+    {
+      "name": "normal_in",
+      "source": "A",
+      "target": "C",
+      "region": {
+        "min": [
+          -2695,
+          -3726,
+          1
+        ],
+        "max": [
+          -1885,
+          -3591,
+          100
+        ]
+      },
+      "members": [
+        {
+          "track": "up",
+          "representation": "native_parts",
+          "structures": [
+            {
+              "classification": "NORMAL"
+            }
+          ]
+        },
+        {
+          "track": "down",
+          "normal_offset_from": {
+            "group_index": 1,
+            "spacing": 5,
+            "reverse": false
+          }
+        },
+        {
+          "track": "fast_up",
+          "normal_offset_from": {
+            "group_index": 1,
+            "spacing": -5,
+            "reverse": false
+          }
+        },
+        {
+          "track": "fast_down",
+          "normal_offset_from": {
+            "group_index": 1,
+            "spacing": 10,
+            "reverse": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "structure",
+      "source": "C",
+      "target": "D",
+      "region": {
+        "min": [
+          -2695,
+          -3726,
+          1
+        ],
+        "max": [
+          -1885,
+          -3591,
+          100
+        ]
+      },
+      "members": [
+        {
+          "track": "up",
+          "representation": "native_parts",
+          "structures": [
+            {
+              "classification": "TUNNEL",
+              "resource_name": "::/infrastructure/tunnel/tunnel_a.tunnel"
+            }
+          ]
+        },
+        {
+          "track": "down",
+          "normal_offset_from": {
+            "group_index": 1,
+            "spacing": 5,
+            "reverse": false
+          }
+        },
+        {
+          "track": "fast_up",
+          "normal_offset_from": {
+            "group_index": 1,
+            "spacing": -5,
+            "reverse": false
+          }
+        },
+        {
+          "track": "fast_down",
+          "normal_offset_from": {
+            "group_index": 1,
+            "spacing": 10,
+            "reverse": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "normal_out",
+      "source": "D",
+      "target": "B",
+      "region": {
+        "min": [
+          -2695,
+          -3726,
+          1
+        ],
+        "max": [
+          -1885,
+          -3591,
+          100
+        ]
+      },
+      "members": [
+        {
+          "track": "up",
+          "representation": "native_parts",
+          "structures": [
+            {
+              "classification": "NORMAL"
+            }
+          ]
+        },
+        {
+          "track": "down",
+          "normal_offset_from": {
+            "group_index": 1,
+            "spacing": 5,
+            "reverse": false
+          }
+        },
+        {
+          "track": "fast_up",
+          "normal_offset_from": {
+            "group_index": 1,
+            "spacing": -5,
+            "reverse": false
+          }
+        },
+        {
+          "track": "fast_down",
+          "normal_offset_from": {
+            "group_index": 1,
+            "spacing": 10,
+            "reverse": false
+          }
+        }
+      ]
+    }
+  ]
+}

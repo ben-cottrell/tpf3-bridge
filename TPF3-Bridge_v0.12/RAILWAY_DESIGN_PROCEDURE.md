@@ -74,11 +74,20 @@ Plan the intended speed progression: slow platform fans need not be faster and
 longer than throat crossovers. Retain the preferred approximately 30 m straight
 parallel platform leads; compare fan/crossover lengths together using native speed
 feedback when available. Approximate visual speed estimates are not measurements.
+Independent prebuild review must assess fan shape, total length and native speed
+feedback together. Choose the compact fan envelope before local fitting; preserve
+30m straight leads and account for final braking/initial acceleration near platforms
+without adding a physics model. In the current accepted layout the user-reported
+approximately80mph crossovers stay unchanged; fans are accepted unchanged but judged
+too long/fast. For future design the slowest relevant fan should not be faster than
+those crossovers. Challenge04/05 roughly55mph is contextual guidance, not a universal
+speed/radius gate or authority to repair the current map.
+
 Balance crossover speed with final decision-signal distance and departure clearance:
 longer/faster crossovers can consume useful capacity through a longer approach.
 Do not propagate a successful turnout gap as a native minimum without testing a
-closer arrangement. Current hub feedback favours an80m crossover trial, with the
-accepted fans retained; native fit and speed observations decide local adjustments.
+closer arrangement. The earlier Mid West C80m crossover trial is a reference, not
+a current repair instruction; native fit/speed feedback informs future choices.
 For operating networks, include open-line block signals (user default about 300 m)
 as well as junction/station signals, preserving final platform-decision placement.
 

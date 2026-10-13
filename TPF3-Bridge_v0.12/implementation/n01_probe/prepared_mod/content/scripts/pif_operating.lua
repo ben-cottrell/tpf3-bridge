@@ -152,6 +152,7 @@ local function signal_command(p,preview)
  summary.accepted=not errors.critical and #errors.messages==0
  summary.evaluation={critical=errors.critical,messages=messages,message_count=#errors.messages,
   messages_truncated=#errors.messages>#messages,representation="same_SimpleProposal_as_build"}
+ for k,v in pairs(ug_require('tpf3_bridge_n01_c04_20261001::/scripts/pif_signal_batch.lua').collision_diagnostics(data)) do summary.evaluation[k]=v end
  if preview then return summary end
  assert(summary.accepted,"native_signal_proposal_rejected")
  return api.cmd.makeWorldBuildProposalCmd(proposal,context,false,true),function(r)

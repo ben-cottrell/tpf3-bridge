@@ -118,14 +118,14 @@ dimensions and constraints govern; it supplies no real-world conversion factor.
 
 | Step | Required fields beyond unique `name`/`kind` |
 |---|---|
-| `stub` | named `port`, `length`5–60; optional construction `direction` |
+| `stub` | named `port`, `length`5â€“60; optional construction `direction` |
 | `extend` | `source`, named `target`; optional existing fitter `radius` |
 | `connect` | `source`, `target`; optional `guides`, `structures`, `handle_scale` |
 | `branch` | `source`, `target`; optional native junction `candidates` |
 | `crossover` | `source`, `target`; optional native crossover `candidates` |
 
 References are named ports or `{"curve":"earlier-step","u":0.5}` on a prior
-single native curve, with interior parameter0.05–0.95. A multi-edge chain needs
+single native curve, with interior parameter0.05â€“0.95. A multi-edge chain needs
 named ports. Port directions describe attachment intent; at free route endpoints
 they point outward. Stub construction direction can oppose that direction.
 The bounded native discovery resolves actual attachment identity; proximity alone
@@ -360,7 +360,7 @@ native `original_edge`/`replacement_edges` receipt lineage, retaining required l
 
 Attachment alternatives are an ordered `attachments:[{source,target},...]` list
 within designer-authored absolute `attachment_windows:{source:{min,max},target:{min,max}}`.
-At most8 attachment×shape evaluations, no inferred permutations. Each complete
+At most8 attachmentÃ—shape evaluations, no inferred permutations. Each complete
 native proposal is evaluated; the first accepted prepared proposal is reused.
 Candidate receipts/reasons remain in run state and native files. Route order,
 profile, corridor and hard limits are not automatically changed. Mutations are
@@ -613,7 +613,7 @@ python bridge_signal_benchmark.py qualify --run <returned-run>
 `execute --run <returned-run>` combines the remaining phases explicitly.
 The fixture has A[0,0,h], B[600,0,h], C[1197,52,h] and
 D[1787.885,156.189,h+6], headings0/0/10/10 degrees, level waypoint ends,
-10-unit stubs and max gradient.025. Two ordinary roads cover A–D; two fast roads
+10-unit stubs and max gradient.025. Two ordinary roads cover Aâ€“D; two fast roads
 start at B. Lateral guide offsets use the selected native spacing; these are
 engineering anchors, not a claim of continuously exact normal spacing.
 No exact radius, intermediate guide or artificial structure is imposed.
@@ -769,8 +769,8 @@ or `{"role":"MW_up","field":"edge_id"}` / `field:"operating_terminal"` for fresh
 qualified roles. Forward references are rejected. Vehicle/line updates recheck current
 revisions; purchase preparation checks explicit depot revision and selected assets.
 
-Signal `forward=true` requests travel along the current edge's node0→node1
-orientation; `false` requests node1→node0. Keep caller tangent calculations in that
+Signal `forward=true` requests travel along the current edge's node0â†’node1
+orientation; `false` requests node1â†’node0. Keep caller tangent calculations in that
 convention. The adapter maps native `EdgeObject.left = not forward` and qualifies
 `SignalList.edgePr`'s reversed bit as `forward`. Verify intended travel independently; attachment/type/orientation bits alone do not
 prove a directed route on the intended running road.
@@ -824,7 +824,7 @@ RN qualification is a separate input-direction lesson: run`9288f7b2af0d4790`
 on the same build/session built both original35-unit crossovers after changing only
 their target travel tangents to match departure (14calls,7.031seconds native-call
 time). No merge, longer crossover or station move was used. The prepared RN merge/
-50–45-unit alternative remained unused. This isolates the earlier RN rejection to
+50â€“45-unit alternative remained unused. This isolates the earlier RN rejection to
 the mistaken free-end target convention; it does not extend the north segmentation
 conclusion to RN. South coalescing`156bd800a9394ae5` and mirrored crossovers
 `9a2f100b55e9481c` also succeeded; these are specific native fixtures, not a new gate.
@@ -943,6 +943,14 @@ scoped station/terminal identity and retain their actual endpoint dependencies.
 Route/station-route fingerprints include every exported rail binding in their explicitly
 declared families, covering shared path interiors and authored negative alternatives,
 even when those bindings are not named route aliases. They do not discover a world graph.
+Route dependencies request opt-in `incidence_edge_ids` subsets in existing16-edge
+inspect chunks. The response carries complete exact-node incident segment IDs (including
+nonrail), counts and native construction owner for up to32 unique endpoints per chunk,
+with at most16 incidents each. Objects/revisions and scoped station identity remain
+separate reads. Default inspect/geometry-only review does not request incidence.
+Missing, malformed, overbound or conflicting observations fail closed; no automatic
+legacy fallback. Upgrade reads must match cached geometry; fingerprints retain their
+existing schema. This change is native-qualified on the observed current R2 fixture.
 Unchanged proofs need no route calls; changed/unavailable dependencies return
 needs_attention before route checks, requiring current-state/binding reconciliation.
 The cache is bounded to256 exact edges,16 objects/incidences per native record and
@@ -1121,3 +1129,83 @@ another use. Current realised context remains `.local_runs/efficiency/r2_current
 Final native qualification passed12 positive platform movements and3 explicit
 wrong-way absences; independent actual-geometry/game-visual review passed. No train
 traversal, speed or continuous clearance proof follows.
+
+### Read-only dependency benchmark
+
+`bridge_dependency_benchmark.compare(client, packet)` compares the former discovery
+reference with enriched observation once each on the SAME explicit current healthy
+fixture. CLI: `python bridge_dependency_benchmark.py --context CURRENT_CONTEXT.json
+--input CURRENT_DEPENDENCIES.json`. This runs dependency reads only; no route calls,
+construction, result-folder creation, job-state editing or automatic retry. The legacy
+class is isolated in this benchmark, never a production fallback.
+
+```json
+{"version":1,"session":"CURRENT_SESSION","checks":[
+ {"name":"directed_scope","kind":"route","edge_ids":[101,102],"selectors":[]},
+ {"name":"platform_scope","kind":"station_routes","edge_ids":[101,102],
+  "selectors":[{"name":"CURRENT_STATION","construction":
+   {"resource":"CURRENT_NATIVE_RESOURCE","position":[0,0,0]}}]}]}
+```
+IDs/selector values above are placeholders. Supply current exact named-family rails,
+including unaliased shared interiors and actual current route endpoints; up to256 rails,
+32 named checks and8 scoped station selectors. Pause the fixture for comparable reads.
+Do not reuse the stale pre-R2 `7c35e56939694be7` cache, transfer an old session or
+manufacture a built job. Coordinator fresh-qualifies the current R2 catalogue/bindings
+and uses current station-route evidence plus wrong-way endpoints for this explicit
+read-only comparison packet; current functional context is r2_current.json.
+
+The compact result reports fingerprint equality, per-mode operation/request counts,
+request wait, wall time and response bytes (explicitly reencoded compact UTF-8 JSON,
+not wire framing). Changed observations return needs_attention; failed reads stop.
+It is not an atomic snapshot, path acceptance, native performance guarantee or credit
+measurement. No benchmark history/monitoring subsystem is created.
+
+Native observation comparison is qualified in session pif_1791891485_26440468 after
+fresh R2 route qualification. On the SAME41 rails including actual station endpoints,
+fingerprints matched: legacy52 requests (3 inspect,3 operating,45 discover,1 station),
+26.391s wall and176011 serialized response bytes; enriched7 (3 inspect,3 operating,
+1 station),3.437s wall/3.422s wait and53542 bytes. Approximately7.68x faster and86.5%
+fewer requests applies to this dependency phase only, not construction or a whole job.
+No route calls/mutations occurred; snapshot_atomic remains false. Current functional
+comparison context is `.local_runs/efficiency/qualification_current.json`. Optional
+standalone Lua fixture remains unexecuted, separate from actual native module execution.
+
+### Derived normal-offset vertical readback
+
+Successful normal_offset_from derivation keeps its existing
+`height_transfer:shared_reference_parameter`: native XY is offset while reference Z
+uses the same parameter. Offset XY speed can change at native-part curvature seams;
+this representation does not imply zero physical grade jump at every internal seam.
+The adapter creates an internal join-contract tag only after successful validated
+derivation. Caller-supplied tags are rejected on fit/structure/reconstructed-fit inputs;
+public readback uses the cached server fit, not a caller-supplied verification policy.
+
+For tagged fits only, each realised SIGNED internal grade delta must match that same
+immutable prepared delta within existing1e-6 residual. Ordinary fits retain the zero-
+jump check. Controls, .001 height/profile/height-join checks, outer grades, selected
+radius/max-grade, resources and exact topology checks remain unchanged. Report fields
+are actual `max_join_grade_gap`, `prepared_max_join_grade_gap`,
+`max_signed_join_grade_residual` and `join_grade_contract`. This preserves the prepared
+representation; it does not claim zero jumps or weaken global tolerances.
+Native bridge/tunnel2/4-road qualification passed, including final normal save reload
+and24 fresh route/direction checks. Optional standalone Lua fixture remains unexecuted.
+
+Individual and bulk signal proposal previews expose bounded diagnostics from the
+installed documented `ProposalData.collisionInfo.collisionEntities[].entity` field:
+`collision_entities` (at most16), total `collision_count`,
+`collision_output_truncated` and `collision_info_available`. Absent/malformed fields
+report unavailable/unknown with a bounded diagnostic error, not a fabricated zero.
+Native proposal identities may include placeholders; diagnostics do not establish
+world correspondence or authorise removal. No extra native entity queries are made.
+Batch preparation rejection preserves the original evaluated nested result, messages,
+seed/hash/counts and correlation instead of discarding them in the Python wrapper.
+Acceptance remains not-critical AND no error messages; diagnostics never override it.
+
+Reusable source briefs and scope: `railway-design/examples/parallel-structures/README.md`.
+All4 fixtures passed independent actual-geometry/game-visual review. Tunnel2 down
+signals are an explicitly authorised ~780-unit end-seed exception;300-spacing and
+capacity are not qualified. Its original failed completion remains needs_attention;
+remaining-only qualification is separate. Final save Bridge Efficiency Structures
+Ready.sav reload matched156 external tracks/41 signals and24 route/direction checks.
+Final individual/batch rejected previews exposed exact native Collision IDs/counts
+without submission. No train traversal or arbitrary-site success follows.

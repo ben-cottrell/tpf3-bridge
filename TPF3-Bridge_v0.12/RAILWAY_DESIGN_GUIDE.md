@@ -69,6 +69,17 @@ actual geometry supports it; whole-route parallelism is not compulsory.
 
 ## Fans and crossovers
 
+Review fan shape, total length and native speed feedback together. A smooth sweep
+can still be unnecessarily long/fast near platforms, where final braking and initial
+acceleration make distance important. Choose a compact fan envelope before routine
+local native fitting, retaining the requested30m straight parallel platform leads.
+The user accepts the current fans unchanged and the current approximately80mph
+crossovers unchanged, but identifies the fans as too long/fast for future designs.
+The slowest relevant fan should not be faster than its throat crossovers; roughly55mph
+Challenge04/05 fans are a contextual reference, not a fixed speed/radius requirement.
+Independent prebuild review must assess this relationship as well as visual shape.
+No current-map repair, universal numeric gate or new train-physics model follows.
+
 With staggered platform mouths, check the projecting neighbouring platform footprint,
 not just exposed rail ends. Complete a fast road's lateral shift before entering
 that footprint; the justified final straight may extend beyond its 30 m platform lead.
@@ -220,8 +231,8 @@ The demonstration is accepted; apply refinements to future builds.
   bowing and curve/straight/return sequences from separately fitted pieces.
 - Retain approximately 30 m of straight parallel platform lead before the fans.
   Slow fans may be shorter/tighter. Aim for throat crossovers no slower than the
-  slowest relevant fan, using native speed feedback. The latest user review finds
-  the current fans' roughly55–60mph appropriate and prefers roughly80m crossovers
+  slowest relevant fan, using native speed feedback. For the Mid West C reference, the user found
+  its roughly55–60mph fans appropriate and preferred roughly80m crossovers
   targeting75–80mph over Challenge04's roughly40m/35–40mph examples. These are
   user-reported observations/targets, not bridge-measured speeds or a linear
   length-to-speed rule. The120m crossover revision overcompensated.

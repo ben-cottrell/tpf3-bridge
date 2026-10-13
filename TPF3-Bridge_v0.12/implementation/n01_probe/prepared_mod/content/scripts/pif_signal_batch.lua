@@ -1,5 +1,24 @@
 -- One prepared, session-bound native proposal; no individual fallback or replay.
 local M={}
+-- Installed api/type.d.tl ProposalData.collisionInfo.collisionEntities:{EntityData}.
+-- Diagnostics only: no component queries, mutation or acceptance interpretation.
+function M.collision_diagnostics(data)
+ local ok,value=pcall(function()
+  local info=assert(data.collisionInfo,'collisionInfo_unavailable')
+  local rows=assert(info.collisionEntities,'collisionEntities_unavailable')
+  assert(type(rows)=='table' or type(rows)=='userdata','collisionEntities_malformed')
+  local count=#rows;assert(type(count)=='number' and count>=0 and count%1==0,'collision_count_malformed')
+  local ids={};for i=1,math.min(count,16) do
+   local entity=rows[i].entity
+   assert(type(entity)=='number' and entity==entity and math.abs(entity)<math.huge and entity%1==0,'collision_entity_malformed')
+   ids[#ids+1]=entity -- Keep native proposal identities, including placeholders.
+  end
+  return {collision_entities=ids,collision_count=count,collision_output_truncated=count>16,collision_info_available=true}
+ end)
+ if ok then return value end
+ return {collision_entities={},collision_count='unavailable',collision_output_truncated='unknown',
+  collision_info_available=false,collision_info_error=tostring(value):sub(1,200)}
+end
 function M.new(comp,rev,fresh,xyz,signals,seed,snapshot)
  local C,E=api.type.ComponentType,api.type['enum']
  local function plain(x)
@@ -113,6 +132,7 @@ function M.new(comp,rev,fresh,xyz,signals,seed,snapshot)
   local summary={accepted=not errors.critical and #errors.messages==0,native_proposal_evaluated=true,
    edge_count=#affected,placement_count=#p.placements,input_hash=p.input_hash,seed=template,
    evaluation={critical=errors.critical,messages=messages,message_count=#errors.messages},game_constructed=false}
+  for k,v in pairs(M.collision_diagnostics(data)) do summary.evaluation[k]=v end
   return proposal,summary,rows,affected,placed
  end
  local function prepare(p,s,state,rid)

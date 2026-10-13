@@ -3099,7 +3099,7 @@ def place_signal_batch(client, brief, *, execute=False):
     if prepared['status']!='ok' or not execute:return prepared
     value=prepared.get('result',{}).get('signal_batch',{})
     if value.get('native_proposal_evaluated') is not True or value.get('accepted') is not True:
-        return prepared|{'status':'error','result':{'error':'native_signal_batch_proposal_rejected','game_constructed':False}}
+        return prepared|{'status':'error','result':prepared.get('result',{})|{'error':'native_signal_batch_proposal_rejected','game_constructed':False}}
     if value.get('input_hash')!=params['input_hash'] or value.get('prepared_handle')!=prepared['request_id'] or value.get('seed',{}).get('id')!=brief['seed_id']:
         raise LiveError('reconciliation_required','signal batch prepared identity differs')
     return client.request('operating_control',{'action':'signal_batch','execute':True,

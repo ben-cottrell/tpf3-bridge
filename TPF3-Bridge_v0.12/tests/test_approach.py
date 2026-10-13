@@ -28,8 +28,17 @@ def brief():
 
 class World(Native):
     def __init__(self,directory):
-        super().__init__(directory);self.objects={};self.revisions={};self.extra_incidence={};self.station_revision=1
+        super().__init__(directory);self.objects={};self.revisions={};self.extra_incidence={};self.node_owners={};self.station_revision=1
     def request(self,op,q,**kwargs):
+        if op=='inspect':
+            r=super().request(op,q,**kwargs)
+            if 'incidence_edge_ids' in q:
+                selected=q['incidence_edge_ids'];nodes=sorted({self.edges[i][k] for i in selected for k in ('node0','node1')});rows=[]
+                for node in nodes:
+                    incident=sorted({e['id'] for e in self.edges.values() if node in (e['node0'],e['node1'])}|set(self.extra_incidence.get(node,[])))
+                    rows.append({'node_id':node,'incident_edges':incident,'incident_count':len(incident),'incidence_complete':True,'incident_output_truncated':False,'construction_owner':self.node_owners.get(node,'none')})
+                r['result']['endpoint_incidence']={'edge_ids':selected,'nodes':rows,'node_count':len(rows),'complete':True,'truncated':False}
+            return r
         if op=='station_lookup':
             self.calls.append((op,copy.deepcopy(q)))
             return {'status':'ok','request_id':'station','result':{'identity_complete':True,'frozen_complete':True,
@@ -45,7 +54,7 @@ class World(Native):
                     pos=e['p'+str(end)];node=e['node'+str(end)]
                     if not all(q['region']['min'][i]<=pos[i]<=q['region']['max'][i] for i in range(3)):continue
                     incident=sorted({row['id'] for row in self.edges.values() if node in (row['node0'],row['node1'])}|set(self.extra_incidence.get(node,[])))
-                    candidates.append({'edge_id':e['id'],'node_id':node,'incident_edges':incident,'incident_count':len(incident),'incidence_complete':True,'incident_output_truncated':False,'construction_owner':'none'})
+                    candidates.append({'edge_id':e['id'],'node_id':node,'incident_edges':incident,'incident_count':len(incident),'incidence_complete':True,'incident_output_truncated':False,'construction_owner':self.node_owners.get(node,'none')})
             return {'status':'ok','request_id':'incidence','result':{'complete':True,'candidates':candidates}}
         return super().request(op,q,**kwargs)
 
@@ -323,9 +332,10 @@ class ApproachTests(unittest.TestCase):
                 calls=len(c.calls);out=o.review_approach(run)
                 self.assertEqual(out['checks_run'],0);self.assertEqual(route.call_count,2)
             observed=[op for op,_ in c.calls[calls:]]
-            self.assertEqual(observed.count('inspect'),1);self.assertEqual(observed.count('operating_inspect'),1);self.assertEqual(observed.count('discover'),2)
+            self.assertEqual(observed.count('inspect'),1);self.assertEqual(observed.count('operating_inspect'),1);self.assertEqual(observed.count('discover'),0)
 
-    def test_incidence_witness_can_be_another_edge_at_the_same_exact_native_node(self):
+    def test_legacy_benchmark_incidence_witness_can_be_another_edge_at_the_same_exact_native_node(self):
+        from bridge_dependency_benchmark import LegacyDependencies
         for problem in (None,'different_node','missing_edge','truncated','conflicting'):
             with self.subTest(problem=problem),tempfile.TemporaryDirectory() as td:
                 c=World(td);row=c.make_edge([0,0,2],[20,0,2],[20,0,0],[20,0,0]);original=c.request
@@ -339,7 +349,7 @@ class ApproachTests(unittest.TestCase):
                         elif problem=='truncated':witness['incident_output_truncated']=True
                         elif problem=='conflicting':r['result']['candidates'].append(witness|{'incident_edges':[row['id'],100]})
                     return r
-                deps=approach.Dependencies(c)
+                deps=LegacyDependencies(c)
                 with patch.object(c,'request',side_effect=request):
                     if problem:
                         with self.assertRaises(ValueError):deps.observe_semantics([row['id']])
@@ -362,7 +372,7 @@ class ApproachTests(unittest.TestCase):
                 self.assertEqual(state['checks']['alignment']['valid'],change!='geometry')
 
     def test_unaliased_exported_family_rail_changes_invalidate_positive_and_negative_proofs(self):
-        for change in ('signal','revision','incidence'):
+        for change in ('signal','revision','incidence','owner'):
             for negative in (False,True):
                 with self.subTest(change=change,negative=negative),tempfile.TemporaryDirectory() as td:
                     c=World(td);o=Operator(runs=td,client=c);b=brief();f=b['families'][0]
@@ -376,6 +386,7 @@ class ApproachTests(unittest.TestCase):
                         proof=approach.load(o.path(run)/'state.json')['checks']['forward'];self.assertIn('2',proof['dependencies']['geometry'])
                         if change=='signal':c.objects[2]=[{'id':80,'signal':{'one_way':True,'forward':False}}]
                         elif change=='revision':c.revisions[2]=[2,0,0]
+                        elif change=='owner':c.node_owners[c.edges[2]['node1']]=42
                         else:c.extra_incidence[c.edges[2]['node1']]=[99]
                         out=o.review_approach(run);self.assertEqual(out['status'],'needs_attention');self.assertEqual(out['checks_run'],0);self.assertEqual(route.call_count,1)
 
@@ -401,6 +412,7 @@ class ApproachTests(unittest.TestCase):
             run=o.plan_approach(b)['run'];o.build_approach(run);external=c.make_edge([20,0,2],[40,0,2],[20,0,0],[20,0,0])
             with patch.object(o,'review_station_routes',return_value={'status':'ok','routes':[{'source':{'edge':external['id']},'target':{'edge':1}}]}) as route:
                 self.assertEqual(o.review_approach(run)['status'],'reviewed');self.assertEqual(o.review_approach(run)['checks_run'],0)
+                self.assertTrue(any(op=='inspect' and q.get('incidence_edge_ids')==[external['id']] for op,q in c.calls))
                 external['t1'][1]=1
                 self.assertEqual(o.review_approach(run)['status'],'needs_attention');self.assertEqual(route.call_count,1)
 

@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "revision": "example_bridge2",
+  "session": "REFRESH_CURRENT_SESSION",
+  "track": {
+    "template": "::/infrastructure/track/standard/standard_catenary.street_template",
+    "style": "::/infrastructure/track/standard/standard.street"
+  },
+  "max_grade": 0.04,
+  "stub_length": 10,
+  "waypoints": {
+    "A": {
+      "up": {
+        "position": [
+          -3800,
+          -3300,
+          5
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      },
+      "down": {
+        "position": [
+          -3800,
+          -3295,
+          5
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      }
+    },
+    "B": {
+      "up": {
+        "position": [
+          -3020,
+          -3240,
+          5
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      },
+      "down": {
+        "position": [
+          -3020,
+          -3235,
+          5
+        ],
+        "direction": [
+          1,
+          0
+        ],
+        "grade": 0
+      }
+    }
+  },
+  "sections": [
+    {
+      "name": "through",
+      "source": "A",
+      "target": "B",
+      "region": {
+        "min": [
+          -3815,
+          -3335,
+          1
+        ],
+        "max": [
+          -3005,
+          -3200,
+          100
+        ]
+      },
+      "members": [
+        {
+          "track": "up",
+          "representation": "native_parts",
+          "guides": [
+            {
+              "position": [
+                -3490,
+                -3280,
+                12
+              ],
+              "travel_direction": [
+                0.9922778767136677,
+                0.12403473458920847
+              ],
+              "grade": 0
+            },
+            {
+              "position": [
+                -3330,
+                -3260,
+                12
+              ],
+              "travel_direction": [
+                0.9922778767136677,
+                0.12403473458920847
+              ],
+              "grade": 0
+            }
+          ],
+          "structures": [
+            {
+              "classification": "NORMAL"
+            },
+            {
+              "classification": "BRIDGE",
+              "resource_name": "::/infrastructure/bridge/steel.bridge"
+            },
+            {
+              "classification": "NORMAL"
+            }
+          ]
+        },
+        {
+          "track": "down",
+          "normal_offset_from": {
+            "group_index": 1,
+            "spacing": 5,
+            "reverse": false
+          }
+        }
+      ]
+    }
+  ]
+}

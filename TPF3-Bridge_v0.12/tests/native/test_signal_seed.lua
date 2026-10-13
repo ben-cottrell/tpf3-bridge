@@ -1,7 +1,7 @@
 -- Actual pif_operating direct seed qualification; no native calls or mutations.
 -- Pass module source to M.run under an available Lua runtime.
 local M={}
-function M.run(source)
+function M.run(source,batch_source)
  local C={EDGE_OBJECT=1,SIGNAL_LIST=2,BASE_EDGE=3}
  local E={RoadType={TRACK=1},EdgeObjectType={SIGNAL=1}}
  local source_edge={roadType=1,objects={{99,1}}}
@@ -32,7 +32,8 @@ function M.run(source)
   if c==C.BASE_EDGE and x==10 then return source_edge end
   if c==C.BASE_EDGE and x==42 then return target end
  end
- local env=setmetatable({api=api,ug_require=function() return {} end},{__index=_G})
+ local batch=assert(load(assert(batch_source,'actual batch diagnostics source required'),'signal diagnostics','t',setmetatable({api=api},{__index=_G})))()
+ local env=setmetatable({api=api,ug_require=function(name) return name:find('pif_signal_batch.lua',1,true) and batch or {} end},{__index=_G})
  local native=assert(load(source,'explicit signal seed under test','t',env))()
  local seed=native.inspect({signal_seed={seed_id=99}}).signal_seed
  assert(seed.id==99 and seed.edge==10 and seed.resource==object.edgeObjectConstruction)
@@ -44,6 +45,7 @@ function M.run(source)
  critical=true;messages={'Collision'}
  prepared=native.inspect({signal_placement=placement}).signal_placement
  assert(not prepared.accepted and prepared.evaluation.messages[1]=='Collision')
+ assert(prepared.evaluation.collision_info_available==false and prepared.evaluation.collision_count=='unavailable')
  local state={};local ok,why
  -- Control requires execute=true, then the same proposal rejection before guard.
  placement.execute=true;placement.action='signal_place'

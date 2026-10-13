@@ -11,6 +11,9 @@ local function distance(a,b) return math.sqrt((a[1]-b[1])^2+(a[2]-b[2])^2) end
 local function near(a,b,tol) return math.abs(a[1]-b[1])<=tol and math.abs(a[2]-b[2])<=tol and math.abs(a[3]-b[3])<=tol end
 local function angle(a,b) a=norm(a);b=norm(b);return math.acos(math.max(-1,math.min(1,a[1]*b[1]+a[2]*b[2])))*180/math.pi end
 local function vector(a) assert(type(a)=="table" and #a>=2 and #a<=3,"invalid_vector");for _,x in ipairs(a) do assert(finite(x),"nonfinite_vector") end end
+local function reject_offset_join_input(p)
+ assert(p.normal_offset_join_contract==nil and (type(p.fit)~="table" or p.fit.normal_offset_join_contract==nil),"adapter_only_offset_join_contract")
+end
 -- Opt-in semantic structure readback. Repository handles are session-local;
 -- resource names establish the selected asset, not geometric resemblance.
 local function structure(base)
@@ -154,11 +157,29 @@ local function movement_speeds(id,kind)
  result.complete=not result.truncated
  return result
 end
+local function incidence(id,cap)
+ local segments=api.engine.system.streetSystem.getNodeSegments(id)
+ assert(type(segments)=="table","native_incidence_unavailable")
+ if cap then assert(#segments<=cap,"native_incidence_bound");end
+ local ids,seen={},{};for _,eid in ipairs(segments) do if cap then assert(finite(eid) and eid>0 and eid%1==0,"invalid_native_incident_id") end;assert(not seen[eid],"duplicate_native_incidence");seen[eid]=true;ids[#ids+1]=eid end
+ table.sort(ids)
+ local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForNode(id)
+ assert(owner==nil or type(owner)=="number","construction_owner_unavailable")
+ return ids,owner
+end
 function M.inspect(p)
  assert(type(p.edge_ids)=="table" and (#p.edge_ids>=1 or p.site~=nil or p.entity_ids~=nil) and #p.edge_ids<=16,"edge_read_bound")
  assert(p.movement_speeds==nil or type(p.movement_speeds)=="boolean","movement_speeds_flag_boolean_required")
  assert(p.structures==nil or type(p.structures)=="boolean","structures_flag_boolean_required")
  assert(p.parallel_strips==nil or type(p.parallel_strips)=="boolean","parallel_strips_flag_boolean_required")
+ local selected,observed_nodes={},{}
+ if p.incidence_edge_ids~=nil then
+  assert(type(p.incidence_edge_ids)=="table" and #p.incidence_edge_ids>=1 and #p.incidence_edge_ids<=#p.edge_ids,"incidence_edge_subset_bound")
+  local allowed={};for _,id in ipairs(p.edge_ids) do assert(not allowed[id],"duplicate_incidence_inspect_edge");allowed[id]=true end
+  for _,id in ipairs(p.incidence_edge_ids) do
+   assert(finite(id) and id>0 and id%1==0 and allowed[id] and not selected[id],"distinct_incidence_subset_required");selected[id]=true
+  end
+ end
  local out={};for _,id in ipairs(p.edge_ids) do
   local e=edge(id)
   if p.movement_speeds==true then e.movement_speeds=movement_speeds(id,"track_edge") end
@@ -187,6 +208,17 @@ function M.inspect(p)
    e.movement_geometry={type=g.type,length=g.length,samples=samples,connections=connections,
     radius=g.type==api.type.EdgeGeometry.Type.ARC and g.arc.radius or nil}
   end
+  if selected[id] then
+   for _,node in ipairs({e.node0,e.node1}) do
+    if not observed_nodes[node] then
+     local ids,owner=incidence(node,16)
+     observed_nodes[node]={node_id=node,incident_edges=ids,incident_count=#ids,
+      incidence_complete=true,incident_output_truncated=false,construction_owner=owner or "none"}
+    end
+    local attached=false;for _,eid in ipairs(observed_nodes[node].incident_edges) do if eid==id then attached=true end end
+    assert(attached,"requested_TRACK_missing_from_endpoint_incidence")
+   end
+  end
   out[#out+1]=e
   if p.geometry_constraints then
    local q=p.geometry_constraints
@@ -200,6 +232,12 @@ function M.inspect(p)
   end
  end
  local result={edges=out,game_constructed=false,native_save_identity="unknown",load_epoch="unknown"}
+ if p.incidence_edge_ids~=nil then
+  local node_ids={};for node in pairs(observed_nodes) do node_ids[#node_ids+1]=node end
+  assert(#node_ids<=32,"endpoint_incidence_node_bound");table.sort(node_ids)
+  local nodes={};for _,node in ipairs(node_ids) do nodes[#nodes+1]=observed_nodes[node] end
+  result.endpoint_incidence={edge_ids=p.incidence_edge_ids,nodes=nodes,node_count=#nodes,complete=true,truncated=false}
+ end
  if p.entity_ids then
   assert(type(p.entity_ids)=="table" and #p.entity_ids>=1 and #p.entity_ids<=8,"exact_entity_read_bound")
   result.entities={}
@@ -494,15 +532,7 @@ end
 local function inside(pos,r)
  for i=1,3 do if pos[i]<r.min[i] or pos[i]>r.max[i] then return false end end;return true
 end
-local function incidence(id)
- local segments=api.engine.system.streetSystem.getNodeSegments(id)
- assert(type(segments)=="table","native_incidence_unavailable")
- local ids,seen={},{};for _,eid in ipairs(segments) do assert(not seen[eid],"duplicate_native_incidence");seen[eid]=true;ids[#ids+1]=eid end
- table.sort(ids)
- local owner=api.engine.system.streetConnectorSystem.getConstructionEntityForNode(id)
- assert(owner==nil or type(owner)=="number","construction_owner_unavailable")
- return ids,owner
-end
+
 function M.discover(p,request_id)
  region_check(p.region)
  assert(type(p.max_edges)=="number" and p.max_edges%1==0 and p.max_edges>=1 and p.max_edges<=16,"discovery_edge_bound")
@@ -1009,6 +1039,7 @@ function M.route(p)
  return out
 end
 function M.fit(p,s,request_id,target,start,diagnostics)
+ reject_offset_join_input(p)
  vector(p.end_xy);vector(p.end_direction)
  assert(finite(p.radius) and p.radius>=0 and (p.radius>0 or finite(p.fit_radius) and p.fit_radius>0),"invalid_radius")
  local fitradius=p.fit_radius or p.radius*1.05
@@ -1212,6 +1243,9 @@ function M.readback(f)
  assert(f.ids and #f.ids==#f.controls,"construction_receipt_incomplete")
  local remaining={};for _,id in ipairs(f.ids) do assert(not remaining[id],"duplicate_receipt_edge");remaining[id]=true end
  local current=f.node;local ordered,nodes,observations={},{current},{};local maxerr,maxheading,maxzerr,maxgrade,maxjoinz,maxjoingrade=0,0,0,0,0,0
+ local derived=f.normal_offset_join_contract~=nil
+ assert(not derived or f.normal_offset_join_contract=="shared_reference_parameter","invalid_offset_join_contract")
+ local prepared_maxjoingrade,maxjoinresidual=0,0
  assert(finite(f.min_radius) and f.min_radius>=0,"realised_radius_requirement_missing")
  local minradius=math.huge
  for i,c in ipairs(f.controls) do
@@ -1238,13 +1272,17 @@ function M.readback(f)
   minradius=math.min(minradius,checkedradius)
   if f.junction_node then geometry_bounds(ng,f.region,f.min_radius,f.max_grade) end
   if i>1 then
-   local prev=observations[i-1];maxjoinz=math.max(maxjoinz,math.abs(prev.p1[3]-e.p0[3]));maxjoingrade=math.max(maxjoingrade,math.abs(slope(prev.t1)-slope(e.t0)))
+   local prev=observations[i-1];maxjoinz=math.max(maxjoinz,math.abs(prev.p1[3]-e.p0[3]))
+   local actual_delta=slope(prev.t1)-slope(e.t0)
+   local prepared_delta=slope(f.controls[i-1].t1)-slope(c.t0)
+   maxjoingrade=math.max(maxjoingrade,math.abs(actual_delta));prepared_maxjoingrade=math.max(prepared_maxjoingrade,math.abs(prepared_delta))
+   maxjoinresidual=math.max(maxjoinresidual,math.abs(actual_delta-(derived and prepared_delta or 0)))
   end
   ordered[#ordered+1]=found;nodes[#nodes+1]=e.node1;observations[#observations+1]=e;current=e.node1
  end
  for _ in pairs(remaining) do error("unreconciled_returned_edge") end
  assert(maxerr<=.1 and maxheading<=.1,"realised_sampled_shape_failed")
- assert(maxzerr<=.001 and maxjoinz<=.001 and maxjoingrade<=.000001,"realised_vertical_profile_failed")
+ assert(maxzerr<=.001 and maxjoinz<=.001 and maxjoinresidual<=.000001,"realised_vertical_profile_failed")
  assert(math.abs(slope(observations[1].t0)-f.grade)<=.000001 and math.abs(slope(observations[#observations].t1)-f.end_grade)<=.000001,"realised_endpoint_grade_failed")
  local attachments=nil
  if f.target then
@@ -1266,7 +1304,7 @@ function M.readback(f)
   assert(math.abs(slope(before.t1)-g.grade)<=.000001 and math.abs(slope(after.t0)-g.grade)<=.000001,"guide_grade_mismatch")
   guides[#guides+1]={node=before.node1,after_piece=g.after_piece,position=before.p1,grade=slope(before.t1),verified=true}
  end
- return {ordered_edges=ordered,ordered_nodes=nodes,edges=observations,attachments=attachments,connected=true,realised_guides=guides,sampled_XY_error=maxerr,sampled_base_Z_error=maxzerr,max_sampled_grade=maxgrade,max_join_height_gap=maxjoinz,max_join_grade_gap=maxjoingrade,endpoint_heading_error=maxheading,engineering_checks_verified=true,straight_only=minradius==math.huge,requested_min_radius=f.min_radius,min_sampled_radius=minradius~=math.huge and minradius or nil,sampled_only=true,game_constructed=true,train_traversal="unprobed",native_effect_history_complete=false}
+ return {ordered_edges=ordered,ordered_nodes=nodes,edges=observations,attachments=attachments,connected=true,realised_guides=guides,sampled_XY_error=maxerr,sampled_base_Z_error=maxzerr,max_sampled_grade=maxgrade,max_join_height_gap=maxjoinz,max_join_grade_gap=maxjoingrade,prepared_max_join_grade_gap=prepared_maxjoingrade,max_signed_join_grade_residual=maxjoinresidual,join_grade_contract=derived and "shared_reference_parameter" or "continuous_zero",endpoint_heading_error=maxheading,engineering_checks_verified=true,straight_only=minradius==math.huge,requested_min_radius=f.min_radius,min_sampled_radius=minradius~=math.huge and minradius or nil,sampled_only=true,game_constructed=true,train_traversal="unprobed",native_effect_history_complete=false}
 end
 local function build_proposal(f)
  local h=api.res.streetTemplateRep.find(f.anchor.template);local resource=api.res.streetTemplateRep.get(h)
@@ -2047,6 +2085,7 @@ function M.remove_branch(p,s,state,request_id,respond)
 end
 
 function M.verify_crossover(p,s)
+ reject_offset_join_input(p)
  local a,b=p.source.edge_snapshot,p.target.edge_snapshot
  local c={parameter=p.source.parameter,pos=p.fit.start,canonical_forward=p.source.canonical_forward}
  local d={parameter=p.target.parameter,pos=p.fit.finish,canonical_forward=p.target.canonical_forward,outward_direction=p.target.outward_direction,grade=p.target.grade}
@@ -2067,6 +2106,7 @@ end
 -- Read-only reconciliation from recorded controls and exact returned identities.
 -- No fitting, preview or construction is performed; do not reconstruct engine history.
 function M.verify_interior(p)
+ reject_offset_join_input(p)
  local a=p.source.edge_snapshot;local c={parameter=p.parameter,canonical_forward=p.source.canonical_forward,pos=p.fit.start}
  assert(a.id==p.source.edge_id and finite(c.parameter) and c.parameter>0 and c.parameter<1,"invalid_recorded_interior")
  assert(type(p.edge_ids)=="table" and #p.edge_ids==p.fit.pieces+2 and #p.edge_ids<=10,"invalid_split_receipt")
@@ -2737,6 +2777,7 @@ local function derive_normal_segments(reference,q)
  return derived,maximum
 end
 local function prepare_new_structure(p,s,request_id,group_reference)
+ reject_offset_join_input(p)
  if p.coalesce_plain~=nil or p.replacement_boundaries~=nil then assert(p.coalesce_plain==true and p.replace_chain and p.replacement_boundaries and not p.junctions,"explicit_plain_replacement_required") end
  if p.junctions then assert(finite(p.max_route_length) and p.max_route_length>0 and p.max_route_length<=8000,"invalid_route_length_bound") end
  local replacement=p.replace_chain and replacement_chain(p) or nil
@@ -2895,6 +2936,9 @@ local function prepare_new_structure(p,s,request_id,group_reference)
     spacing=q.spacing,reference_reversed=q.reverse,sampled_conversion_XY_error=maximum,height_transfer="shared_reference_parameter",
     structure_inherited_from_reference=true,sampled_only=true}
   end
+  -- Server-created provenance only, after successful derivation and all bounds.
+  -- XY offset changes parameter speed; copied reference Z need not be grade-C1.
+  fitted.normal_offset_join_contract="shared_reference_parameter"
  end
  fitted.samples={};fitted.grade=grade;fitted.end_grade=target.grade;fitted.total_length=0
  for i,ctrl in ipairs(fitted.controls) do
@@ -3012,6 +3056,7 @@ local function structure_evaluation(data)
  return {critical=errors.critical,messages=messages,message_count=#errors.messages,warnings=warnings,collision_entities=collisions,collision_count=#rows,collision_output_truncated=#rows>16}
 end
 function M.structured_chain(p,s,state,request_id,respond)
+ reject_offset_join_input(p)
  assert(not s.mutationPending,"unreconciled_mutation")
  s.prepared_structures=s.prepared_structures or {}
  local record

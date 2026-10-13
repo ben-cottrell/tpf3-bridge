@@ -76,6 +76,20 @@ class BatchTests(unittest.TestCase):
             self.assertEqual(len(c.calls),1);self.assertFalse(c.changed)
             self.assertEqual(r['status'],'error' if rejected else 'ok')
 
+    def test_rejection_preserves_native_evaluation_identity_and_diagnostics_without_execution(self):
+        c=Fake();c.accepted=False;request=c.request;captured=[]
+        def native_response(op,q,**kw):
+            r=request(op,q,**kw)
+            r['result']['signal_batch']['evaluation']={'critical':False,'messages':['Collision'],'message_count':1,
+                'collision_entities':[123,-1],'collision_count':2,'collision_output_truncated':False,'collision_info_available':True}
+            r['result']['player']=3892;captured.append(copy.deepcopy(r));return r
+        with patch.object(c,'request',side_effect=native_response):r=live.place_signal_batch(c,brief(),execute=True)
+        self.assertEqual(len(c.calls),1);self.assertFalse(c.changed)
+        self.assertEqual(r['status'],'error');self.assertEqual(r['request_id'],captured[0]['request_id'])
+        self.assertEqual(r['result']['signal_batch'],captured[0]['result']['signal_batch'])
+        self.assertEqual(r['result']['player'],3892);self.assertFalse(r['result']['game_constructed'])
+        self.assertEqual(captured[0]['status'],'ok');self.assertNotIn('error',captured[0]['result'])
+
     def test_geometry_snapshot_payload_stays_within_existing_request_bound(self):
         q=brief();q['edges']=[];q['placements']=[]
         for i in range(16):

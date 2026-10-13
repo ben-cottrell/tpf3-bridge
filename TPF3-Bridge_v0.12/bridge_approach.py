@@ -175,44 +175,79 @@ def geometry_dependency(row):return {k:copy.deepcopy(row[k]) for k in GEOMETRY_K
 
 class Dependencies:
     """One bounded observation cache per review; no graph reconstruction."""
-    def __init__(self,client):self.client=client;self.edges={};self.tracks={};self.nodes={};self.stations={}
+    def __init__(self,client):
+        self.client=client;self.edges={};self.tracks={};self.nodes={};self.stations={};self.incidence_edges=set()
 
-    def observe_edges(self,ids):
-        missing=sorted(set(ids)-self.edges.keys())
-        if len(set(ids)|self.edges.keys())>256:raise ValueError('review dependency bound256 exact edges exceeded')
+    @staticmethod
+    def exact_ids(values,limit):
+        if not isinstance(values,list) or len(values)>limit or any(type(i) is not int or i<=0 for i in values) or len(set(values))!=len(values):
+            raise ValueError('bounded distinct exact native identities required')
+        return set(values)
+
+    def incidence_rows(self,value,selected,rows):
+        if not isinstance(value,dict) or value.get('complete') is not True or value.get('truncated') is not False or self.exact_ids(value.get('edge_ids'),16)!=set(selected):
+            raise ValueError('complete exact endpoint incidence subset required')
+        expected={}
+        for ident in selected:
+            for k in ('node0','node1'):expected.setdefault(rows[ident][k],set()).add(ident)
+        records=value.get('nodes')
+        if not isinstance(records,list) or len(records)>32 or type(value.get('node_count')) is not int or value['node_count']!=len(records):
+            raise ValueError('bounded complete endpoint node records required')
+        nodes={}
+        for row in records:
+            if not isinstance(row,dict) or type(row.get('node_id')) is not int or row['node_id'] not in expected or row['node_id'] in nodes:
+                raise ValueError('missing/extra/duplicate exact endpoint node')
+            incident=self.exact_ids(row.get('incident_edges'),16)
+            if row.get('incidence_complete') is not True or row.get('incident_output_truncated') is not False or type(row.get('incident_count')) is not int or row['incident_count']!=len(incident) or not expected[row['node_id']]<=incident:
+                raise ValueError('bounded complete endpoint incidence/membership unavailable')
+            if 'construction_owner' not in row:raise ValueError('native endpoint owner unavailable')
+            owner=row['construction_owner'];owner='none' if owner is None else owner
+            if owner!='none' and type(owner) is not int:raise ValueError('native endpoint owner malformed')
+            v={'incident_edges':sorted(incident),'construction_owner':owner}
+            if row['node_id'] in self.nodes and v!=self.nodes[row['node_id']]:raise ValueError('conflicting exact-node incidence observations')
+            nodes[row['node_id']]=v
+        if set(nodes)!=set(expected):raise ValueError('exact endpoint nodes incomplete')
+        return nodes
+
+    def observe_edges(self,ids,semantic_ids=()):
+        requested=set(ids);semantic=set(semantic_ids)
+        if any(type(i) is not int or i<=0 for i in requested|semantic) or not semantic<=requested or len(requested|self.edges.keys())>256:
+            raise ValueError('review dependency bound256 exact edges exceeded')
+        missing=sorted((requested-self.edges.keys())|(semantic-self.incidence_edges))
         for i in range(0,len(missing),16):
-            selected=missing[i:i+16];r=self.client.request('inspect',{'edge_ids':selected,'structures':True});rows=r.get('result',{}).get('edges',[])
-            if r['status']!='ok' or len(rows)!=len(selected) or {e['id'] for e in rows}!=set(selected) or any(e.get('road_type')!='TRACK' for e in rows):raise ValueError('exact review dependency geometry unavailable')
-            self.edges.update({e['id']:e for e in rows})
+            selected=missing[i:i+16];enriched=sorted(set(selected)&semantic)
+            query={'edge_ids':selected,'structures':True}
+            if enriched:query['incidence_edge_ids']=enriched
+            r=self.client.request('inspect',query);records=r.get('result',{}).get('edges',[])
+            if r['status']!='ok' or not isinstance(records,list) or len(records)!=len(selected) or any(not isinstance(e,dict) or type(e.get('id')) is not int or e.get('road_type')!='TRACK' for e in records) or {e['id'] for e in records}!=set(selected):
+                raise ValueError('exact review dependency geometry unavailable')
+            rows={e['id']:e for e in records}
+            for ident,row in rows.items():
+                if any(type(row.get(k)) is not int or row[k]<=0 for k in ('node0','node1')):raise ValueError('exact endpoint identity unavailable')
+                if not {'p0','p1','t0','t1','template','style','structure'}<=row.keys() or not isinstance(row['structure'],dict):raise ValueError('complete geometry/structure snapshot unavailable')
+                for k in ('p0','p1','t0','t1'):
+                    if not isinstance(row[k],list) or len(row[k])!=3 or any(type(v) not in (int,float) or not math.isfinite(v) for v in row[k]):raise ValueError('finite complete geometry unavailable')
+                if ident in self.edges and geometry_dependency(row)!=geometry_dependency(self.edges[ident]):raise ValueError('enriched reread geometry changed')
+            nodes=self.incidence_rows(r.get('result',{}).get('endpoint_incidence'),enriched,rows) if enriched else {}
+            # Validate the entire response and shared-node consistency before merge.
+            self.edges.update(copy.deepcopy(rows));self.nodes.update(nodes);self.incidence_edges.update(enriched)
 
-    def observe_semantics(self,ids):
-        self.observe_edges(ids);missing=sorted(set(ids)-self.tracks.keys())
+    def observe_tracks(self,ids):
+        missing=sorted(set(ids)-self.tracks.keys())
         for i in range(0,len(missing),16):
             selected=missing[i:i+16];r=self.client.request('operating_inspect',{'track_ids':selected,'limit':16});value=r.get('result',{}).get('tracks',{});rows=value.get('records',[])
-            if r['status']!='ok' or value.get('truncated') is not False or len(rows)!=len(selected) or {e['id'] for e in rows}!=set(selected):raise ValueError('exact review track-object dependencies incomplete')
+            if r['status']!='ok' or value.get('truncated') is not False or not isinstance(rows,list) or len(rows)!=len(selected) or any(not isinstance(e,dict) or type(e.get('id')) is not int for e in rows) or {e['id'] for e in rows}!=set(selected):raise ValueError('exact review track-object dependencies incomplete')
+            checked={}
             for row in rows:
                 objects=row.get('objects');objects=[] if objects=={} else objects
-                if not isinstance(objects,list) or len(objects)>16 or not isinstance(row.get('revision'),list) or len(row['revision'])!=3 or any(row.get(k)!=self.edges[row['id']][k] for k in ('node0','node1')):raise ValueError('bounded track revision/object identity unavailable')
-                self.tracks[row['id']]={'revision':row['revision'],'objects':sorted(objects,key=lambda o:o['id'])}
-        for ident in sorted(set(ids)):
-            e=self.edges[ident]
-            for end in (0,1):
-                node=e['node'+str(end)]
-                if node in self.nodes:continue
-                pos=e.get('node_positions',[e['p0'],e['p1']])[end]
-                r=self.client.request('discover',{'region':{'min':[x-.5 for x in pos],'max':[x+.5 for x in pos]},'max_edges':16});value=r.get('result',{})
-                # The octree locates a witness. Exact native node identity and
-                # getNodeSegments incidence establish attachment, not the edge
-                # whose bounding volume happened to be returned by the octree.
-                witnesses=[c for c in value.get('candidates',[]) if c.get('node_id')==node and ident in c.get('incident_edges',[])]
-                if r['status']!='ok' or value.get('complete') is not True or not witnesses:raise ValueError(f'exact review endpoint incidence unavailable (edge {ident}, node {node})')
-                observations=[]
-                for c in witnesses:
-                    incident=c.get('incident_edges',[])
-                    if c.get('incidence_complete') is not True or c.get('incident_output_truncated') is not False or c.get('incident_count')!=len(incident) or len(set(incident))!=len(incident) or len(incident)>16:raise ValueError('bounded complete endpoint incidence unavailable')
-                    observations.append({'incident_edges':sorted(incident),'construction_owner':c.get('construction_owner','unknown')})
-                if any(v!=observations[0] for v in observations):raise ValueError('conflicting exact-node incidence witnesses')
-                self.nodes[node]=observations[0]
+                revision=row.get('revision')
+                if not isinstance(objects,list) or len(objects)>16 or any(not isinstance(o,dict) for o in objects) or not isinstance(revision,list) or len(revision)!=3 or any(type(v) is not int for v in revision) or any(row.get(k)!=self.edges[row['id']][k] for k in ('node0','node1')):raise ValueError('bounded track revision/object identity unavailable')
+                self.exact_ids([o.get('id') for o in objects],16)
+                checked[row['id']]={'revision':revision,'objects':sorted(objects,key=lambda o:o['id'])}
+            self.tracks.update(copy.deepcopy(checked))
+
+    def observe_semantics(self,ids):
+        self.observe_edges(ids,semantic_ids=ids);self.observe_tracks(ids)
 
     def station_identity(self,selector):
         import bridge_station as station
@@ -227,14 +262,16 @@ class Dependencies:
         return copy.deepcopy(v)
 
     def fingerprint(self,check,ids,selectors):
-        self.observe_edges(ids)
+        semantic=check['kind'] in ('route','station_routes')
+        if semantic:self.observe_semantics(ids)
+        else:self.observe_edges(ids)
         value={'geometry':{str(i):geometry_dependency(self.edges[i]) for i in sorted(set(ids))}}
-        if check['kind'] in ('route','station_routes'):
-            self.observe_semantics(ids)
+        if semantic:
             value['objects']={str(i):copy.deepcopy(self.tracks[i]) for i in sorted(set(ids))}
             value['incidence']={str(n):copy.deepcopy(self.nodes[n]) for i in ids for n in (self.edges[i]['node0'],self.edges[i]['node1'])}
         if check['kind']=='station_routes':value['stations']={s['name']:self.station_identity(s) for s in selectors}
         return value
+
 
 
 def invalidate(b,s,families,effects,*,geometry_preserved=False):
@@ -532,8 +569,8 @@ def review(operator,run,checks=None):
         candidates=[c for c in b['checks'] if c['name'] in selected or s['checks'].get(c['name'],{}).get('valid')]
         changed=[];fingerprints={}
         try:
-            dependencies.observe_edges([i for c in candidates for i in ids_for(c)])
             semantic_ids=[i for c in candidates if c['kind'] in ('route','station_routes') for i in ids_for(c)]
+            dependencies.observe_edges([i for c in candidates for i in ids_for(c)],semantic_ids=semantic_ids)
             if semantic_ids:dependencies.observe_semantics(semantic_ids)
             for c in candidates:
                 rows={}

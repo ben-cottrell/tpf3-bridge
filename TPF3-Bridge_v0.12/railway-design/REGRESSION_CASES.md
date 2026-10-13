@@ -160,6 +160,14 @@ An independent reviewer must detect artificial landing bows across named familie
 before dependent building. Successful functional checks do not answer whole-family
 visual quality; ordinary fitting stays deterministic without another model call.
 
+The current user accepts the fans unchanged but judges them too long/fast; accepted
+approximately80mph crossovers also stay unchanged. Prebuild review of a future fan
+must compare shape, total length and native speed feedback, choose a compact envelope
+before local fitting, and retain30m straight leads. Final braking/initial acceleration
+near platforms makes length material. The slowest relevant fan should not exceed the
+throat crossover speed; roughly55mph Challenge04/05 is contextual, not a universal
+numeric/radius gate. Do not redesign the accepted map or add train physics.
+
 ## R8 — A nearby native fit is good enough
 
 **Situation:** a compact fan has correct route roles and reserved space. Its nominal

@@ -53,10 +53,10 @@ function M.run(source)
  end}
  local native=assert(load(source,'native grouped family under test','t',setmetatable({api=api},{__index=_G})))()
  native.inspect=function(p) return {edges=p.edge_ids} end -- avoid unrelated diagnostic APIs; actual readback remains under test
- local root_control;local fits=0
+ local root_control,root_parts;local fits=0;local actual_fit=native.fit
  native.fit=function(_,s,id)
-  fits=fits+1;s.fits[id]={controls={clone(root_control)}}
-  return {pieces=1,representation='native_parts',native_dubins_fit_invoked=true}
+  local parts=root_parts or {root_control};fits=fits+1;s.fits[id]={controls=clone(parts)}
+  return {pieces=#parts,representation='native_parts',native_dubins_fit_invoked=true}
  end
  local function stub(id,pos,direction,source_end)
   local delta={10*direction[1],10*direction[2],0};local p0,p1={},{ }
@@ -68,7 +68,7 @@ function M.run(source)
   return {edge_id=id,node_id=source_end and n1 or n0,edge_snapshot=row}
  end
  local function input(count,height,kind)
-  edges={};nodes={};incidents={};root_control={p0={0,0,0},p1={600,60,height},t0={600,0,0},t1={590.88465,104.18891,0},length=603}
+  edges={};nodes={};incidents={};root_parts=nil;root_control={p0={0,0,0},p1={600,60,height},t0={600,0,0},t1={590.88465,104.18891,0},length=603}
   local angle=math.atan(root_control.t1[2],root_control.t1[1]);local enddir={math.cos(angle),math.sin(angle)}
   local p={prepare=true,groups={}};local region={min={-20,-30,-5},max={640,110,20}}
   for i=1,count do
@@ -136,6 +136,61 @@ function M.run(source)
  assert(last.status=='mutation_unverified' and submissions==before+1 and s.mutationPending=='execute')
  local ok=pcall(native.structured_chain,{execute=true,prepared_request='family'},s,state,'retry',function() end)
  assert(not ok and submissions==before+1)
+ -- A grade-C1 reference with curvature changes between tiny native parts.
+ -- Shared Z parameters deliberately imply NONZERO derived physical grade jumps.
+ local function profile_input(spacing,reverse)
+  local p=input(2,1);local direction={1,0};local end_y=(.006666666666666667*91*91+6*.15+4*1.82)/6
+  root_parts={
+   {p0={0,0,0},p1={3,.03,.0045},t0={3,0,0},t1={3,.06,.009},length=3},
+   {p0={3,.03,.0045},p1={6,.09,.0135},t0={3,.06,.009},t1={3,.06,.009},length=3},
+   {p0={6,.09,.0135},p1={9,.15,.0225},t0={3,.06,.009},t1={3,.06,.009},length=3},
+   {p0={9,.15,.0225},p1={100,end_y,1},t0={91,1.82,.273},t1={91,0,0},length=91}}
+  for i,g in ipairs(p.groups) do g.region={min={-20,-30,-5},max={140,60,5}} end
+  p.groups[1].source=stub(10,{0,0,0},direction,true);p.groups[1].target=stub(11,{100,end_y,1},direction,false)
+  local a,b={0,spacing,0},{100,end_y+spacing,1};local travel=direction
+  if reverse then a,b=b,a;travel={-1,0} end
+  p.groups[2].source=stub(20,a,travel,true);p.groups[2].target=stub(21,b,travel,false)
+  p.groups[2].normal_offset_from={group_index=1,spacing=spacing,reverse=reverse};return p
+ end
+ local function realised(spacing,reverse)
+  local p=profile_input(spacing,reverse);local ready,s,state=run(p);assert(ready.status=='ok')
+  local record=s.prepared_structures.family;local f=record.groups[2].fitted
+  assert(f.normal_offset_join_contract=='shared_reference_parameter' and not record.groups[1].fitted.normal_offset_join_contract)
+  succeed=true;local result
+  native.structured_chain({execute=true,prepared_request='family'},s,state,'graded_parts',function(_,status,value) result={status=status,result=value} end)
+  assert(result.status=='ok' and not s.mutationPending,tostring(result.result.error))
+  local rb=result.result.groups[2].readback
+  assert(rb.max_join_grade_gap>1e-6 and rb.prepared_max_join_grade_gap>1e-6 and rb.max_signed_join_grade_residual<=1e-6)
+  assert(rb.join_grade_contract=='shared_reference_parameter');return f
+ end
+ for _,spacing in ipairs({d,-d}) do for _,reverse in ipairs({false,true}) do realised(spacing,reverse) end end
+ local function check_failure(f,pattern)
+  local ok,why=pcall(native.readback,f);assert(not ok and tostring(why):find(pattern,1,true),tostring(why))
+ end
+ local f=realised(d,false);f.normal_offset_join_contract=nil;check_failure(f,'realised_vertical_profile_failed') -- ordinary zero gate remains
+ f=realised(d,false)
+ local left,right=edges[f.ids[1]],edges[f.ids[2]]
+ local function grade(t) return t.z/math.sqrt(t.x*t.x+t.y*t.y) end
+ local before,after=grade(left.tangent1),grade(right.tangent0)
+ local flipped=(2*after-before)*math.sqrt(left.tangent1.x^2+left.tangent1.y^2)
+ assert(math.abs(flipped-left.tangent1.z)<.001);left.tangent1.z=flipped
+ check_failure(f,'realised_vertical_profile_failed') -- SAME absolute max, wrong SIGN
+ f=realised(d,false);left,right=edges[f.ids[1]],edges[f.ids[2]]
+ local delta=grade(left.tangent1)-grade(right.tangent0)
+ right.tangent0.z=right.tangent0.z+delta*math.sqrt(right.tangent0.x^2+right.tangent0.y^2)
+ right.tangent1.z=right.tangent1.z+delta*math.sqrt(right.tangent1.x^2+right.tangent1.y^2)
+ check_failure(f,'realised_vertical_profile_failed') -- moved a jump to another join
+ f=realised(d,false);edges[f.ids[1]].position1.z=edges[f.ids[1]].position1.z+.002
+ check_failure(f,'realised_controls_differ')
+ f=realised(d,false);f.max_grade=1e-6;check_failure(f,'realised_sampled_grade_exceeds_limit')
+ f=realised(d,false);f.min_radius=100000;check_failure(f,'realised_sampled_radius_below_limit')
+ f=realised(d,false);f.end_grade=.01;check_failure(f,'realised_endpoint_grade_failed')
+ f=realised(d,false);edges[f.ids[2]].node0=999;check_failure(f,'actual_connection_missing')
+ local spoof=profile_input(d,false);spoof.normal_offset_join_contract='shared_reference_parameter';fails(spoof,'adapter_only')
+ spoof=profile_input(d,false);spoof.groups[2].normal_offset_join_contract='shared_reference_parameter';fails(spoof,'unsupported')
+ local ok,why=pcall(actual_fit,{normal_offset_join_contract='shared_reference_parameter'});assert(not ok and tostring(why):find('adapter_only',1,true))
+ ok,why=pcall(native.verify_interior,{fit={normal_offset_join_contract='shared_reference_parameter'}});assert(not ok and tostring(why):find('adapter_only',1,true))
+ succeed=false
  return true
 end
 return M

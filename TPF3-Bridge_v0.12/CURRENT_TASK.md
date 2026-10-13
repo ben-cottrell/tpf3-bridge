@@ -1,20 +1,22 @@
 # Current task
 
-R2 flyover repair and source qualification are complete, ready for final user review.
-Current session: pif_1791872469_7424591. Native checks passed4/4 main arrivals,
-4/4 flyover arrivals and4/4 departures; all3 wrong-way queries explicitly returned
-no_native_path_returned. Independent Astra review of combined actual geometry and
-unobstructed game visual passed: continuous sweep, no previous landing plateau/bow,
-no outer hook or obvious clipping at the review scale. No train traversal claimed.
+Completed: native dependency observation batching, parallel bridge/tunnel2/4-road
+qualification and integrated efficiency checks. No further implementation task is
+queued. Coordinator performed native/staging/UI; worker source/tests/docs only.
 
-Corrected exact signal removal and a partial-selection retained-signal case passed
-native absence/retention/function/geometry/structure/ownership checks. Signals were
-restored and directions corrected. Current functional context remains
-.local_runs/efficiency/r2_current.json; old c3061a pending journal/evidence stays
-untouched/unresolved. Observed saved-baseline reset was not historical reconciliation.
+Final save Bridge Efficiency Structures Ready.sav reloaded into
+pif_1791903539_38493779. Exact geometry matched;156 external tracks/41 signals,
+24 fresh directed/reverse-blocked fixture checks passed. Independent design/visual
+review approved all4. Tunnel2 down remains an explicit ~780-unit end-seed signal
+exception, not300-spacing/capacity; original failed parent stays needs_attention,
+remaining-only qualification is separate. Unresolved old mutation evidence preserved.
 
-Worker closes concise documentation and reusable R2 reference/control/diagrams in a
-scoped local commit, then stops. Reuse599 affected Python passes; optional Lua fixture
-unexecuted. No new task, native/UI/staging, live receipt rewrite, general recovery,
-broad cleanup or push. Existing independent material-design review and deterministic
-routine fitting remain binding.
+Same41-rail dependency fingerprints matched:52 requests/26.391s versus7/3.437s
+wall,7.68x measured dependency-phase improvement only. New individual/batch Collision
+diagnostics natively qualified without submission; acceptance remains unchanged.
+Valid affected Python checks reused (618 combined,8 focused,464 verifier,473 signal
+checks); optional Lua fixtures unexecuted, no installed runtime. Examples compile
+and diff checks pass. See STATE.md and OPERATOR_USAGE.md for contracts/limits.
+
+Scoped local milestone checkpoint only; no remote push, native retry, cleanup audit
+or automatic follow-on task. Preserve unrelated ../tpf3-projects and current evidence.
