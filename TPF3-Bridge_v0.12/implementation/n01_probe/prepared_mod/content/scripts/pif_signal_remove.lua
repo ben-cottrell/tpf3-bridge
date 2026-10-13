@@ -103,7 +103,10 @@ function M.new(comp,rev,fresh,xyz,signals,snapshot,ownership)
    local receipt=r.proposal.proposal;assert(#receipt.addedSegments==1,'signal_removal_receipt_unresolved')
    local replacement=receipt.addedSegments[1].entity
    assert(type(replacement)=='number' and replacement>0 and replacement%1==0,'signal_removal_replacement_identity')
-   if replacement~=saved.input.edge_snapshot.id then assert(not comp(saved.input.edge_snapshot.id,C.BASE_EDGE),'signal_removal_old_edge_still_present') end
+   -- getComponent requires a live entity; deleted IDs must be tested first.
+   if replacement~=saved.input.edge_snapshot.id and api.engine.entityExists(saved.input.edge_snapshot.id) then
+    assert(not comp(saved.input.edge_snapshot.id,C.BASE_EDGE),'signal_removal_old_edge_still_present')
+   end
    local current=snapshot(replacement);geometry(current,saved.input.edge_snapshot)
    assert(equal(ownership(replacement),owner),'signal_removal_ownership_changed')
    local actual=assert(comp(replacement,C.BASE_EDGE),'signal_removal_readback_missing')
@@ -112,7 +115,10 @@ function M.new(comp,rev,fresh,xyz,signals,snapshot,ownership)
     assert(not found[entry[1]],'signal_removal_duplicate_readback_object');found[entry[1]]=entry[2]
    end
    for _,v in ipairs(saved.input.signals) do
-    assert(not found[v.id] and not comp(v.id,C.EDGE_OBJECT) and not comp(v.id,C.SIGNAL_LIST),'signal_removal_selected_still_present')
+    assert(not found[v.id],'signal_removal_selected_still_present')
+    if api.engine.entityExists(v.id) then
+     assert(not comp(v.id,C.EDGE_OBJECT) and not comp(v.id,C.SIGNAL_LIST),'signal_removal_selected_still_present')
+    end
    end
    for _,v in ipairs(retained) do
     assert(found[v.id]==v.category,'signal_removal_retained_identity_category_changed')

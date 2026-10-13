@@ -16,7 +16,9 @@ function M.run(source)
  end
  reset()
  local function xyz(v) return {v.x,v.y,v.z} end
+ local function exists(x) return edges[x]~=nil or objects[x]~=nil end
  local function comp(x,t)
+  assert(exists(x),'Invalid entity') -- Real API throws for a deleted native ID.
   if t==C.BASE_EDGE then return edges[x] elseif t==C.EDGE_OBJECT then return objects[x]
   elseif t==C.SIGNAL_LIST then return objects[x] and objects[x].signal and {} or nil
   elseif t==C.PLAYER_OWNED then return players[x] and {player=players[x]} or nil end
@@ -30,7 +32,7 @@ function M.run(source)
    node_positions={xyz(e.position0),xyz(e.position1)},structure={classification='NORMAL',type_index=e.typeIndex,resource_name=''}}
  end
  local function ownership(x) return players[x] and {present=true,player=players[x]} or {present=false} end
- local api={type={ComponentType=C,enum=E},engine={system={streetConnectorSystem={getConstructionEntityForEdge=function() return 0 end}},util={getPlayer=function() return 7 end}}}
+ local api={type={ComponentType=C,enum=E},engine={entityExists=exists,system={streetConnectorSystem={getConstructionEntityForEdge=function() return 0 end}},util={getPlayer=function() return 7 end}}}
  api.type.SimpleProposal={new=function() return {streetProposal={}} end};api.type.Context={new=function() return {} end}
  api.type.SegmentAndEntity={new=function() return setmetatable({},{__newindex=function(t,k,v) rawset(t,k,k=='comp' and clone(v) or v) end}) end}
  api.engine.util.proposal={makeProposalData=function() return {errorState={critical=not accepted,messages={}}} end}
@@ -51,9 +53,21 @@ function M.run(source)
  end
  local p,s,state=setup();local summary=module.prepare(p,s,state,'prepared');assert(summary.accepted and summary.prepared_handle=='prepared' and edges[1] and objects[90])
  local cmd,read=module.command({prepared_handle='prepared',input_hash=p.input_hash},s,state)
- local value=read(built(cmd));assert(value.selected_signals_absent and value.existing_objects_retained and value.functional_signals_verified and value.ownership_verified)
+ local result=built(cmd)
+ fails(function() comp(1,C.BASE_EDGE) end,'Invalid entity');fails(function() comp(90,C.EDGE_OBJECT) end,'Invalid entity')
+ local value=read(result);assert(value.selected_signals_absent and value.existing_objects_retained and value.functional_signals_verified and value.ownership_verified)
  assert(value.replaced_edge==1 and value.replacement_edge==2 and value.removed_signals[1]==90 and objects[91] and objects[92])
  fails(function() module.command({prepared_handle='prepared',input_hash=p.input_hash},s,state) end,'consumed')
+ -- A recycled numeric ID is not the removed component's continued existence.
+ reset();p,s,state=setup();module.prepare(p,s,state,'prepared')
+ cmd,read=module.command({prepared_handle='prepared',input_hash=p.input_hash},s,state);result=built(cmd)
+ edges[90]=clone(edges[2]);objects[1]={params={},param=.1,edgeObjectConstruction='unrelated'}
+ assert(read(result).selected_signals_absent)
+ -- Observation failures remain failures; they are never converted into absence.
+ reset();p,s,state=setup();module.prepare(p,s,state,'prepared')
+ cmd,read=module.command({prepared_handle='prepared',input_hash=p.input_hash},s,state);result=built(cmd)
+ api.engine.entityExists=function() error('read unavailable') end
+ fails(function() read(result) end,'read unavailable');api.engine.entityExists=exists
  for _,fault in ipairs({'non_signal','foreign','edge_revision','signal_revision','geometry','node','resource','structure','session'}) do
   reset();p,s,state=setup()
   if fault=='non_signal' then p.signals[1]={id=92,revision=rev(92)}

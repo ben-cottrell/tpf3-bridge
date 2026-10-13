@@ -1,25 +1,19 @@
 # Current task
 
-User resumed after save/reload into session pif_1791865071_25864. Coordinator owns
-flyover design, native execution/UI/staging and current identity reacquisition.
-Worker assignment: offline combined approach plan/profile renderer using existing
-renderers and supplied full controls/recorded receipts, focused checks and current
-procedure/guide/R6/R7 lessons. No flyover redesign by worker.
+Coordinator owns native observations/design/UI/staging. Healthy current session:
+pif_1791870329_5284063. First exact signal removal executed, then callback verification
+reported mutation_unverified: getComponent on deleted original edge60645 raised
+Invalid entity. Do not replay this removal; second removal has not been attempted.
+Preserve client/native pending state, original prepared input and existing evidence.
 
-Material coupled-family changes need preconstruction combined diagrams and a reviewer
-independent of the designer. Routine bounded fitting stays autonomous/deterministic.
-Keep authored/preview/committed evidence distinct; native endpoint-cubic acceptance
-does not certify a whole alignment. Preserve hard constraints without new exact gates,
-planner, dependency or model loop.
+Worker source fix uses documented entityExists before old-edge/selected-signal
+component absence reads. Lua fixture now throws on deleted IDs and covers recycled
+IDs and unavailable observations. Fixture remains unexecuted (no Lua runtime); reuse
+599 passing unchanged Python checks rather than rerunning them. Diff check passes.
 
-Offline renderer/procedure checkpoint61720c3 complete. Narrow signal-removal source
-and renderer decluttering complete:599 affected quiet Python tests passed,
-AST/diff checks pass. Local checkpoint authorised. Native design repair remains with
-coordinator; exact-chain removal/replacement currently rejects signals on affected
-ramps, requiring exact signal removal before mutation. The approved one-track/1..16-signal
-helper and prepared Lua proposal/readback are implemented for coordinator activation
-and native qualification; the worker does not stage or invoke them. Ownership and
-entity-removal shapes are confirmed from current installed declarations. Lua fixture
-is prepared but unexecuted; native removal awaits coordinator staging/reload/test.
-No push,
-native calls, live state edits, new batch or unrelated cleanup.
+Read-only reconciliation must establish the exact current replacement and all required
+removal/retention/geometry/structure/ownership facts before clearing either guard.
+Old callback discarded its native receipt and consumed prepared state on failure;
+coordinator/source architect is resolving the first-case proof contract. No fabricated
+receipt, proximity mapping, blanket exception swallowing or unproved journal clearing.
+Worker does not stage, reload, invoke native operations, redesign or push.

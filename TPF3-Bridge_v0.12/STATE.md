@@ -186,8 +186,17 @@ test_signal_batch.py, test_live_client.py, test_approach_render.py, test_approac
 test_operator.py and test_corridor_operator.py with the same quiet discovery command.
 AST/diff checks pass. Renderer now uses numbered controls, a bounded off-track legend
 and cropped canvases without changing scale. Optional tests/native/test_signal_remove.lua
-is prepared, unexecuted: no installed Lua runtime/checker. Native signal removal is
-not demonstrated; coordinator owns staging/reload/qualification and actual repair.
+is prepared, unexecuted: no installed Lua runtime/checker. Current native attempt in
+session pif_1791870329_5284063 executed first removal but reported mutation_unverified:
+getComponent on deleted edge60645 raised Invalid entity. No replay; second removal
+unattempted. The source fix uses entityExists (installed engine.d.tl1723); getComponent
+requires a live entity (1686-1690). Fake Lua reads now throw for deleted IDs, cover
+recycled IDs and retain observation errors. Python code unchanged:599-test evidence
+reused; current diff check passes, no Lua execution claim.
+Original callback lost its raw native receipt and consumed preparation before failure.
+Exact read-only current-state reconciliation contract is pending coordinator/source
+architect evidence; preserve both guards and original records until required facts pass.
+Worker performs no native observations, staging/reload, live state edits or push.
 Worker renderer/procedure scope is offline; native snapshot/design/review/build belong
 to the coordinator. No flyover repair or new-session native qualification is claimed here.
 
