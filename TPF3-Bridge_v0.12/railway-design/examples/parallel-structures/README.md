@@ -21,6 +21,11 @@ separately `forward:false`. Reference guides have explicit zero boundary grades;
 the selected maximum railway grade is 0.04. These are task-selected dimensions,
 not a universal UK-to-game scale conversion.
 
+The bridge fixtures deliberately use simple guided `native_parts` approaches for
+technical qualification, not as a recommended visual approach template. Existing
+Python/Lua tooling supports cubic curved inclined approaches and normal offsets;
+it does not mandate long straight ramps. Choose the approach shape for the brief.
+
 The tunnel2 brief retains the actual qualified variant: endpoints at heights
 27 and 33, guides [-2280,-3276,33] and [-1900,-3245,33], with direction
 [0.9966889551003809,0.08130883581082055]. Native-parts fitting supplies the cubic
@@ -49,6 +54,13 @@ such batch; do not infer seed correspondence by proximity. Preserve already-buil
 up signals and uncertain/failed operation records; never replay the original
 failed completion. No 300-spacing or capacity qualification is claimed for this
 exception, and it is not an automatic fallback recipe.
+
+The user also observed the manual signal tool rejecting placements on these same
+tunnel2 tracks, while a separate tunnel with identical track type did not reproduce
+the rejection. This suggests a localised game/native collision bug; its cause is
+unproven. It is not established normal tunnel signalling behaviour or a general
+bridge restriction. The approximately780-unit spacing remains a fixture-specific
+workaround. No further investigation or track repair is requested.
 
 The four native fixtures collectively qualified 24 signals and 24 forward/reverse
 route checks. Three original parent completions finished; tunnel2 qualified through
