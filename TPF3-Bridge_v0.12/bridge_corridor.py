@@ -9,14 +9,19 @@ import bridge_live as live
 
 
 def compile_corridor(brief):
-    from bridge_operator import validate_plan, vector, unit, in_region
+    from bridge_operator import validate_plan, validate_structures, validate_group_offsets, validate_seed_track, vector, unit, in_region
     required={'version','revision','session','track','max_grade','stub_length','waypoints','sections'}
-    if not required<=brief.keys() or brief.keys()-required-{'bindings','roads'}:raise ValueError('explicit corridor brief fields required')
+    if not required<=brief.keys() or brief.keys()-required-{'bindings','roads','track_by_road'}:raise ValueError('explicit corridor brief fields required')
     if brief['version']!=1 or not isinstance(brief['revision'],str) or not brief['revision'] or not isinstance(brief['session'],str) or not brief['session']:raise ValueError('corridor version1, revision and surveyed session required')
     length=brief['stub_length']
     if type(length) not in (int,float) or not math.isfinite(length) or not 5<=length<=60:raise ValueError('corridor stub_length must be5..60')
     waypoints=brief['waypoints'];sections=brief['sections'];bindings=copy.deepcopy(brief.get('bindings',{}))
     if not isinstance(waypoints,dict) or not 2<=len(waypoints)<=129 or not isinstance(sections,list) or not 1<=len(sections)<=128:raise ValueError('bounded corridor requires2..129 waypoints and1..128 sections')
+    known_roads={road for roads in waypoints.values() for road in roads}
+    overrides=brief.get('track_by_road',{})
+    if not isinstance(overrides,dict) or set(overrides)-known_roads:raise ValueError('track_by_road requires known authored road names')
+    for value in overrides.values():validate_seed_track(value)
+    selected_tracks={road:overrides.get(road,brief['track']) for road in known_roads}
     def simple(name):
         if not isinstance(name,str) or not re.fullmatch(r'[A-Za-z0-9_-]+',name):raise ValueError('simple corridor names required')
     for name,roads in waypoints.items():
@@ -24,9 +29,13 @@ def compile_corridor(brief):
         if not isinstance(roads,dict) or not 1<=len(roads)<=4:raise ValueError('waypoint requires1..4 authored track profiles')
         for road,profile in roads.items():
             simple(road)
-            if set(profile)=={'position','direction','grade'}:
+            if {'position','direction','grade'}<=profile.keys() and not profile.keys()-{'position','direction','grade','seed_structure'}:
                 vector(profile['position'],3);unit(profile['direction'])
                 if type(profile['grade']) not in (int,float) or not math.isfinite(profile['grade']) or abs(profile['grade'])>min(brief['max_grade'],.04):raise ValueError('waypoint stub grade exceeds existing native/selected bound')
+                if 'seed_structure' in profile:
+                    seed=profile['seed_structure']
+                    if not isinstance(seed,dict) or set(seed)!={'classification','resource_name'} or seed['classification']!='TUNNEL' or not isinstance(seed['resource_name'],str) or not seed['resource_name']:
+                        raise ValueError('waypoint seed_structure requires explicit TUNNEL resource')
             elif not set(profile)<= {'back','front'} or not profile:raise ValueError('waypoint needs an authored profile or exact back/front endpoints')
     for name in bindings:
         simple(name)
@@ -43,6 +52,23 @@ def compile_corridor(brief):
         if not isinstance(members,list) or len(members) not in (2,4):raise ValueError('corridor section requires2 or4 track members')
         roads=[member['track'] for member in members]
         if len(set(roads))!=len(roads):raise ValueError('distinct authored tracks required per section')
+        validate_group_offsets(members)
+        for member in members:
+            if 'normal_offset_from' in member:
+                reference=members[member['normal_offset_from']['group_index']-1]['track']
+                if selected_tracks[member['track']]!=selected_tracks[reference]:raise ValueError('derived family requires matching selected track resources')
+        boundaries=[]
+        for member in members:
+            if 'normal_offset_from' in member:
+                selector=member['normal_offset_from'];ends=boundaries[selector['group_index']-1]
+                boundaries.append(tuple(reversed(ends)) if selector['reverse'] else ends)
+            else:
+                validate_structures(member)
+                spans=member.get('structures',[{'classification':'NORMAL'}]*(len(member.get('guides',[]))+1))
+                first=spans[0].get('spans',[spans[0]])[0]
+                last=spans[-1].get('spans',[spans[-1]])[-1]
+                boundaries.append(tuple({k:v[k] for k in ('classification','resource_name') if k in v} for v in (first,last)))
+        boundary_by_road=dict(zip(roads,boundaries))
         p={'version':2,'revision':f"{brief['revision']}_{section['name']}",'origin':[0,0,0],
            'region':copy.deepcopy(section['region']),'ports':{},'track':copy.deepcopy(brief['track']),
            'max_grade':brief['max_grade'],'max_route_length':8000,'steps':[],'routes':[],'curves':{},'port_refs':{}}
@@ -51,6 +77,9 @@ def compile_corridor(brief):
             if road not in waypoints[waypoint]:raise ValueError('section track missing from waypoint')
             profile=waypoints[waypoint][road];port=f'{side}_{len(p["port_refs"])}'
             if 'position' in profile:
+                seed_structure=profile.get('seed_structure')
+                if seed_structure is not None and boundary_by_road[road][0 if waypoint==source else 1]!=seed_structure:
+                    raise ValueError('waypoint TUNNEL seed must match every adjoining section boundary structure/resource')
                 key=(waypoint,road);binding=f'corr_seed_{list(waypoints).index(waypoint)}_{road}'
                 direction=unit(profile['direction']);grade=profile['grade'];half=length/2
                 back=[profile['position'][i]-half*(direction[i] if i<2 else grade) for i in range(3)]
@@ -58,7 +87,12 @@ def compile_corridor(brief):
                 if not all(in_region(pos,p['region']) for pos in (back,front)):raise ValueError('entire waypoint stub must lie inside section region')
                 if key not in seeded:
                     seed_port=f'seed_origin_{len(created)}';p['ports'][seed_port]={'position':back,'direction':[-x for x in direction],'grade':-grade}
-                    p['steps'].append({'name':binding,'kind':'stub','port':seed_port,'direction':direction,'grade':grade,'length':length})
+                    if seed_structure is None:
+                        p['steps'].append({'name':binding,'kind':'stub','port':seed_port,'direction':direction,'grade':grade,'length':length})
+                    else:
+                        end_port=f'seed_end_{len(created)}';p['ports'][end_port]={'position':front,'direction':direction,'grade':grade}
+                        p['steps'].append({'name':binding,'kind':'structure_seed','source':seed_port,'target':end_port,'structure':copy.deepcopy(seed_structure)})
+                    if selected_tracks[road]!=brief['track']:p['steps'][-1]['track']=copy.deepcopy(selected_tracks[road])
                     seeded.add(key);created.append(binding)
                 elif binding not in created:needed.add(binding)
                 sign=1 if side=='front' else -1
@@ -70,6 +104,8 @@ def compile_corridor(brief):
                 if ref['chain'] not in bindings:raise ValueError('existing waypoint binding unavailable')
                 rows=[e for e in bindings[ref['chain']]['edges'] if e['id']==ref['edge_id']]
                 if len(rows)!=1 or ref['node_id'] not in (rows[0]['node0'],rows[0]['node1']):raise ValueError('existing waypoint endpoint identity unavailable')
+                if any(rows[0].get(k)!=selected_tracks[road].get(k) for k in ('template','style')):
+                    raise ValueError('imported waypoint track resources differ from selected road resources')
                 e=rows[0];at_end=ref['node_id']==e['node1'];tangent=e['t1' if at_end else 't0'];sign=1 if at_end else -1
                 horizontal=math.hypot(*tangent[:2])
                 if not horizontal:raise ValueError('existing endpoint tangent unavailable')

@@ -390,14 +390,19 @@ def exported_binding(operator,child,state,name):
     Reacquire them only when the parent approach actually exports their proof.
     """
     from bridge_operator import digest
+    allow_steps=True
     for _ in range(16):
         if name in state.get('invalidated_bindings',[]):raise ValueError('family export was removed/invalidated')
-        value=state.get('steps',{}).get(name) or state.get('bindings',{}).get(name)
+        value=(state.get('steps',{}).get(name) if allow_steps else None) or state.get('bindings',{}).get(name)
         if value:return value
         p=load(operator.path(child)/'plan.json');continuation=p.get('continuation')
-        if not continuation or name not in continuation['skipped_steps']:return None
+        if not continuation:return None
+        # Input bindings omitted from a remaining-only child are not skipped
+        # execution steps. Follow their immutable proof without inventing steps.
+        allow_steps=allow_steps and name in continuation['skipped_steps']
         child=continuation['run'];state=load(operator.path(child)/'state.json')
         if digest(state)!=continuation['state_hash']:raise ValueError('completed export parent changed')
+        if continuation.get('session') is not None and state.get('session')!=continuation['session']:raise ValueError('completed export parent session changed')
     raise ValueError('bounded continuation receipt depth exceeded')
 
 
@@ -448,14 +453,45 @@ def station_leads(operator,selector,*,outward_direction,ordered_roles,lead_lengt
         'exports':{name+'_lead':name+'_lead' for name in ordered_roles},'session':operator.client().session,'game_constructed':False}
 
 
-def build(operator,run,*,continuing=False,family_run=None):
+def corrected_contract(original,revised):
+    """Only explicit free-to-interior branch contract correction; geometry fixed."""
+    expected=copy.deepcopy(original);changed=False
+    if not isinstance(revised,dict) or not isinstance(revised.get('steps'),list) or len(revised['steps'])!=len(expected['steps']):
+        raise ValueError('remaining family requires the same explicit payload/steps')
+    for old,new in zip(expected['steps'],revised['steps']):
+        if new!=old:
+            if old.get('kind')!='branch' or not isinstance(old.get('source'),str) or not isinstance(old.get('target'),dict) or 'curve' not in old['target']:
+                raise ValueError('remaining family supports only explicit free-to-interior contract correction')
+            old.update(kind='connect',target_interior=True);changed=True
+    if not changed or expected!=revised:raise ValueError('remaining family correction must preserve geometry, fields and limits')
+    return copy.deepcopy(revised)
+
+
+def revise_remaining(b,s,revisions):
+    from bridge_operator import digest
+    if not isinstance(revisions,dict) or not 1<=len(revisions)<=8:raise ValueError('bounded explicit remaining family corrections required')
+    by_name={f['name']:(i,f) for i,f in enumerate(b['families'])};updates={}
+    for name,payload in revisions.items():
+        if name not in by_name:raise ValueError('unknown remaining family')
+        index,f=by_name[name];entry=s['families'].get(name,{})
+        if index<s['family_index'] or entry.get('run') or entry.get('status','pending')!='pending' or f['kind']!='operator':
+            raise ValueError('only unstarted operator families may receive contract corrections')
+        value=corrected_contract(f['payload'],payload)
+        updates[name]={'source_hash':digest(f['payload']),'payload_hash':digest(value),'payload':value}
+    s.setdefault('remaining_family_contracts',{}).update(updates)
+
+
+def build(operator,run,*,continuing=False,family_run=None,remaining_families=None):
     from bridge_operator import fresh_binding
     from bridge_corridor import recover_road
     folder,b,s=record(operator,run);guard(operator,s)
     if s['status']!='planned' and not(continuing and s['status'] in ('running','needs_attention')):raise ValueError('approach already attempted; explicit continuation required')
     if family_run and not continuing:raise ValueError('replacement child requires explicit continuation')
+    if remaining_families is not None and not continuing:raise ValueError('remaining family correction requires explicit continuation')
     def persist():live.atomic_json(folder/'state.json',s)
     with locked(folder):
+        if remaining_families is not None:
+            revise_remaining(b,s,remaining_families);persist()
         try:
             s.update(status='running');s.pop('error',None);persist()
             while s['family_index']<len(b['families']):
@@ -472,7 +508,13 @@ def build(operator,run,*,continuing=False,family_run=None):
                     if not contained(p['region'],f['envelopes']):raise ValueError('continued child exceeds authored family envelope')
                     entry['run']=child=family_run;family_run=None;persist()
                 if child is None:
-                    p=copy.deepcopy(f['payload']);p.setdefault('bindings',{})
+                    p=copy.deepcopy(f['payload'])
+                    correction=s.get('remaining_family_contracts',{}).get(name)
+                    if correction:
+                        from bridge_operator import digest
+                        if correction['source_hash']!=digest(p) or correction['payload_hash']!=digest(correction['payload']):raise ValueError('remaining family correction changed')
+                        p=corrected_contract(p,correction['payload'])
+                    p.setdefault('bindings',{})
                     # Refresh current dependencies once at phase entry. Child still
                     # performs its own mutation-time freshness checks.
                     cache={}

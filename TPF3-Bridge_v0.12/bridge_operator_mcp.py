@@ -35,9 +35,9 @@ async def survey_site(region: dict, terrain_points: list[list[float]] | None = N
     return await invoke(op.survey,region,terrain_points)
 
 @server.tool(annotations=read)
-async def track_catalogue(max_examined_edges: int = 65536,max_tracks: int = 512,summary_limit: int = 32) -> dict:
+async def track_catalogue(max_examined_edges: int = 65536,max_tracks: int = 512,summary_limit: int = 32,region: dict | None = None) -> dict:
     """Bounded disconnected external-track catalogue; compact components, full current geometry local."""
-    return await invoke(op.track_catalogue,max_examined_edges,max_tracks,summary_limit)
+    return await invoke(op.track_catalogue,max_examined_edges,max_tracks,summary_limit,region=region)
 
 @server.tool(annotations=read)
 async def survey_station(brief: dict) -> dict:

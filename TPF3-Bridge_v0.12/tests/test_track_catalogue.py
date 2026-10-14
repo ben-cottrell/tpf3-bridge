@@ -91,6 +91,32 @@ class CatalogueTests(unittest.TestCase):
             result=o.track_catalogue()
             self.assertEqual(result['components'],[]);self.assertTrue(result['complete'])
 
+    def test_optional_region_forwarding_wide_bounds_and_subset_incidence(self):
+        with tempfile.TemporaryDirectory() as td:
+            rows=[self.fixture()[2]]
+            region={'min':[-10000,-20,0],'max':[10000,20,5]}
+            value=self.native_result(rows)|{'region':region,'region_match_count':1,
+                'region_predicate':'inclusive_Hermite_Bezier_control_AABB_overlap',
+                'region_false_positives_possible':True,'region_clearance_proof':False}
+            c=self.client(td,value);o=Operator(runs=td,client=c);r=o.track_catalogue(region=region)
+            self.assertEqual(c.calls[0][1]['region'],region);self.assertIsNot(c.calls[0][1]['region'],region)
+            self.assertEqual(r['region_match_count'],1);self.assertEqual(r['component_count'],1)
+            self.assertEqual(r['components'][0]['free_endpoint_count'],1)
+            self.assertFalse(r['region_clearance_proof']);self.assertTrue(r['region_false_positives_possible'])
+
+    def test_invalid_region_rejected_before_client_discovery(self):
+        with tempfile.TemporaryDirectory() as td:
+            o=Operator(runs=td)
+            bad=[{},[],{'min':[0,0],'max':[1,1,1]},
+                 {'min':[0,0,0],'max':[1,1,0]},
+                 {'min':[0,0,0],'max':[float('inf'),1,1]},
+                 {'min':[False,0,0],'max':[1,1,1]},
+                 {'min':[0,0,0],'max':[1,1,1],'extra':True}]
+            with patch.object(o,'client') as discover:
+                for region in bad:
+                    with self.subTest(region=region),self.assertRaises(ValueError):o.track_catalogue(region=region)
+                discover.assert_not_called()
+
     def test_native_failure_and_returned_bound_mismatch_do_not_write_snapshot(self):
         with tempfile.TemporaryDirectory() as td:
             c=self.client(td,self.native_result(self.fixture()));o=Operator(runs=td,client=c)

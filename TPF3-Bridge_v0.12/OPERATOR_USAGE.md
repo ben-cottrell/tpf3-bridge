@@ -61,6 +61,27 @@ geometry/resources/objects and component details overwrite the local
 `operator_track_catalogue.json` working snapshot, identified by `evidence`.
 No historical catalogue is retained; identities are current-session observations.
 
+Optional `region:{"min":[x,y,z],"max":[x,y,z]}` on the same catalogue operation
+filters external tracks before the512-track output budget and detail/name/object/
+incidence enrichment. Bounds must be finite ordered XYZ; no400-unit site-size gate.
+The inclusive conservative predicate uses the Hermite Bezier control AABB:
+`p0,p0+t0/3,p1-t1/3,p1`. It can return false positives and is not clearance proof.
+The response echoes the region/predicate and `region_match_count`; output truncation
+counts matching tracks, while global examined/excluded/external and scan/metadata
+completeness retain their meanings. Missing/nonfinite geometry fails the read.
+Full native endpoint incidence remains authoritative: a region boundary is not a free
+attachment. Components describe only the returned subset. Default global behaviour
+and caps are unchanged;65536 limits examined components, not the native whole-map
+adjacency retrieval. Native regional qualification passed after normal reload of
+Giganto1 Continued in session pif_1792004660_4401693: the large NW box
+[-9000,10000,-100]..[2000,25000,500] returned113 matching external tracks in9
+components, complete, including known guides239064/237452. One catalogue request
+took0.343s active wall for the full Operator call. A tight NWR1 box
+[-3500,21100,-20]..[-2600,22100,100] returned its2 known leads, complete.
+Earlier adaptive discovery of that tight box exhausted64 queries without complete
+coverage. These are not identical-output benchmarks; no speedup factor is claimed.
+Optional standalone Lua fixtures remain unexecuted, distinct from this native read.
+
 For long disposable corridor rehearsals, `corridor-plan --input brief.json` / MCP
 `plan_corridor(brief)` compiles one authored data file into bounded local plans.
 `corridor-build --run <run>` / `build_corridor(run)` executes them sequentially;
@@ -1209,3 +1230,82 @@ remaining-only qualification is separate. Final save Bridge Efficiency Structure
 Ready.sav reload matched156 external tracks/41 signals and24 route/direction checks.
 Final individual/batch rejected previews exposed exact native Collision IDs/counts
 without submission. No train traversal or arbitrary-site success follows.
+
+### Current phase measurements
+
+Existing public approach build/continue/review and corridor build/complete/continue
+calls record `phase_metrics` in their existing job state and return one compact
+`measurement`. Only the outermost call measures nested children. A shared collector
+reuses Counted; each Operator.client call still discovers a current client/session.
+Request arguments, journal/evidence and exceptions retain their existing contracts.
+
+Per-phase aggregate and latest invocation report request attempts, mutation request
+attempts, blocking request wait seconds and monotonic active wall seconds. Invocation
+and explicit continuation counts are separate from attachment trials. Failed requests
+are counted; a completed measurement may have a failed job outcome. State merges reload
+the latest records, preserving pending effects and child/continuation ownership.
+An active record left by interruption remains incomplete; later explicit continuation
+does not invent missing timing or repair/resume a job. Aggregates retain that uncertainty.
+
+Fit summaries are recomputed from distinct full current child records and their existing
+exact continuation-parent plan links (bounded2048), not truncated UI summaries. They
+retain adopted children's prior attachment trials, additional attachment trials and
+declared fit-search requests without double counting. Missing lineage coverage is
+explicitly incomplete; parent proofs are not modified. This is not a new retry ledger.
+Measurements do not alter fitting budgets, affected-only acceptance, native guards or
+continuation policy. No atomic snapshot, global transaction or recovery layer is added.
+
+Branch/crossover geometry preflight checks each effective step `max_route_length`
+(step override, otherwise plan default) against its existing800 native-unit limit.
+Version2 route reviews may still use up to8000; an explicit local800 override keeps
+that wider review scope. Plain connections retain their existing contract; structured
+interior/replacement connections use a distinct native interface, not this800 gate.
+Branch preparation requires an interior source and free target. An exact endpoint
+port_ref cannot be resolved as an interior attachment; a free source to an interior
+target uses the existing structured connect contract with `target_interior:true`.
+
+Explicit `continue_approach(..., remaining_families={NAME:PAYLOAD})` may correct only
+unstarted operator families. It accepts solely existing free-source/interior-target
+branch steps changed to connect plus `target_interior:true`; every other payload field,
+geometry, source/target, limit and parent check remains identical. Started/completed
+families are rejected. The immutable original brief is retained; bounded source/payload
+hashes and corrections live in existing current state and are checked before child
+creation. Current reconciled-child adoption remains separate through `family_run`.
+There is no automatic reinterpretation, parent replay or general plan-editing facility.
+When exporting unused continuation input bindings, the resolver follows existing bounded
+parent links with immutable state-hash/session checks and then reacquires native identity.
+Only explicitly skipped execution steps may export ancestor step receipts; input bindings
+remain bindings. Removed/invalidated or changed parent proofs still reject.
+
+### Explicit tunnel waypoint seeds
+
+An authored corridor waypoint profile may add
+`seed_structure:{"classification":"TUNNEL","resource_name":"OBSERVED_RESOURCE"}`.
+This uses the existing one-span standalone structure_seed primitive at the same centred
+back/front positions, outward grades and named receipt. Each adjoining section's terminal
+span must match that classification/resource; offset inheritance and reverse boundary
+order are resolved before validation. Other spans may differ. Omission still creates the
+ordinary NORMAL stub. No structure is inferred or substituted after a rejected seed.
+
+Standalone seeds accept explicit BRIDGE/TUNNEL resources only. Committed readback compares
+both classification and resource with the immutable prepared segment and preserves all
+one-span controls/node/free-endpoint/geometry checks. Native tunnel qualification requires
+the seed plus both adjoining tunnel connections, a second parallel road, exact continuous
+topology/resource readback, directed paths and a visual portal/shaft check. This passed
+on the qualified UF/DF w2 fixture: two five-edge tunnel_b chains, exact adjoining nodes,
+two directed routes and no internal portals/shafts in the surface view. It is not an
+arbitrary-site guarantee. The actual-source standalone Lua fixture remains unexecuted,
+distinct from the deployed native operation qualification.
+
+Optional corridor `track_by_road` maps known authored road names to explicit
+`{"template":"OBSERVED_TEMPLATE","style":"OBSERVED_STYLE"}` resources; other roads
+inherit the existing global track. Only stub/structure_seed steps receive resource
+overrides, through their existing native paths. All selected imported endpoint
+template/style pairs and normal-offset reference compatibility validate before the
+corridor is published. Independent four-road groups may use mixed resources; derived
+offset families must use matching resources. Geometry/identities and native attachment
+guards are unchanged. Mixed-section native qualification remains coordinator-owned.
+The reviewed per-road main-corridor job built16 sections; exact mixed-resource readback
+and wider network acceptance are still pending. This is construction evidence, not
+full district qualification. Imported resources are compared directly on selected
+exact endpoint snapshots, never inferred from position or another road.

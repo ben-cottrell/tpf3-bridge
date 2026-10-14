@@ -11,9 +11,10 @@ function M.run(source)
  end
  local bases={[1]=base(10,11,0,10,2),[2]=base(20,21,0,100,1),[3]=base(30,31,1000,1100,1),[4]=base(21,40,100,200,1)}
  local node_edges={[20]={2},[21]={2,4},[40]={4}}
- local names={[2]='Guide west',[800]='Scaffold named signal'};local enumerations=0
+ local names={[2]='Guide west',[800]='Scaffold named signal'};local enumerations=0;local enriched={}
  local operating={inspect=function(p)
   assert(#p.track_ids==1 and p.limit==1)
+  enriched[#enriched+1]=p.track_ids[1]
   local objects={}
   if p.track_ids[1]==2 then objects={{id=800,parameter=.5,position={50,0,2},resource='signal',signal={lanes={}}}} end
   return {tracks={records={{objects=objects}}}}
@@ -43,8 +44,31 @@ function M.run(source)
  bases[4].objects={};for i=1,17 do bases[4].objects[i]={i,0} end
  result=native.track_catalogue({})
  assert(result.metadata_truncated and not result.complete and result.edges[2].objects_truncated)
+ bases[4].objects={}
+ local region={min={150,-1,1},max={160,1,3}}
+ enriched={};result=native.track_catalogue({region=region,max_tracks=1})
+ assert(result.region_match_count==1 and result.external_tracks_observed==2 and not result.tracks_truncated)
+ assert(#enriched==1 and enriched[1]==4 and result.edges[1].id==4,'outside edge consumed detail/output budget')
+ assert(not result.edges[1].endpoint_incidence[1].free,'region boundary fabricated free attachment')
+ -- Both endpoints lie outside Y, but Bezier controls bow through the box.
+ bases[2].tangent0.y=300;bases[2].tangent1.y=-300
+ result=native.track_catalogue({region={min={40,50,1},max={60,80,3}}})
+ assert(result.region_match_count==1 and result.edges[1].id==2)
+ assert(result.region_false_positives_possible and not result.region_clearance_proof)
+ bases[2].tangent0.y=0;bases[2].tangent1.y=0
+ result=native.track_catalogue({region={min={200,-1,1},max={201,1,3}}})
+ assert(result.region_match_count==1 and result.edges[1].id==4,'inclusive boundary touch omitted')
+ result=native.track_catalogue({region={min={-10,-1,1},max={2000,1,3}},max_tracks=1})
+ assert(result.region_match_count==2 and result.excluded_construction_tracks==1 and result.tracks_truncated)
+ result=native.track_catalogue({region=region,max_examined_edges=1})
+ assert(result.region_match_count==0 and result.scan_truncated and not result.complete)
+ local tangent=bases[2].tangent0;bases[2].tangent0=nil
+ assert(not pcall(native.track_catalogue,{region=region}),'missing geometry silently excluded')
+ bases[2].tangent0=tangent
  local before=enumerations
- for _,p in ipairs({{max_tracks=513},{max_examined_edges=0},{execute=true}}) do assert(not pcall(native.track_catalogue,p)) end
+ for _,p in ipairs({{max_tracks=513},{max_examined_edges=0},{execute=true},
+  {region={min={0,0,0},max={1,1,0}}},{region={min={0,0},max={1,1,1}}},
+  {region={min={0,0,0},max={math.huge,1,1}}}}) do assert(not pcall(native.track_catalogue,p)) end
  assert(enumerations==before,'invalid bounds reached engine enumeration')
  return {passed=true,external_only=true,bounds_checked=true,native_mutation=false,native_enumeration_qualified=false}
 end

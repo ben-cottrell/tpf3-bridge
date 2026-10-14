@@ -31,6 +31,38 @@ class FakeClient:
 
 
 class OperatorTest(unittest.TestCase):
+    def test_branch_exact_endpoint_source_rejected_before_prefix_execution(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=fixture();p['version']=2
+            p['ports']['lead_out']={'position':[20,0,0],'direction':[1,0],'grade':0}
+            p['port_refs']={'lead_out':{'chain':p['steps'][0]['name'],'end':'node1'}}
+            p['steps'].append({'name':'merge','kind':'branch','source':'lead_out','target':{'curve':p['steps'][0]['name'],'u':.68}})
+            with self.assertRaisesRegex(ValueError,'interior source, not an exact endpoint'):o.plan(p)
+            self.assertEqual(c.calls,[])
+            # Existing free-to-interior structured contract preserves authored
+            # endpoint identity/direction without inventing an interior node ID.
+            p['steps'][-1].update(kind='connect',target_interior=True)
+            self.assertEqual(validate_plan(p)['steps'][-1]['target_interior'],True)
+
+    def test_local_geometry_route_limit_preflight_preserves_wide_route_reviews(self):
+        for kind in ('branch','crossover'):
+            with self.subTest(kind=kind),tempfile.TemporaryDirectory() as td:
+                c=FakeClient();o=Operator(runs=td,client=c);p=fixture();p['version']=2;p['max_route_length']=1000
+                p['ports']['b']={'position':[50,0,0],'direction':[-1,0],'grade':0}
+                p['steps'].append({'name':'local','kind':kind,'source':'a','target':'b'})
+                with self.assertRaisesRegex(ValueError,'effective local route limit'):o.plan(p)
+                self.assertEqual(c.calls,[])
+                p['steps'][-1]['max_route_length']=800
+                self.assertEqual(validate_plan(p)['max_route_length'],1000)
+                for invalid in (True,0,801,float('inf')):
+                    p['steps'][-1]['max_route_length']=invalid
+                    with self.assertRaisesRegex(ValueError,'effective local route limit'):validate_plan(p)
+        p=fixture();p['version']=2;p['max_route_length']=8000
+        p['ports']['b']={'position':[50,0,0],'direction':[-1,0],'grade':0}
+        self.assertEqual(validate_plan(p)['max_route_length'],8000)
+        p['steps'].append({'name':'plain','kind':'connect','source':'a','target':'b'})
+        self.assertEqual(validate_plan(p)['steps'][-1]['kind'],'connect')
+
     def test_local_guide_limit_rejected_before_native_discovery(self):
         for kind in ('branch','crossover'):
             with self.subTest(kind=kind),tempfile.TemporaryDirectory() as td:
@@ -566,6 +598,32 @@ class OperatorTest(unittest.TestCase):
             self.assertEqual(q['structures'],[p['steps'][0]['structure']]);self.assertEqual(q['track'],p['track'])
             self.assertEqual(calls[1].args[1],{'execute':True,'prepared_request':'prepared'})
             self.assertEqual(json.loads((o.path(run)/'state.json').read_text())['steps']['deck']['edges'],[edge])
+
+    def test_standalone_tunnel_reuses_exact_single_span_prepare_execute_readback(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=self.seed_plan()
+            p['steps'][0]['structure']={'classification':'TUNNEL','resource_name':'observed.tunnel'}
+            p['steps'][0]['track']={'template':'slow.track','style':'slow.style'}
+            edge=self.native_edge();edge['structure']=copy.deepcopy(p['steps'][0]['structure'])
+            responses=[{'status':'ok','request_id':'prepared','result':{'game_constructed':False}},
+                       {'status':'ok','request_id':'built','result':{'game_constructed':True,'ordered_edges':[1]}},
+                       {'status':'ok','request_id':'read','result':{'edges':[edge]}}]
+            with patch.object(c,'request',side_effect=responses) as request,patch('bridge_operator.live._select_throat_port') as select:
+                run=o.plan(p)['run'];r=o.execute(run)
+            self.assertEqual(r['status'],'built');select.assert_not_called()
+            self.assertEqual([v.args[0] for v in request.call_args_list],['structured_chain','structured_chain','inspect'])
+            self.assertEqual(request.call_args_list[0].args[1]['structures'],[p['steps'][0]['structure']])
+            self.assertTrue(request.call_args_list[0].args[1]['freestanding'])
+            self.assertEqual(request.call_args_list[0].args[1]['track'],p['steps'][0]['track'])
+
+    def test_stub_track_override_uses_requested_native_resources(self):
+        with tempfile.TemporaryDirectory() as td:
+            c=FakeClient();o=Operator(runs=td,client=c);p=fixture()
+            p['steps'][0]['track']={'template':'slow.track','style':'slow.style'}
+            run=o.plan(p)['run'];r=o.execute(run)
+            self.assertEqual(r['status'],'built')
+            q=next(q for operation,q in c.calls if operation=='test_approach')['fixture']
+            self.assertEqual(q['template'],'slow.track');self.assertEqual(q['style'],'slow.style')
 
     def test_standalone_rejection_never_executes_or_hides_uncertain_readback(self):
         for failure in ['prepare','readback']:

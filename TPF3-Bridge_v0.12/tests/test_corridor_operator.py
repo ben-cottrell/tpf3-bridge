@@ -81,7 +81,8 @@ class CorridorTests(unittest.TestCase):
         b=brief();b['bindings']={}
         for index,road in enumerate(('up','down')):
             ident=index+1;edge={'id':ident,'node0':ident*2,'node1':ident*2+1,'p0':[-10,index*5,9.9],
-                'p1':[0,index*5,10],'t0':[10,0,.1],'t1':[10,0,.1]}
+                'p1':[0,index*5,10],'t0':[10,0,.1],'t1':[10,0,.1],
+                'template':'track','style':'style'}
             name=f'outer_{road}';b['bindings'][name]={'edges':[edge]}
             b['waypoints']['w0'][road]={'front':{'chain':name,'edge_id':ident,'node_id':ident*2+1}}
         first=compile_corridor(b)['sections'][0]
@@ -93,7 +94,8 @@ class CorridorTests(unittest.TestCase):
         b=brief();b['bindings']={}
         for i,road in enumerate(('up','down')):
             edge={'id':i+1,'node0':i*2+2,'node1':i*2+3,'p0':[0,i*5,10],
-                  'p1':[-10,i*5,9.9],'t0':[-10,0,-.1],'t1':[-10,0,-.1]}
+                  'p1':[-10,i*5,9.9],'t0':[-10,0,-.1],'t1':[-10,0,-.1],
+                  'template':'track','style':'style'}
             b['bindings'][road]={'edges':[edge]}
             b['waypoints']['w0'][road]={'front':{'chain':road,'edge_id':edge['id'],'node_id':edge['node0']}}
         port=compile_corridor(b)['sections'][0]['plan']['ports']['front_0']

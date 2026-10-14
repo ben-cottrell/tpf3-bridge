@@ -495,6 +495,12 @@ def validate_structures(step):
         if 'spans' in item and previous!=1:raise ValueError('structure spans must cover the leg')
 
 
+def validate_seed_track(value):
+    if not isinstance(value,dict) or set(value)!={'template','style'} or any(not isinstance(value[k],str) or not value[k] for k in ('template','style')):
+        raise ValueError('seed track requires explicit template/style resources')
+    return value
+
+
 def validate_plan(p):
     if p.get('version') not in (1,2) or not isinstance(p.get('revision'), str):
         raise ValueError('version1/2 and design revision required')
@@ -536,6 +542,9 @@ def validate_plan(p):
         if not re.fullmatch(r'[A-Za-z0-9_-]+',s['name']) or s['name'] in names:
             raise ValueError('unique simple step names required')
         kind=s['kind']
+        if 'track' in s:
+            if kind not in ('stub','structure_seed'):raise ValueError('track override supports seed steps only')
+            validate_seed_track(s['track'])
         if kind not in ('stub','extend','connect','branch','crossover','group','structure_seed','remove','terrain_check','signal_chain') and kind not in tasks.KINDS:raise ValueError('unsupported construction step')
         if p['version']==1 and kind in {'group','structure_seed','remove','terrain_check','signal_chain'}|tasks.KINDS:raise ValueError('new operation requires version2')
         if kind=='stub':
@@ -567,8 +576,8 @@ def validate_plan(p):
             for name in (s['source'],s['target']):
                 if 'grade' not in p['ports'][name]:raise ValueError('structure seed requires explicit outward endpoint grades')
             structure=s.get('structure',{})
-            if set(structure)!={'classification','resource_name'} or structure.get('classification')!='BRIDGE' or not isinstance(structure.get('resource_name'),str) or not structure['resource_name']:
-                raise ValueError('structure seed requires an explicit observed BRIDGE resource')
+            if set(structure)!={'classification','resource_name'} or structure.get('classification') not in ('BRIDGE','TUNNEL') or not isinstance(structure.get('resource_name'),str) or not structure['resource_name']:
+                raise ValueError('structure seed requires an explicit observed BRIDGE/TUNNEL resource')
             if any(k in s for k in ('guides','structures','source_interior','target_interior','replace_chain','attachments','candidates')):raise ValueError('standalone structure seed is one unconnected span')
             if not 0<math.dist(p['ports'][s['source']]['position'],p['ports'][s['target']]['position'])<=800:raise ValueError('structure seed length must be within800')
             for key,default,lower,upper in [('radius',0,0,800),('handle_scale',1,0,4)]:
@@ -613,6 +622,12 @@ def validate_plan(p):
                     if any(a>=b for a,b in zip(window['min'],window['max'])):raise ValueError('ordered attachment windows required')
                 for alternative in alternatives:ref(alternative['source']);ref(alternative['target'])
         names.add(s['name'])
+        if kind=='branch' and isinstance(s['source'],str) and s['source'] in port_refs:
+            raise ValueError('branch requires an interior source, not an exact endpoint port; use structured connect for a free source and interior target')
+        if kind in ('branch','crossover'):
+            local_limit=s.get('max_route_length',p.get('max_route_length',800))
+            if type(local_limit) not in (int,float) or not math.isfinite(local_limit) or not 0<local_limit<=800:
+                raise ValueError('branch/crossover effective local route limit must be within(0,800]')
         if 'fit_variation' in s:fit_variation_config(s)
         if kind in ('branch','crossover') and len(s.get('guides',[]))>2:
             raise ValueError('branch/crossover support at most two local shape guides')
@@ -653,7 +668,9 @@ class Operator:
 
     def client(self):
         # Re-discover session per public operation; never reuse aliases across loads.
-        return self._client or live.client_from_context(self.context,30)
+        client=self._client or live.client_from_context(self.context,30)
+        collector=getattr(self,'_phase_collector',None)
+        return collector.wrap(client) if collector is not None else client
 
     def path(self, run):
         if not re.fullmatch(r'[a-f0-9]{16}',run):raise ValueError('operator run id required')
@@ -675,10 +692,16 @@ class Operator:
         live.atomic_json(path,record)
         return out
 
-    def track_catalogue(self,max_examined_edges=65536,max_tracks=512,summary_limit=32):
+    def track_catalogue(self,max_examined_edges=65536,max_tracks=512,summary_limit=32,region=None):
         for key,value,upper in [('max_examined_edges',max_examined_edges,65536),('max_tracks',max_tracks,512),('summary_limit',summary_limit,128)]:
             if type(value) is not int or not 1<=value<=upper:raise ValueError(f'{key} requires an integer within1..{upper}')
-        c=self.client();response=c.request('track_catalogue',{'max_examined_edges':max_examined_edges,'max_tracks':max_tracks})
+        query={'max_examined_edges':max_examined_edges,'max_tracks':max_tracks}
+        if region is not None:
+            if not isinstance(region,dict) or set(region)!={'min','max'}:raise ValueError('catalogue region requires min/max XYZ')
+            vector(region['min'],3);vector(region['max'],3)
+            if any(a>=b for a,b in zip(region['min'],region['max'])):raise ValueError('catalogue region requires finite ordered XYZ bounds')
+            query['region']=copy.deepcopy(region)
+        c=self.client();response=c.request('track_catalogue',query)
         if response['status']!='ok':raise live.LiveError(response['status'],native_failure(response),response['request_id'])
         result=response['result'];edges=result['edges']
         if len(edges)>max_tracks or result['returned_tracks']!=len(edges):raise ValueError('catalogue returned-track bound/count mismatch')
@@ -754,7 +777,7 @@ class Operator:
 
     def build_corridor(self,run):
         from bridge_corridor import build_corridor
-        return build_corridor(self,run)
+        return self._measure_phase(run,'corridor_build',lambda:build_corridor(self,run))
 
     def corridor_status(self,run):
         from bridge_corridor import corridor_status
@@ -762,7 +785,7 @@ class Operator:
 
     def continue_corridor(self,run,section_run=None):
         from bridge_corridor import build_corridor
-        return build_corridor(self,run,continuing=True,section_run=section_run)
+        return self._measure_phase(run,'corridor_build',lambda:build_corridor(self,run,continuing=True,section_run=section_run),continuing=True)
 
     def attach_corridor_completion(self,run,roads):
         from bridge_corridor import attach_completion
@@ -770,7 +793,7 @@ class Operator:
 
     def complete_corridor(self,run,*,phase='all',continuing=False,road=None):
         from bridge_corridor import complete_corridor
-        return complete_corridor(self,run,phase=phase,continuing=continuing,road=road)
+        return self._measure_phase(run,'corridor_complete',lambda:complete_corridor(self,run,phase=phase,continuing=continuing,road=road),continuing=continuing)
 
     def plan_approach(self,brief):
         from bridge_approach import plan
@@ -778,15 +801,19 @@ class Operator:
 
     def build_approach(self,run):
         from bridge_approach import build
-        return build(self,run)
+        return self._measure_phase(run,'approach_build',lambda:build(self,run))
 
-    def continue_approach(self,run,family_run=None):
+    def continue_approach(self,run,family_run=None,remaining_families=None):
         from bridge_approach import build
-        return build(self,run,continuing=True,family_run=family_run)
+        return self._measure_phase(run,'approach_build',lambda:build(self,run,continuing=True,family_run=family_run,remaining_families=remaining_families),continuing=True)
 
     def review_approach(self,run,checks=None):
         from bridge_approach import review
-        return review(self,run,checks)
+        return self._measure_phase(run,'approach_review',lambda:review(self,run,checks))
+
+    def _measure_phase(self,run,phase,callback,*,continuing=False):
+        from bridge_phase_metrics import invoke
+        return invoke(self,run,phase,callback,continuing=continuing)
 
     def render_approach(self,source,output,**options):
         from bridge_approach_render import render_approach
@@ -887,13 +914,15 @@ class Operator:
                     'travel_direction':direction,'heading_tolerance_deg':p.get('heading_tolerance_deg',2),
                     'placement_tolerance':tolerance}
         def resolve(ref,interior=False,connected=False):
+            exact=p.get('port_refs',{}).get(ref) if isinstance(ref,str) else None
+            if exact and interior:
+                raise ValueError('exact endpoint port cannot resolve as an interior attachment')
             loc=intent(ref)
             role=roles.get(p.get('role_refs',{}).get(ref)) if isinstance(ref,str) else None
             if role and role['mode']=='station_exit':
                 if kind!='extend' or interior or connected:raise ValueError('qualified station_exit supports deliberate lead extension only')
                 a=role['candidate']
             else:a,_=live._select_throat_port(rc,loc,interior=interior,tolerance=loc['placement_tolerance'],connected=connected)
-            exact=p.get('port_refs',{}).get(ref) if isinstance(ref,str) else None
             if exact:
                 binding=state['steps'].get(exact['chain']) or prior.get(exact['chain']);rows=binding['edges']
                 if 'end' in exact:
@@ -1122,8 +1151,9 @@ class Operator:
                     for i in range(3):
                         local_region['min'][i]=max(local_region['min'][i],p['region']['min'][i])
                         local_region['max'][i]=min(local_region['max'][i],p['region']['max'][i])
+                    seed_track=s.get('track',p['track'])
                     q={'authorised':True,'length':length,'fixture':{'position':pos,'travel_direction':d,'grade':grade,
-                       'region':local_region,'template':p['track']['template'],'style':p['track']['style']}}
+                       'region':local_region,'template':seed_track['template'],'style':seed_track['style']}}
                     if any(not p['region']['min'][i]<=end[i]<=p['region']['max'][i] for i in range(3)):
                         raise ValueError('stub end outside authorised plan region')
                     r=rc.request('test_approach',q)
@@ -1142,7 +1172,7 @@ class Operator:
                     start={'position':world(source),'travel_direction':[-x for x in unit(source['direction'])],'grade':-source['grade']}
                     end={'position':world(target),'travel_direction':unit(target['direction']),'grade':target['grade']}
                     q={'prepare':True,'new_alignment':True,'freestanding':True,'source':start,'target':end,
-                       'track':p['track'],'region':p['region'],'vertical':{'max_grade':p['max_grade']},
+                       'track':s.get('track',p['track']),'region':p['region'],'vertical':{'max_grade':p['max_grade']},
                        'guides':[],'structures':[s['structure']],'representation':'endpoint_cubic',
                        'radius':s.get('radius',0),'handle_scale':s.get('handle_scale',1)}
                     prepared=rc.request('structured_chain',q)

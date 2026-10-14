@@ -570,10 +570,31 @@ end
 -- Sparse scaffold read: the documented street-system adjacency map avoids a tile sweep.
 -- BASE_EDGE cannot be enumerated with getEntitiesWithComponent in TPF3.
 function M.track_catalogue(p)
- for key in pairs(p) do assert(key=="max_examined_edges" or key=="max_tracks","unsupported_track_catalogue_field") end
+ for key in pairs(p) do assert(key=="max_examined_edges" or key=="max_tracks" or key=="region","unsupported_track_catalogue_field") end
  local examined_limit,track_limit=p.max_examined_edges or 65536,p.max_tracks or 512
  assert(finite(examined_limit) and examined_limit%1==0 and examined_limit>=1 and examined_limit<=65536,"catalogue_examined_edge_bound")
  assert(finite(track_limit) and track_limit%1==0 and track_limit>=1 and track_limit<=512,"catalogue_track_bound")
+ local region=p.region
+ if region~=nil then
+  assert(type(region)=="table" and type(region.min)=="table" and type(region.max)=="table" and #region.min==3 and #region.max==3,"catalogue_region_XYZ_required")
+  for key in pairs(region) do assert(key=="min" or key=="max","unsupported_catalogue_region_field") end
+  for i=1,3 do assert(finite(region.min[i]) and finite(region.max[i]) and region.min[i]<region.max[i],"catalogue_region_finite_ordered_required") end
+ end
+ local function matches(base)
+  if not region then return true end
+  -- A cubic lies in its Bezier control hull. Its AABB is conservative,
+  -- inclusive, and may return false positives; never a clearance proof.
+  local a,b,t,u=arr(base.position0),arr(base.position1),arr(base.tangent0),arr(base.tangent1)
+  local lo,hi={},{}
+  for i=1,3 do
+   assert(finite(a[i]) and finite(b[i]) and finite(t[i]) and finite(u[i]),"catalogue_region_geometry_unavailable")
+   local c,d=a[i]+t[i]/3,b[i]-u[i]/3
+   assert(finite(c) and finite(d),"catalogue_region_control_nonfinite")
+   lo[i]=math.min(a[i],b[i],c,d);hi[i]=math.max(a[i],b[i],c,d)
+  end
+  for i=1,3 do if hi[i]<region.min[i] or lo[i]>region.max[i] then return false end end
+  return true
+ end
  local mapping=api.engine.system.streetSystem.getNode2TrackEdgeMap()
  assert(type(mapping)=="table","track_adjacency_map_unavailable")
  local ids,seen={},{}
@@ -582,7 +603,7 @@ function M.track_catalogue(p)
  end end
  table.sort(ids)
  local operating=ug_require('tpf3_bridge_n01_c04_20261001::/scripts/pif_operating.lua')
- local edges,node_reads={},{};local examined,tracks,excluded,external=0,0,0,0;local metadata_truncated=false
+ local edges,node_reads={},{};local examined,tracks,excluded,external,matching=0,0,0,0,0;local metadata_truncated=false
  local function bounded_name(id)
   local c=api.engine.getComponent(id,api.type.ComponentType.NAME);local name=c and c.name or "unnamed"
   assert(type(name)=="string","entity_name_unavailable");return name:sub(1,80),#name>80
@@ -595,7 +616,9 @@ function M.track_catalogue(p)
    assert(owner==nil or type(owner)=="number","construction_owner_unavailable")
    if owner and owner>0 then excluded=excluded+1 else
     external=external+1
-    if #edges<track_limit then
+    if matches(base) then
+     matching=matching+1
+     if #edges<track_limit then
      local row=edge(id);row.structure=structure(base);row.name,row.name_truncated=bounded_name(id);row.construction_owner="none"
      row.endpoint_incidence={}
      for _,node in ipairs({row.node0,row.node1}) do
@@ -612,12 +635,13 @@ function M.track_catalogue(p)
       end
      else row.objects={};row.objects_truncated=true;metadata_truncated=true end
      edges[#edges+1]=row
+     end
     end
    end
   end
  end
- local scan_truncated=examined<#ids;local tracks_truncated=external>#edges
- return {edges=edges,enumerated_edges=#ids,examined_edges=examined,examined_TRACK=tracks,
+ local scan_truncated=examined<#ids;local tracks_truncated=matching>#edges
+ local result={edges=edges,enumerated_edges=#ids,examined_edges=examined,examined_TRACK=tracks,
   excluded_construction_tracks=excluded,external_tracks_observed=external,returned_tracks=#edges,
   max_examined_edges=examined_limit,max_tracks=track_limit,scan_truncated=scan_truncated,
   tracks_truncated=tracks_truncated,metadata_truncated=metadata_truncated,
@@ -626,6 +650,12 @@ function M.track_catalogue(p)
   exclusion="all_construction_owned_TRACK",game_constructed=false,
   enumeration_api="streetSystem.getNode2TrackEdgeMap",native_qualification="pending",
   identity_scope="current_adapter_session_only",native_save_identity="unknown"}
+ if region then
+  result.region=region;result.region_match_count=matching
+  result.region_predicate="inclusive_Hermite_Bezier_control_AABB_overlap"
+  result.region_false_positives_possible=true;result.region_clearance_proof=false
+ end
+ return result
 end
 -- Point-only terrain sampling avoids the unrelated entity search in site inspection.
 function M.terrain_samples(p)
@@ -2791,7 +2821,7 @@ local function prepare_new_structure(p,s,request_id,group_reference)
  local a,pos,direction,grade,t,tp,td,tg,c,d,splits
  if p.freestanding then
   assert(p.freestanding==true and not p.junctions and not replacement and not p.normal_offset_from,"standalone_structure_seed_only")
-  assert(#p.guides==0 and #p.structures==1 and p.structures[1].classification=="BRIDGE" and not p.structures[1].spans and p.representation=="endpoint_cubic" and not p.leg_representations,"standalone_bridge_span_required")
+  assert(#p.guides==0 and #p.structures==1 and (p.structures[1].classification=="BRIDGE" or p.structures[1].classification=="TUNNEL") and not p.structures[1].spans and p.representation=="endpoint_cubic" and not p.leg_representations,"standalone_bridge_or_tunnel_span_required")
   assert(type(p.track)=="table" and type(p.track.template)=="string" and type(p.track.style)=="string","track_resource_names_required")
   local resource=api.res.streetTemplateRep.get(api.res.streetTemplateRep.find(p.track.template))
   assert(resource and resource.roadType==E.RoadType.TRACK and resource.streetStyle==p.track.style,"standalone_track_resource_mismatch")
@@ -3215,7 +3245,7 @@ function M.structured_chain(p,s,state,request_id,respond)
     local result=M.inspect({edge_ids=ids,structures=true,geometry=true});local e=result.edges[1];local ctrl=record.segments[1].controls
     assert(e and e.road_type=="TRACK" and e.template==record.fitted.anchor.template and e.style==record.fitted.anchor.style,"standalone_track_readback_mismatch")
     assert(near(e.p0,ctrl.p0,.001) and near(e.p1,ctrl.p1,.001) and near(e.t0,ctrl.t0,.001) and near(e.t1,ctrl.t1,.001),"standalone_controls_readback_mismatch")
-    assert(e.structure.classification=="BRIDGE" and e.structure.resource_name==record.segments[1].structure.resource_name,"standalone_structure_readback_mismatch")
+    assert(e.structure.classification==record.segments[1].structure.classification and e.structure.resource_name==record.segments[1].structure.resource_name,"standalone_structure_readback_mismatch")
     local nodes={};for _,node in ipairs(receipt.addedNodes) do nodes[node.entity]=true end
     assert(e.node0~=e.node1 and nodes[e.node0] and nodes[e.node1],"standalone_receipt_node_identity_mismatch")
     for _,node in ipairs({e.node0,e.node1}) do

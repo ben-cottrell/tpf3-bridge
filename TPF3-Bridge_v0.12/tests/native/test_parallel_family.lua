@@ -28,6 +28,7 @@ function M.run(source)
  api.type.SimpleProposal={new=function() return {streetProposal={}} end}
  api.type.SegmentAndEntity={new=function() return {comp={}} end};api.type.NodeAndEntity={new=function() return {comp={}} end}
  local edges,nodes,incidents,networks={}, {}, {}, {};local d=5;local reject=false;local submissions=0;local evaluated;local succeed=false;local corrupt_structure=false
+ local seed_mode=false;local seed_wrong_class=false;local seed_wrong_resource=false
  local resource={trackDistance=d,laneConfigs={{}},streetStyle='style'}
  api.res.streetTemplateRep={find=function() return 1 end,get=function() return resource end,findAndGet=function() return resource end}
  for _,name in ipairs({'bridgeTypeRep','tunnelTypeRep'}) do api.res[name]={find=function() return 1 end,getName=function() return 'observed' end,get=function() return {} end} end
@@ -47,6 +48,10 @@ function M.run(source)
    g.height=vec(comp.position0.z,comp.position1.z);g.tangent=vec(comp.tangent0.z,comp.tangent1.z)
    networks[id]={edges={{transportModes={[1]=true},geometry=g}}}
    if corrupt_structure then comp.type=E.BaseEdgeType.TUNNEL end
+   if seed_mode then
+    incidents[comp.node0]={id};incidents[comp.node1]={id}
+    if seed_wrong_class then comp.type=E.BaseEdgeType.BRIDGE end
+   end
    table.insert(receipt.addedSegments,1,{entity=id}) -- deliberately reverse native receipt order
   end
   callback({proposal={proposal=receipt}},true)
@@ -190,6 +195,37 @@ function M.run(source)
  spoof=profile_input(d,false);spoof.groups[2].normal_offset_join_contract='shared_reference_parameter';fails(spoof,'unsupported')
  local ok,why=pcall(actual_fit,{normal_offset_join_contract='shared_reference_parameter'});assert(not ok and tostring(why):find('adapter_only',1,true))
  ok,why=pcall(native.verify_interior,{fit={normal_offset_join_contract='shared_reference_parameter'}});assert(not ok and tostring(why):find('adapter_only',1,true))
+ -- Actual freestanding preparation and committed checks, same one-span path.
+ -- Mock inspect supplies component facts; production assertions remain active.
+ seed_mode=true;resource.roadType=E.RoadType.TRACK;corrupt_structure=false;reject=false;succeed=true
+ native.inspect=function(p)
+  local rows={}
+  for _,id in ipairs(p.edge_ids) do
+   local e=edges[id];local function a(v) return {v.x,v.y,v.z} end
+   rows[#rows+1]={id=id,node0=e.node0,node1=e.node1,p0=a(e.position0),p1=a(e.position1),
+    t0=a(e.tangent0),t1=a(e.tangent1),road_type='TRACK',template='track',style='style',
+    structure={classification=e.type==E.BaseEdgeType.TUNNEL and 'TUNNEL' or 'BRIDGE',
+     resource_name=seed_wrong_resource and 'wrong.resource' or 'observed'}}
+  end
+  return {edges=rows}
+ end
+ for _,fault in ipairs({'none','classification','resource'}) do
+  edges={};nodes={};incidents={};networks={};seed_wrong_class=false;seed_wrong_resource=false
+  local p={prepare=true,new_alignment=true,freestanding=true,track={template='track',style='style'},
+   source={position={0,0,0},travel_direction={1,0},grade=.01},
+   target={position={5,0,.05},travel_direction={1,0},grade=.01},
+   guides={},structures={{classification='TUNNEL',resource_name='observed'}},
+   representation='endpoint_cubic',radius=0,handle_scale=1,
+   vertical={max_grade=.04},region={min={-1,-1,-1},max={6,1,1}}}
+  local response,s,state=run(p);assert(response.status=='ok')
+  local record=s.prepared_structures.family
+  assert(record.freestanding and #record.segments==1 and record.segments[1].structure.classification=='TUNNEL')
+  seed_wrong_class=fault=='classification';seed_wrong_resource=fault=='resource'
+  local result
+  native.structured_chain({execute=true,prepared_request='family'},s,state,'seed-build',function(_,status,value) result={status=status,result=value} end)
+  if fault=='none' then assert(result.status=='ok' and result.result.freestanding and #result.result.ordered_edges==1)
+  else assert(result.status=='mutation_unverified','wrong committed structure accepted') end
+ end
  succeed=false
  return true
 end
