@@ -1309,3 +1309,21 @@ The reviewed per-road main-corridor job built16 sections; exact mixed-resource r
 and wider network acceptance are still pending. This is construction evidence, not
 full district qualification. Imported resources are compared directly on selected
 exact endpoint snapshots, never inferred from position or another road.
+
+### Wide signal-only plans
+
+A nonempty version2 plan whose every step is signal_chain may use an empty ports
+dictionary when routes do not reference ports, and has no spatial diameter cap.
+Its XYZ envelope must still be finite and ordered. Adding construction, removal,
+seeds or any other operating step restores the existing port/spatial limits.
+Referenced chains require concrete snapshot bindings. All four Hermite Bezier
+controls and sampled signal locations must be within the authorised envelope before
+publication, again on all fresh bindings before the first mutation, and on each
+fresh chain before its signal phase. This is bounded existing signalling, not a
+general wide construction permission.32 steps/64 edges/64 placements and native
+batch/object limits, ordinary-chain checks, pending guards, replacement propagation
+and remaining-only continuation are unchanged. No discovery or new native API is used.
+Ordinary bounded approach compilation may defer imported receipt placeholders during
+structural validation only. Materialized Operator child publication always requires
+concrete snapshots; the new wide exception never accepts deferred imports. All fresh
+execution envelope checks still run before mutation.

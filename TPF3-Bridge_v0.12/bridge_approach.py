@@ -83,7 +83,7 @@ def compile_brief(brief):
                 for port,name in p['role_refs'].items():
                     role=reg['roles'][name];intent=role['intent']
                     p['ports'].setdefault(port,{'position':[intent['guide_xyz'][i]-p['origin'][i] for i in range(3)],'direction':intent['travel_direction'],'grade':role.get('grade',0)})
-            validate_plan(p)
+            validate_plan(p,deferred_bindings=True)
             possible=set(p['bindings'])|{s['name'] for s in p['steps']}
             if any(not isinstance(v,str) or v not in possible for v in f['exports'].values()):raise ValueError('export requires exact child step/binding name')
         elif f['kind']=='corridor':

@@ -60,6 +60,33 @@ class World(Native):
 
 
 class ApproachTests(unittest.TestCase):
+    def test_bounded_imported_signal_family_defers_only_structural_snapshots(self):
+        b=brief();family=copy.deepcopy(b['families'][0]);family.update(name='signals',imports={'imported':'seed.road'},exports={})
+        family['payload']['steps']=[{'name':'blocks','kind':'signal_chain','chains':['imported'],'forward':True,
+            'spacing':300,'start_offset':5,'end_clearance':5,'max_count':4,'seed_id':99,'placement_mode':'batch'}]
+        b['families'].append(family)
+        approach.compile_brief(b) # Ordinary bounded structural import is supported.
+        from bridge_operator import validate_plan
+        p=copy.deepcopy(family['payload']);p['bindings']={'imported':{'edges':[{'unresolved_receipt':True}]}}
+        with self.assertRaisesRegex(ValueError,'concrete'):validate_plan(p)
+        p['region']['max'][0]=2000
+        with self.assertRaisesRegex(ValueError,'concrete'):validate_plan(p,deferred_bindings=True)
+        with tempfile.TemporaryDirectory() as td:
+            c=World(td);op=Operator(runs=td,client=c)
+            with self.assertRaises(ValueError):op.plan(p)
+            self.assertEqual(c.calls,[])
+        from test_signal_benchmark import World as SignalWorld
+        with tempfile.TemporaryDirectory() as td:
+            c=SignalWorld(td);op=Operator(runs=td,client=c);run=op.plan_approach(b)['run']
+            with patch('bridge_approach.qualify_station'):
+                result=op.build_approach(run)
+            self.assertEqual(result['status'],'built',result)
+            state=approach.load(op.path(run)/'state.json');child=state['families']['signals']['run']
+            materialized=approach.load(op.path(child)/'plan.json')
+            self.assertIn('p0',materialized['bindings']['imported']['edges'][0])
+            self.assertNotIn('unresolved_receipt',materialized['bindings']['imported']['edges'][0])
+            self.assertEqual(sum(operation=='operating_control' for operation,q in c.calls),1)
+
     def test_offline_plan_then_build_review_and_affected_only_cache(self):
         with tempfile.TemporaryDirectory() as td:
             c=World(td);o=Operator(runs=td,client=c);b=brief();run=o.plan_approach(b)['run']

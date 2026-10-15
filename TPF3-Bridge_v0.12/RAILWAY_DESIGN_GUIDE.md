@@ -157,6 +157,10 @@ Reference acceptance does not establish the desired speed balance or dimensions.
 
 ## Grade separation and construction order
 
+Measure a city-to-flyover setback from the first RISE, not the level deck. Reserve
+the approach envelope at that datum and reuse built handoffs rather than adding
+duplicate receiving stubs. Geometry review covers the whole rise/deck/descent.
+
 Choose crossing order before curves. Compare forks before/after the crossing and
 shared corridors. Plan the level span, both ramps and receiving pair together.
 Build the controlling unconnected span first when this fixes its position clearly.
@@ -190,6 +194,23 @@ ground and persistence after removing it. Ordinary NORMAL-track cut/fill may suf
 Neither technique establishes an available numeric terrain-edit API.
 
 ## Stations, signalling and operation
+
+Bind station functions through fresh frozen components and terminal vehicle_node
+identities, not guessed physical platform indices. A required station-edge path check
+needs the terminal/inner endpoint; an outer lead endpoint may test a different movement.
+For paths longer than a bounded native query, compose direction-consistent checks with
+whole-edge identity overlaps. Do not redesign the railway or raise the bound to repair
+a query specification; overlapping path availability is not train-performance proof.
+
+Keep per-road template/style compatibility explicit when ordinary and high-speed roads
+share a corridor. Preserve the actual imported attachment resource rather than applying
+one global seed type. Branch preparation uses an interior source and free target;
+a free-to-interior movement uses structured connect with target_interior:true, preserving
+the supplied direction and exact identity. Do not silently swap those contracts.
+
+Signal-only work may use a wide authorised effect envelope with exact current chain
+receipts and fresh placement checks. This does not authorise wide construction or weaken
+construction diameter limits. Place dependent signals after topology is ready.
 
 Put shared platform choices after all required arrivals have merged. Correct wrongly
 ordered pointwork before appending a reversing feeder. Plan arrival, return departure,

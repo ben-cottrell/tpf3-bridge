@@ -69,10 +69,14 @@ coordinate resemblance is not identity. Opt-in existing inspect chunks now retur
 complete exact-node incidence; default reads and dependency fingerprints are unchanged.
 On the same41-rail fixture, equal fingerprints used52 legacy requests/26.391s wall versus
 7 enriched requests/3.437s:7.68x faster in dependency observation only, not a whole build.
-Current work is a user-authorised measured repeatable district workflow on Giganto1
-Continued. Coordinator surveys/plans/reviews before native construction; use existing
-approach/corridor/operator composition and bounded fitting. Any orchestration extension
-requires the pending architecture review, not an unsolicited new layer.
+The measured district workflow on Giganto1 Continued is complete for user review:
+all planned track/jobs,331 signals and166 final bounded native queries passed their
+stated scope; four new service configurations/cargo readbacks are verified, no trains
+purchased. Giganto1 NW District Review.sav is saved; no new-service operation/capacity
+or user-acceptance claim. Reusable phase accounting, regional observations, explicit
+TUNNEL seeds, per-road resources and guarded continuation reuse existing composition.
+Wide signal-only effect scope is separate from construction diameter limits. No new
+district framework, recovery layer or follow-on queue is implied.
 
 ## Boundaries for any future brief
 Choose a concrete authorised construction/operation outcome before adding capabilities.

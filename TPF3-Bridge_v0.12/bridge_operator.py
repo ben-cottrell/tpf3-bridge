@@ -495,17 +495,44 @@ def validate_structures(step):
         if 'spans' in item and previous!=1:raise ValueError('structure spans must cover the leg')
 
 
+def signal_only_plan(p):
+    steps=p.get('steps')
+    return p.get('version')==2 and isinstance(steps,list) and bool(steps) and all(isinstance(s,dict) and s.get('kind')=='signal_chain' for s in steps)
+
+
+def signal_controls_envelope(rows,region):
+    for row in rows:
+        if not isinstance(row,dict) or any(type(row.get(k)) is not int or row[k]<=0 for k in ('id','node0','node1')):
+            raise ValueError('signal chain requires exact concrete edge/node snapshots')
+        if not {'p0','p1','t0','t1'}<=row.keys():raise ValueError('signal snapshot cubic controls unavailable')
+        for key in ('p0','p1','t0','t1'):vector(row[key],3)
+        controls=[row['p0'],row['p1'],
+                  [a+t/3 for a,t in zip(row['p0'],row['t0'])],
+                  [a-t/3 for a,t in zip(row['p1'],row['t1'])]]
+        if any(not in_region(point,region) for point in controls):raise ValueError('signal snapshot cubic controls outside authorised envelope')
+
+
+def signal_envelope(rows,step,region):
+    if not rows or len(rows)>64:raise ValueError('signal chain requires1..64 concrete snapshot edges')
+    signal_controls_envelope(rows,region)
+    locations,_=signal_chain_locations(rows,step['forward'],step['spacing'],step['start_offset'],step['end_clearance'],step['max_count'])
+    for location in locations:
+        if not in_region(cubic(rows[location['edge_index']],location['parameter'])[0],region):
+            raise ValueError('sampled signal placement outside authorised envelope')
+
+
 def validate_seed_track(value):
     if not isinstance(value,dict) or set(value)!={'template','style'} or any(not isinstance(value[k],str) or not value[k] for k in ('template','style')):
         raise ValueError('seed track requires explicit template/style resources')
     return value
 
 
-def validate_plan(p):
+def validate_plan(p,*,deferred_bindings=False):
     if p.get('version') not in (1,2) or not isinstance(p.get('revision'), str):
         raise ValueError('version1/2 and design revision required')
     vector(p['origin'], 3)
-    if not isinstance(p['ports'], dict) or not p['ports']:
+    signals_only=signal_only_plan(p)
+    if not isinstance(p['ports'], dict) or (not p['ports'] and (not signals_only or p.get('routes'))):
         raise ValueError('named ports required')
     for port in p['ports'].values():
         vector(port['position'], 3); unit(port['direction'])
@@ -629,6 +656,18 @@ def validate_plan(p):
             if type(local_limit) not in (int,float) or not math.isfinite(local_limit) or not 0<local_limit<=800:
                 raise ValueError('branch/crossover effective local route limit must be within(0,800]')
         if 'fit_variation' in s:fit_variation_config(s)
+        if signals_only:
+            rows=[]
+            for name in s['chains']:
+                binding=p.get('bindings',{}).get(name)
+                if not binding or not binding.get('edges'):raise ValueError('signal-only plan requires referenced concrete bindings')
+                rows.extend(binding['edges'])
+            deferred=[row for row in rows if row=={'unresolved_receipt':True}]
+            bounded=all(region['max'][i]-region['min'][i]<=(1000 if i<2 else 400) for i in range(3))
+            if deferred_bindings and bounded and deferred:
+                if len(rows)>64:raise ValueError('signal chain snapshot bound64 exceeded')
+                signal_controls_envelope([row for row in rows if row!={'unresolved_receipt':True}],region)
+            else:signal_envelope(rows,s,region)
         if kind in ('branch','crossover') and len(s.get('guides',[]))>2:
             raise ValueError('branch/crossover support at most two local shape guides')
         for g in s.get('guides',[]):
@@ -638,7 +677,7 @@ def validate_plan(p):
             if kind in ('branch','crossover') and g['grade']!=0:raise ValueError('graded guides require structured connect')
     if len(p['steps'])>32:raise ValueError('at most32 steps per plan')
     bound=400 if p['version']==1 else 1000
-    if any(region['max'][i]-region['min'][i]>bound for i in range(2)) or region['max'][2]-region['min'][2]>400:
+    if not signals_only and (any(region['max'][i]-region['min'][i]>bound for i in range(2)) or region['max'][2]-region['min'][2]>400):
         raise ValueError(f'operator region limited to{bound} per horizontal axis,400 vertical')
     if type(p.get('max_grade')) not in (int,float) or not 0 < p['max_grade'] <= 1:raise ValueError('explicit positive grade bound required')
     if not 0 < p.get('max_route_length',800) <= (800 if p['version']==1 else 8000):raise ValueError('route length exceeds native bound')
@@ -1082,10 +1121,14 @@ class Operator:
                 if roles!=p['role_bindings']:raise ValueError('named interface changed; resolve and publish a fresh plan')
             prior.update(p.get('result_bindings',{}))
             for name,binding in p.get('bindings',{}).items():prior.setdefault(name,{}).update(edges=fresh_binding(rc,binding))
+            if signal_only_plan(p):
+                for step in p['steps']:
+                    signal_envelope([row for name in step['chains'] for row in prior[name]['edges']],step,p['region'])
             for s in p['steps']:
                 state['current_step']=s['name'];state['current_step_start_calls']=state['calls'];state['step_mutation']=None;persist();kind=s['kind']
                 if kind=='signal_chain':
                     rows=[edge for name in s['chains'] for edge in chain(name)]
+                    if signal_only_plan(p):signal_envelope(rows,s,p['region'])
                     locations,total=signal_chain_locations(rows,s['forward'],s['spacing'],s['start_offset'],s['end_clearance'],s['max_count'])
                     progress={'placements':[],'sampled_length':total,'sampled_only':True}
                     state.setdefault('signal_chains',{})[s['name']]=progress;persist()

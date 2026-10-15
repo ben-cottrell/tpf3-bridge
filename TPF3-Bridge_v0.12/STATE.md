@@ -20,40 +20,41 @@ left paused; a final reload is not claimed. Accepted earlier design examples rem
 reference material, not a task queue. Use the [handbook](RAILWAY_DESIGN_GUIDE.md) and
 [procedure](RAILWAY_DESIGN_PROCEDURE.md) for current lessons.
 
-## Current district workload / source checkpoint
-Giganto1 Continued D2 design closure and independent source reviews passed. Focused
-source-efficiency milestone qualified; district construction remains coordinator-owned
-and incomplete. Region-filtered catalogue, outermost phase measurements, explicit
-TUNNEL waypoint seeds, per-road resources and guarded continuation/export corrections
-reuse existing APIs. Direct exact imported template/style equality is required; no
-extrapolation or native attachment weakening. Local branch/crossover800 preflight is
-separate from the structured8000 contract. Interrupted/uncertain effects are not replayed.
+## NW district ready for user review
+Giganto1 Continued district workload is complete: all planned track/jobs built;
+MW/NW flyovers and NWC north fans passed independent actual-geometry review.
+Save Giganto1 NW District Review.sav: native callback and complete file verified,
+141425788 bytes, SHA256 f99fe8d31cafd4db559b1b1c82caec1a713e31f8ae6775dbe4ea556bd77bb4c0.
+User review/final reload are not claimed. Current session pif_1792012458_12199971.
 
-Current native context pif_1792012458_12199971. Tunnel qualification dacac06a99d54336:
-ten steps/two five-edge tunnel_b chains, exact joins/two paths, no internal portals/shafts
-in surface review; .local_runs/district/tunnel_qualification_current.json. Regional
-catalogue previously returned113 known tracks/9 components in one request/0.343s wall;
-not an equivalent-output speedup benchmark. Measured construction phases:
+331 district signals:224 corridor +64 ordinary +24 decision +19 seam. Final120
+checks had112 passes and8 southern paths beyond the8000 bound. Ten overlapping
+whole-edge replacement checks passed, then44 post-signalling corridor checks passed:
+166 accepted final native queries (112+10+44), not capacity/traversal/performance proof.
+Four new services have native configuration/cargo readback:228903 stopper,228968
+Regional1A,241102 Regional1B,241118 Express NWET-SWET with8 stops. Existing233671
+preserved; no trains purchased or new-service operation demonstrated.
 
-| Scope | Built | Active wall s | Requests | Mutation attempts | Acceptance observed |
-| --- | --- | ---: | ---: | ---: | --- |
-| NWET | 2 families | 63.517 | 118 | 16 | 8 native paths |
-| Main ac02c25271cc48d1 | 16 sections | 165.203 | 316 | 74 | Mixed/full-network readback pending |
-| NW south | 4 sections | 38.562 | 76 | 16 | Wider acceptance pending |
-| NW flyover | 6 families | 60.453 | 111 | 12 | 20 corrected native queries; actual geometry pass |
-| MW | 8 families | 147.406 | 274 | 46 | 20 native queries; actual geometry pass |
-| NWC north | 2 families | 82.375 | 140 | 30 | Wider acceptance pending |
+Minimum current review pointers beneath .local_runs/district/:
+final_directed_route_results_current.json,express_south_split_results_current.json,
+final_corridor_route_results_current.json,services_readback_current.json,
+decision_signals_current.json. Keep needed current receipts/uncertain journals; generated
+records are local working data, not a permanent audit/archive. Original stopped jobs
+remain honest, with explicit remaining-only continuation rather than parent replay.
 
-NW north is in progress. Phase counters are not total workflow/engine times, capacity,
-service or full-network acceptance. Keep original stopped parents and uncertain receipts.
-Validation reused:156 tests (test_corridor_resources.py,test_corridor_seeds.py,
-test_corridor_operator.py,test_operator.py,test_parallel_family.py,test_corridor_completion.py,
-test_approach.py);45 tests (test_approach_contracts.py,test_approach.py,test_phase_metrics.py);
-114 shared phase/operator/fit/benchmark tests. Command .local_tools/operator312/Scripts/
-python.exe -X utf8 - with unittest discovery for these patterns and
-TextTestRunner(stream=io.StringIO(),verbosity=0); counts/failures only. AST/diff checks
-pass. Optional actual-source Lua fixtures remain unexecuted; native module qualification
-is separate. Local source checkpoint only; no push, new guarantees or recovery layer.
+Source checkpoint includes regional catalogue/phase measurements, continuous TUNNEL
+seeds, direct per-road resource validation and guarded continuation/export corrections.
+Wide signal-only validation and bounded deferred structural imports passed independent
+review and native12-chain/19-seam-step qualification. Ordinary construction limits,
+exact identity/pending checks and fresh effect-envelope checks remain unchanged.
+Checks reused:118 tests (test_wide_signal_plan.py,test_signal_batch.py,test_operator.py,
+test_corridor_completion.py);44 tests (test_wide_signal_plan.py,test_approach.py,
+test_approach_contracts.py), plus the strengthened imported-family build regression.
+Command .local_tools/operator312/Scripts/python.exe -X utf8 - with unittest discovery
+for those patterns and TextTestRunner(stream=io.StringIO(),verbosity=0), counts/failures
+only. AST/diff checks pass. Optional standalone actual-source Lua fixtures unexecuted
+(no installed runtime), distinct from deployed native qualification. Local commit only;
+no push, new task queue or broader production guarantees.
 
 ## Implemented capabilities
 Offline bridge_cli.py/bridge_app.py: design, single/pair connections, explicit mock

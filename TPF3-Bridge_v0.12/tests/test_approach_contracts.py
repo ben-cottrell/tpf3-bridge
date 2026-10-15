@@ -71,9 +71,9 @@ class ContractTests(unittest.TestCase):
             c=World(td);op=Operator(runs=td,client=c);b=brief();later=copy.deepcopy(b['families'][0])
             later.update(name='later',payload=payload());b['families'].append(later)
             # Represents a brief accepted before the new branch preflight gate.
-            def legacy(p):
+            def legacy(p,**kwargs):
                 q=corrected(p) if p['steps'][-1].get('kind')=='branch' else p
-                validate_plan(q);return p
+                validate_plan(q,**kwargs);return p
             with patch('bridge_operator.validate_plan',side_effect=legacy):run=op.plan_approach(b)['run']
             old='b'*16;adopted='c'*16
             edge=c.make_edge([0,0,2],[20,0,2],[20,0,0],[20,0,0])
