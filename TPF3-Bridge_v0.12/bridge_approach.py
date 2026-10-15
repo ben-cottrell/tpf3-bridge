@@ -147,7 +147,72 @@ def record(operator,run):
     from bridge_operator import digest
     folder=operator.path(run);b=load(folder/'approach.json');s=load(folder/'state.json')
     if s.get('kind')!='approach' or s['plan_hash']!=digest(b):raise ValueError('approach brief changed; new revision/job required')
+    if s.get('review_origin'):validate_review_origin(operator,b,s)
     return folder,b,s
+
+
+def review_endpoint_changes(old,new,bindings):
+    """Only the node on the same explicit bound edge may change."""
+    if not isinstance(new,list) or len(new)!=len(old):raise ValueError('review must preserve all checks/order')
+    rows={};changed=False
+    for a,b in zip(old,new):
+        value=copy.deepcopy(b)
+        for side in ('source','target'):
+            x=a.get('payload',{}).get(side);y=value.get('payload',{}).get(side)
+            if x==y:continue
+            if a['kind']!='route' or not isinstance(x,dict) or not isinstance(y,dict) or set(x)!= {'binding','edge_id','node_id'} or set(y)!=set(x) or any(x[k]!=y[k] for k in ('binding','edge_id')):raise ValueError('only same-edge route endpoint node correction allowed')
+            selected=[e for e in bindings[a['bindings'][x['binding']]]['edges'] if e['id']==x['edge_id']]
+            if len(selected)!=1 or type(y['node_id']) is not int or any(ref['node_id'] not in (selected[0]['node0'],selected[0]['node1']) for ref in (x,y)):raise ValueError('review endpoint is not an exact bound-edge node')
+            rows[x['edge_id']]=selected[0];y['node_id']=x['node_id'];changed=True
+        if value!=a:raise ValueError('review changed other criteria, dependencies or limits')
+    if not changed:raise ValueError('explicit endpoint correction required')
+    return list(rows.values())
+
+
+def validate_review_origin(operator,b,s):
+    """Bounded immutable source lineage for review and exported evidence."""
+    from bridge_operator import digest
+    for _ in range(16):
+        origin=s.get('review_origin')
+        if not origin:return
+        parent=operator.path(origin['run']);old=load(parent/'approach.json');state=load(parent/'state.json')
+        if state['plan_hash']!=digest(old) or origin['plan_hash']!=digest(old) or origin['state_hash']!=digest(state) or origin['session']!=s['session'] or state['session']!=s['session']:raise ValueError('review source hash/session changed')
+        if {k:v for k,v in b.items() if k not in ('revision','checks')}!={k:v for k,v in old.items() if k not in ('revision','checks')}:raise ValueError('review construction scope changed')
+        review_endpoint_changes(old['checks'],b['checks'],state['bindings'])
+        if s['families']!=state['families'] or s['bindings']!=state['bindings'] or s['family_index']!=len(b['families']):raise ValueError('review owned family proof changed')
+        if set(origin['children'])!=set(state['families']):raise ValueError('review child ownership changed')
+        for name,proof in origin['children'].items():
+            entry=state['families'][name];cs=load(operator.path(entry['run'])/'state.json')
+            filename='plan.json' if next(f for f in old['families'] if f['name']==name)['kind']=='operator' else 'corridor.json'
+            cp=load(operator.path(entry['run'])/filename)
+            if proof!={'run':entry['run'],'state_hash':digest(cs),'plan_hash':digest(cp)} or cs.get('status')!='built' or cs.get('session')!=s['session'] or cs.get('plan_hash')!=digest(cp):raise ValueError('review completed child proof changed')
+        b,s=old,state
+    raise ValueError('review source lineage exceeds16')
+
+
+def revise_review(operator,run,revision,checks,expected_state_hash):
+    """Publish a new read-only criteria revision; never mutate/replay its parent."""
+    from bridge_operator import digest,fresh_binding
+    folder,b,s=record(operator,run);client=guard(operator,s)
+    if s['status'] not in ('built','reviewed') or s['family_index']!=len(b['families']) or digest(s)!=expected_state_hash:raise ValueError('completed unchanged source state required for review revision')
+    if not isinstance(revision,str) or not revision or revision==b['revision']:raise ValueError('new explicit review revision required')
+    rows=review_endpoint_changes(b['checks'],checks,s['bindings']);new=copy.deepcopy(b);new.update(revision=revision,checks=copy.deepcopy(checks));compile_brief(new)
+    children={}
+    for f in b['families']:
+        entry=s['families'][f['name']];child=entry['run'];cs=load(operator.path(child)/'state.json')
+        cp=load(operator.path(child)/('plan.json' if f['kind']=='operator' else 'corridor.json'))
+        if entry.get('status')!='built' or cs.get('status')!='built' or cs.get('session')!=s['session'] or cs.get('plan_hash')!=digest(cp):raise ValueError('all unchanged same-session family children must be built')
+        children[f['name']]={'run':child,'state_hash':digest(cs),'plan_hash':digest(cp)}
+    fresh_binding(client,{'edges':rows});guard(operator,s)
+    if digest(load(folder/'state.json'))!=expected_state_hash:raise ValueError('source changed during review preparation')
+    state=copy.deepcopy(s);state.update(status='built',checks={},plan_hash=digest(new),review_origin={
+        'run':run,'plan_hash':digest(b),'state_hash':expected_state_hash,'session':s['session'],'children':children})
+    for key in ('phase_metrics','error','current_family'):state.pop(key,None)
+    ident=uuid.uuid4().hex[:16];target=operator.path(ident);target.mkdir()
+    live.atomic_json(target/'approach.json',new);live.atomic_json(target/'state.json',state)
+    result=operator.review_approach(ident)
+    if result['status']!='reviewed':result.update(status='needs_attention',review_status=load(target/'state.json')['status'])
+    return result|{'review_of':run,'construction_replayed':False}
 
 
 @contextmanager
@@ -485,6 +550,7 @@ def build(operator,run,*,continuing=False,family_run=None,remaining_families=Non
     from bridge_operator import fresh_binding
     from bridge_corridor import recover_road
     folder,b,s=record(operator,run);guard(operator,s)
+    if s.get('review_origin'):raise ValueError('review-only revision cannot execute construction')
     if s['status']!='planned' and not(continuing and s['status'] in ('running','needs_attention')):raise ValueError('approach already attempted; explicit continuation required')
     if family_run and not continuing:raise ValueError('replacement child requires explicit continuation')
     if remaining_families is not None and not continuing:raise ValueError('remaining family correction requires explicit continuation')

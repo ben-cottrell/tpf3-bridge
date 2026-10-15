@@ -20,6 +20,14 @@ class Client:
 
 
 class PhaseTests(unittest.TestCase):
+    def test_prepared_fixed_children_traversed_once(self):
+        with tempfile.TemporaryDirectory() as td:
+            op,run=self.setup_run(td);child='d'*16;op.path(child).mkdir()
+            self.save(op,child,{'fit_variations':{'attach':{'attempt_count':2,'requests_used':5}}})
+            self.save(op,run,{'kind':'prepared_approach','plan_hash':'fixed','children':{'bootstrap':child,'approach':child}})
+            self.assertEqual(fit_summary(op,run),{'attachment_trials':2,'additional_attachment_trials':1,
+                'fit_search_requests':5,'records_examined':2,'complete':True})
+
     def setup_run(self,td,client=None):
         op=Operator(runs=td,client=client or Client(td));run='a'*16
         op.path(run).mkdir();self.save(op,run,{'status':'planned','kind':'approach'})

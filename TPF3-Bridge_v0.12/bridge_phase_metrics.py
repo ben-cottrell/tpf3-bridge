@@ -23,6 +23,7 @@ def fit_summary(operator, run):
         pending.extend(v['run'] for v in state.get('families',{}).values() if v.get('run'))
         pending.extend(v['run'] for v in state.get('section_runs',[]) if v.get('run'))
         if state.get('current_run'):pending.append(state['current_run'])
+        if state.get('kind')=='prepared_approach':pending.extend(state.get('children',{}).values())
         # Adoption replaces the current child pointer. Its existing immutable
         # plan link retains prior work; follow only that bounded exact lineage.
         plan_path=operator.path(ident)/'plan.json'
@@ -34,7 +35,7 @@ def fit_summary(operator, run):
                     parent=link['run'];operator.path(parent) # Validate exact run ID.
                     pending.append(parent)
             except (OSError,ValueError,TypeError,KeyError):complete=False
-        elif state.get('plan_hash') and state.get('kind') not in ('approach','corridor'):
+        elif state.get('plan_hash') and state.get('kind') not in ('approach','corridor','prepared_approach'):
             complete=False
         # Completion children are not geometry fitting jobs.
         variations=state.get('fit_variations',{})

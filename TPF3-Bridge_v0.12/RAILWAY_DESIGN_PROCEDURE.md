@@ -158,6 +158,12 @@ Choose the construction sequence by remaining spatial freedom and native staging
 
 ## 4. Fit and build within the selected revision
 
+Keep the accepted source recipe reusable: full canonical intent, named attachment
+slots, resources, required bootstrap removals, every approved bounded continuation
+window and acceptance criteria. A final remaining-only plan or post-build entity
+IDs are not the complete recipe. Qualify named slots against the current world;
+reuse completed prefixes and continue only the original outstanding scope.
+
 An implementation assignment identifies the design revision, route family, intended
 attachments and directions, corridor/profile, neighbours still to be built, allowed
 local adjustments, and expected functional outcome. Include the relevant plan view.

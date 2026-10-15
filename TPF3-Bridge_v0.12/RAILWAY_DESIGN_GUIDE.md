@@ -282,5 +282,8 @@ problems, not a nonblocking validation discrepancy alone.
 
 Use reusable plans and deterministic candidate loops. Keep only current working
 state needed for the operation; discard completed logs and candidate history.
+An accepted recipe retains the full intent and all approved continuation windows,
+bootstrap actions, resources and proof criteria behind named attachment slots.
+Do not mistake its last partial continuation or old built IDs for that recipe.
 Distil lessons into this guide or a reusable pattern, without dated narrative or
 handoff archives. Stop polishing accepted demonstrations once their purpose is met.

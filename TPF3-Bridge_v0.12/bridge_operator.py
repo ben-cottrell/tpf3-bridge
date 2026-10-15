@@ -838,6 +838,19 @@ class Operator:
         from bridge_approach import plan
         return plan(self,brief)
 
+    def prepare_approach(self,brief,inputs,follow_on_corridor=None):
+        from bridge_prepared_approach import prepare
+        try:return prepare(self,brief,inputs,follow_on_corridor)
+        except Exception as exc:return {'status':'needs_attention','error':str(exc)[:350],'game_constructed':False}
+
+    def build_prepared_approach(self,run,*,continuing=False,bootstrap_run=None,family_run=None,section_run=None):
+        from bridge_prepared_approach import build
+        return self._measure_phase(run,'prepared_approach',lambda:build(self,run,continuing=continuing,bootstrap_run=bootstrap_run,family_run=family_run,section_run=section_run),continuing=continuing)
+
+    def prepared_approach_status(self,run):
+        from bridge_prepared_approach import status
+        return status(self,run)
+
     def build_approach(self,run):
         from bridge_approach import build
         return self._measure_phase(run,'approach_build',lambda:build(self,run))
@@ -849,6 +862,10 @@ class Operator:
     def review_approach(self,run,checks=None):
         from bridge_approach import review
         return self._measure_phase(run,'approach_review',lambda:review(self,run,checks))
+
+    def revise_approach_review(self,run,revision,checks,expected_state_hash):
+        from bridge_approach import revise_review
+        return revise_review(self,run,revision,checks,expected_state_hash)
 
     def _measure_phase(self,run,phase,callback,*,continuing=False):
         from bridge_phase_metrics import invoke
@@ -1437,7 +1454,7 @@ def render_profile(plan,edges,path,*,horizontal_scale=None):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['status','survey','track-catalogue','station-survey','station-exits','station-routes','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','corridor-plan','corridor-build','corridor-status','corridor-continue','corridor-attach-completion','corridor-complete','approach-plan','approach-build','approach-continue','approach-review','approach-render','camera','capture','save'])
+    parser.add_argument('action',choices=['status','survey','track-catalogue','station-survey','station-exits','station-routes','diagnose','register-interfaces','resolve-interfaces','plan','execute','summary','review','continue','corridor-plan','corridor-build','corridor-status','corridor-continue','corridor-attach-completion','corridor-complete','approach-prepare','prepared-approach-build','prepared-approach-continue','prepared-approach-status','approach-plan','approach-build','approach-continue','approach-review','approach-revise-review','approach-render','camera','capture','save'])
     parser.add_argument('--input',type=Path);parser.add_argument('--run');parser.add_argument('--context',type=Path,default=CONTEXT)
     a=parser.parse_args()
     try:
@@ -1455,10 +1472,15 @@ def main():
         elif a.action=='corridor-continue':r=op.continue_corridor(a.run,**data)
         elif a.action=='corridor-attach-completion':r=op.attach_corridor_completion(a.run,**data)
         elif a.action=='corridor-complete':r=op.complete_corridor(a.run,**data)
+        elif a.action=='approach-prepare':r=op.prepare_approach(**data)
+        elif a.action=='prepared-approach-build':r=op.build_prepared_approach(a.run)
+        elif a.action=='prepared-approach-continue':r=op.build_prepared_approach(a.run,continuing=True,**data)
+        elif a.action=='prepared-approach-status':r=op.prepared_approach_status(a.run)
         elif a.action=='approach-plan':r=op.plan_approach(data)
         elif a.action=='approach-build':r=op.build_approach(a.run)
         elif a.action=='approach-continue':r=op.continue_approach(a.run,**data)
         elif a.action=='approach-review':r=op.review_approach(a.run,**data)
+        elif a.action=='approach-revise-review':r=op.revise_approach_review(a.run,**data)
         elif a.action=='approach-render':r=op.render_approach(data.pop('source',a.run),**data)
         elif a.action=='station-survey':r=op.survey_station(data)
         elif a.action=='station-exits':r=op.survey_station_exits(data)
@@ -1469,7 +1491,7 @@ def main():
         else:r=op.gui(a.action,**data)
     except Exception as exc:r={'status':'error','error':str(exc)[:500]}
     print(json.dumps(r,separators=(',',':')))
-    return 0 if r['status'] in ('ok','planned','built','reviewed') else 1
+    return 0 if r['status'] in ('ok','planned','prepared','built','reviewed','completed') else 1
 
 
 if __name__=='__main__':raise SystemExit(main())

@@ -1,5 +1,86 @@
 # Current state
 
+## Current full-district replay
+Coordinator owns native/UI work; worker owns source/tests/data. Prepared approaches
+now qualify named guide, terminal and frozen-construction endpoints; owned public
+exports can bind follow-on corridors, with self exports deferred until reviewed.
+Original constraints/resources/budgets remain; completed children are reused without
+rebinding consumed attachments. Immutable review-only revisions cannot construct.
+
+All district approaches/corridors and the main/WN1 join are built. NWC north's new
+review d4b5c836d1eb4886 passed12 checks; old failed prepared7e92aa6f7372422b remains
+honest. NWFS completed via remaining-only continuation88285522ea4a41f7, retaining the
+already accepted US_branch_7 window; successful prefix was not rebuilt. Main's16
+bounded checks passed without raising8000/256. Ordinary12 chains, six decision jobs
+(24 signals) and gap job6c2fd067c4d244f5 (23 signals) are built.
+
+Current functional index: .local_runs/efficiency_replay/district_current.json.
+Final fresh read-back confirms331signals on12declared paths, maximum sampled gap
+309.2347753 against explicit312threshold (target300). All60final native queries
+passed:22overlapping linear pieces and8whole-family paths, each positive/reverse.
+Native required-edge cap32 is distinct from256pathentries; no cap was raised.
+Four-service job5086663ba3814ead built:212257stopper4stops,215232regionalA2,
+215220regionalB2,224352express8. Fresh operating read-back verified them and retained
+existing233671name/allstops exactly. No trains purchased/run, new save or push.
+Final compact evidence: .local_runs/efficiency_replay/final_path_results.current.json,
+final_path_preparation.current.json and services/operating_after.current.json. Current helper data uses actual exact
+identities and object parameters; no global newest-ID map. It covers12 declared
+linear roads in overlapping whole-edge pieces within existing limits and eight
+explicit whole-family positive/reverse pairs; no station capacity/train proof.
+Accepted recipes retain full canonical intent, named slots, all approved bounded
+continuation windows, bootstrap actions, resources and acceptance criteria.
+Measured outer workflows/standalone jobs total2203requests/1450.917s active;
+separate preparation33requests/20.138s. Adding final60queries (60.468s active/60.453s blocking) and4service operations
+(4.359s active/4.328s blocking) gives2300requests/1535.882s active (~25.6min) for
+this recorded subset. It excludes additional qualification/catalogue/registry/route
+reads, superseded check attempts and untimed development/conversion/handoff. Nested stages are not added again. No full-session
+speedup attribution or GPT/token/credit estimate is available.
+
+Validation:228 affected offline tests passed; source unchanged since that check.
+Quiet command: .local_tools/operator312/Scripts/python.exe -X utf8 -; unittest
+loadTestsFromNames for test_approach_review_revision,test_prepared_approach,
+test_approach,test_approach_contracts,test_corridor_operator,test_corridor_completion,
+test_signal_benchmark,test_signal_batch,test_phase_metrics,test_operator,
+test_operator_fit_variation,test_dependency_batch,test_wide_signal_plan, using
+TextTestRunner(stream=io.StringIO(),verbosity=0). Data helper AST/schema checks and
+focused signal-gap/final-query cases passed; diff whitespace check passed. No Lua,
+server, cap, railway-algorithm or task-runner change. Local milestone checkpoint is the commit containing this completion record
+(parentdef2e57); no push. No further task is queued. Preserve uncertain journals and unrelated tpf3-projects.
+
+## Current efficiency comparison
+Representative replay passed from SAME original Giganto1 Continued starting world:
+eight MW fan/flyover families,16 station checks, main s0 four roads,4 signals/8
+directed checks, and4 whole-flyover native routes. Improved job6c13ea0ce5a54760 in
+session pif_1792093843_5919808 is completed; children a4f12a822e814e5b bootstrap,
+cec84e8c14fa4868 approach, ce8de29bf8ca4d85 corridor. Local current evidence:
+.local_runs/operator/6c13ea0ce5a54760/state.json and child state records; baseline:
+.local_runs/efficiency_replay/baseline_current.json, whole_flyover_results.current.json.
+Reusable packet: .local_runs/efficiency_replay/prepare_request.current.json.
+
+Preparation5reads/0mutations/3.343s + one healthy build341requests/57mutation attempts/
+175.844s active (172.203s blocking) =179.187s. No construction/fit/route intervention
+after preparation. Baseline1062.437s elapsed includes missing-bootstrap recovery and
+handoff waits; measured stages approximately170s, initial manual qualification not
+precisely timed/excluded. Therefore no engine-call speedup or strict end-to-end ratio
+is claimed. Baseline had1 omitted original13-edge bootstrap intervention; improved
+had1 pre-mutation implementation fix forwarding existing station lookup bounds, plus
+a CLI success-exit mismatch (prepared/completed), now corrected. Actual model/token/
+credit usage unavailable; no estimates.
+
+prepare_approach(brief,inputs,follow_on_corridor=None) qualifies named exact terminal/
+guide selectors and explicit signal seed, then delegates original removals -> existing
+<=8-family approach/review -> ONE corridor/completion -> exact whole-road queries.
+Original controls/resources/budgets stay fixed. Actual post-bootstrap incidence, owned
+remaining-removal scope, pending/session guards, durable child reuse, current path
+qualification and fresh resumed checks passed independent review. Native ID recycling
+is permitted only through qualified new receipts. No Lua, staging or cap changes.
+
+Current validation is228affected tests, with the exact quiet command and native
+acceptance recorded in [Current full-district replay](#current-full-district-replay).
+The full replay is complete. This local checkpoint includes source/tests/guidance;
+no push, new geometry or generic replay framework. Preserve uncertain-operation
+state, the prior review save and unrelated tpf3-projects.
+
 ## Current accepted rehearsal
 Giganto1 is user-accepted. `Giganto1 Corridor Review Ready` completed, including
 220 ordinary block signals and34 station/junction boundary signals (254 total).
