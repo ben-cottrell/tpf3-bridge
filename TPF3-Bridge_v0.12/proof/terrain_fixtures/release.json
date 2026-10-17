@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.11.0",
+  "fidelity": "gb_reference_inspired_terrain_junction_study",
+  "source_corridor": "corridor_fixtures/release.json",
+  "source_branch": "branch_fixtures/release.json",
+  "lateral_offsets_m": [0, 180, 280, 360],
+  "layouts": [
+    {"id": "original_toes", "merge_x_m": 1500, "diverge_x_m": 1800, "spread_finish_x_m": 1200, "main_restore_x_m": 4200},
+    {"id": "east_shifted_toes", "merge_x_m": 2000, "diverge_x_m": 2300, "spread_finish_x_m": 1700, "main_restore_x_m": 4200}
+  ],
+  "modes": ["flat", "flyover", "diveunder"],
+  "candidate_budget": 24,
+  "civil_policy": {
+    "single_track_half_formation_m": 2.5,
+    "construction_margin_m": 0.5,
+    "structure_half_reservation_m": 3.5,
+    "grid_step_m": 40,
+    "specialwork_on_structures": "unsupported_in_this_study"
+  },
+  "operation_scenarios": ["nominal", "crossing_pulse", "merge_pulse", "downstream_blocked"],
+  "selected_mode_for_mock": "flyover"
+}

@@ -1,0 +1,123 @@
+{
+  "schema_version": "0.12.0",
+  "plan_ref": "example-plan",
+  "candidate_hash": "5cab175c352d9d51edfc734e1d1bdca667c2f40b54b35aac70e2d898c102d6d7",
+  "binding": {
+    "environment": "mock",
+    "save_id": "fixture-save",
+    "load_epoch": "load-1",
+    "scope_id": "test-region",
+    "topology_revision": "topology-1",
+    "terrain_revision": "terrain-1",
+    "snapshot_hash": "3dc34be7abc802cd50f694bcba3796779554b487314c05c92203d22183a1c9ff",
+    "asset_catalogue_hash": "59e75574d15dd41311957fb2945ff86f993a71165d2222ccfe93181dcf7de16f",
+    "game_build": null,
+    "adapter_build": "contract-example-only"
+  },
+  "effect_region": {
+    "min_m": [
+      -10,
+      -50,
+      -10
+    ],
+    "max_m": [
+      1100,
+      50,
+      100
+    ]
+  },
+  "operations": [
+    {
+      "operation_id": "operation-1",
+      "kind": "build_track",
+      "depends_on": [],
+      "expected_effect_region": {
+        "min_m": [
+          -10,
+          -50,
+          -10
+        ],
+        "max_m": [
+          1100,
+          50,
+          100
+        ]
+      },
+      "payload": {
+        "edge_ref": "illustrative-edge-1",
+        "start_node_ref": "west_in",
+        "end_node_ref": "east_out",
+        "asset_ref": "mock-track",
+        "centreline_m": [
+          [
+            0,
+            1.7,
+            20
+          ],
+          [
+            1000,
+            1.7,
+            20
+          ]
+        ],
+        "structure_ref": null
+      },
+      "content_hash": "e70ab4a46991a84d90ce98fc6de967b5d416c4d722317bc4465c17dd70409840"
+    },
+    {
+      "operation_id": "operation-2",
+      "kind": "build_track",
+      "depends_on": [],
+      "expected_effect_region": {
+        "min_m": [
+          -10,
+          -50,
+          -10
+        ],
+        "max_m": [
+          1100,
+          50,
+          100
+        ]
+      },
+      "payload": {
+        "edge_ref": "illustrative-edge-2",
+        "start_node_ref": "east_in",
+        "end_node_ref": "west_out",
+        "asset_ref": "mock-track",
+        "centreline_m": [
+          [
+            1000,
+            -1.7,
+            20
+          ],
+          [
+            0,
+            -1.7,
+            20
+          ]
+        ],
+        "structure_ref": null
+      },
+      "content_hash": "939b60604627537dc2d420836cf0ceaf40100fd6c9b5dd0056012739b03239d1"
+    }
+  ],
+  "required_capabilities": [
+    "game.coordinates.map",
+    "game.geometry.read",
+    "game.identity.read",
+    "game.operation.receipt",
+    "game.routes.verify",
+    "game.topology.read",
+    "game.track.construct"
+  ],
+  "required_movement_refs": [
+    "main-east",
+    "main-west"
+  ],
+  "policy_ref": "build-policy-example",
+  "scope": "create_only",
+  "execution_mode": "mock",
+  "native_lowering_ref": "illustrative-lowering-not-a-build",
+  "plan_hash": "406089e88fcc1e996fa6e3760a80a865a85eb33f8efe28db9b2bd52163ca3ae3"
+}

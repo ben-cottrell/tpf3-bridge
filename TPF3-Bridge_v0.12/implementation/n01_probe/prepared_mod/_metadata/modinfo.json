@@ -1,0 +1,5 @@
+{
+  "name": "TPF3 Bridge N01 Activation",
+  "summary": "Development Python/native railway inspection, fitting and explicit construction adapter.",
+  "description": "Development interface demonstrated on TPF3 build 40408 in a disposable test world. Python publishes data-only request modules; the GameScript performs native inspection, fitting, explicitly requested construction and fresh readback, returning bounded JSON through the game log. Use only an authorised test context. Construction can change the world; no automatic rollback or mutation replay. This is development transport, not a production compatibility guarantee."
+}

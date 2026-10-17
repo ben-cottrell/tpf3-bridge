@@ -1,0 +1,1862 @@
+{
+  "contract_version": "0.12.0",
+  "status": "proposed_descriptors_not_running_server",
+  "protocol_reference": "MCP 2026-07-28; actual host/version compatibility untested",
+  "tools": [
+    {
+      "name": "rail.inspect",
+      "description": "Inspect a bounded world region or asset summary. Read-only; no full-world dump.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "scope_ref": {
+            "$ref": "#/$defs/Id"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "status",
+                "terrain",
+                "topology",
+                "assets",
+                "changes"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 5,
+            "uniqueItems": true
+          },
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "max_items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "scope_ref",
+          "categories",
+          "cursor",
+          "max_items"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "const": "0.12.0"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "running",
+              "decision_required",
+              "blocked",
+              "failed",
+              "cancelling",
+              "cancelled"
+            ]
+          },
+          "job_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "detail_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          },
+          "error_codes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 32
+          },
+          "event_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "schema_version",
+          "status",
+          "job_ref",
+          "result_ref",
+          "summary",
+          "detail_refs",
+          "error_codes",
+          "event_sequence"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "rail.design",
+      "description": "Create bounded local candidate designs. Does not write to the game. Retains a job/result handle.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "brief": {
+            "$ref": "#/$defs/DesignBrief"
+          }
+        },
+        "required": [
+          "brief"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Binding": {
+            "type": "object",
+            "properties": {
+              "environment": {
+                "enum": [
+                  "offline",
+                  "mock",
+                  "game"
+                ]
+              },
+              "save_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "load_epoch": {
+                "$ref": "#/$defs/Id"
+              },
+              "scope_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "topology_revision": {
+                "$ref": "#/$defs/Id"
+              },
+              "terrain_revision": {
+                "$ref": "#/$defs/Id"
+              },
+              "snapshot_hash": {
+                "$ref": "#/$defs/Hash"
+              },
+              "asset_catalogue_hash": {
+                "$ref": "#/$defs/Hash"
+              },
+              "game_build": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "adapter_build": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "environment",
+              "save_id",
+              "load_epoch",
+              "scope_id",
+              "topology_revision",
+              "terrain_revision",
+              "snapshot_hash",
+              "asset_catalogue_hash",
+              "game_build",
+              "adapter_build"
+            ],
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "environment": {
+                      "const": "game"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "game_build": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "adapter_build": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "Bounds": {
+            "type": "object",
+            "properties": {
+              "min_m": {
+                "$ref": "#/$defs/Vec3"
+              },
+              "max_m": {
+                "$ref": "#/$defs/Vec3"
+              }
+            },
+            "required": [
+              "min_m",
+              "max_m"
+            ],
+            "additionalProperties": false
+          },
+          "Budget": {
+            "type": "object",
+            "properties": {
+              "candidate_evaluations": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "geometry_evaluations": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000
+              },
+              "local_wall_time_s": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 86400
+              },
+              "game_write_attempts": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "max_summary_bytes": {
+                "type": "integer",
+                "minimum": 1024,
+                "maximum": 65536
+              }
+            },
+            "required": [
+              "candidate_evaluations",
+              "geometry_evaluations",
+              "local_wall_time_s",
+              "game_write_attempts",
+              "max_summary_bytes"
+            ],
+            "additionalProperties": false
+          },
+          "DesignBrief": {
+            "type": "object",
+            "properties": {
+              "schema_version": {
+                "const": "0.12.0"
+              },
+              "brief_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "request_key": {
+                "$ref": "#/$defs/Id"
+              },
+              "binding": {
+                "$ref": "#/$defs/Binding"
+              },
+              "task": {
+                "enum": [
+                  "connect_corridor",
+                  "construct_junction",
+                  "connect_station",
+                  "modify_layout"
+                ]
+              },
+              "mode": {
+                "enum": [
+                  "gb_reference_inspired",
+                  "synthetic_regression",
+                  "strict_research"
+                ]
+              },
+              "profile_ref": {
+                "$ref": "#/$defs/Id"
+              },
+              "effect_region": {
+                "$ref": "#/$defs/Bounds"
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Port"
+                },
+                "minItems": 2,
+                "maxItems": 128
+              },
+              "targets": {
+                "type": "object",
+                "properties": {
+                  "route_speed": {
+                    "$ref": "#/$defs/Target"
+                  },
+                  "maximum_gradient": {
+                    "$ref": "#/$defs/Target"
+                  },
+                  "minimum_radius": {
+                    "$ref": "#/$defs/Target"
+                  },
+                  "design_train_length": {
+                    "$ref": "#/$defs/Target"
+                  }
+                },
+                "required": [
+                  "route_speed",
+                  "maximum_gradient",
+                  "minimum_radius",
+                  "design_train_length"
+                ],
+                "additionalProperties": false
+              },
+              "allowed_families": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 1,
+                "maxItems": 32,
+                "uniqueItems": true
+              },
+              "preservation": {
+                "$ref": "#/$defs/Preservation"
+              },
+              "budget": {
+                "$ref": "#/$defs/Budget"
+              },
+              "authorised_parameter_changes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0,
+                "maxItems": 64,
+                "uniqueItems": true
+              },
+              "policy_ref": {
+                "$ref": "#/$defs/Id"
+              }
+            },
+            "required": [
+              "schema_version",
+              "brief_id",
+              "request_key",
+              "binding",
+              "task",
+              "mode",
+              "profile_ref",
+              "effect_region",
+              "ports",
+              "targets",
+              "allowed_families",
+              "preservation",
+              "budget",
+              "authorised_parameter_changes",
+              "policy_ref"
+            ],
+            "additionalProperties": false
+          },
+          "Hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          },
+          "Origin": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "source_reference",
+                  "game_observation",
+                  "project_choice",
+                  "synthetic_test"
+                ]
+              },
+              "record_ref": {
+                "$ref": "#/$defs/Id"
+              }
+            },
+            "required": [
+              "kind",
+              "record_ref"
+            ],
+            "additionalProperties": false
+          },
+          "Port": {
+            "type": "object",
+            "properties": {
+              "port_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "position_m": {
+                "$ref": "#/$defs/Vec3"
+              },
+              "forward_unit": {
+                "$ref": "#/$defs/Vec3"
+              },
+              "grade": {
+                "type": "number",
+                "minimum": -1,
+                "maximum": 1
+              },
+              "role": {
+                "enum": [
+                  "entry",
+                  "exit",
+                  "bidirectional"
+                ]
+              },
+              "native_entity_ref": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Id"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "native_port_ref": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Id"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "port_id",
+              "position_m",
+              "forward_unit",
+              "grade",
+              "role",
+              "native_entity_ref",
+              "native_port_ref"
+            ],
+            "additionalProperties": false
+          },
+          "Preservation": {
+            "type": "object",
+            "properties": {
+              "protected_asset_refs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0,
+                "maxItems": 10000,
+                "uniqueItems": true
+              },
+              "permitted_delete_refs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0,
+                "maxItems": 10000,
+                "uniqueItems": true
+              },
+              "required_movement_refs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0,
+                "maxItems": 10000,
+                "uniqueItems": true
+              },
+              "external_ports_must_match": {
+                "const": true
+              }
+            },
+            "required": [
+              "protected_asset_refs",
+              "permitted_delete_refs",
+              "required_movement_refs",
+              "external_ports_must_match"
+            ],
+            "additionalProperties": false
+          },
+          "Target": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "minimum": 0
+              },
+              "unit": {
+                "enum": [
+                  "m",
+                  "m/s",
+                  "m/m",
+                  "rad",
+                  "mm"
+                ]
+              },
+              "origin": {
+                "$ref": "#/$defs/Origin"
+              }
+            },
+            "required": [
+              "value",
+              "unit",
+              "origin"
+            ],
+            "additionalProperties": false
+          },
+          "Vec3": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": -1000000000.0,
+              "maximum": 1000000000.0
+            },
+            "minItems": 3,
+            "maxItems": 3
+          }
+        }
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "const": "0.12.0"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "running",
+              "decision_required",
+              "blocked",
+              "failed",
+              "cancelling",
+              "cancelled"
+            ]
+          },
+          "job_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "detail_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          },
+          "error_codes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 32
+          },
+          "event_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "schema_version",
+          "status",
+          "job_ref",
+          "result_ref",
+          "summary",
+          "detail_refs",
+          "error_codes",
+          "event_sequence"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "rail.revise",
+      "description": "Replan from a complete replacement brief. Does not authorise a build or silently relax limits.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "candidate_ref": {
+            "$ref": "#/$defs/Id"
+          },
+          "replacement_brief": {
+            "$ref": "#/$defs/DesignBrief"
+          },
+          "request_key": {
+            "$ref": "#/$defs/Id"
+          }
+        },
+        "required": [
+          "candidate_ref",
+          "replacement_brief",
+          "request_key"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Binding": {
+            "type": "object",
+            "properties": {
+              "environment": {
+                "enum": [
+                  "offline",
+                  "mock",
+                  "game"
+                ]
+              },
+              "save_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "load_epoch": {
+                "$ref": "#/$defs/Id"
+              },
+              "scope_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "topology_revision": {
+                "$ref": "#/$defs/Id"
+              },
+              "terrain_revision": {
+                "$ref": "#/$defs/Id"
+              },
+              "snapshot_hash": {
+                "$ref": "#/$defs/Hash"
+              },
+              "asset_catalogue_hash": {
+                "$ref": "#/$defs/Hash"
+              },
+              "game_build": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "adapter_build": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "environment",
+              "save_id",
+              "load_epoch",
+              "scope_id",
+              "topology_revision",
+              "terrain_revision",
+              "snapshot_hash",
+              "asset_catalogue_hash",
+              "game_build",
+              "adapter_build"
+            ],
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "environment": {
+                      "const": "game"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "game_build": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "adapter_build": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "Bounds": {
+            "type": "object",
+            "properties": {
+              "min_m": {
+                "$ref": "#/$defs/Vec3"
+              },
+              "max_m": {
+                "$ref": "#/$defs/Vec3"
+              }
+            },
+            "required": [
+              "min_m",
+              "max_m"
+            ],
+            "additionalProperties": false
+          },
+          "Budget": {
+            "type": "object",
+            "properties": {
+              "candidate_evaluations": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "geometry_evaluations": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000
+              },
+              "local_wall_time_s": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 86400
+              },
+              "game_write_attempts": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "max_summary_bytes": {
+                "type": "integer",
+                "minimum": 1024,
+                "maximum": 65536
+              }
+            },
+            "required": [
+              "candidate_evaluations",
+              "geometry_evaluations",
+              "local_wall_time_s",
+              "game_write_attempts",
+              "max_summary_bytes"
+            ],
+            "additionalProperties": false
+          },
+          "DesignBrief": {
+            "type": "object",
+            "properties": {
+              "schema_version": {
+                "const": "0.12.0"
+              },
+              "brief_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "request_key": {
+                "$ref": "#/$defs/Id"
+              },
+              "binding": {
+                "$ref": "#/$defs/Binding"
+              },
+              "task": {
+                "enum": [
+                  "connect_corridor",
+                  "construct_junction",
+                  "connect_station",
+                  "modify_layout"
+                ]
+              },
+              "mode": {
+                "enum": [
+                  "gb_reference_inspired",
+                  "synthetic_regression",
+                  "strict_research"
+                ]
+              },
+              "profile_ref": {
+                "$ref": "#/$defs/Id"
+              },
+              "effect_region": {
+                "$ref": "#/$defs/Bounds"
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Port"
+                },
+                "minItems": 2,
+                "maxItems": 128
+              },
+              "targets": {
+                "type": "object",
+                "properties": {
+                  "route_speed": {
+                    "$ref": "#/$defs/Target"
+                  },
+                  "maximum_gradient": {
+                    "$ref": "#/$defs/Target"
+                  },
+                  "minimum_radius": {
+                    "$ref": "#/$defs/Target"
+                  },
+                  "design_train_length": {
+                    "$ref": "#/$defs/Target"
+                  }
+                },
+                "required": [
+                  "route_speed",
+                  "maximum_gradient",
+                  "minimum_radius",
+                  "design_train_length"
+                ],
+                "additionalProperties": false
+              },
+              "allowed_families": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 1,
+                "maxItems": 32,
+                "uniqueItems": true
+              },
+              "preservation": {
+                "$ref": "#/$defs/Preservation"
+              },
+              "budget": {
+                "$ref": "#/$defs/Budget"
+              },
+              "authorised_parameter_changes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0,
+                "maxItems": 64,
+                "uniqueItems": true
+              },
+              "policy_ref": {
+                "$ref": "#/$defs/Id"
+              }
+            },
+            "required": [
+              "schema_version",
+              "brief_id",
+              "request_key",
+              "binding",
+              "task",
+              "mode",
+              "profile_ref",
+              "effect_region",
+              "ports",
+              "targets",
+              "allowed_families",
+              "preservation",
+              "budget",
+              "authorised_parameter_changes",
+              "policy_ref"
+            ],
+            "additionalProperties": false
+          },
+          "Hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          },
+          "Origin": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "source_reference",
+                  "game_observation",
+                  "project_choice",
+                  "synthetic_test"
+                ]
+              },
+              "record_ref": {
+                "$ref": "#/$defs/Id"
+              }
+            },
+            "required": [
+              "kind",
+              "record_ref"
+            ],
+            "additionalProperties": false
+          },
+          "Port": {
+            "type": "object",
+            "properties": {
+              "port_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "position_m": {
+                "$ref": "#/$defs/Vec3"
+              },
+              "forward_unit": {
+                "$ref": "#/$defs/Vec3"
+              },
+              "grade": {
+                "type": "number",
+                "minimum": -1,
+                "maximum": 1
+              },
+              "role": {
+                "enum": [
+                  "entry",
+                  "exit",
+                  "bidirectional"
+                ]
+              },
+              "native_entity_ref": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Id"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "native_port_ref": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Id"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "port_id",
+              "position_m",
+              "forward_unit",
+              "grade",
+              "role",
+              "native_entity_ref",
+              "native_port_ref"
+            ],
+            "additionalProperties": false
+          },
+          "Preservation": {
+            "type": "object",
+            "properties": {
+              "protected_asset_refs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0,
+                "maxItems": 10000,
+                "uniqueItems": true
+              },
+              "permitted_delete_refs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0,
+                "maxItems": 10000,
+                "uniqueItems": true
+              },
+              "required_movement_refs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0,
+                "maxItems": 10000,
+                "uniqueItems": true
+              },
+              "external_ports_must_match": {
+                "const": true
+              }
+            },
+            "required": [
+              "protected_asset_refs",
+              "permitted_delete_refs",
+              "required_movement_refs",
+              "external_ports_must_match"
+            ],
+            "additionalProperties": false
+          },
+          "Target": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "minimum": 0
+              },
+              "unit": {
+                "enum": [
+                  "m",
+                  "m/s",
+                  "m/m",
+                  "rad",
+                  "mm"
+                ]
+              },
+              "origin": {
+                "$ref": "#/$defs/Origin"
+              }
+            },
+            "required": [
+              "value",
+              "unit",
+              "origin"
+            ],
+            "additionalProperties": false
+          },
+          "Vec3": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": -1000000000.0,
+              "maximum": 1000000000.0
+            },
+            "minItems": 3,
+            "maxItems": 3
+          }
+        }
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "const": "0.12.0"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "running",
+              "decision_required",
+              "blocked",
+              "failed",
+              "cancelling",
+              "cancelled"
+            ]
+          },
+          "job_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "detail_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          },
+          "error_codes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 32
+          },
+          "event_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "schema_version",
+          "status",
+          "job_ref",
+          "result_ref",
+          "summary",
+          "detail_refs",
+          "error_codes",
+          "event_sequence"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "rail.commit",
+      "description": "Execute only the referenced immutable plan under a host-issued approval. May change the game.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "plan_ref": {
+            "$ref": "#/$defs/Id"
+          },
+          "expected_plan_hash": {
+            "$ref": "#/$defs/Hash"
+          },
+          "approval_ref": {
+            "$ref": "#/$defs/Id"
+          },
+          "request_key": {
+            "$ref": "#/$defs/Id"
+          }
+        },
+        "required": [
+          "plan_ref",
+          "expected_plan_hash",
+          "approval_ref",
+          "request_key"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "const": "0.12.0"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "running",
+              "decision_required",
+              "blocked",
+              "failed",
+              "cancelling",
+              "cancelled"
+            ]
+          },
+          "job_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "detail_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          },
+          "error_codes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 32
+          },
+          "event_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "schema_version",
+          "status",
+          "job_ref",
+          "result_ref",
+          "summary",
+          "detail_refs",
+          "error_codes",
+          "event_sequence"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "rail.status",
+      "description": "Read one retained job summary after a cursor. Host polling, not per-iteration model polling.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "job_ref": {
+            "$ref": "#/$defs/Id"
+          },
+          "after_event_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "job_ref",
+          "after_event_sequence"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "const": "0.12.0"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "running",
+              "decision_required",
+              "blocked",
+              "failed",
+              "cancelling",
+              "cancelled"
+            ]
+          },
+          "job_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "detail_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          },
+          "error_codes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 32
+          },
+          "event_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "schema_version",
+          "status",
+          "job_ref",
+          "result_ref",
+          "summary",
+          "detail_refs",
+          "error_codes",
+          "event_sequence"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "rail.explain",
+      "description": "Read bounded diagnostics from a result. Does not evaluate arbitrary code or paths.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "result_ref": {
+            "$ref": "#/$defs/Id"
+          },
+          "category": {
+            "enum": [
+              "summary",
+              "geometry",
+              "capability",
+              "failure",
+              "provenance",
+              "comparison"
+            ]
+          },
+          "max_items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "required": [
+          "result_ref",
+          "category",
+          "max_items"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "const": "0.12.0"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "running",
+              "decision_required",
+              "blocked",
+              "failed",
+              "cancelling",
+              "cancelled"
+            ]
+          },
+          "job_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "detail_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          },
+          "error_codes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 32
+          },
+          "event_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "schema_version",
+          "status",
+          "job_ref",
+          "result_ref",
+          "summary",
+          "detail_refs",
+          "error_codes",
+          "event_sequence"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "rail.observe",
+      "description": "Read a bounded game-state change summary. No settings or train control writes.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "scope_ref": {
+            "$ref": "#/$defs/Id"
+          },
+          "after_cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "window_game_seconds": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 86400
+          },
+          "max_items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "scope_ref",
+          "after_cursor",
+          "window_game_seconds",
+          "max_items"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "const": "0.12.0"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "running",
+              "decision_required",
+              "blocked",
+              "failed",
+              "cancelling",
+              "cancelled"
+            ]
+          },
+          "job_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "detail_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          },
+          "error_codes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 32
+          },
+          "event_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "schema_version",
+          "status",
+          "job_ref",
+          "result_ref",
+          "summary",
+          "detail_refs",
+          "error_codes",
+          "event_sequence"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "rail.cancel",
+      "description": "Request cooperative stop. Completed game effects remain; cancellation is not rollback.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "job_ref": {
+            "$ref": "#/$defs/Id"
+          },
+          "request_key": {
+            "$ref": "#/$defs/Id"
+          }
+        },
+        "required": [
+          "job_ref",
+          "request_key"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "const": "0.12.0"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "running",
+              "decision_required",
+              "blocked",
+              "failed",
+              "cancelling",
+              "cancelled"
+            ]
+          },
+          "job_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "detail_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          },
+          "error_codes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0,
+            "maxItems": 32
+          },
+          "event_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "schema_version",
+          "status",
+          "job_ref",
+          "result_ref",
+          "summary",
+          "detail_refs",
+          "error_codes",
+          "event_sequence"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    }
+  ]
+}

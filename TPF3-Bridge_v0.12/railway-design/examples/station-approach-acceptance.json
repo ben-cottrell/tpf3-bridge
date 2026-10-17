@@ -1,0 +1,1541 @@
+{
+  "kind": "authored_acceptance_spec",
+  "version": 1,
+  "revision": "station-approach-acceptance-R1",
+  "status": "selected_for_native_trial",
+  "purpose": "Reusable bounded acceptance challenge for complete approach jobs, nearby fitting, replacement propagation, continuation, and affected checks.",
+  "execution": "Designer specification; the exact current executable adaptation is station-approach-brief.json. The executable uses an additional u650 ordinary boundary and seven families: leads, parallel, fans, flyover, pointwork, signals_inner, signals_outer. Its native grade context is 0.2; no railway grade performance claim is implied.",
+  "world": {
+    "session": "pif_1791837108_17074876",
+    "disposable": true,
+    "save_required": false,
+    "signal_seed_id": 60370,
+    "signal_resource": "::/infrastructure/signal/signal_path_c.con",
+    "effect_policy": "Native terrain and ordinary content inside each family envelope are redevelopable; no new protections are implied."
+  },
+  "sources": {
+    "design": [
+      "RAILWAY_DESIGN_PROCEDURE.md",
+      "railway-design/PATTERNS.md:F1,X1,O1,G3,D4"
+    ],
+    "native_station": "Installed base/content/stations/rail.zip: rail/modular_station/modular_station.con.lua and modular_station.script.lua:createTemplateFn",
+    "native_track": "Installed base/content/infrastructure/track.zip: track/standard/standard.street_template.lua",
+    "adapter": [
+      "bridge_station.py:place_station,inspect_exits",
+      "bridge_operator.py:validate_plan,fit_variation_config",
+      "bridge_corridor.py:compile_corridor",
+      "bridge_station_routes.py:review"
+    ]
+  },
+  "station_step": {
+    "name": "station",
+    "kind": "station",
+    "brief": {
+      "resource": "::/stations/rail/modular_station/modular_station.con",
+      "template": 5,
+      "params": {
+        "tracks": 4,
+        "length": 2,
+        "trackType": 2,
+        "catenary": 1,
+        "year": 2000
+      },
+      "position": [
+        -200,
+        -4700,
+        2.6
+      ],
+      "angle": -1.5707963267948966,
+      "name": "Approach Acceptance"
+    }
+  },
+  "station_parameter_meaning": {
+    "template": "zero-based era-C passenger terminus; odd passenger templates have head=true",
+    "tracks": "Native script interprets4 as four tracks",
+    "length": "Native script length2 selects three40-unit track modules, giving120 nominal platform length",
+    "trackType": "2 selects standard;1 would cap track at100km/h",
+    "catenary": "1 selects no catenary",
+    "level": "Creation requested2.6; native construction and rail exits read back2.5999999046325684. Exact current selector uses the native float. No universal terrain floor."
+  },
+  "survey": {
+    "station_region": {
+      "min": [
+        -600,
+        -5100,
+        -25
+      ],
+      "max": [
+        300,
+        -4200,
+        75
+      ]
+    },
+    "external_track_edges": 0,
+    "station_samples": [
+      {
+        "xy": [
+          -320,
+          -4770
+        ],
+        "height": 2.45
+      },
+      {
+        "xy": [
+          -200,
+          -4770
+        ],
+        "height": 2.6
+      },
+      {
+        "xy": [
+          -80,
+          -4770
+        ],
+        "height": 3.05
+      },
+      {
+        "xy": [
+          -320,
+          -4700
+        ],
+        "height": 2.05
+      },
+      {
+        "xy": [
+          -200,
+          -4700
+        ],
+        "height": 2.6
+      },
+      {
+        "xy": [
+          -80,
+          -4700
+        ],
+        "height": 0.55
+      },
+      {
+        "xy": [
+          -320,
+          -4630
+        ],
+        "height": 2.5
+      },
+      {
+        "xy": [
+          -200,
+          -4630
+        ],
+        "height": 2.5
+      },
+      {
+        "xy": [
+          -80,
+          -4630
+        ],
+        "height": 1.55
+      }
+    ],
+    "coverage": "Terrain samples only; TRACK discovery is not a buildings/water/collision survey. Native proposals decide construction.",
+    "approach_samples": [
+      {
+        "xy": [
+          200,
+          -4715
+        ],
+        "height": 3
+      },
+      {
+        "xy": [
+          500,
+          -4715
+        ],
+        "height": 1.35
+      },
+      {
+        "xy": [
+          580,
+          -4690
+        ],
+        "height": 1.55
+      },
+      {
+        "xy": [
+          650,
+          -4680
+        ],
+        "height": 2.95
+      },
+      {
+        "xy": [
+          800,
+          -4715
+        ],
+        "height": 1.1
+      },
+      {
+        "xy": [
+          1000,
+          -4715
+        ],
+        "height": 1.45
+      },
+      {
+        "xy": [
+          1040,
+          -4700
+        ],
+        "height": 0.9
+      },
+      {
+        "xy": [
+          1110,
+          -4715
+        ],
+        "height": 2.15
+      },
+      {
+        "xy": [
+          1180,
+          -4730
+        ],
+        "height": 2.15
+      },
+      {
+        "xy": [
+          1300,
+          -4715
+        ],
+        "height": 1.85
+      },
+      {
+        "xy": [
+          1300,
+          -4765
+        ],
+        "height": 2.3
+      },
+      {
+        "xy": [
+          1370,
+          -4715
+        ],
+        "height": 3.25
+      },
+      {
+        "xy": [
+          1380,
+          -4780
+        ],
+        "height": 8.65
+      },
+      {
+        "xy": [
+          1420,
+          -4785
+        ],
+        "height": 12.85
+      },
+      {
+        "xy": [
+          1470,
+          -4785
+        ],
+        "height": 17.15
+      },
+      {
+        "xy": [
+          1520,
+          -4785
+        ],
+        "height": 21.35
+      },
+      {
+        "xy": [
+          1670,
+          -4785
+        ],
+        "height": 31
+      }
+    ],
+    "approach_survey_pending": false,
+    "approach_regions": [
+      {
+        "min": [
+          150,
+          -4860,
+          -20
+        ],
+        "max": [
+          1000,
+          -4540,
+          65
+        ]
+      },
+      {
+        "min": [
+          980,
+          -4870,
+          -20
+        ],
+        "max": [
+          1750,
+          -4540,
+          65
+        ]
+      }
+    ],
+    "profile_decision": "Keep main/crossing near observed station rail level. End the inbound branch on the surveyed hillside at[1420,-4785,12.85], rather than cutting back to station level through31m terrain farther east. Native earthworks remain permitted."
+  },
+  "frame": {
+    "origin": "Observed M: mean XYZ of the four east-facing station rail exits, each uniquely associated with its frozen terminal component.",
+    "u_world": [
+      1,
+      0
+    ],
+    "v_world": [
+      0,
+      1
+    ],
+    "height": "w=0 is observed station railhead; all local coordinates are [u,v,w]",
+    "station_roles": "P1..P4 are increasing world Y (local v); native terminal indexes are4,3,2,1. These are observed associations for the current station, not a universal numbering rule.",
+    "traffic": {
+      "main_in": "higher-v road; travel decreasing u",
+      "main_out": "lower-v road; travel increasing u",
+      "flyover_in": "inbound only; decreasing u; merge into main_in before any platform choices",
+      "platforms": "Both arrival and departure at all four terminals"
+    },
+    "observed_origin": [
+      -140,
+      -4715,
+      2.5999999046325684
+    ]
+  },
+  "resources": {
+    "track": {
+      "template": "::/infrastructure/track/standard/standard.street_template",
+      "style": "::/infrastructure/track/standard/standard.street"
+    },
+    "track_distance": 5,
+    "track_distance_source": "Installed native resource; confirm the selected runtime template still has this value.",
+    "bridge": {
+      "classification": "BRIDGE",
+      "resource_name": "::/infrastructure/bridge/steel.bridge"
+    },
+    "bridge_authority": "Selected installed RAIL-capable resource; runtime preparation/acceptance still required."
+  },
+  "arrangement": {
+    "platform_lead_length": 30,
+    "bank_lower": [
+      "P1",
+      "P2"
+    ],
+    "bank_upper": [
+      "P3",
+      "P4"
+    ],
+    "native_pair_v": [
+      -2.5,
+      2.5
+    ],
+    "fan_tip_u": 240,
+    "fan_inner_branch_preferred_u": 135,
+    "departure_crossover": {
+      "from": [
+        270,
+        2.5,
+        0
+      ],
+      "to": [
+        350,
+        -2.5,
+        0
+      ],
+      "travel": "+u"
+    },
+    "arrival_crossover": {
+      "from": [
+        450,
+        2.5,
+        0
+      ],
+      "to": [
+        370,
+        -2.5,
+        0
+      ],
+      "travel": "-u"
+    },
+    "common_arrival_decision": [
+      500,
+      2.5,
+      0
+    ],
+    "branch_merge": [
+      570,
+      2.5,
+      0
+    ],
+    "branch_landing": [
+      720,
+      25,
+      0
+    ],
+    "flyover_near": [
+      1180,
+      15,
+      15
+    ],
+    "flyover_far": [
+      1320,
+      -15,
+      15
+    ],
+    "branch_far": [
+      1560,
+      -70,
+      10.250000095367431
+    ],
+    "main_far_u": 1510,
+    "bridge_angle_degrees": 12.095,
+    "preferences": "Roughly55\u00e2\u20ac\u201c60mph fan context and75\u00e2\u20ac\u201c80mph crossover context are user design references, not measured performance or hard acceptance gates.80m crossover preferred; no added fixed turnout gap. Native fit may alter positions inside family envelopes.",
+    "urban_reserve_local": {
+      "min": [
+        -170,
+        65,
+        -10
+      ],
+      "max": [
+        600,
+        230,
+        40
+      ]
+    },
+    "urban_reserve_intent": "Keep station frontage and one approach-side development/road corridor visibly open; no roads/buildings added in this challenge.",
+    "branch_far_world": [
+      1420,
+      -4785,
+      12.85
+    ],
+    "coordinates_note": "Local anchors use the observed mouth datum. branch_far_world remains the surveyed hillside anchor. Native fit may move flexible connections inside their authored family envelopes."
+  },
+  "profile": {
+    "main": "Initially level at observed station railhead2.5999999046325684. Surveyed main centreline is1.10..3.25; ordinary native cut/fill accommodates this without a guessed absolute floor.",
+    "flyover": "Level 15 m above lower rail at the crossing; inner NORMAL approach descends to station rail level, outer NORMAL approach descends gently to the higher hillside boundary at absolute 12.85. Both endpoint grades initially zero. The 15 m separation is a starting height, not clearance proof.",
+    "max_grade": 0.06,
+    "max_grade_intent": "Selected generous fixture limit, not a universal railway rule. Preferred inner/outer approach spans are460/240m; native geometry and sampled grade decide. Outer endpoint uses actual hillside height.",
+    "no_automatic_repair": "A support collision may require a different native span/structure sequence within the same crossing envelope; no blind rebuild or extra level."
+  },
+  "family_order": [
+    {
+      "name": "station",
+      "kind": "operator",
+      "region_world": {
+        "min": [
+          -350,
+          -4820,
+          -5
+        ],
+        "max": [
+          -30,
+          -4580,
+          35
+        ]
+      },
+      "uses": [],
+      "output": [
+        "station_identity"
+      ],
+      "payload": "station_step"
+    },
+    {
+      "name": "leads",
+      "kind": "operator",
+      "envelope_local": {
+        "min": [
+          -5,
+          -45,
+          -10
+        ],
+        "max": [
+          65,
+          45,
+          25
+        ]
+      },
+      "uses": [
+        "station"
+      ],
+      "output": [
+        "P1_lead",
+        "P2_lead",
+        "P3_lead",
+        "P4_lead"
+      ],
+      "steps": "Four existing extend operations from exact station_exit roles to30m outward endpoint, preserving observed grade. Do not guess frozen node/edge IDs."
+    },
+    {
+      "name": "fans",
+      "kind": "operator",
+      "envelope_local": {
+        "min": [
+          20,
+          -55,
+          -10
+        ],
+        "max": [
+          275,
+          55,
+          25
+        ]
+      },
+      "uses": [
+        "leads"
+      ],
+      "output": [
+        "lower_fan",
+        "upper_fan",
+        "lower_throat_seed",
+        "upper_throat_seed"
+      ],
+      "steps": "Two10m throat stubs from u240 to250 at v+-2.5. Connect each stub's station-facing end to the outer platform lead, source toward station (-u). Branch the inner platform lead from that same fitted fan aroundu135; lower outer=P1,inner=P2; upper outer=P4,inner=P3. Controlling parents before inner branches."
+    },
+    {
+      "name": "parallel_throat",
+      "kind": "corridor",
+      "envelope_local": {
+        "min": [
+          230,
+          -35,
+          -10
+        ],
+        "max": [
+          1520,
+          35,
+          30
+        ]
+      },
+      "uses": [
+        "fans"
+      ],
+      "output": [
+        "main_out",
+        "main_in"
+      ],
+      "sections": [
+        {
+          "name": "throat",
+          "u": [
+            250,
+            900
+          ],
+          "envelope_local": {
+            "min": [
+              230,
+              -35,
+              -10
+            ],
+            "max": [
+              920,
+              35,
+              30
+            ]
+          }
+        },
+        {
+          "name": "outer",
+          "u": [
+            900,
+            1510
+          ],
+          "envelope_local": {
+            "min": [
+              880,
+              -35,
+              -10
+            ],
+            "max": [
+              1530,
+              35,
+              30
+            ]
+          }
+        }
+      ],
+      "steps": "Attach exact far ends of the fan seeds; create only necessary far waypoint stubs. Pair reference main_out atv=-2.5, native group-local normal offset +5 for main_in. Both authored canonical directions+u; max native20segments unchanged."
+    },
+    {
+      "name": "flyover",
+      "kind": "operator",
+      "envelope_local": {
+        "min": [
+          690,
+          -110,
+          -10
+        ],
+        "max": [
+          1590,
+          65,
+          40
+        ]
+      },
+      "uses": [
+        "parallel_throat"
+      ],
+      "output": [
+        "flyover_deck",
+        "flyover_inner_ramp",
+        "flyover_outer_ramp",
+        "flyover_far"
+      ],
+      "steps": "Build lower main pair first. Prepare one level unconnected structure_seed between near/far deck anchors. Connect both exact deck ends to NORMAL approaches: a zero-grade landing stub at [720,25,0] and a zero-grade far stub at surveyed world [1420,-4785,12.85]. No interior profile guide initially. Native abutments/supports and complete crossing proposal must be accepted."
+    },
+    {
+      "name": "pointwork",
+      "kind": "operator",
+      "envelope_local": {
+        "min": [
+          240,
+          -30,
+          -10
+        ],
+        "max": [
+          750,
+          55,
+          30
+        ]
+      },
+      "uses": [
+        "fans",
+        "parallel_throat",
+        "flyover"
+      ],
+      "output": [
+        "arrival_crossover",
+        "departure_crossover",
+        "branch_merge"
+      ],
+      "steps": "Fit two separate single crossovers and one branch from main_in nearu570 to exact landing at[720,25,0]. Branch is constructed outward but operated inbound. Bind actual revised through roads after each split; preserve merge before decision before first platform choice in inbound travel."
+    },
+    {
+      "name": "signals_inner",
+      "kind": "operator",
+      "uses": [
+        "leads",
+        "fans",
+        "parallel_throat",
+        "flyover",
+        "pointwork"
+      ],
+      "output": [
+        "platform_departure_signals",
+        "common_arrival_decision",
+        "inner_main_blocks"
+      ],
+      "steps": "After all pointwork, place four departure signals on bidirectional platform leads with one_way=false, facing +u. Place one common inbound decision between merge and arrival crossover, preferred u500. Signal only ordinary main-road subchains within this envelope, ending at the exact waypoint boundary near u900. Preserve the 300m phase for the later outer family. Reacquire exact split-edge identity and orientation before each single placement.",
+      "envelope_local": {
+        "min": [
+          -5,
+          -55,
+          -10
+        ],
+        "max": [
+          920,
+          55,
+          40
+        ]
+      }
+    },
+    {
+      "name": "signals_outer",
+      "kind": "operator",
+      "envelope_local": {
+        "min": [
+          690,
+          -110,
+          -10
+        ],
+        "max": [
+          1590,
+          65,
+          40
+        ]
+      },
+      "uses": [
+        "parallel_throat",
+        "flyover",
+        "pointwork",
+        "signals_inner"
+      ],
+      "output": [
+        "outer_main_blocks",
+        "flyover_blocks"
+      ],
+      "steps": "One-way bulk signals on exact ordinary main-road subchains beyond the u900 waypoint and on the entire ordinary flyover approach from its landing toward the far boundary. Carry main-road300m spacing phase from signals_inner using measured receipt-chain distance; signals face main_in/flyover -u and main_out +u. Whole-chain junction exclusion remains mandatory; endpoint joining the merge is allowed only as supported by existing native checks."
+    }
+  ],
+  "current_api_fragments": {
+    "lead_step": {
+      "name": "P1_lead",
+      "kind": "extend",
+      "source": "P1_exit",
+      "target": "P1_end"
+    },
+    "fan_connect": {
+      "name": "outer_fan",
+      "kind": "connect",
+      "source": "throat_seed_near",
+      "target": "outer_platform_lead",
+      "structures": [
+        {
+          "classification": "NORMAL"
+        }
+      ],
+      "representation": "endpoint_cubic",
+      "radius": 0
+    },
+    "fan_branch": {
+      "name": "inner_fan",
+      "kind": "branch",
+      "source": {
+        "curve": "outer_fan",
+        "u": 0.5
+      },
+      "target": "inner_platform_lead",
+      "radius": 0,
+      "max_route_length": 800,
+      "candidates": [
+        {
+          "branch": "endpoint_cubic_graded",
+          "through": "subdivide"
+        }
+      ],
+      "fit_variation": {
+        "source": {
+          "max_shift": 25,
+          "step": 5,
+          "direction": "both"
+        },
+        "max_attempts": 12,
+        "max_requests": 100,
+        "intent": {
+          "longitudinal_axis": [
+            -1,
+            0
+          ],
+          "max_extra_inflections": 0
+        }
+      }
+    },
+    "group_members": [
+      {
+        "track": "main_out",
+        "representation": "native_parts",
+        "structures": [
+          {
+            "classification": "NORMAL"
+          }
+        ],
+        "radius": 0,
+        "fit_radius": 100
+      },
+      {
+        "track": "main_in",
+        "normal_offset_from": {
+          "group_index": 1,
+          "spacing": 5,
+          "reverse": false
+        }
+      }
+    ],
+    "crossover_step": {
+      "name": "departure_crossover",
+      "kind": "crossover",
+      "source": {
+        "curve": "main_in_throat",
+        "u": 0.03076923076923077
+      },
+      "target": {
+        "curve": "main_out_throat",
+        "u": 0.15384615384615385
+      },
+      "radius": 0,
+      "max_route_length": 800,
+      "candidates": [
+        {
+          "branch": "endpoint_cubic_graded",
+          "through": "subdivide"
+        }
+      ],
+      "fit_variation": {
+        "source": {
+          "max_shift": 15,
+          "step": 5,
+          "direction": "both"
+        },
+        "target": {
+          "max_shift": 15,
+          "step": 5,
+          "direction": "both"
+        },
+        "max_attempts": 24,
+        "max_requests": 160,
+        "intent": {
+          "longitudinal_axis": [
+            1,
+            0
+          ],
+          "max_extra_inflections": 0
+        }
+      }
+    },
+    "structure_seed": {
+      "name": "flyover_deck",
+      "kind": "structure_seed",
+      "source": "deck_near",
+      "target": "deck_far",
+      "structure": {
+        "classification": "BRIDGE",
+        "resource_name": "::/infrastructure/bridge/steel.bridge"
+      },
+      "radius": 0
+    },
+    "departure_signal": {
+      "name": "P1_departure",
+      "kind": "signal",
+      "brief": {
+        "edge_id": {
+          "role": "P1_lead_signal",
+          "field": "edge_id"
+        },
+        "parameter": 0.5,
+        "forward": true,
+        "one_way": false,
+        "seed_id": 60370,
+        "fit_offsets_m": [
+          -5,
+          5,
+          -10,
+          10
+        ]
+      }
+    },
+    "ordinary_signal_chain": {
+      "name": "main_in_blocks",
+      "kind": "signal_chain",
+      "chains": [
+        "main_in_ordinary"
+      ],
+      "forward": false,
+      "spacing": 300,
+      "start_offset": 150,
+      "end_clearance": 60,
+      "max_count": 8,
+      "seed_id": 60370,
+      "placement_mode": "batch"
+    },
+    "station_leads_input": {
+      "selector": {
+        "name": "Approach Acceptance",
+        "construction": {
+          "resource": "::/stations/rail/modular_station/modular_station.con",
+          "position": [
+            -200,
+            -4700,
+            2.5999999046325684
+          ]
+        }
+      },
+      "outward_direction": [
+        1,
+        0
+      ],
+      "ordered_roles": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "lead_length": 30,
+      "registry_name": "approach_acceptance_station",
+      "revision": "station-approach-acceptance-R1",
+      "track": {
+        "template": "::/infrastructure/track/standard/standard.street_template",
+        "style": "::/infrastructure/track/standard/standard.street"
+      },
+      "max_grade": 0.06,
+      "region": {
+        "min": [
+          -145,
+          -4760,
+          -7.400000095367432
+        ],
+        "max": [
+          -75,
+          -4670,
+          27.59999990463257
+        ]
+      }
+    },
+    "station_leads_api": "bridge_approach.station_leads(operator, selector, **remaining_station_leads_input_fields); optional current-session exit_evidence may reuse the coordinator's fresh survey. Function authors data only; native registration/build still reacquire identities.",
+    "family_envelopes_world": {
+      "station": [
+        {
+          "min": [
+            -350,
+            -4820,
+            -5
+          ],
+          "max": [
+            -30,
+            -4580,
+            35
+          ]
+        }
+      ],
+      "leads": [
+        {
+          "min": [
+            -145,
+            -4760,
+            -7.400000095367432
+          ],
+          "max": [
+            -75,
+            -4670,
+            27.59999990463257
+          ]
+        }
+      ],
+      "fans": [
+        {
+          "min": [
+            -120,
+            -4770,
+            -7.400000095367432
+          ],
+          "max": [
+            135,
+            -4660,
+            27.59999990463257
+          ]
+        }
+      ],
+      "parallel_throat": [
+        {
+          "min": [
+            90,
+            -4750,
+            -7.400000095367432
+          ],
+          "max": [
+            780,
+            -4680,
+            32.59999990463257
+          ]
+        },
+        {
+          "min": [
+            740,
+            -4750,
+            -7.400000095367432
+          ],
+          "max": [
+            1390,
+            -4680,
+            32.59999990463257
+          ]
+        }
+      ],
+      "flyover": [
+        {
+          "min": [
+            550,
+            -4825,
+            -7.400000095367432
+          ],
+          "max": [
+            1450,
+            -4650,
+            42.59999990463257
+          ]
+        }
+      ],
+      "pointwork": [
+        {
+          "min": [
+            100,
+            -4745,
+            -7.400000095367432
+          ],
+          "max": [
+            610,
+            -4660,
+            32.59999990463257
+          ]
+        }
+      ],
+      "signals_inner": [
+        {
+          "min": [
+            -145,
+            -4770,
+            -7.400000095367432
+          ],
+          "max": [
+            780,
+            -4660,
+            42.59999990463257
+          ]
+        }
+      ],
+      "signals_outer": [
+        {
+          "min": [
+            550,
+            -4825,
+            -7.400000095367432
+          ],
+          "max": [
+            1450,
+            -4650,
+            42.59999990463257
+          ]
+        }
+      ]
+    },
+    "platform_route_endpoints": {
+      "P1": {
+        "arrival": {
+          "role": "P1",
+          "guide_xyz": [
+            -260,
+            -4725,
+            2.5999999046325684
+          ],
+          "travel_direction": [
+            -1,
+            0
+          ],
+          "placement_tolerance": 0.15,
+          "heading_tolerance_deg": 2
+        },
+        "departure": {
+          "role": "P1",
+          "guide_xyz": [
+            -260,
+            -4725,
+            2.5999999046325684
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "placement_tolerance": 0.15,
+          "heading_tolerance_deg": 2
+        }
+      },
+      "P2": {
+        "arrival": {
+          "role": "P2",
+          "guide_xyz": [
+            -260,
+            -4720,
+            2.5999999046325684
+          ],
+          "travel_direction": [
+            -1,
+            0
+          ],
+          "placement_tolerance": 0.15,
+          "heading_tolerance_deg": 2
+        },
+        "departure": {
+          "role": "P2",
+          "guide_xyz": [
+            -260,
+            -4720,
+            2.5999999046325684
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "placement_tolerance": 0.15,
+          "heading_tolerance_deg": 2
+        }
+      },
+      "P3": {
+        "arrival": {
+          "role": "P3",
+          "guide_xyz": [
+            -260,
+            -4710,
+            2.5999999046325684
+          ],
+          "travel_direction": [
+            -1,
+            0
+          ],
+          "placement_tolerance": 0.15,
+          "heading_tolerance_deg": 2
+        },
+        "departure": {
+          "role": "P3",
+          "guide_xyz": [
+            -260,
+            -4710,
+            2.5999999046325684
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "placement_tolerance": 0.15,
+          "heading_tolerance_deg": 2
+        }
+      },
+      "P4": {
+        "arrival": {
+          "role": "P4",
+          "guide_xyz": [
+            -260,
+            -4705,
+            2.5999999046325684
+          ],
+          "travel_direction": [
+            -1,
+            0
+          ],
+          "placement_tolerance": 0.15,
+          "heading_tolerance_deg": 2
+        },
+        "departure": {
+          "role": "P4",
+          "guide_xyz": [
+            -260,
+            -4705,
+            2.5999999046325684
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "placement_tolerance": 0.15,
+          "heading_tolerance_deg": 2
+        }
+      }
+    }
+  },
+  "adaptation_contract": [
+    "Use the worker's approach schema as the sole production schema. This spec's family envelopes/anchors are design data; no generic expression evaluator or new planner is requested.",
+    "Current station has been built and exact east exits associated; station_roles records the observed native terminal indexes4,3,2,1. Reuse station_leads_input to generate the production lead plan and registry; no guessed frozen entities.",
+    "station_leads_input binds all lead endpoints to observed M and rail Z. Remaining local anchors translate by frame.observed_origin; family_envelopes_world gives exact authorised boxes. Later free attachments and native orientation come only from qualified lead/fan/through receipts. Each child retains ordinary version2 fields and1000m horizontal limit.",
+    "The current_api_fragments are valid field shapes, but their u/edge/parameter references must be resolved against exact current receipt geometry. Illustrative u values assume a straight u250..900 connection; compute from the actual selected native chain. Do not replay fixed fractions after a split.",
+    "Fan parent canonical direction must point toward station for named curve branching. Crossovers use travel tangents at both interior endpoints: with+u parent roads, departure is upper270->lower350; arrival is constructed lower370->upper450 and traversed in reverse. Explicitly inspect canonical direction before using forward flags.",
+    "Provide required route bindings containing only edges each movement must traverse. Never require every edge in a whole fan/through receipt containing alternative branches or unused upstream sections. Keep native required_edges<=32.",
+    "Target exact ordinary signal subchains after pointwork using receipt topology and endpoint identities. No proximity remap; junction incidence must be revalidated by current native checks. Mid-lead signal parameter and forward flag derive from its refreshed edge orientation.",
+    "The15m deck height and selected grade ceiling need native proposal acceptance and profile readback; accepted different segmentation and suitable local displacement are normal outcomes.",
+    "Existing named curve references have no direction-reversal field. For fit_variation, ensure the relevant exported chain uses the intended canonical direction and actual contiguous receipt ordering; otherwise use an explicit named interior port with the correct travel tangent, or a narrow adapter extension, never fabricate reversed snapshots.",
+    "There are exactly8 bounded construction families. The surveyed shorter branch allows one900m-wide flyover child. Split signalling into inner and outer children to retain the1000m Operator region cap; acceptance is the existing job's check phase.",
+    "Bulk signal exclusions suppress placements but do not legalize an internally branching chain. At pointwork, form exact ordinary subchains from the qualified replacement topology. Across the u900 waypoint retain a single300m phase from measured chain lengths, not nominal local-u distances."
+  ],
+  "acceptance": {
+    "required_movements": [
+      {
+        "name": "main_in_to_P1",
+        "purpose": "arrival",
+        "source": "main_in",
+        "target": "P1",
+        "required_binding_roles": [
+          "main_in_ordinary",
+          "arrival_crossover",
+          "P1_lead"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer"
+        ]
+      },
+      {
+        "name": "flyover_in_to_P1",
+        "purpose": "arrival",
+        "source": "flyover_in",
+        "target": "P1",
+        "required_binding_roles": [
+          "flyover_deck",
+          "branch_merge",
+          "arrival_crossover",
+          "P1_lead"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer",
+          "flyover"
+        ]
+      },
+      {
+        "name": "P1_to_main_out",
+        "purpose": "departure",
+        "source": "P1",
+        "target": "main_out",
+        "required_binding_roles": [
+          "P1_lead",
+          "main_out_ordinary"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer"
+        ]
+      },
+      {
+        "name": "main_in_to_P2",
+        "purpose": "arrival",
+        "source": "main_in",
+        "target": "P2",
+        "required_binding_roles": [
+          "main_in_ordinary",
+          "arrival_crossover",
+          "P2_lead"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer"
+        ]
+      },
+      {
+        "name": "flyover_in_to_P2",
+        "purpose": "arrival",
+        "source": "flyover_in",
+        "target": "P2",
+        "required_binding_roles": [
+          "flyover_deck",
+          "branch_merge",
+          "arrival_crossover",
+          "P2_lead"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer",
+          "flyover"
+        ]
+      },
+      {
+        "name": "P2_to_main_out",
+        "purpose": "departure",
+        "source": "P2",
+        "target": "main_out",
+        "required_binding_roles": [
+          "P2_lead",
+          "main_out_ordinary"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer"
+        ]
+      },
+      {
+        "name": "main_in_to_P3",
+        "purpose": "arrival",
+        "source": "main_in",
+        "target": "P3",
+        "required_binding_roles": [
+          "main_in_ordinary",
+          "P3_lead"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer"
+        ]
+      },
+      {
+        "name": "flyover_in_to_P3",
+        "purpose": "arrival",
+        "source": "flyover_in",
+        "target": "P3",
+        "required_binding_roles": [
+          "flyover_deck",
+          "branch_merge",
+          "P3_lead"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer",
+          "flyover"
+        ]
+      },
+      {
+        "name": "P3_to_main_out",
+        "purpose": "departure",
+        "source": "P3",
+        "target": "main_out",
+        "required_binding_roles": [
+          "P3_lead",
+          "departure_crossover",
+          "main_out_ordinary"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer"
+        ]
+      },
+      {
+        "name": "main_in_to_P4",
+        "purpose": "arrival",
+        "source": "main_in",
+        "target": "P4",
+        "required_binding_roles": [
+          "main_in_ordinary",
+          "P4_lead"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer"
+        ]
+      },
+      {
+        "name": "flyover_in_to_P4",
+        "purpose": "arrival",
+        "source": "flyover_in",
+        "target": "P4",
+        "required_binding_roles": [
+          "flyover_deck",
+          "branch_merge",
+          "P4_lead"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer",
+          "flyover"
+        ]
+      },
+      {
+        "name": "P4_to_main_out",
+        "purpose": "departure",
+        "source": "P4",
+        "target": "main_out",
+        "required_binding_roles": [
+          "P4_lead",
+          "departure_crossover",
+          "main_out_ordinary"
+        ],
+        "uses": [
+          "station",
+          "leads",
+          "fans",
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer"
+        ]
+      }
+    ],
+    "negative_checks": [
+      "main_in reverse blocked on ordinary outside chain",
+      "main_out reverse blocked on ordinary outside chain",
+      "flyover_in reverse blocked outside merge"
+    ],
+    "geometry": [
+      {
+        "name": "fan_family",
+        "uses": [
+          "leads",
+          "fans",
+          "pointwork"
+        ],
+        "checks": [
+          "Four30m parallel platform leads survive",
+          "Both compact fan banks retain exact terminal attachments",
+          "Two separate crossovers retain intended movement order without new loops"
+        ]
+      },
+      {
+        "name": "parallel_pair",
+        "uses": [
+          "parallel_throat",
+          "pointwork",
+          "signals_inner",
+          "signals_outer"
+        ],
+        "checks": [
+          "Native5m pair remains coherent outside fans",
+          "Signal-only replacement preserves track geometry; prior unchanged geometry proof can be reused"
+        ]
+      },
+      {
+        "name": "flyover_crossing",
+        "uses": [
+          "parallel_throat",
+          "flyover",
+          "pointwork"
+        ],
+        "checks": [
+          "One BRIDGE crosses both ground main roads with distinct native topology",
+          "Level shallow deck and both NORMAL ramps retain intended over/under order",
+          "Native acceptance plus actual overhead/profile review; no claim from height gap alone"
+        ]
+      }
+    ],
+    "route_batch_size": 8,
+    "max_path_entries": 256,
+    "max_route_length": 3000,
+    "conclusions": [
+      "built",
+      "directed native routes qualified",
+      "train operation unprobed",
+      "whole-layout design reviewed separately"
+    ],
+    "no_trains_or_depot": true
+  },
+  "regression_cases": [
+    "Resume after completed child consumes exact receipt without repeating station or track construction",
+    "Unknown pending mutation blocks all dependent work and acceptance",
+    "Nearby rejected crossover fit tries bounded next candidate once, without replaying a mutation",
+    "A successful turnout split refreshes every exported binding which shared the replaced edge",
+    "Signal replacement invalidates dependent directed routes; unchanged geometry proof survives only after qualified identity mapping",
+    "Flyover or lower-road change invalidates the crossing check through explicit uses membership",
+    "Required crossover/branch proof cannot be satisfied by an alternative path which avoids that exact binding",
+    "Mirrored layout maps physical P roles and travel directions explicitly; no silentUP/DOWN inversion"
+  ],
+  "station_selector": {
+    "name": "Approach Acceptance",
+    "construction": {
+      "resource": "::/stations/rail/modular_station/modular_station.con",
+      "position": [
+        -200,
+        -4700,
+        2.5999999046325684
+      ]
+    }
+  },
+  "station_creation_current_session": "Already built. Start approach with station_selector; do not execute station_step again in this session. station_step remains the reusable bootstrap input for a fresh disposable map.",
+  "station_roles": {
+    "P1": {
+      "terminal_index": 4,
+      "exit_world": [
+        -140,
+        -4725,
+        2.5999999046325684
+      ],
+      "lead_end_world": [
+        -110,
+        -4725,
+        2.5999999046325684
+      ],
+      "grade": 0,
+      "outward_direction": [
+        1,
+        6.123234262925839e-17
+      ]
+    },
+    "P2": {
+      "terminal_index": 3,
+      "exit_world": [
+        -140,
+        -4720,
+        2.5999999046325684
+      ],
+      "lead_end_world": [
+        -110,
+        -4720,
+        2.5999999046325684
+      ],
+      "grade": 0,
+      "outward_direction": [
+        1,
+        6.123234262925839e-17
+      ]
+    },
+    "P3": {
+      "terminal_index": 2,
+      "exit_world": [
+        -140,
+        -4710,
+        2.5999999046325684
+      ],
+      "lead_end_world": [
+        -110,
+        -4710,
+        2.5999999046325684
+      ],
+      "grade": 0,
+      "outward_direction": [
+        1,
+        6.123234262925839e-17
+      ]
+    },
+    "P4": {
+      "terminal_index": 1,
+      "exit_world": [
+        -140,
+        -4705,
+        2.5999999046325684
+      ],
+      "lead_end_world": [
+        -110,
+        -4705,
+        2.5999999046325684
+      ],
+      "grade": 0,
+      "outward_direction": [
+        1,
+        6.123234262925839e-17
+      ]
+    }
+  }
+}

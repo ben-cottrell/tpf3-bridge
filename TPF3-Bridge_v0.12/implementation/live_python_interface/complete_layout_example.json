@@ -1,0 +1,116 @@
+{
+  "side": "left",
+  "spacing": 5,
+  "spacing_tolerance": 0.05,
+  "radius": 400,
+  "max_grade": 0.04,
+  "max_route_length": 2000,
+  "min_curved_length": 300,
+  "layout": "native_complete_branching_v1",
+  "seed_edge": 139829,
+  "reference": {
+    "start": {
+      "position": [
+        -3200.0,
+        -2900.0,
+        33
+      ],
+      "travel_direction": [
+        1,
+        0
+      ]
+    },
+    "finish": {
+      "position": [
+        -2300.0,
+        -2500.0,
+        33
+      ],
+      "travel_direction": [
+        0.7071067811865476,
+        0.7071067811865476
+      ]
+    },
+    "guides": [
+      {
+        "position": [
+          -2750,
+          -2750,
+          33
+        ],
+        "travel_direction": [
+          0.8660254037844387,
+          0.49999999999999994
+        ],
+        "grade": 0
+      }
+    ]
+  },
+  "tracks": [
+    {
+      "id": "U1",
+      "direction": "UP"
+    },
+    {
+      "id": "U2",
+      "direction": "UP"
+    },
+    {
+      "id": "D3",
+      "direction": "DOWN"
+    },
+    {
+      "id": "D4",
+      "direction": "DOWN"
+    }
+  ],
+  "branches": [
+    {
+      "id": "branch_up",
+      "track": "U1",
+      "lead_length": 400,
+      "split_fraction": 0.5,
+      "target": {
+        "position": [
+          -1755.527824266339,
+          -2096.9491805036487,
+          33.0
+        ],
+        "travel_direction": [
+          0.7071067811865476,
+          0.7071067811865476
+        ]
+      }
+    },
+    {
+      "id": "branch_down",
+      "track": "D4",
+      "lead_length": 200,
+      "split_fraction": 0.5,
+      "target": {
+        "position": [
+          -4020.0,
+          -2805.0,
+          33.0
+        ],
+        "travel_direction": [
+          -1.0,
+          -0.0
+        ]
+      }
+    }
+  ],
+  "region": {
+    "min": [
+      -4400,
+      -3100,
+      -20
+    ],
+    "max": [
+      -1400,
+      -1800,
+      80
+    ]
+  },
+  "site_policy": "clear_roads"
+}

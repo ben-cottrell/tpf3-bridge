@@ -1,0 +1,42 @@
+{
+  "schema_version": "0.12.0",
+  "kind": "plain_track_connection",
+  "coordinate_frame": {
+    "length_unit": "m",
+    "up_axis": "z",
+    "handedness": "right",
+    "transform_ref": "local-offline",
+    "transform_probe_ref": null
+  },
+  "start": {
+    "port_id": "start",
+    "position_m": [0, 0, 0],
+    "forward_unit": [1, 0, 0],
+    "grade": 0,
+    "role": "entry",
+    "native_entity_ref": null,
+    "native_port_ref": null
+  },
+  "end": {
+    "port_id": "end",
+    "position_m": [500, 0, 0],
+    "forward_unit": [1, 0, 0],
+    "grade": 0,
+    "role": "exit",
+    "native_entity_ref": null,
+    "native_port_ref": null
+  },
+  "region": {"min_m": [-2000, -2000, -1], "max_m": [2000, 2000, 1]},
+  "constraints": {
+    "min_radius_m": 80,
+    "max_length_m": 2000,
+    "cant_mm": 0,
+    "max_candidates": 100,
+    "curvature_depth": 6
+  },
+  "provenance": {
+    "source_refs": [],
+    "project_choices": ["offline design constraints"],
+    "assumptions": ["level plain track; no terrain or game evidence"]
+  }
+}

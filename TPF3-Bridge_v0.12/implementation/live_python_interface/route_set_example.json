@@ -1,0 +1,191 @@
+{
+  "version": 1,
+  "endpoints": {
+    "A1": {
+      "region": {
+        "min": [
+          -3202,
+          -4502,
+          7.5
+        ],
+        "max": [
+          -3198,
+          -4498,
+          11.5
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        -3200,
+        -4500,
+        9.5
+      ],
+      "travel_direction": [
+        1,
+        0
+      ],
+      "heading_tolerance_deg": 2,
+      "position_tolerance": 0.5
+    },
+    "A2": {
+      "region": {
+        "min": [
+          -3202,
+          -4497,
+          7.5
+        ],
+        "max": [
+          -3198,
+          -4493,
+          11.5
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        -3200,
+        -4495,
+        9.5
+      ],
+      "travel_direction": [
+        1,
+        0
+      ],
+      "heading_tolerance_deg": 2,
+      "position_tolerance": 0.5
+    },
+    "A3": {
+      "region": {
+        "min": [
+          -3202,
+          -4492,
+          7.5
+        ],
+        "max": [
+          -3198,
+          -4488,
+          11.5
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        -3200,
+        -4490,
+        9.5
+      ],
+      "travel_direction": [
+        1,
+        0
+      ],
+      "heading_tolerance_deg": 2,
+      "position_tolerance": 0.5
+    },
+    "S1": {
+      "region": {
+        "min": [
+          -2402,
+          -4497,
+          11.75
+        ],
+        "max": [
+          -2398,
+          -4493,
+          15.75
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        -2400,
+        -4495,
+        13.75
+      ],
+      "travel_direction": [
+        -1,
+        0
+      ],
+      "heading_tolerance_deg": 2,
+      "position_tolerance": 0.5
+    },
+    "S2": {
+      "region": {
+        "min": [
+          -2402,
+          -4507,
+          11.75
+        ],
+        "max": [
+          -2398,
+          -4503,
+          15.75
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        -2400,
+        -4505,
+        13.75
+      ],
+      "travel_direction": [
+        -1,
+        0
+      ],
+      "heading_tolerance_deg": 2,
+      "position_tolerance": 0.5
+    },
+    "N1": {
+      "region": {
+        "min": [
+          -2402,
+          -4492,
+          11.75
+        ],
+        "max": [
+          -2398,
+          -4488,
+          15.75
+        ]
+      },
+      "max_edges": 16,
+      "guide_xyz": [
+        -2400,
+        -4490,
+        13.75
+      ],
+      "travel_direction": [
+        -1,
+        0
+      ],
+      "heading_tolerance_deg": 2,
+      "position_tolerance": 0.5
+    }
+  },
+  "junctions": {},
+  "movements": [
+    {
+      "id": "south_in_1",
+      "from": "A2",
+      "to": "S1"
+    },
+    {
+      "id": "south_out_1",
+      "from": "S1",
+      "to": "A1"
+    },
+    {
+      "id": "south_in_2",
+      "from": "A2",
+      "to": "S2"
+    },
+    {
+      "id": "south_reverse",
+      "from": "S1",
+      "to": "A2"
+    },
+    {
+      "id": "north_in_1",
+      "from": "A3",
+      "to": "N1"
+    }
+  ],
+  "mode": "TRAIN",
+  "max_length": 1500
+}

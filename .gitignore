@@ -427,3 +427,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Imported research handoff remains local, separate from shipped implementation.
+/TPF3_Native_Integration_Research_2026-09-30/

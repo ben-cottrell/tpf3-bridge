@@ -1,0 +1,36 @@
+{
+  "recipe": "widened_two_approach_three_exit_v1",
+  "origin": [
+    1700,
+    5200,
+    33
+  ],
+  "heading_deg": -50,
+  "radius": 120,
+  "max_grade": 0.04,
+  "spacing": 5,
+  "region": {
+    "min": [
+      1550,
+      3800,
+      0
+    ],
+    "max": [
+      3250,
+      5650,
+      80
+    ]
+  },
+  "asset_region": {
+    "min": [
+      1786,
+      4514,
+      0
+    ],
+    "max": [
+      1808,
+      4528,
+      80
+    ]
+  }
+}

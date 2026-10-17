@@ -1,0 +1,279 @@
+{
+  "guides": [
+    {
+      "position": [
+        -2750,
+        -4550,
+        33
+      ],
+      "travel_direction": [
+        0.8660254037844387,
+        0.49999999999999994
+      ],
+      "grade": 0
+    }
+  ],
+  "side": "left",
+  "spacing": 5,
+  "spacing_tolerance": 0.05,
+  "radius": 400,
+  "max_grade": 0.04,
+  "region": {
+    "min": [
+      -3300,
+      -4800,
+      0
+    ],
+    "max": [
+      -2200,
+      -4100,
+      80
+    ]
+  },
+  "max_route_length": 2000,
+  "min_curved_length": 300,
+  "layout": "native_multitrack_connection_v1",
+  "reference_up": "increasing",
+  "tracks": [
+    {
+      "id": "U1",
+      "direction": "UP",
+      "source": {
+        "id": "U1:source",
+        "endpoint": {
+          "guide_xyz": [
+            -3200.0,
+            -4700.0,
+            33
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -3202.0,
+              -4702.0,
+              31
+            ],
+            "max": [
+              -3198.0,
+              -4698.0,
+              35
+            ]
+          }
+        }
+      },
+      "target": {
+        "id": "U1:target",
+        "endpoint": {
+          "guide_xyz": [
+            -2300.0,
+            -4300.0,
+            33
+          ],
+          "travel_direction": [
+            0.7071067811865476,
+            0.7071067811865476
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -2302.0,
+              -4302.0,
+              31
+            ],
+            "max": [
+              -2298.0,
+              -4298.0,
+              35
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "U2",
+      "direction": "UP",
+      "source": {
+        "id": "U2:source",
+        "endpoint": {
+          "guide_xyz": [
+            -3200.0,
+            -4695.0,
+            33
+          ],
+          "travel_direction": [
+            1,
+            0
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -3202.0,
+              -4697.0,
+              31
+            ],
+            "max": [
+              -3198.0,
+              -4693.0,
+              35
+            ]
+          }
+        }
+      },
+      "target": {
+        "id": "U2:target",
+        "endpoint": {
+          "guide_xyz": [
+            -2303.5355339059324,
+            -4296.464466094068,
+            33
+          ],
+          "travel_direction": [
+            0.7071067811865476,
+            0.7071067811865476
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -2305.5355339059324,
+              -4298.464466094068,
+              31
+            ],
+            "max": [
+              -2301.5355339059324,
+              -4294.464466094068,
+              35
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "D3",
+      "direction": "DOWN",
+      "source": {
+        "id": "D3:source",
+        "endpoint": {
+          "guide_xyz": [
+            -2307.0710678118658,
+            -4292.928932188134,
+            33
+          ],
+          "travel_direction": [
+            -0.7071067811865476,
+            -0.7071067811865476
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -2309.0710678118658,
+              -4294.928932188134,
+              31
+            ],
+            "max": [
+              -2305.0710678118658,
+              -4290.928932188134,
+              35
+            ]
+          }
+        }
+      },
+      "target": {
+        "id": "D3:target",
+        "endpoint": {
+          "guide_xyz": [
+            -3200.0,
+            -4690.0,
+            33
+          ],
+          "travel_direction": [
+            -1,
+            0
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -3202.0,
+              -4692.0,
+              31
+            ],
+            "max": [
+              -3198.0,
+              -4688.0,
+              35
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "D4",
+      "direction": "DOWN",
+      "source": {
+        "id": "D4:source",
+        "endpoint": {
+          "guide_xyz": [
+            -2310.606601717798,
+            -4289.393398282202,
+            33
+          ],
+          "travel_direction": [
+            -0.7071067811865476,
+            -0.7071067811865476
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -2312.606601717798,
+              -4291.393398282202,
+              31
+            ],
+            "max": [
+              -2308.606601717798,
+              -4287.393398282202,
+              35
+            ]
+          }
+        }
+      },
+      "target": {
+        "id": "D4:target",
+        "endpoint": {
+          "guide_xyz": [
+            -3200.0,
+            -4685.0,
+            33
+          ],
+          "travel_direction": [
+            -1,
+            0
+          ],
+          "heading_tolerance_deg": 0.1,
+          "max_edges": 16,
+          "region": {
+            "min": [
+              -3202.0,
+              -4687.0,
+              31
+            ],
+            "max": [
+              -3198.0,
+              -4683.0,
+              35
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

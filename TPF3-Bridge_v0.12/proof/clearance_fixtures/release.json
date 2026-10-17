@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.5.0",
+  "scenario_id": "passenger_static_clearance",
+  "fidelity": "reference_informed_assumptions",
+  "assumptions": {
+    "use_nominal_length_as_rectangular_body": true,
+    "bogie_centres_m": 14.0,
+    "lateral_allowance_m": 0.0,
+    "vertical_scope": "level_zero_cant_plan_only"
+  },
+  "spacing_m": 3.4,
+  "curve_radii_m": [
+    150.0,
+    250.0,
+    400.0,
+    800.0,
+    1500.0
+  ],
+  "bogie_sensitivity_m": [
+    12.0,
+    14.0,
+    16.0
+  ],
+  "sweep_step_m": 1.0,
+  "refined_step_m": 0.1,
+  "support_extension_m": 35.0,
+  "max_poses": 10000,
+  "max_pairs": 5000000
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.12.0",
+  "operation_id": "operation-1",
+  "content_hash": "e70ab4a46991a84d90ce98fc6de967b5d416c4d722317bc4465c17dd70409840",
+  "binding": {
+    "environment": "mock",
+    "save_id": "fixture-save",
+    "load_epoch": "load-1",
+    "scope_id": "test-region",
+    "topology_revision": "topology-1",
+    "terrain_revision": "terrain-1",
+    "snapshot_hash": "3dc34be7abc802cd50f694bcba3796779554b487314c05c92203d22183a1c9ff",
+    "asset_catalogue_hash": "59e75574d15dd41311957fb2945ff86f993a71165d2222ccfe93181dcf7de16f",
+    "game_build": null,
+    "adapter_build": "contract-example-only"
+  },
+  "state": "prepared",
+  "realised_entity_refs": [],
+  "observed_tick": 0,
+  "reason_code": null
+}

@@ -1,0 +1,2 @@
+# Optional local stdio MCP boundary. Core operator remains standard-library Python.
+mcp==2.3.0

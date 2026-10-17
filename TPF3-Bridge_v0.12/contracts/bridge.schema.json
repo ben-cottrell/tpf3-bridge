@@ -1,0 +1,1848 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tpf3-bridge:contract:0.12.0",
+  "title": "TPF3-Bridge proposed domain contracts; not an implementation of a native game API",
+  "$defs": {
+    "Id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+    },
+    "Hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "Vec3": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "minimum": -1000000000.0,
+        "maximum": 1000000000.0
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "Bounds": {
+      "type": "object",
+      "properties": {
+        "min_m": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "max_m": {
+          "$ref": "#/$defs/Vec3"
+        }
+      },
+      "required": [
+        "min_m",
+        "max_m"
+      ],
+      "additionalProperties": false
+    },
+    "Origin": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "source_reference",
+            "game_observation",
+            "project_choice",
+            "synthetic_test"
+          ]
+        },
+        "record_ref": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "kind",
+        "record_ref"
+      ],
+      "additionalProperties": false
+    },
+    "Target": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "enum": [
+            "m",
+            "m/s",
+            "m/m",
+            "rad",
+            "mm"
+          ]
+        },
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "origin"
+      ],
+      "additionalProperties": false
+    },
+    "Binding": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "enum": [
+            "offline",
+            "mock",
+            "game"
+          ]
+        },
+        "save_id": {
+          "$ref": "#/$defs/Id"
+        },
+        "load_epoch": {
+          "$ref": "#/$defs/Id"
+        },
+        "scope_id": {
+          "$ref": "#/$defs/Id"
+        },
+        "topology_revision": {
+          "$ref": "#/$defs/Id"
+        },
+        "terrain_revision": {
+          "$ref": "#/$defs/Id"
+        },
+        "snapshot_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "asset_catalogue_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "game_build": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "adapter_build": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "environment",
+        "save_id",
+        "load_epoch",
+        "scope_id",
+        "topology_revision",
+        "terrain_revision",
+        "snapshot_hash",
+        "asset_catalogue_hash",
+        "game_build",
+        "adapter_build"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "environment": {
+                "const": "game"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "game_build": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "adapter_build": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Port": {
+      "type": "object",
+      "properties": {
+        "port_id": {
+          "$ref": "#/$defs/Id"
+        },
+        "position_m": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "forward_unit": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "grade": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "role": {
+          "enum": [
+            "entry",
+            "exit",
+            "bidirectional"
+          ]
+        },
+        "native_entity_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "native_port_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "port_id",
+        "position_m",
+        "forward_unit",
+        "grade",
+        "role",
+        "native_entity_ref",
+        "native_port_ref"
+      ],
+      "additionalProperties": false
+    },
+    "Budget": {
+      "type": "object",
+      "properties": {
+        "candidate_evaluations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "geometry_evaluations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "local_wall_time_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "game_write_attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "max_summary_bytes": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65536
+        }
+      },
+      "required": [
+        "candidate_evaluations",
+        "geometry_evaluations",
+        "local_wall_time_s",
+        "game_write_attempts",
+        "max_summary_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "Preservation": {
+      "type": "object",
+      "properties": {
+        "protected_asset_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 10000,
+          "uniqueItems": true
+        },
+        "permitted_delete_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 10000,
+          "uniqueItems": true
+        },
+        "required_movement_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 10000,
+          "uniqueItems": true
+        },
+        "external_ports_must_match": {
+          "const": true
+        }
+      },
+      "required": [
+        "protected_asset_refs",
+        "permitted_delete_refs",
+        "required_movement_refs",
+        "external_ports_must_match"
+      ],
+      "additionalProperties": false
+    },
+    "DesignBrief": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.12.0"
+        },
+        "brief_id": {
+          "$ref": "#/$defs/Id"
+        },
+        "request_key": {
+          "$ref": "#/$defs/Id"
+        },
+        "binding": {
+          "$ref": "#/$defs/Binding"
+        },
+        "task": {
+          "enum": [
+            "connect_corridor",
+            "construct_junction",
+            "connect_station",
+            "modify_layout"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "gb_reference_inspired",
+            "synthetic_regression",
+            "strict_research"
+          ]
+        },
+        "profile_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "effect_region": {
+          "$ref": "#/$defs/Bounds"
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Port"
+          },
+          "minItems": 2,
+          "maxItems": 128
+        },
+        "targets": {
+          "type": "object",
+          "properties": {
+            "route_speed": {
+              "$ref": "#/$defs/Target"
+            },
+            "maximum_gradient": {
+              "$ref": "#/$defs/Target"
+            },
+            "minimum_radius": {
+              "$ref": "#/$defs/Target"
+            },
+            "design_train_length": {
+              "$ref": "#/$defs/Target"
+            }
+          },
+          "required": [
+            "route_speed",
+            "maximum_gradient",
+            "minimum_radius",
+            "design_train_length"
+          ],
+          "additionalProperties": false
+        },
+        "allowed_families": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "preservation": {
+          "$ref": "#/$defs/Preservation"
+        },
+        "budget": {
+          "$ref": "#/$defs/Budget"
+        },
+        "authorised_parameter_changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "policy_ref": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "schema_version",
+        "brief_id",
+        "request_key",
+        "binding",
+        "task",
+        "mode",
+        "profile_ref",
+        "effect_region",
+        "ports",
+        "targets",
+        "allowed_families",
+        "preservation",
+        "budget",
+        "authorised_parameter_changes",
+        "policy_ref"
+      ],
+      "additionalProperties": false
+    },
+    "Evidence": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "enum": [
+            "unknown",
+            "published_feature",
+            "api_documented",
+            "demonstrated",
+            "unsupported"
+          ]
+        },
+        "record_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "native_symbols": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "probe_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "limits_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "level",
+        "record_refs",
+        "native_symbols",
+        "probe_ids",
+        "limits_ref"
+      ],
+      "additionalProperties": false
+    },
+    "Capability": {
+      "type": "object",
+      "properties": {
+        "capability_id": {
+          "$ref": "#/$defs/Id"
+        },
+        "environment": {
+          "enum": [
+            "mock",
+            "game"
+          ]
+        },
+        "game_build": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "adapter_build": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        }
+      },
+      "required": [
+        "capability_id",
+        "environment",
+        "game_build",
+        "adapter_build",
+        "evidence"
+      ],
+      "additionalProperties": false
+    },
+    "CapabilityManifest": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.12.0"
+        },
+        "manifest_id": {
+          "$ref": "#/$defs/Id"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "inspection_date": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10
+        }
+      },
+      "required": [
+        "schema_version",
+        "manifest_id",
+        "capabilities",
+        "inspection_date"
+      ],
+      "additionalProperties": false
+    },
+    "Asset": {
+      "type": "object",
+      "properties": {
+        "asset_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "native_asset_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "owner_mod_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "owner_mod_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "content_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "kind": {
+          "enum": [
+            "track",
+            "bridge",
+            "tunnel",
+            "station",
+            "signal"
+          ]
+        },
+        "catalogue_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "supported_parameters_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "tested_use_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "availability": {
+          "enum": [
+            "observed_available",
+            "observed_unavailable",
+            "unknown"
+          ]
+        }
+      },
+      "required": [
+        "asset_ref",
+        "native_asset_id",
+        "owner_mod_id",
+        "owner_mod_version",
+        "content_hash",
+        "kind",
+        "catalogue_hash",
+        "supported_parameters_ref",
+        "tested_use_refs",
+        "availability"
+      ],
+      "additionalProperties": false
+    },
+    "Snapshot": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.12.0"
+        },
+        "binding": {
+          "$ref": "#/$defs/Binding"
+        },
+        "region": {
+          "$ref": "#/$defs/Bounds"
+        },
+        "capture": {
+          "type": "object",
+          "properties": {
+            "consistency": {
+              "enum": [
+                "single_tick",
+                "paused",
+                "double_read_stable",
+                "inconsistent"
+              ]
+            },
+            "start_tick": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "end_tick": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "complete_for_scope": {
+              "type": "boolean"
+            },
+            "missing_refs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Id"
+              },
+              "minItems": 0,
+              "maxItems": 1000
+            }
+          },
+          "required": [
+            "consistency",
+            "start_tick",
+            "end_tick",
+            "complete_for_scope",
+            "missing_refs"
+          ],
+          "additionalProperties": false
+        },
+        "coordinate_frame": {
+          "type": "object",
+          "properties": {
+            "length_unit": {
+              "const": "m"
+            },
+            "up_axis": {
+              "const": "z"
+            },
+            "handedness": {
+              "const": "right"
+            },
+            "transform_ref": {
+              "$ref": "#/$defs/Id"
+            },
+            "transform_probe_ref": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "length_unit",
+            "up_axis",
+            "handedness",
+            "transform_ref",
+            "transform_probe_ref"
+          ],
+          "additionalProperties": false
+        },
+        "topology_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "terrain_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "asset_catalogue_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Port"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "schema_version",
+        "binding",
+        "region",
+        "capture",
+        "coordinate_frame",
+        "topology_ref",
+        "terrain_ref",
+        "asset_catalogue_ref",
+        "ports"
+      ],
+      "additionalProperties": false
+    },
+    "Check": {
+      "type": "object",
+      "properties": {
+        "check_id": {
+          "$ref": "#/$defs/Id"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "status": {
+          "enum": [
+            "pass",
+            "fail",
+            "unassessed",
+            "not_applicable"
+          ]
+        },
+        "mandatory_for_request": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "check_id",
+        "scope",
+        "status",
+        "mandatory_for_request",
+        "reason",
+        "evidence_refs"
+      ],
+      "additionalProperties": false
+    },
+    "SummaryMetric": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/Id"
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "origin": {
+          "enum": [
+            "calculated",
+            "estimated",
+            "observed",
+            "illustrative"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "origin"
+      ],
+      "additionalProperties": false
+    },
+    "Alternative": {
+      "type": "object",
+      "properties": {
+        "candidate_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "candidate_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Check"
+          },
+          "minItems": 1,
+          "maxItems": 64
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SummaryMetric"
+          },
+          "minItems": 0,
+          "maxItems": 20
+        }
+      },
+      "required": [
+        "candidate_ref",
+        "candidate_hash",
+        "summary",
+        "checks",
+        "metrics"
+      ],
+      "additionalProperties": false
+    },
+    "DecisionPacket": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.12.0"
+        },
+        "job_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "result_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "binding": {
+          "$ref": "#/$defs/Binding"
+        },
+        "status": {
+          "enum": [
+            "planning",
+            "decision_required",
+            "design_ready",
+            "blocked",
+            "search_exhausted",
+            "failed"
+          ]
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Alternative"
+          },
+          "minItems": 0,
+          "maxItems": 3
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "next_action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "detail_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true
+        },
+        "live_build_authorised": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "job_ref",
+        "result_ref",
+        "binding",
+        "status",
+        "alternatives",
+        "blockers",
+        "next_action",
+        "detail_refs",
+        "live_build_authorised"
+      ],
+      "additionalProperties": false
+    },
+    "TrackPayload": {
+      "type": "object",
+      "properties": {
+        "edge_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "start_node_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "end_node_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "asset_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "centreline_m": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec3"
+          },
+          "minItems": 2,
+          "maxItems": 4096
+        },
+        "structure_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "edge_ref",
+        "start_node_ref",
+        "end_node_ref",
+        "asset_ref",
+        "centreline_m",
+        "structure_ref"
+      ],
+      "additionalProperties": false
+    },
+    "StructurePayload": {
+      "type": "object",
+      "properties": {
+        "structure_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "asset_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "kind": {
+          "enum": [
+            "bridge",
+            "tunnel"
+          ]
+        },
+        "footprint": {
+          "$ref": "#/$defs/Bounds"
+        },
+        "path_m": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec3"
+          },
+          "minItems": 2,
+          "maxItems": 4096
+        },
+        "parameter_values": {
+          "type": "object",
+          "maxProperties": 64,
+          "propertyNames": {
+            "pattern": "^[A-Za-z0-9_]{1,64}$"
+          },
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ],
+            "maxLength": 256
+          }
+        }
+      },
+      "required": [
+        "structure_ref",
+        "asset_ref",
+        "kind",
+        "footprint",
+        "path_m",
+        "parameter_values"
+      ],
+      "additionalProperties": false
+    },
+    "SignalPayload": {
+      "type": "object",
+      "properties": {
+        "signal_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "asset_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "edge_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "position_m": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "direction": {
+          "enum": [
+            "forward",
+            "reverse"
+          ]
+        },
+        "configuration_ref": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "signal_ref",
+        "asset_ref",
+        "edge_ref",
+        "position_m",
+        "direction",
+        "configuration_ref"
+      ],
+      "additionalProperties": false
+    },
+    "RemovePayload": {
+      "type": "object",
+      "properties": {
+        "native_entity_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 1,
+          "maxItems": 1000,
+          "uniqueItems": true
+        },
+        "expected_content_hashes": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 1000,
+          "additionalProperties": {
+            "$ref": "#/$defs/Hash"
+          }
+        }
+      },
+      "required": [
+        "native_entity_refs",
+        "expected_content_hashes"
+      ],
+      "additionalProperties": false
+    },
+    "Operation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "operation_id": {
+              "$ref": "#/$defs/Id"
+            },
+            "content_hash": {
+              "$ref": "#/$defs/Hash"
+            },
+            "kind": {
+              "const": "build_track"
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Id"
+              },
+              "minItems": 0,
+              "maxItems": 10000,
+              "uniqueItems": true
+            },
+            "expected_effect_region": {
+              "$ref": "#/$defs/Bounds"
+            },
+            "payload": {
+              "$ref": "#/$defs/TrackPayload"
+            }
+          },
+          "required": [
+            "operation_id",
+            "content_hash",
+            "kind",
+            "depends_on",
+            "expected_effect_region",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation_id": {
+              "$ref": "#/$defs/Id"
+            },
+            "content_hash": {
+              "$ref": "#/$defs/Hash"
+            },
+            "kind": {
+              "const": "build_structure"
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Id"
+              },
+              "minItems": 0,
+              "maxItems": 10000,
+              "uniqueItems": true
+            },
+            "expected_effect_region": {
+              "$ref": "#/$defs/Bounds"
+            },
+            "payload": {
+              "$ref": "#/$defs/StructurePayload"
+            }
+          },
+          "required": [
+            "operation_id",
+            "content_hash",
+            "kind",
+            "depends_on",
+            "expected_effect_region",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation_id": {
+              "$ref": "#/$defs/Id"
+            },
+            "content_hash": {
+              "$ref": "#/$defs/Hash"
+            },
+            "kind": {
+              "const": "place_signal"
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Id"
+              },
+              "minItems": 0,
+              "maxItems": 10000,
+              "uniqueItems": true
+            },
+            "expected_effect_region": {
+              "$ref": "#/$defs/Bounds"
+            },
+            "payload": {
+              "$ref": "#/$defs/SignalPayload"
+            }
+          },
+          "required": [
+            "operation_id",
+            "content_hash",
+            "kind",
+            "depends_on",
+            "expected_effect_region",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation_id": {
+              "$ref": "#/$defs/Id"
+            },
+            "content_hash": {
+              "$ref": "#/$defs/Hash"
+            },
+            "kind": {
+              "const": "remove_assets"
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Id"
+              },
+              "minItems": 0,
+              "maxItems": 10000,
+              "uniqueItems": true
+            },
+            "expected_effect_region": {
+              "$ref": "#/$defs/Bounds"
+            },
+            "payload": {
+              "$ref": "#/$defs/RemovePayload"
+            }
+          },
+          "required": [
+            "operation_id",
+            "content_hash",
+            "kind",
+            "depends_on",
+            "expected_effect_region",
+            "payload"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ConstructionPlan": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.12.0"
+        },
+        "plan_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "plan_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "candidate_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "binding": {
+          "$ref": "#/$defs/Binding"
+        },
+        "effect_region": {
+          "$ref": "#/$defs/Bounds"
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Operation"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "required_capabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "required_movement_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "policy_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "scope": {
+          "enum": [
+            "create_only",
+            "authorised_replacement"
+          ]
+        },
+        "execution_mode": {
+          "enum": [
+            "mock",
+            "live"
+          ]
+        },
+        "native_lowering_ref": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "schema_version",
+        "plan_ref",
+        "plan_hash",
+        "candidate_hash",
+        "binding",
+        "effect_region",
+        "operations",
+        "required_capabilities",
+        "required_movement_refs",
+        "policy_ref",
+        "scope",
+        "execution_mode",
+        "native_lowering_ref"
+      ],
+      "additionalProperties": false
+    },
+    "Authority": {
+      "type": "object",
+      "properties": {
+        "authority_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "issued_by": {
+          "const": "trusted_local_host"
+        },
+        "principal_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "plan_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "save_id": {
+          "$ref": "#/$defs/Id"
+        },
+        "load_epoch": {
+          "$ref": "#/$defs/Id"
+        },
+        "effect_region": {
+          "$ref": "#/$defs/Bounds"
+        },
+        "expires_unix_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "allowed_kinds": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "build_track",
+              "build_structure",
+              "place_signal",
+              "remove_assets"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true
+        },
+        "permitted_delete_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 10000,
+          "uniqueItems": true
+        },
+        "maximum_write_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        }
+      },
+      "required": [
+        "authority_ref",
+        "issued_by",
+        "principal_ref",
+        "plan_hash",
+        "save_id",
+        "load_epoch",
+        "effect_region",
+        "expires_unix_ms",
+        "allowed_kinds",
+        "permitted_delete_refs",
+        "maximum_write_attempts"
+      ],
+      "additionalProperties": false
+    },
+    "Receipt": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.12.0"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Id"
+        },
+        "content_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "binding": {
+          "$ref": "#/$defs/Binding"
+        },
+        "state": {
+          "enum": [
+            "prepared",
+            "submitted",
+            "accepted",
+            "applied",
+            "rejected",
+            "uncertain"
+          ]
+        },
+        "realised_entity_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 10000,
+          "uniqueItems": true
+        },
+        "observed_tick": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "reason_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "operation_id",
+        "content_hash",
+        "binding",
+        "state",
+        "realised_entity_refs",
+        "observed_tick",
+        "reason_code"
+      ],
+      "additionalProperties": false
+    },
+    "RealisationReport": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.12.0"
+        },
+        "plan_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "plan_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "binding": {
+          "$ref": "#/$defs/Binding"
+        },
+        "status": {
+          "enum": [
+            "mock_verified",
+            "geometry_verified",
+            "topology_verified",
+            "game_traversal_observed",
+            "partial_failure",
+            "blocked",
+            "uncertain_effect"
+          ]
+        },
+        "operation_receipt_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Check"
+          },
+          "minItems": 1,
+          "maxItems": 128
+        },
+        "observation_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "unresolved": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "remaining_effect_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "schema_version",
+        "plan_ref",
+        "plan_hash",
+        "binding",
+        "status",
+        "operation_receipt_refs",
+        "checks",
+        "observation_refs",
+        "unresolved",
+        "remaining_effect_refs"
+      ],
+      "additionalProperties": false
+    },
+    "InspectInput": {
+      "type": "object",
+      "properties": {
+        "scope_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "status",
+              "terrain",
+              "topology",
+              "assets",
+              "changes"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_items": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        }
+      },
+      "required": [
+        "scope_ref",
+        "categories",
+        "cursor",
+        "max_items"
+      ],
+      "additionalProperties": false
+    },
+    "DesignInput": {
+      "type": "object",
+      "properties": {
+        "brief": {
+          "$ref": "#/$defs/DesignBrief"
+        }
+      },
+      "required": [
+        "brief"
+      ],
+      "additionalProperties": false
+    },
+    "ReviseInput": {
+      "type": "object",
+      "properties": {
+        "candidate_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "replacement_brief": {
+          "$ref": "#/$defs/DesignBrief"
+        },
+        "request_key": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "candidate_ref",
+        "replacement_brief",
+        "request_key"
+      ],
+      "additionalProperties": false
+    },
+    "CommitInput": {
+      "type": "object",
+      "properties": {
+        "plan_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "expected_plan_hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "approval_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "request_key": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "plan_ref",
+        "expected_plan_hash",
+        "approval_ref",
+        "request_key"
+      ],
+      "additionalProperties": false
+    },
+    "StatusInput": {
+      "type": "object",
+      "properties": {
+        "job_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "after_event_sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "job_ref",
+        "after_event_sequence"
+      ],
+      "additionalProperties": false
+    },
+    "ExplainInput": {
+      "type": "object",
+      "properties": {
+        "result_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "category": {
+          "enum": [
+            "summary",
+            "geometry",
+            "capability",
+            "failure",
+            "provenance",
+            "comparison"
+          ]
+        },
+        "max_items": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      "required": [
+        "result_ref",
+        "category",
+        "max_items"
+      ],
+      "additionalProperties": false
+    },
+    "ObserveInput": {
+      "type": "object",
+      "properties": {
+        "scope_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "after_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "window_game_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "max_items": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        }
+      },
+      "required": [
+        "scope_ref",
+        "after_cursor",
+        "window_game_seconds",
+        "max_items"
+      ],
+      "additionalProperties": false
+    },
+    "CancelInput": {
+      "type": "object",
+      "properties": {
+        "job_ref": {
+          "$ref": "#/$defs/Id"
+        },
+        "request_key": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "job_ref",
+        "request_key"
+      ],
+      "additionalProperties": false
+    },
+    "ToolResponse": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.12.0"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "running",
+            "decision_required",
+            "blocked",
+            "failed",
+            "cancelling",
+            "cancelled"
+          ]
+        },
+        "job_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "result_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "detail_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "error_codes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 32
+        },
+        "event_sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "schema_version",
+        "status",
+        "job_ref",
+        "result_ref",
+        "summary",
+        "detail_refs",
+        "error_codes",
+        "event_sequence"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
